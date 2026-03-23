@@ -274,10 +274,44 @@
       .about-inner { grid-template-columns: 1fr; gap: 3rem; }
       .about-img-wrap { max-width: 380px; }
     }
+    /* ── HAMBURGER ── */
+    .hamburger {
+      display: none; flex-direction: column; justify-content: center; gap: 5px;
+      width: 40px; height: 40px; background: none; border: none; cursor: pointer; padding: 6px;
+    }
+    .hamburger span {
+      display: block; height: 2px; background: white; border-radius: 2px;
+      transition: transform 0.25s, opacity 0.25s;
+      transform-origin: center;
+    }
+    .nav.scrolled .hamburger span { background: var(--primary); }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* ── MOBILE MENU ── */
+    .mobile-menu {
+      display: none; position: fixed; top: 72px; left: 0; right: 0;
+      background: rgba(2,25,47,0.98); backdrop-filter: blur(16px);
+      padding: 1.5rem 2rem 2rem; flex-direction: column; gap: 0.25rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      transform: translateY(-8px); opacity: 0;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .mobile-menu.open { transform: translateY(0); opacity: 1; }
+    .mobile-menu .nav-link {
+      color: rgba(255,255,255,0.75); font-size: 1.05rem; padding: 0.875rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07); display: block;
+    }
+    .mobile-menu .nav-link:hover { color: var(--aqua); }
+    .mobile-menu .btn-aqua { margin-top: 1rem; justify-content: center; font-size: 1rem; padding: 0.9rem 1.75rem; }
+
     @media (max-width: 768px) {
       .issues-grid { grid-template-columns: 1fr; }
       .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
-      .nav-links .nav-link { display: none; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      .mobile-menu { display: flex; }
       .hero-divider { flex-wrap: wrap; gap: 1.5rem; }
       .hero-client-logo { height: 22px; max-width: 90px; }
       .community-card { flex-direction: column; align-items: flex-start; gap: 1rem; }
@@ -309,8 +343,22 @@
           <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
       </div>
+      <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#services" class="nav-link">Services</a>
+    <a href="#about" class="nav-link">About</a>
+    <a href="#newsletter" class="nav-link">Newsletter</a>
+    <a href="#contact" class="btn-aqua">
+      Work With Tangram
+      <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
 
   <!-- HERO -->
   <section class="hero" id="hero">
@@ -703,6 +751,21 @@
     const nav = document.getElementById('mainNav');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Hamburger menu
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburgerBtn.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      hamburgerBtn.classList.toggle('open', isOpen);
+    });
+    // Close mobile menu when a link is clicked
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        hamburgerBtn.classList.remove('open');
+      });
     });
 
     // Fade-up on scroll
