@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tangram MedTech — FDA Clearance & Manufacturing Experts</title>
+  <meta name="description" content="Tangram MedTech helps medical device companies navigate FDA clearance, build scalable quality systems, and launch manufacturing. Founded by Eric Sugalski.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --primary:   #0B2740;
+      --mid-blue:  #304F6B;
+      --dark-blue: #02192F;
+      --aqua:      #0AC0E9;
+      --aqua-dark: #089bbf;
+      --gray:      #D2D2D2;
+      --light-gray:#F5F5F5;
+      --white:     #FFFFFF;
+      --text:      #0B2740;
+      --text-muted:#304F6B;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--white); color: var(--text); overflow-x: hidden; }
+    h1,h2,h3,h4,h5,h6 { font-family: 'Inter', sans-serif; }
+
+    /* Subtle grain overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.02; pointer-events: none; z-index: 9999;
+    }
+
+    /* ── NAV ── */
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 2rem; transition: background 0.3s, box-shadow 0.3s; }
+    .nav.scrolled { background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
+    .nav-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 72px; }
+    .nav-logo-light { display: block; }
+    .nav-logo-dark  { display: none; }
+    .nav.scrolled .nav-logo-light { display: none; }
+    .nav.scrolled .nav-logo-dark  { display: block; }
+    .nav-links { display: flex; align-items: center; gap: 2.5rem; }
+    .nav-link { font-size: 0.875rem; font-weight: 500; color: rgba(255,255,255,0.75); text-decoration: none; transition: color 0.2s; letter-spacing: 0.01em; }
+    .nav.scrolled .nav-link { color: var(--text-muted); }
+    .nav-link:hover, .nav.scrolled .nav-link:hover { color: var(--aqua); }
+
+    /* ── BUTTONS ── */
+    .btn-aqua {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--aqua); color: var(--primary);
+      font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.875rem; letter-spacing: 0.01em;
+      padding: 0.7rem 1.4rem; border-radius: 6px; text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(10,192,233,0.3);
+    }
+    .btn-aqua:hover { background: var(--aqua-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(10,192,233,0.4); }
+    .btn-aqua:active { transform: translateY(0); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: transparent; color: white;
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.875rem;
+      padding: 0.7rem 1.4rem; border-radius: 6px; border: 1.5px solid rgba(255,255,255,0.28);
+      text-decoration: none; cursor: pointer; transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-outline:hover { border-color: var(--aqua); color: var(--aqua); transform: translateY(-1px); }
+    .btn-outline-dark {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: transparent; color: var(--primary);
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.875rem;
+      padding: 0.7rem 1.4rem; border-radius: 6px; border: 1.5px solid rgba(11,39,64,0.3);
+      text-decoration: none; cursor: pointer; transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-outline-dark:hover { border-color: var(--aqua-dark); color: var(--aqua-dark); transform: translateY(-1px); }
+    .btn-primary-dark {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--primary); color: white;
+      font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1rem;
+      padding: 0.9rem 1.75rem; border-radius: 8px; text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary-dark:hover { background: var(--dark-blue); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero { min-height: 100vh; background: var(--primary); position: relative; overflow: hidden; display: flex; align-items: center; padding: 7rem 2rem 5rem; }
+    .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(10,192,233,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(10,192,233,0.04) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+    .hero-orb-1 { position: absolute; top: -200px; right: -100px; width: 700px; height: 700px; background: radial-gradient(circle, rgba(10,192,233,0.1) 0%, transparent 70%); pointer-events: none; }
+    .hero-orb-2 { position: absolute; bottom: -180px; left: -80px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(48,79,107,0.2) 0%, transparent 70%); pointer-events: none; }
+    .hero-inner { max-width: 1280px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 390px; gap: 5rem; align-items: center; position: relative; z-index: 1; }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(10,192,233,0.1); border: 1px solid rgba(10,192,233,0.25); color: #5DDAF5; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.35rem 0.9rem; border-radius: 100px; margin-bottom: 1.75rem; }
+    .hero-headline { font-weight: 800; font-size: clamp(1.85rem, 3vw, 3.25rem); line-height: 1.1; letter-spacing: -0.03em; color: white; margin-bottom: 1.5rem; }
+    .hero-headline .aqua, .section-title .aqua { color: var(--aqua); }
+    .hero-sub { font-size: 1.05rem; line-height: 1.75; color: rgba(255,255,255,0.58); max-width: 560px; margin-bottom: 2.5rem; }
+    .hero-ctas { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .hero-ctas .btn-aqua, .hero-ctas .btn-outline { font-size: 1rem; padding: 0.875rem 1.75rem; }
+    .hero-divider { display: flex; align-items: center; gap: 2rem; margin-top: 3rem; padding-top: 2.5rem; border-top: 1px solid rgba(255,255,255,0.07); flex-wrap: wrap; }
+    .hero-client-logo { height: 28px; width: auto; max-width: 110px; object-fit: contain; filter: brightness(0) invert(1); opacity: 0.55; transition: opacity 0.2s; }
+    .hero-client-logo:hover { opacity: 0.85; }
+
+    /* Hero right — newsletter card */
+    .hero-newsletter-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; overflow: hidden; backdrop-filter: blur(10px); }
+    .hnc-header { background: rgba(10,192,233,0.1); border-bottom: 1px solid rgba(10,192,233,0.15); padding: 0.85rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+    .hnc-badge { background: var(--aqua); color: var(--primary); font-size: 0.58rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 4px; }
+    .hnc-label { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.75); }
+    .hnc-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+    .hnc-body { padding: 1.2rem; }
+    .hnc-meta { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aqua); margin-bottom: 0.45rem; }
+    .hnc-issue-title { font-size: 1.05rem; font-weight: 700; color: white; line-height: 1.3; margin-bottom: 0.45rem; }
+    .hnc-issue-sub { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.55; margin-bottom: 0.95rem; }
+    .hnc-link { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.38); text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; transition: color 0.2s; }
+    .hnc-link:hover { color: var(--aqua); }
+
+    .hnc-input::placeholder { color: rgba(255,255,255,0.28); }
+    .hnc-input:focus { border-color: var(--aqua); }
+    .hnc-btn { background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.55rem 0.9rem; border: none; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+    .hnc-btn:hover { background: var(--aqua-dark); }
+
+    /* ── SECTION COMMON ── */
+    .section { padding: 6rem 2rem; }
+    .section-inner { max-width: 1280px; margin: 0 auto; }
+    .section-eyebrow { display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--aqua-dark); margin-bottom: 0.85rem; }
+    .section-title { font-weight: 800; font-size: clamp(1.9rem, 3.5vw, 2.75rem); letter-spacing: -0.025em; color: var(--primary); line-height: 1.1; margin-bottom: 1rem; }
+    .section-title-light { color: white; }
+    .section-sub { font-size: 1rem; line-height: 1.75; color: var(--text-muted); max-width: 560px; }
+
+    /* ── SERVICES ── */
+    .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
+    .service-card { background: white; border: 1px solid var(--gray); border-radius: 16px; padding: 2rem; position: relative; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s; }
+    .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--aqua); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(11,39,64,0.1); border-color: transparent; }
+    .service-icon { width: 48px; height: 48px; background: rgba(10,192,233,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; }
+    .service-icon svg { width: 22px; height: 22px; stroke: var(--aqua-dark); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .service-title { font-weight: 700; font-size: 1.05rem; color: var(--primary); margin-bottom: 0.6rem; letter-spacing: -0.01em; }
+    .service-desc { font-size: 0.88rem; line-height: 1.65; color: var(--text-muted); }
+
+    /* ── ABOUT ── */
+    .about-inner { max-width: 1280px; margin: 0 auto; display: grid; grid-template-columns: 420px 1fr; gap: 6rem; align-items: center; }
+    .about-img-wrap { position: relative; }
+    .about-accent-bar { position: absolute; top: 2.5rem; left: -10px; width: 4px; height: 80px; background: var(--aqua); border-radius: 4px; z-index: 1; }
+    .about-img-frame { border-radius: 20px; overflow: hidden; position: relative; box-shadow: 0 32px 64px rgba(11,39,64,0.18); }
+    .about-img-frame::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(10,192,233,0.07) 0%, transparent 60%); }
+    .about-img-frame img { width: 100%; aspect-ratio: 4/5; object-fit: cover; object-position: center top; display: block; }
+    .about-tag { display: inline-flex; align-items: center; background: rgba(10,192,233,0.08); border: 1px solid rgba(10,192,233,0.2); color: var(--mid-blue); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.3rem 0.75rem; border-radius: 100px; margin-bottom: 1rem; }
+    .about-pull-quote { border-left: 3px solid var(--aqua); padding-left: 1.25rem; margin: 1.5rem 0; }
+    .about-pull-quote p { font-size: 1.12rem; font-weight: 600; font-style: italic; color: var(--primary); line-height: 1.45; }
+    .about-bio { font-size: 0.95rem; line-height: 1.75; color: var(--text-muted); margin-bottom: 0.9rem; }
+    .about-stats { display: flex; gap: 2.5rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--gray); }
+    .about-stat-num { font-size: 1.9rem; font-weight: 800; color: var(--aqua-dark); letter-spacing: -0.03em; }
+    .about-stat-label { font-size: 0.68rem; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.15rem; }
+
+    /* ── MEDTECH MINDSET SUB-BRAND ── */
+    .mindset-section { background: var(--primary); padding: 7rem 2rem; position: relative; overflow: hidden; }
+    .mindset-orb-1 { position: absolute; top: -200px; right: -120px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(10,192,233,0.08) 0%, transparent 70%); pointer-events: none; }
+    .mindset-orb-2 { position: absolute; bottom: -150px; left: -80px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(48,79,107,0.25) 0%, transparent 70%); pointer-events: none; }
+    .mindset-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
+    .mindset-top { display: grid; grid-template-columns: 340px 1fr; gap: 4rem; align-items: center; margin-bottom: 4.5rem; }
+    .mindset-left { max-width: none; display: flex; align-items: center; justify-content: center; }
+    .mindset-right { display: flex; flex-direction: column; justify-content: center; }
+
+    /* Sub-brand badge */
+    .sub-brand-badge { display: inline-flex; align-items: center; gap: 0.6rem; background: rgba(10,192,233,0.1); border: 1px solid rgba(10,192,233,0.22); border-radius: 100px; padding: 0.35rem 0.85rem 0.35rem 0.65rem; margin-bottom: 1.5rem; }
+    .sub-brand-dot { width: 6px; height: 6px; background: var(--aqua); border-radius: 50%; }
+    .sub-brand-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(10,192,233,0.75); }
+    .sub-brand-sep { width: 1px; height: 10px; background: rgba(10,192,233,0.25); }
+    .sub-brand-parent { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.38); }
+
+    .mindset-brand-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+    .mindset-logo-img { height: 200px; width: auto; max-width: 100%; object-fit: contain; flex-shrink: 0; }
+    .mindset-brand-name { font-size: 2rem; font-weight: 800; color: white; letter-spacing: -0.025em; }
+    .mindset-brand-name .teal { color: var(--aqua); }
+    .mindset-tagline { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.32); margin-bottom: 1.75rem; }
+    .mindset-desc { font-size: 1rem; line-height: 1.78; color: rgba(255,255,255,0.58); margin-bottom: 2rem; }
+    .mindset-community-link { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 600; color: var(--aqua); text-decoration: none; transition: gap 0.2s; }
+    .mindset-community-link:hover { gap: 0.75rem; }
+
+
+
+
+    /* Recent issues */
+    .issues-label { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.26); margin-bottom: 1.5rem; }
+    .issues-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .issue-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; }
+    .issue-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.28); border-color: rgba(10,192,233,0.2); }
+    .issue-img { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; }
+    .issue-body { padding: 1.25rem; }
+    .issue-meta { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem; }
+    .issue-date { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--aqua); }
+    .issue-tag { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(10,192,233,0.12); color: rgba(10,192,233,0.8); padding: 0.15rem 0.5rem; border-radius: 4px; }
+    .issue-title { font-weight: 700; font-size: 1.05rem; color: white; line-height: 1.3; margin-bottom: 0.5rem; letter-spacing: -0.01em; }
+    .issue-excerpt { font-size: 0.83rem; color: rgba(255,255,255,0.42); line-height: 1.6; margin-bottom: 1rem; }
+    .issue-link { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.32); text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; transition: color 0.2s; }
+    .issue-link:hover { color: var(--aqua); }
+    .issues-footer { margin-top: 2.5rem; }
+    .community-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); border-radius: 14px; padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; text-decoration: none; transition: background 0.2s, border-color 0.2s; }
+    .community-card:hover { background: rgba(10,192,233,0.06); border-color: rgba(10,192,233,0.25); }
+    .cc-text { font-size: 0.9rem; font-weight: 600; color: white; }
+    .cc-sub { font-size: 0.78rem; color: rgba(255,255,255,0.35); margin-top: 0.2rem; }
+    .cc-arrow svg { width: 20px; height: 20px; stroke: var(--aqua); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+    /* ── CTA SECTION ── */
+    .cta-section { background: var(--aqua); padding: 6.5rem 2rem; }
+    .cta-inner { max-width: 900px; margin: 0 auto; text-align: center; }
+    .cta-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(11,39,64,0.5); margin-bottom: 1rem; display: block; }
+    .cta-title { font-weight: 800; font-size: clamp(2rem, 3.5vw, 3rem); color: var(--primary); letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 1rem; }
+    .cta-sub { font-size: 1.05rem; line-height: 1.65; color: rgba(11,39,64,0.6); margin-bottom: 2.5rem; }
+
+    /* ── CONTACT FORM ── */
+    .contact-form-card { background: white; border-radius: 20px; padding: 2.75rem 3rem; text-align: left; box-shadow: 0 12px 48px rgba(11,39,64,0.18), 0 2px 8px rgba(11,39,64,0.08); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+    .form-field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-field.full { margin-bottom: 1.25rem; }
+    .form-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.45); }
+    .form-input, .form-select, .form-textarea { border: 1.5px solid rgba(11,39,64,0.12); border-radius: 9px; padding: 0.75rem 1rem; font-family: inherit; font-size: 0.9rem; color: var(--primary); background: #fafafa; outline: none; width: 100%; transition: border-color 0.18s ease, box-shadow 0.18s ease; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--aqua); box-shadow: 0 0 0 3px rgba(10,192,233,0.18); background: white; }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%230B2740' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; cursor: pointer; }
+    .form-textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+    .form-section-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.45); margin-bottom: 0.75rem; display: block; }
+    .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.65rem; margin-bottom: 1.25rem; }
+    .service-checkbox { display: flex; align-items: center; gap: 0.65rem; cursor: pointer; padding: 0.65rem 0.9rem; border: 1.5px solid rgba(11,39,64,0.1); border-radius: 9px; transition: border-color 0.15s, background 0.15s; user-select: none; }
+    .service-checkbox:hover { border-color: rgba(10,192,233,0.4); background: rgba(10,192,233,0.04); }
+    .service-checkbox input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--aqua); cursor: pointer; flex-shrink: 0; }
+    .service-checkbox span { font-size: 0.875rem; font-weight: 500; color: var(--primary); }
+    .form-submit-row { display: flex; align-items: center; justify-content: space-between; margin-top: 1.75rem; gap: 1rem; flex-wrap: wrap; }
+    .form-privacy { font-size: 0.78rem; color: rgba(11,39,64,0.4); line-height: 1.5; }
+    .form-success { display: none; text-align: center; padding: 3rem 1rem; }
+    .form-success-icon { width: 52px; height: 52px; background: rgba(10,192,233,0.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
+    .form-success-icon svg { width: 24px; height: 24px; stroke: var(--aqua); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .form-success-title { font-size: 1.4rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+    .form-success-sub { font-size: 0.95rem; color: rgba(11,39,64,0.55); line-height: 1.6; }
+    .btn-form-submit { display: inline-flex; align-items: center; gap: 0.6rem; background: var(--primary); color: white; padding: 0.9rem 2rem; border-radius: 9px; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.02em; border: none; cursor: pointer; transition: background 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease; }
+    .btn-form-submit:hover { background: var(--mid-blue); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(11,39,64,0.25); }
+    .btn-form-submit:active { transform: translateY(0); }
+    .btn-form-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    @media (max-width: 700px) { .form-row, .form-row-3 { grid-template-columns: 1fr; } .services-grid { grid-template-columns: 1fr; } .contact-form-card { padding: 2rem 1.5rem; } .form-submit-row { flex-direction: column; align-items: stretch; } .btn-form-submit { justify-content: center; } }
+
+    /* ── FOOTER ── */
+    footer { background: var(--dark-blue); padding: 4.5rem 2rem 2rem; }
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .footer-brand-desc { font-size: 0.875rem; line-height: 1.65; color: rgba(255,255,255,0.36); margin-top: 1rem; max-width: 280px; }
+    .footer-sub-brand { margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .footer-sub-brand-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.24); margin-bottom: 0.4rem; }
+    .footer-sub-brand-name { font-size: 0.88rem; font-weight: 600; color: rgba(10,192,233,0.6); }
+    .footer-col-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.26); margin-bottom: 1.25rem; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+    .footer-link { color: rgba(255,255,255,0.44); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .footer-link:hover { color: var(--aqua); }
+    .footer-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 2rem; }
+    .footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.2); }
+    .footer-legal { display: flex; gap: 1.5rem; }
+
+    /* ── ANIMATIONS ── */
+    .fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+
+    .arrow-svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      .mindset-top { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 1024px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .services-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .about-img-wrap { max-width: 380px; }
+    }
+    @media (max-width: 768px) {
+      .issues-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .nav-links .nav-link { display: none; }
+      .hero-divider { flex-wrap: wrap; gap: 1.5rem; }
+      .hero-client-logo { height: 22px; max-width: 90px; }
+      .community-card { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    }
+    @media (max-width: 480px) {
+      .services-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .about-stats { flex-wrap: wrap; gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="mainNav">
+    <div class="nav-inner">
+      <a href="/" style="text-decoration:none; display:flex; align-items:center;">
+        <!-- Light (on dark hero) — white knockout logo -->
+        <img class="nav-logo-light" src="brand_assets/Tangram_white%20logo.png" alt="Tangram MedTech" style="height:36px; width:auto;">
+        <!-- Dark (on white nav) — color logo (navy on transparent) -->
+        <img class="nav-logo-dark" src="brand_assets/Tangram_color%20logo.png" alt="Tangram MedTech" style="height:36px; width:auto;">
+      </a>
+      <div class="nav-links">
+        <a href="#services" class="nav-link">Services</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#newsletter" class="nav-link">Newsletter</a>
+        <a href="#contact" class="btn-aqua">
+          Work With Tangram
+          <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-orb-1"></div>
+    <div class="hero-orb-2"></div>
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-eyebrow">Medtech Consulting Services</div>
+        <h1 class="hero-headline">
+          Helping medtech<br>
+          companies clear FDA<br>
+          and launch manufacturing <br>
+          <span class="aqua">(without the redo loop).</span>
+        </h1>
+        <p class="hero-sub">
+          What's the regulatory pathway? Who are the right development and manufacturing partners? How do we build a QMS that meets the regulations without outgrowing the company? How long will it take, and what will it cost? Tangram helps medtech teams answer those questions with a sharp focus on the commercial realities that drive adoption.
+        </p>
+        <div class="hero-ctas">
+          <a href="#contact" class="btn-aqua">
+            Work With Tangram
+            <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="#newsletter" class="btn-outline">
+            Read the Newsletter
+          </a>
+        </div>
+        <div class="hero-divider">
+          <img src="client_logos/mit_logo_white.png" alt="MIT" class="hero-client-logo">
+          <img src="client_logos/ocularDx_logo_white.png" alt="OcularDx" class="hero-client-logo">
+          <img src="client_logos/sutolBio.png" alt="Sutol Bio" class="hero-client-logo">
+          <img src="client_logos/uPenn_logo.png" alt="University of Pennsylvania" class="hero-client-logo">
+          <img src="client_logos/wavelet_logo_white.png" alt="Wavelet" class="hero-client-logo">
+        </div>
+      </div>
+
+      <!-- Newsletter teaser card -->
+      <div class="hero-right">
+        <div style="font-size:0.63rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.26);margin-bottom:0.6rem;">From the MedTech Mindset Newsletter</div>
+        <div class="hero-newsletter-card">
+          <div class="hnc-header">
+            <div class="hnc-badge">Newsletter</div>
+            <div class="hnc-label">MedTech Mindset</div>
+          </div>
+          <img id="hncImg" class="hnc-img" src="https://media.licdn.com/dms/image/v2/D4E12AQGISWKD_dkVqw/article-cover_image-shrink_720_1280/B4EZ0QoouOIkAI-/0/1774100581684?e=2147483647&v=beta&t=DFwXND4_-Gm-9oM3xC4sv0JH4yRAWkr9B2eD8wnS7gs" alt="There is no Gen 2">
+          <div class="hnc-body">
+            <div id="hncMeta" class="hnc-meta">March 21, 2026 &middot; Commercialization</div>
+            <div id="hncTitle" class="hnc-issue-title">There is no Gen 2</div>
+            <p id="hncSub" class="hnc-issue-sub">Why medtech startups need to stop treating Gen 1 like a placeholder — and build for success from the very first device.</p>
+            <a id="hncLink" href="https://www.linkedin.com/pulse/gen-2-eric-sugalski-jfnue/" target="_blank" class="hnc-link">
+              Read Issue
+              <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="section" id="services" style="background: var(--light-gray);">
+    <div class="section-inner">
+      <div class="fade-up">
+        <span class="section-eyebrow">How Tangram Helps</span>
+        <h2 class="section-title">Clearing FDA gets you to market. <span style="color: var(--aqua-dark);">The right commercial strategy wins it.</span></h2>
+        <p class="section-sub" style="max-width: 100%;">Tangram helps medtech companies navigate regulatory strategy, supply chain development, quality management, and the execution required to move forward. But those pieces only work when the commercial direction is sound. Tangram brings the technical, regulatory, and operational pieces together, with commercial strategy shaping the process from the start.</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card fade-up delay-1">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <div class="service-title">Regulatory Strategy</div>
+          <p class="service-desc">FDA pathway selection, pre-submission planning, evidence strategy. Build a regulatory path that supports both clearance and the business behind it.</p>
+        </div>
+        <div class="service-card fade-up delay-2">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <div class="service-title">Quality Management</div>
+          <p class="service-desc">QMS design that fits your stage and scales with your company — built to hold up under FDA scrutiny, not just satisfy paperwork.</p>
+        </div>
+        <div class="service-card fade-up delay-3">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+          </div>
+          <div class="service-title">Supply Chain Development</div>
+          <p class="service-desc">Product development strategy, outsourced manufacturing, contract testing. Close the gap between prototype and production with a supply chain built for scale.</p>
+        </div>
+        <div class="service-card fade-up delay-4">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div class="service-title">Commercial Strategy</div>
+          <p class="service-desc">Customer segmentation, market sizing, healthcare economics, revenue models. Product-market fit starts during development — not after launch.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT ERIC -->
+  <section class="section" id="about" style="background: white;">
+    <div class="about-inner">
+      <div class="about-img-wrap fade-up">
+        <div class="about-accent-bar"></div>
+        <div class="about-img-frame">
+          <img src="brand_assets/sugalski_headshot_2.jpg" alt="Eric Sugalski — Founder, Tangram MedTech">
+        </div>
+      </div>
+      <div class="fade-up delay-1">
+        <div class="about-tag">Founder</div>
+        <h2 class="section-title">Eric Sugalski</h2>
+        <p style="font-size:1rem;font-weight:600;color:var(--mid-blue);margin-bottom:1.25rem;letter-spacing:-0.01em;">Engineer, Founder, and MedTech Investor</p>
+        <div class="about-pull-quote">
+          <p>"MedTech success does not come from technical innovation alone. It comes from aligning technology, regulatory strategy, and commercial realities from day one."</p>
+        </div>
+        <p class="about-bio">Eric is the Founder of Tangram, a medtech consultancy that helps device companies navigate FDA clearance, launch manufacturing, and build quality systems around the commercial factors that matter most. With more than 25 years of hands-on experience, he has led programs spanning surgical instrumentation, drug delivery systems, wearables, and life-support technologies.</p>
+        <p class="about-bio">Before founding Tangram, Eric built and led a medical device development firm for 15 years before its acquisition in 2024. He also invests in medtech ventures through Robin Hood Ventures, the largest angel investor consortium in the Mid-Atlantic region, and is committed to helping innovative teams turn device concepts into reliable, scalable, high-impact medical products.</p>
+        <div class="about-stats">
+          <div>
+            <div class="about-stat-num">25+</div>
+            <div class="about-stat-label">Years in MedTech</div>
+          </div>
+          <div>
+            <div class="about-stat-num">50+</div>
+            <div class="about-stat-label">Companies Advised</div>
+          </div>
+          <div>
+            <div class="about-stat-num">$100M+</div>
+            <div class="about-stat-label">Multiple Client Exits</div>
+          </div>
+        </div>
+        <div style="margin-top:2rem;">
+          <a href="https://www.linkedin.com/in/esugalski/" target="_blank" class="btn-outline-dark" style="font-size:0.9rem;padding:0.75rem 1.4rem;">
+            Connect on LinkedIn
+            <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEDTECH MINDSET SUB-BRAND -->
+  <section class="mindset-section" id="newsletter">
+    <div class="mindset-orb-1"></div>
+    <div class="mindset-orb-2"></div>
+    <div class="mindset-inner">
+
+      <div class="mindset-top">
+        <!-- Left: brand identity + description -->
+        <div class="mindset-left fade-up">
+          <img class="mindset-logo-img" src="brand_assets/MedtechMindset_logo_noBackground.png" alt="MedTech Mindset">
+        </div>
+
+        <div class="mindset-right fade-up">
+          <span class="section-eyebrow" style="color: var(--aqua);">Newsletter · A Tangram MedTech Publication</span>
+          <p class="mindset-desc">MedTech Mindset is Tangram’s weekly newsletter, offering Eric's direct perspective on quality, regulatory, manufacturing, and commercialization topics that founders need to think about early. No sponsored opinions. No fluff. Just practical insight from someone who has been there.</p>
+        </div>
+
+      </div>
+
+      <!-- Recent issues -->
+      <div class="fade-up">
+        <div class="issues-label">Recent Issues</div>
+        <div id="issuesGrid" class="issues-grid">
+          <div class="issue-card">
+            <img class="issue-img" src="https://media.licdn.com/dms/image/v2/D4E12AQGISWKD_dkVqw/article-cover_image-shrink_720_1280/B4EZ0QoouOIkAI-/0/1774100581684?e=2147483647&v=beta&t=DFwXND4_-Gm-9oM3xC4sv0JH4yRAWkr9B2eD8wnS7gs" alt="There is no Gen 2">
+            <div class="issue-body">
+              <div class="issue-meta">
+                <span class="issue-date">Mar 21, 2026</span>
+                <span class="issue-tag">Commercialization</span>
+              </div>
+              <div class="issue-title">There is no Gen 2</div>
+              <p class="issue-excerpt">Why medtech startups need to stop treating Gen 1 like a placeholder — and build for market success from the very first device.</p>
+              <a href="https://www.linkedin.com/pulse/gen-2-eric-sugalski-jfnue/" target="_blank" class="issue-link">
+                Read Issue
+                <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </div>
+          <div class="issue-card">
+            <img class="issue-img" src="https://media.licdn.com/dms/image/v2/D4E12AQG_cDHzqNWTsA/article-cover_image-shrink_720_1280/B4EZzsYGtIHAAI-/0/1773492268497?e=2147483647&v=beta&t=iSpqx6vmOsNcfJoh6vRFvGTQjS7R66BFeeyI0J6AYWI" alt="Flexibility is not your friend">
+            <div class="issue-body">
+              <div class="issue-meta">
+                <span class="issue-date">Mar 14, 2026</span>
+                <span class="issue-tag">Quality</span>
+              </div>
+              <div class="issue-title">Flexibility is not your friend</div>
+              <p class="issue-excerpt">Vague quality systems aren't adaptable — they're fragile. When everyone documents work differently, you don't have a QMS. You have organized chaos waiting to fail.</p>
+              <a href="https://www.linkedin.com/pulse/flexibility-your-friend-eric-sugalski-6zg9e/" target="_blank" class="issue-link">
+                Read Issue
+                <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </div>
+          <div class="issue-card">
+            <img class="issue-img" src="https://media.licdn.com/dms/image/v2/D4E12AQH32idJ5HbJAA/article-cover_image-shrink_720_1280/B4EZzNsDMTKIAI-/0/1772977403733?e=2147483647&v=beta&t=979B10kbgY1omAXYc12BofhuG1VWfIwBs7ypPkb9KNM" alt="Too Fast for the Turn">
+            <div class="issue-body">
+              <div class="issue-meta">
+                <span class="issue-date">Mar 8, 2026</span>
+                <span class="issue-tag">Strategy</span>
+              </div>
+              <div class="issue-title">Too Fast for the Turn</div>
+              <p class="issue-excerpt">Speed is a medtech virtue — until it isn't. Locking in design decisions before you understand downstream consequences creates the late-stage rework that kills timelines.</p>
+              <a href="https://www.linkedin.com/pulse/too-fast-turn-eric-sugalski-vn3ne/" target="_blank" class="issue-link">
+                Read Issue
+                <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="issues-footer">
+          <a href="https://www.skool.com/medtechmindset" target="_blank" class="community-card">
+            <div>
+              <div class="cc-text">Join the MedTech Mindset Community</div>
+              <div class="cc-sub">Deeper discussions, peer network, and direct access to Eric — hosted on Skool.com.</div>
+            </div>
+            <div class="cc-arrow">
+              <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CTA / CONTACT -->
+  <section class="cta-section" id="contact">
+    <div class="cta-inner fade-up">
+      <span class="cta-eyebrow">Work With Tangram</span>
+      <h2 class="cta-title">Ready to clear FDA and scale manufacturing?</h2>
+      <p class="cta-sub">Whether you are just getting started, deep in development, or approaching production, Tangram can help you move with more clarity and less waste. Tell us about your project.</p>
+
+      <div class="contact-form-card">
+
+        <!-- Success state (shown after submit) -->
+        <div class="form-success" id="form-success">
+          <div class="form-success-icon">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <p class="form-success-title">Message received.</p>
+          <p class="form-success-sub">Thanks for reaching out — Eric will be in touch shortly.</p>
+        </div>
+
+        <!-- Form -->
+<form id="contact-form" action="https://formspree.io/f/xpqyevwg" method="POST">
+
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-label" for="cf-name">Full Name <span style="color:var(--aqua)">*</span></label>
+              <input class="form-input" id="cf-name" name="name" type="text" placeholder="Jane Smith" required>
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="cf-email">Email <span style="color:var(--aqua)">*</span></label>
+              <input class="form-input" id="cf-email" name="email" type="email" placeholder="jane@yourcompany.com" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-label" for="cf-company">Company <span style="color:var(--aqua)">*</span></label>
+              <input class="form-input" id="cf-company" name="company" type="text" placeholder="Acme Medical" required>
+            </div>
+            <div class="form-field">
+              <label class="form-label" for="cf-stage">Project Stage</label>
+              <select class="form-select" id="cf-stage" name="stage">
+                <option value="" disabled selected>Select your stage…</option>
+                <option value="Concept / Feasibility">Concept / Feasibility</option>
+                <option value="Pre-submission / 510(k) Prep">Pre-submission / 510(k) Prep</option>
+                <option value="Mid-development">Mid-development</option>
+                <option value="Approaching production / scale-up">Approaching production / scale-up</option>
+                <option value="Post-clearance / commercialization">Post-clearance / commercialization</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field" style="margin-bottom:1.25rem;">
+            <span class="form-section-label">What do you need help with?</span>
+            <div class="services-grid">
+              <label class="service-checkbox"><input type="checkbox" name="services" value="Regulatory Strategy"><span>Regulatory Strategy</span></label>
+              <label class="service-checkbox"><input type="checkbox" name="services" value="Quality Management System"><span>Quality Management</span></label>
+              <label class="service-checkbox"><input type="checkbox" name="services" value="Manufacturing Scale-Up"><span>Manufacturing Scale-Up</span></label>
+              <label class="service-checkbox"><input type="checkbox" name="services" value="Commercialization"><span>Commercialization</span></label>
+            </div>
+          </div>
+
+          <div class="form-field full">
+            <label class="form-label" for="cf-message">Tell us about your project</label>
+            <textarea class="form-textarea" id="cf-message" name="message" placeholder="What's the challenge? Where are you stuck? The more context, the better."></textarea>
+          </div>
+
+          <div class="form-submit-row">
+            <p class="form-privacy">Your information is never shared or sold. We'll be in touch within 1–2 business days.</p>
+            <button type="submit" class="btn-form-submit" id="form-submit-btn">
+              Send Message
+              <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Formspree AJAX submission — shows inline success instead of redirecting
+    (function() {
+      var form = document.getElementById('contact-form');
+      var btn  = document.getElementById('form-submit-btn');
+      var successEl = document.getElementById('form-success');
+      if (!form) return;
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+        try {
+          var data = new FormData(form);
+          var res  = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+          if (res.ok) {
+            form.style.display = 'none';
+            successEl.style.display = 'block';
+          } else {
+            var json = await res.json();
+            var msg  = (json.errors || []).map(function(e){ return e.message; }).join(', ') || 'Something went wrong. Please try again.';
+            alert(msg);
+            btn.disabled = false;
+            btn.innerHTML = 'Send Message <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+          }
+        } catch(err) {
+          alert('Network error — please try again.');
+          btn.disabled = false;
+          btn.innerHTML = 'Send Message <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+        }
+      });
+    })();
+  </script>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <img src="brand_assets/Tangram_white%20logo.png" alt="Tangram MedTech" style="height:38px; width:auto;">
+          <p class="footer-brand-desc">A medical device consultancy helping companies navigate FDA clearance, build scalable quality systems, and launch manufacturing with speed and confidence.</p>
+          <div class="footer-sub-brand">
+            <div class="footer-sub-brand-label">Newsletter Publication</div>
+            <div class="footer-sub-brand-name">MedTech Mindset</div>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title">Company</div>
+          <ul class="footer-links">
+            <li><a href="#services" class="footer-link">Services</a></li>
+            <li><a href="#about" class="footer-link">About Eric</a></li>
+            <li><a href="#newsletter" class="footer-link">Newsletter</a></li>
+            <li><a href="#contact" class="footer-link">Work With Tangram</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Services</div>
+          <ul class="footer-links">
+            <li><a href="#services" class="footer-link">Regulatory Strategy</a></li>
+            <li><a href="#services" class="footer-link">Quality Management</a></li>
+            <li><a href="#services" class="footer-link">Supply Chain Development</a></li>
+            <li><a href="#services" class="footer-link">Commercial Strategy</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Connect</div>
+          <ul class="footer-links">
+            <li><a href="https://www.linkedin.com/in/esugalski/" target="_blank" class="footer-link">LinkedIn</a></li>
+            <li><a href="https://www.skool.com/medtechmindset" target="_blank" class="footer-link">Skool Community</a></li>
+            <li><a href="https://www.linkedin.com/newsletters/medtech-mindset-7033233055771172864/" target="_blank" class="footer-link">MedTech Mindset on LinkedIn</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-copy">&copy; 2026 Tangram MedTech. All rights reserved.</div>
+        <div class="footer-legal">
+          <a href="#" class="footer-link" style="font-size:0.78rem;">Privacy Policy</a>
+          <a href="#" class="footer-link" style="font-size:0.78rem;">Terms of Use</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Nav scroll behavior
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    // Fade-up on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ── LinkedIn Newsletter RSS Feed ──────────────────────────────────────
+    const NEWSLETTER_RSS = 'https://www.linkedin.com/newsletters/medtech-mindset-7033233055771172864/';
+    const RSS2JSON = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(NEWSLETTER_RSS)}&count=6`;
+    const FALLBACK_IMG = 'https://placehold.co/800x500/0B2740/0AC0E9?text=MedTech+Mindset';
+
+    function esc(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function stripHtml(html) {
+      const d = document.createElement('div');
+      d.innerHTML = html;
+      return d.textContent || d.innerText || '';
+    }
+
+    function fmtDate(dateStr) {
+      const d = new Date(dateStr);
+      if (isNaN(d)) return '';
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function getThumb(item) {
+      return item.thumbnail || item.enclosure?.link || FALLBACK_IMG;
+    }
+
+    function renderCard(item) {
+      const date = fmtDate(item.pubDate);
+      const img = getThumb(item);
+      const excerpt = stripHtml(item.description || '').trim().replace(/\s+/g,' ').slice(0,180);
+      return `<div class="issue-card">
+        <img class="issue-img" src="${esc(img)}" alt="${esc(item.title)}"
+             onerror="this.src='${FALLBACK_IMG}'">
+        <div class="issue-body">
+          <div class="issue-meta">
+            <span class="issue-date">${esc(date)}</span>
+          </div>
+          <div class="issue-title">${esc(item.title)}</div>
+          <p class="issue-excerpt">${esc(excerpt)}${excerpt.length >= 180 ? '…' : ''}</p>
+          <a href="${esc(item.link)}" target="_blank" rel="noopener" class="issue-link">
+            Read Issue
+            <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>`;
+    }
+
+    (async function loadFeed() {
+      try {
+        const res = await fetch(RSS2JSON);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        if (data.status !== 'ok' || !Array.isArray(data.items) || !data.items.length) {
+          throw new Error('No items in feed');
+        }
+
+        const items = data.items.slice(0, 3);
+
+        // Update hero card with latest post
+        const latest = items[0];
+        const thumb = getThumb(latest);
+        document.getElementById('hncImg').src = thumb;
+        document.getElementById('hncImg').alt = latest.title;
+        document.getElementById('hncMeta').textContent = fmtDate(latest.pubDate);
+        document.getElementById('hncTitle').textContent = latest.title;
+        document.getElementById('hncSub').textContent =
+          stripHtml(latest.description || '').trim().replace(/\s+/g,' ').slice(0,140) + '…';
+        document.getElementById('hncLink').href = latest.link;
+
+        // Update issues grid
+        document.getElementById('issuesGrid').innerHTML = items.map(renderCard).join('');
+
+      } catch (err) {
+        // Silently keep the static fallback cards — no action needed
+        console.info('MedTech Mindset: using static newsletter cards.', err.message);
+      }
+    })();
+  </script>
+
+</body>
+</html>
