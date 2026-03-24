@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tangram MedTech — FDA Clearance & Manufacturing Experts</title>
+  <link rel="icon" type="image/png" href="brand_assets/Tangram-T%20mark%20reverse_Square.png">
   <meta name="description" content="Tangram MedTech helps medical device companies navigate FDA clearance, build scalable quality systems, and launch manufacturing. Founded by Eric Sugalski.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -128,6 +129,10 @@
     /* ── SERVICES ── */
     .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
     .service-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
+    .services-header { display: grid; grid-template-columns: 1fr 280px; gap: 4rem; align-items: center; }
+    .redo-loop-graphic { display: flex; align-items: center; justify-content: center; opacity: 0.65; }
+    .redo-loop-graphic svg { width: 220px; height: 220px; }
+    @media (max-width: 768px) { .services-header { grid-template-columns: 1fr; } .redo-loop-graphic { display: none; } }
     .service-card { background: white; border: 1px solid var(--gray); border-radius: 16px; padding: 2rem; position: relative; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s; }
     .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--aqua); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
     .service-card:hover::before { transform: scaleX(1); }
@@ -420,10 +425,22 @@
   <!-- SERVICES -->
   <section class="section" id="services" style="background: var(--light-gray);">
     <div class="section-inner">
-      <div class="fade-up">
-        <span class="section-eyebrow">How Tangram Helps</span>
-        <h2 class="section-title">The <span style="color: var(--aqua-dark);">redo loop</span> is what slows medtech startups down.</h2>
-        <p class="section-sub" style="max-width: 100%;">Most redo loops start when regulatory, quality, and manufacturing decisions are made without enough regard for adoption. Tangram helps lean teams make those decisions with the commercial endgame in view from the start.</p>
+      <div class="services-header fade-up">
+        <div>
+          <span class="section-eyebrow">How Tangram Helps</span>
+          <h2 class="section-title">The <span style="color: var(--aqua-dark);">redo loop</span> is what slows medtech startups down.</h2>
+          <p class="section-sub" style="max-width: 100%;">Most redo loops start when regulatory, quality, and manufacturing decisions are made without enough regard for adoption. Tangram helps lean teams make those decisions with the commercial endgame in view from the start.</p>
+        </div>
+        <div class="redo-loop-graphic">
+          <!-- Hook-style redo loop arrow, matching reference -->
+          <svg viewBox="0 0 180 210" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Main sweep: starts top-center, arcs right, comes back lower-left (fishhook / reverse-J) -->
+            <path d="M 108 18 C 168 16 186 80 170 130 C 155 168 120 186 84 180 C 60 175 44 161 38 144"
+              stroke="#0AC0E9" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <!-- Calligraphic asymmetric arrowhead: sharp tip pointing upper-left, long tail lower-right -->
+            <polygon points="20,136 48,120 66,162" fill="#0AC0E9"/>
+          </svg>
+        </div>
       </div>
       <div class="service-cards-grid">
         <div class="service-card fade-up delay-1">
