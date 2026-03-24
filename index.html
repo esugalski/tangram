@@ -127,6 +127,7 @@
 
     /* ── SERVICES ── */
     .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
+    .service-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
     .service-card { background: white; border: 1px solid var(--gray); border-radius: 16px; padding: 2rem; position: relative; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s; }
     .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--aqua); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
     .service-card:hover::before { transform: scaleX(1); }
@@ -271,6 +272,7 @@
       .hero-inner { grid-template-columns: 1fr; }
       .hero-right { display: none; }
       .services-grid { grid-template-columns: repeat(2, 1fr); }
+      .service-cards-grid { grid-template-columns: 1fr; }
       .about-inner { grid-template-columns: 1fr; gap: 3rem; }
       .about-img-wrap { max-width: 380px; }
     }
@@ -372,7 +374,7 @@
           <span class="aqua">(without the redo loop).</span>
         </h1>
         <p class="hero-sub">
-          What's the regulatory pathway? Who are the right development and manufacturing partners? How do we build a QMS that meets the regulations without outgrowing the company? How long will it take, and what will it cost? Tangram helps medtech teams answer those questions with a sharp focus on the commercial realities that drive adoption.
+          Medtech startups do not need more disconnected advice. They need the right quality, regulatory, and manufacturing decisions early enough to avoid costly rework later.
         </p>
         <div class="hero-ctas">
           <a href="#contact" class="btn-aqua">
@@ -420,37 +422,30 @@
     <div class="section-inner">
       <div class="fade-up">
         <span class="section-eyebrow">How Tangram Helps</span>
-        <h2 class="section-title">Clearing FDA gets you to market. <span style="color: var(--aqua-dark);">The right commercial strategy wins it.</span></h2>
-        <p class="section-sub" style="max-width: 100%;">Tangram helps medtech companies navigate regulatory strategy, supply chain development, quality management, and the execution required to move forward. But those pieces only work when the commercial direction is sound. Tangram brings the technical, regulatory, and operational pieces together, with commercial strategy shaping the process from the start.</p>
+        <h2 class="section-title">The redo loop is what slows <span style="color: var(--aqua-dark);">medtech startups down.</span></h2>
+        <p class="section-sub" style="max-width: 100%;">Tangram helps lean teams avoid costly rework by using quality, regulatory, and manufacturing decisions as leverage early — before they become delays later.</p>
       </div>
-      <div class="services-grid">
+      <div class="service-cards-grid">
         <div class="service-card fade-up delay-1">
           <div class="service-icon">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
           </div>
-          <div class="service-title">Regulatory Strategy</div>
-          <p class="service-desc">FDA pathway selection, pre-submission planning, evidence strategy. Build a regulatory path that supports both clearance and the business behind it.</p>
+          <div class="service-title">Regulatory Clarity</div>
+          <p class="service-desc">Set the pathway, evidence strategy, and submission plan with the end milestone in view.</p>
         </div>
         <div class="service-card fade-up delay-2">
           <div class="service-icon">
             <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
           </div>
-          <div class="service-title">Quality Management</div>
-          <p class="service-desc">QMS design that fits your stage and scales with your company — built to hold up under FDA scrutiny, not just satisfy paperwork.</p>
+          <div class="service-title">Right-Sized Quality</div>
+          <p class="service-desc">Build a quality system that supports execution now and holds up under future scrutiny.</p>
         </div>
         <div class="service-card fade-up delay-3">
           <div class="service-icon">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
           </div>
-          <div class="service-title">Supply Chain Development</div>
-          <p class="service-desc">Product development strategy, outsourced manufacturing, contract testing. Close the gap between prototype and production with a supply chain built for scale.</p>
-        </div>
-        <div class="service-card fade-up delay-4">
-          <div class="service-icon">
-            <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          </div>
-          <div class="service-title">Commercial Strategy</div>
-          <p class="service-desc">Customer segmentation, market sizing, healthcare economics, revenue models. Product-market fit starts during development — not after launch.</p>
+          <div class="service-title">Manufacturing Readiness</div>
+          <p class="service-desc">Make supplier, testing, and production decisions that reduce downstream surprises.</p>
         </div>
       </div>
     </div>
