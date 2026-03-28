@@ -29,6 +29,7 @@ Check whether the most recent article is already on the site (compare titles). I
 ## Step 4 — Update the hero newsletter card
 
 Find the hero newsletter card section (elements with IDs `hncImg`, `hncMeta`, `hncTitle`, `hncSub`, `hncLink`). Replace with the new article's data:
+- `hncImgLink` href → new LinkedIn URL
 - `hncImg` src → new image URL, alt → new title
 - `hncMeta` text → formatted date + " · " + tag
 - `hncTitle` text → new title
