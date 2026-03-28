@@ -128,7 +128,7 @@
 
     /* ── SERVICES ── */
     .services-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
-    .service-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
+    .service-cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
     .services-header { display: grid; grid-template-columns: 1fr 280px; gap: 4rem; align-items: center; }
     .redo-loop-graphic { display: flex; align-items: center; justify-content: center; opacity: 0.65; }
     .redo-loop-graphic svg { width: 220px; height: 220px; }
@@ -313,6 +313,7 @@
 
     @media (max-width: 768px) {
       .issues-grid { grid-template-columns: 1fr; }
+      .service-cards-grid { grid-template-columns: 1fr 1fr; }
       .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
       .nav-links { display: none; }
       .hamburger { display: flex; }
@@ -322,6 +323,7 @@
     }
     @media (max-width: 480px) {
       .services-grid { grid-template-columns: 1fr; }
+      .service-cards-grid { grid-template-columns: 1fr; }
       .footer-top { grid-template-columns: 1fr; }
       .about-stats { flex-wrap: wrap; gap: 1.5rem; }
     }
@@ -371,15 +373,15 @@
     <div class="hero-orb-2"></div>
     <div class="hero-inner">
       <div class="hero-left">
-        <div class="hero-eyebrow">Medtech Consulting Services</div>
+        <div class="hero-eyebrow">Fractional VP of Engineering for Medtech</div>
         <h1 class="hero-headline">
-          Helping medtech<br>
-          companies clear FDA<br>
-          and launch manufacturing <br>
-          <span class="aqua">(without the redo loop).</span>
+          Lead product development<br>
+          with the regulatory, quality,<br>
+          manufacturing, and commercial<br>
+          <span class="aqua">alignment needed to launch.</span>
         </h1>
         <p class="hero-sub">
-          Medtech startups do not need more disconnected advice. They need the right quality, regulatory, and manufacturing decisions early enough to avoid costly rework later.
+          Building a medical device is not just an engineering problem. The product, regulatory path, evidence plan, quality system, manufacturing approach, and market strategy all shape each other from the start. Tangram helps medtech teams lead product development with the broader context in view, so critical decisions are made earlier and costly rework is avoided later.
         </p>
         <div class="hero-ctas">
           <a href="#contact" class="btn-aqua">
@@ -428,8 +430,8 @@
       <div class="services-header fade-up">
         <div>
           <span class="section-eyebrow">How Tangram Helps</span>
-          <h2 class="section-title">The <span style="color: var(--aqua-dark);">redo loop</span> is what really slows down medtech.</h2>
-          <p class="section-sub" style="max-width: 100%;">Most redo loops start when regulatory, quality, and manufacturing decisions are made without enough regard for adoption. Tangram helps lean teams make those decisions with the commercial endgame in view from the start.</p>
+          <h2 class="section-title">Product development leadership with the <span style="color: var(--aqua-dark);">rest of the business in view.</span></h2>
+          <p class="section-sub" style="max-width: 100%;">Tangram serves as a fractional VP of Engineering for medtech teams that need more than technical execution alone. The goal is not just to build a working device. It is to lead development in a way that supports the regulatory pathway, fits the quality system, prepares for manufacturing, and makes commercial sense. That is how stronger products get built, and how teams avoid the redo loop later.</p>
         </div>
         <div class="redo-loop-graphic">
           <img src="brand_assets/redo_loop.png" alt="Redo loop" style="width:100%;max-width:260px;height:auto;">
@@ -440,22 +442,29 @@
           <div class="service-icon">
             <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
           </div>
-          <div class="service-title">Regulatory Clarity</div>
-          <p class="service-desc">Choose the pathway, evidence strategy, and claims direction that support not just clearance, but a product the market can adopt.</p>
+          <div class="service-title">Product Development Leadership</div>
+          <p class="service-desc">Development strategy, program leadership, technical decision-making, partner coordination. Lead the product forward with a clear view of what each decision means downstream.</p>
         </div>
         <div class="service-card fade-up delay-2">
           <div class="service-icon">
             <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
           </div>
-          <div class="service-title">Right-Sized Quality</div>
-          <p class="service-desc">Build a quality system that supports execution now, stands up later, and keeps the team focused on the work that actually moves the business forward.</p>
+          <div class="service-title">Regulatory Alignment</div>
+          <p class="service-desc">FDA pathway selection, pre-submission planning, evidence strategy. Shape development around the regulatory path early, so product decisions support clearance instead of colliding with it later.</p>
         </div>
         <div class="service-card fade-up delay-3">
           <div class="service-icon">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
           </div>
-          <div class="service-title">Manufacturing Readiness</div>
-          <p class="service-desc">Make supplier, development, and production decisions that support scale, economics, and real-world adoption before they become late-stage constraints.</p>
+          <div class="service-title">Quality and Operational Readiness</div>
+          <p class="service-desc">Right-sized quality systems, design control structure, development planning, documentation discipline. Build the operating framework needed to move quickly without creating avoidable quality debt.</p>
+        </div>
+        <div class="service-card fade-up delay-4">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="service-title">Manufacturing and Commercial Fit</div>
+          <p class="service-desc">Development and manufacturing partner strategy, scale-up planning, workflow fit, adoption considerations. Build toward a product that can be manufactured, supported, and adopted in the real world.</p>
         </div>
       </div>
       <div class="fade-up" style="margin-top:2.5rem;">
@@ -479,12 +488,12 @@
       <div class="fade-up delay-1">
         <div class="about-tag">Founder</div>
         <h2 class="section-title">Eric Sugalski</h2>
-        <p style="font-size:1rem;font-weight:600;color:var(--mid-blue);margin-bottom:1.25rem;letter-spacing:-0.01em;">Engineer, Founder, and MedTech Investor</p>
+        <p style="font-size:1rem;font-weight:600;color:var(--mid-blue);margin-bottom:1.25rem;letter-spacing:-0.01em;">Engineer, Founder, Investor</p>
         <div class="about-pull-quote">
-          <p>"MedTech success does not come from technical innovation alone. It comes from aligning technology, regulatory strategy, and commercial realities from day one."</p>
+          <p>"Strong medtech products are not created by engineering in isolation. They are built by aligning product decisions early with regulatory strategy, quality systems, manufacturing realities, and the commercial path ahead."</p>
         </div>
-        <p class="about-bio">Eric is the Founder of Tangram, a medtech consultancy that helps device companies navigate FDA clearance, launch manufacturing, and build quality systems around the commercial factors that matter most. With more than 25 years of hands-on experience, he has led programs spanning surgical instrumentation, drug delivery systems, wearables, and life-support technologies.</p>
-        <p class="about-bio">Before founding Tangram, Eric built and led a medical device development firm for 15 years before its acquisition in 2024. He also invests in medtech ventures through Robin Hood Ventures, the largest angel investor consortium in the Mid-Atlantic region, and is committed to helping innovative teams turn device concepts into reliable, scalable, high-impact medical products.</p>
+        <p class="about-bio">Eric is the Founder of Tangram MedTech, where he works with medtech companies as a fractional VP of Engineering. His core expertise is product development, but his value comes from leading that process with a broader cross-functional view — connecting engineering decisions to regulatory strategy, quality management, clinical and evidence needs, manufacturing readiness, and adoption.</p>
+        <p class="about-bio">With more than 25 years of hands-on experience, Eric has led programs spanning surgical devices, drug delivery systems, wearables, and life-support technologies. Before founding Tangram, he built and led a medical device development firm for 15 years prior to its acquisition in 2024. Today, he helps medtech teams make better development decisions earlier, bring in the right specialists at the right time, and move toward clearance, manufacturing, and launch with greater clarity.</p>
         <div class="about-stats">
           <div>
             <div class="about-stat-num">25+</div>
@@ -523,7 +532,7 @@
 
         <div class="mindset-right fade-up">
           <span class="section-eyebrow" style="color: var(--aqua);">Newsletter · A Tangram MedTech Publication</span>
-          <p class="mindset-desc">MedTech Mindset is Tangram’s weekly newsletter, offering Eric's direct perspective on quality, regulatory, manufacturing, and commercialization topics that founders need to think about early. No sponsored opinions. No fluff. Just practical insight from someone who has been there.</p>
+          <p class="mindset-desc">MedTech Mindset is Tangram’s newsletter for founders and operators building medical devices in the real world. It covers the decisions that shape products long before clearance or launch — and the mistakes that create expensive rework later. No sponsored opinions. No recycled talking points. Just practical insight from someone who has led the work.</p>
         </div>
 
       </div>
@@ -598,8 +607,8 @@
   <section class="cta-section" id="contact">
     <div class="cta-inner fade-up">
       <span class="cta-eyebrow">Work With Tangram</span>
-      <h2 class="cta-title">Ready to clear FDA and scale manufacturing?</h2>
-      <p class="cta-sub">Whether you are just getting started, deep in development, or approaching production, Tangram can help you move with more clarity and less waste. Tell us about your project.</p>
+      <h2 class="cta-title">Need product development leadership without a full-time VP of Engineering?</h2>
+      <p class="cta-sub">Whether you are at concept stage, deep in development, preparing for FDA interaction, or approaching manufacturing scale-up, Tangram helps medtech teams move forward with stronger alignment and fewer downstream surprises. Tell us about your project.</p>
 
       <div class="contact-form-card">
 
@@ -647,10 +656,11 @@
           <div class="form-field" style="margin-bottom:1.25rem;">
             <span class="form-section-label">What do you need help with?</span>
             <div class="services-grid">
+              <label class="service-checkbox"><input type="checkbox" name="services" value="Product Development Leadership"><span>Product Development Leadership</span></label>
               <label class="service-checkbox"><input type="checkbox" name="services" value="Regulatory Strategy"><span>Regulatory Strategy</span></label>
-              <label class="service-checkbox"><input type="checkbox" name="services" value="Quality Management System"><span>Quality Management</span></label>
-              <label class="service-checkbox"><input type="checkbox" name="services" value="Supply Chain Development"><span>Supply Chain Development</span></label>
-              <label class="service-checkbox"><input type="checkbox" name="services" value="Commercial Strategy"><span>Commercial Strategy</span></label>
+              <label class="service-checkbox"><input type="checkbox" name="services" value="Quality Management"><span>Quality Management</span></label>
+              <label class="service-checkbox"><input type="checkbox" name="services" value="Manufacturing / Supply Chain"><span>Manufacturing / Supply Chain</span></label>
+              <label class="service-checkbox"><input type="checkbox" name="services" value="Commercial Alignment"><span>Commercial Alignment</span></label>
             </div>
           </div>
 
@@ -711,7 +721,7 @@
       <div class="footer-top">
         <div>
           <img src="brand_assets/Tangram_white%20logo.png" alt="Tangram MedTech" style="height:38px; width:auto;">
-          <p class="footer-brand-desc">A medical device consultancy helping companies navigate FDA clearance, build scalable quality systems, and launch manufacturing with speed and confidence.</p>
+          <p class="footer-brand-desc">A medtech consultancy providing fractional VP of Engineering support for companies navigating product development, FDA strategy, quality systems, and manufacturing readiness.</p>
           <div class="footer-sub-brand">
             <div class="footer-sub-brand-label">Newsletter Publication</div>
             <div class="footer-sub-brand-name">MedTech Mindset</div>
@@ -729,10 +739,10 @@
         <div>
           <div class="footer-col-title">Services</div>
           <ul class="footer-links">
-            <li><a href="#services" class="footer-link">Regulatory Strategy</a></li>
-            <li><a href="#services" class="footer-link">Quality Management</a></li>
-            <li><a href="#services" class="footer-link">Supply Chain Development</a></li>
-            <li><a href="#services" class="footer-link">Commercial Strategy</a></li>
+            <li><a href="#services" class="footer-link">Product Development Leadership</a></li>
+            <li><a href="#services" class="footer-link">Regulatory Alignment</a></li>
+            <li><a href="#services" class="footer-link">Quality and Operational Readiness</a></li>
+            <li><a href="#services" class="footer-link">Manufacturing and Commercial Fit</a></li>
           </ul>
         </div>
         <div>
