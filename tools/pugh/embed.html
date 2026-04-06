@@ -108,7 +108,7 @@ input[type=range]{accent-color:#0AC0E9}
   </div>
 
   <!-- Main content -->
-  <div id="main" style="display:none;flex:1;padding:1.5rem 2rem 2rem;display:flex;flex-direction:column;gap:1.25rem">
+  <div id="main" style="display:none;flex:1;padding:1.5rem 2rem 2rem;flex-direction:column;gap:1.25rem">
 
     <!-- Matrix -->
     <div style="background:#031C2E;border:1px solid #0F3050;border-radius:12px;overflow:hidden;flex:1">
@@ -566,7 +566,10 @@ function handleOverlayKey(e) {
   if (e.key === 'Escape') closeCritDetail();
 }
 
-init();
+init().catch(err => {
+  console.error('embed init error:', err);
+  document.getElementById('loading').textContent = 'Error loading session: ' + err.message;
+});
 </script>
 </body>
 </html>
