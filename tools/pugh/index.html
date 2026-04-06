@@ -253,8 +253,13 @@ function setTab(t) {
 }
 
 async function googleIn() {
-  try { await Auth.googleSignIn(); location.href = 'dashboard.html'; }
-  catch(e) { showToast(e.message, 'error'); }
+  try {
+    await Auth.googleSignIn();
+    // signInWithOAuth redirects the browser — if we reach this line, the redirect didn't fire
+    showToast('Google sign-in did not redirect. Check Supabase Google provider config.', 'error');
+  } catch(e) {
+    showToast(e.message, 'error');
+  }
 }
 
 async function emailIn(e) {
