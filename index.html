@@ -812,14 +812,14 @@
     // Tools dropdown (hover + click)
     const navDropdown = document.querySelector('.nav-dropdown');
     const navDropdownToggle = document.querySelector('.nav-dropdown-toggle');
+    const navDropdownMenu = document.querySelector('.nav-dropdown-menu');
     let closeTimer;
-    navDropdown.addEventListener('mouseenter', () => {
-      clearTimeout(closeTimer);
-      navDropdown.classList.add('open');
-    });
-    navDropdown.addEventListener('mouseleave', () => {
-      closeTimer = setTimeout(() => navDropdown.classList.remove('open'), 100);
-    });
+    const openDropdown  = () => { clearTimeout(closeTimer); navDropdown.classList.add('open'); };
+    const scheduleClose = () => { closeTimer = setTimeout(() => navDropdown.classList.remove('open'), 300); };
+    navDropdown.addEventListener('mouseenter', openDropdown);
+    navDropdown.addEventListener('mouseleave', scheduleClose);
+    navDropdownMenu.addEventListener('mouseenter', openDropdown);
+    navDropdownMenu.addEventListener('mouseleave', scheduleClose);
     navDropdownToggle.addEventListener('click', (e) => {
       e.stopPropagation();
       navDropdown.classList.toggle('open');
