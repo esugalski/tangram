@@ -809,9 +809,17 @@
       });
     });
 
-    // Tools dropdown (click-based)
+    // Tools dropdown (hover + click)
     const navDropdown = document.querySelector('.nav-dropdown');
     const navDropdownToggle = document.querySelector('.nav-dropdown-toggle');
+    let closeTimer;
+    navDropdown.addEventListener('mouseenter', () => {
+      clearTimeout(closeTimer);
+      navDropdown.classList.add('open');
+    });
+    navDropdown.addEventListener('mouseleave', () => {
+      closeTimer = setTimeout(() => navDropdown.classList.remove('open'), 100);
+    });
     navDropdownToggle.addEventListener('click', (e) => {
       e.stopPropagation();
       navDropdown.classList.toggle('open');
