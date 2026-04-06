@@ -54,9 +54,9 @@
     .nav-dropdown-toggle:hover { color: var(--aqua); }
     .nav.scrolled .nav-dropdown-toggle { color: var(--text-muted); }
     .nav.scrolled .nav-dropdown-toggle:hover { color: var(--aqua); }
-    .nav-dropdown-menu { position: absolute; top: calc(100% + 12px); left: 50%; transform: translateX(-50%); background: rgba(11,39,64,0.97); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.5rem; min-width: 160px; opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.15s; transform: translateX(-50%) translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+    .nav-dropdown-menu { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(-4px); background: rgba(11,39,64,0.97); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.5rem; min-width: 160px; opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.15s; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
     .nav.scrolled .nav-dropdown-menu { background: rgba(255,255,255,0.97); border-color: rgba(0,0,0,0.08); }
-    .nav-dropdown:hover .nav-dropdown-menu { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+    .nav-dropdown.open .nav-dropdown-menu { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
     .nav-dropdown-item { display: block; padding: 0.5rem 0.75rem; font-size: 0.825rem; font-weight: 500; color: rgba(255,255,255,0.75); text-decoration: none; border-radius: 6px; transition: background 0.15s, color 0.15s; white-space: nowrap; }
     .nav-dropdown-item:hover { background: rgba(10,192,233,0.12); color: var(--aqua); }
     .nav.scrolled .nav-dropdown-item { color: var(--text-muted); }
@@ -808,6 +808,15 @@
         hamburgerBtn.classList.remove('open');
       });
     });
+
+    // Tools dropdown (click-based)
+    const navDropdown = document.querySelector('.nav-dropdown');
+    const navDropdownToggle = document.querySelector('.nav-dropdown-toggle');
+    navDropdownToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navDropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', () => navDropdown.classList.remove('open'));
 
     // Fade-up on scroll
     const observer = new IntersectionObserver((entries) => {
