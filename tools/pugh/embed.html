@@ -134,7 +134,6 @@ input[type=range]{accent-color:#0AC0E9}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="app.js"></script>
 <script>
-document.getElementById('loading').textContent = 'JS running…';
 const chartId = new URLSearchParams(location.search).get('id');
 let chart = null;
 let weightOverrides = {};
@@ -145,11 +144,9 @@ let editingWeights = false;
 async function init() {
   if (!chartId) { showError('No session ID in URL'); return; }
 
-  showError('Connecting to database…');
   chart = await DB.get(chartId);
-  if (!chart) { showError('Session not found — check that the session ID is correct and the chart exists'); return; }
+  if (!chart) { showError('Session not found'); return; }
 
-  showError('Rendering…');
   document.getElementById('chart-title').textContent = chart.title;
   document.getElementById('loading').style.display = 'none';
 
@@ -426,7 +423,7 @@ function onWeightChange(critId, val) {
   }
 }
 
-function saveWeights() {
+async function saveWeights() {
   chart.criteria = chart.criteria.map(c => ({ ...c, weight: weightOverrides[c.id] ?? c.weight }));
   await DB.update(chartId, { criteria: chart.criteria });
   toggleWeightEdit();
