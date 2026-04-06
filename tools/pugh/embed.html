@@ -144,9 +144,11 @@ let editingWeights = false;
 async function init() {
   if (!chartId) { showError('No session ID in URL'); return; }
 
+  showError('Connecting to database…');
   chart = await DB.get(chartId);
-  if (!chart) { showError('Session not found'); return; }
+  if (!chart) { showError('Session not found — check that the session ID is correct and the chart exists'); return; }
 
+  showError('Rendering…');
   document.getElementById('chart-title').textContent = chart.title;
   document.getElementById('loading').style.display = 'none';
 
