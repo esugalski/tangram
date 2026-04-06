@@ -48,6 +48,20 @@
     .nav.scrolled .nav-link { color: var(--text-muted); }
     .nav-link:hover, .nav.scrolled .nav-link:hover { color: var(--aqua); }
 
+    /* ── TOOLS DROPDOWN ── */
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-toggle { font-size: 0.875rem; font-weight: 500; color: rgba(255,255,255,0.75); background: none; border: none; cursor: pointer; letter-spacing: 0.01em; display: flex; align-items: center; gap: 0.3rem; transition: color 0.2s; padding: 0; font-family: inherit; }
+    .nav-dropdown-toggle:hover { color: var(--aqua); }
+    .nav.scrolled .nav-dropdown-toggle { color: var(--text-muted); }
+    .nav.scrolled .nav-dropdown-toggle:hover { color: var(--aqua); }
+    .nav-dropdown-menu { position: absolute; top: calc(100% + 12px); left: 50%; transform: translateX(-50%); background: rgba(11,39,64,0.97); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.5rem; min-width: 160px; opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.15s; transform: translateX(-50%) translateY(-4px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+    .nav.scrolled .nav-dropdown-menu { background: rgba(255,255,255,0.97); border-color: rgba(0,0,0,0.08); }
+    .nav-dropdown:hover .nav-dropdown-menu { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+    .nav-dropdown-item { display: block; padding: 0.5rem 0.75rem; font-size: 0.825rem; font-weight: 500; color: rgba(255,255,255,0.75); text-decoration: none; border-radius: 6px; transition: background 0.15s, color 0.15s; white-space: nowrap; }
+    .nav-dropdown-item:hover { background: rgba(10,192,233,0.12); color: var(--aqua); }
+    .nav.scrolled .nav-dropdown-item { color: var(--text-muted); }
+    .nav.scrolled .nav-dropdown-item:hover { background: rgba(10,192,233,0.08); color: var(--aqua); }
+
     /* ── BUTTONS ── */
     .btn-aqua {
       display: inline-flex; align-items: center; gap: 0.5rem;
@@ -246,7 +260,7 @@
     /* ── FOOTER ── */
     footer { background: var(--dark-blue); padding: 4.5rem 2rem 2rem; }
     .footer-inner { max-width: 1280px; margin: 0 auto; }
-    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
     .footer-brand-desc { font-size: 0.875rem; line-height: 1.65; color: rgba(255,255,255,0.36); margin-top: 1rem; max-width: 280px; }
     .footer-sub-brand { margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.06); }
     .footer-sub-brand-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.24); margin-bottom: 0.4rem; }
@@ -344,6 +358,15 @@
         <a href="#services" class="nav-link">Services</a>
         <a href="#about" class="nav-link">About</a>
         <a href="#newsletter" class="nav-link">Newsletter</a>
+        <div class="nav-dropdown">
+          <button class="nav-dropdown-toggle">
+            Tools
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="opacity:.6"><path d="M2 3.5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="nav-dropdown-menu">
+            <a href="/tools/pugh/" class="nav-dropdown-item">Pugh Chart</a>
+          </div>
+        </div>
         <a href="#contact" class="btn-aqua">
           Work With Tangram
           <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -737,6 +760,12 @@
             <li><a href="#services" class="footer-link">Regulatory Alignment</a></li>
             <li><a href="#services" class="footer-link">Quality and Operational Readiness</a></li>
             <li><a href="#services" class="footer-link">Manufacturing and Commercial Fit</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Tools</div>
+          <ul class="footer-links">
+            <li><a href="/tools/pugh/" class="footer-link">Pugh Chart</a></li>
           </ul>
         </div>
         <div>

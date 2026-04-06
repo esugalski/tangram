@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tangram Pugh · Score</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{box-sizing:border-box}
+*,*::before,*::after{font-family:'Inter',sans-serif}
+h1,h2,h3,h4,h5,h6{font-family:'Inter',sans-serif;font-weight:700}
+html,body{font-family:'Inter',sans-serif;background:#0B2740;color:#E8ECF4;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(10,192,233,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(10,192,233,.035) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");background-size:300px;pointer-events:none;z-index:0}
+
+/* Concept tabs */
+.concept-tab{padding:.55rem 1rem;border-radius:6px;font-size:.82rem;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;border:1px solid #0F3050;background:#031C2E;color:#4A5770;transition:all .15s;white-space:nowrap;position:relative}
+.concept-tab.active{background:#0F3050;color:#E8ECF4;border-color:#304F6B}
+.concept-tab.scored{border-color:rgba(62,207,142,.3)}
+.concept-tab.scored.active{background:#0F3050;border-color:rgba(62,207,142,.4)}
+.concept-tab .check{position:absolute;top:-4px;right:-4px;width:14px;height:14px;border-radius:50%;background:#3ECF8E;display:flex;align-items:center;justify-content:center}
+
+/* Scoring buttons — Pugh */
+.pugh-btn{padding:.6rem 1.25rem;border-radius:7px;font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;border:1px solid;transition:all .15s;min-width:64px;text-align:center}
+.pugh-neg{background:transparent;color:#E05555;border-color:rgba(224,85,85,.25)}
+.pugh-neg:hover{background:rgba(224,85,85,.12);border-color:rgba(224,85,85,.5)}
+.pugh-neg.selected{background:rgba(224,85,85,.25);border-color:#E05555;box-shadow:0 0 0 1px #E05555}
+.pugh-zero{background:transparent;color:#8A97B0;border-color:#1A3D5C}
+.pugh-zero:hover{background:#0F3050;border-color:#304F6B}
+.pugh-zero.selected{background:#0F3050;border-color:#8A97B0;box-shadow:0 0 0 1px #8A97B0}
+.pugh-pos{background:transparent;color:#3ECF8E;border-color:rgba(62,207,142,.25)}
+.pugh-pos:hover{background:rgba(62,207,142,.12);border-color:rgba(62,207,142,.5)}
+.pugh-pos.selected{background:rgba(62,207,142,.2);border-color:#3ECF8E;box-shadow:0 0 0 1px #3ECF8E}
+
+/* Scoring buttons — Numeric */
+.num-btn{width:44px;height:44px;border-radius:8px;font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;border:1px solid #1A3D5C;background:transparent;color:#8A97B0;transition:all .15s;text-align:center}
+.num-btn:hover{background:#0F3050;color:#E8ECF4}
+.num-btn.selected-1{background:rgba(224,85,85,.2);color:#F08080;border-color:#E05555;box-shadow:0 0 0 1px #E0555550}
+.num-btn.selected-2{background:rgba(232,131,58,.18);color:#E8833A;border-color:#E8833A80;box-shadow:0 0 0 1px #E8833A40}
+.num-btn.selected-3{background:rgba(236,201,75,.18);color:#ECC94B;border-color:#ECC94B80;box-shadow:0 0 0 1px #ECC94B40}
+.num-btn.selected-4{background:rgba(126,200,122,.18);color:#7EC87A;border-color:#7EC87A80;box-shadow:0 0 0 1px #7EC87A40}
+.num-btn.selected-5{background:rgba(62,207,142,.25);color:#3ECF8E;border-color:#3ECF8E;box-shadow:0 0 0 1px #3ECF8E80}
+
+.btn-submit{display:block;width:100%;padding:.875rem;background:#0AC0E9;color:#02192F;font-family:'Inter',sans-serif;font-weight:600;font-size:.95rem;letter-spacing:.01em;border:none;border-radius:9px;cursor:pointer;transition:background .15s,box-shadow .15s,transform .1s}
+.btn-submit:hover:not(:disabled){background:#089bbf;box-shadow:0 6px 24px rgba(10,192,233,.3)}
+.btn-submit:active:not(:disabled){transform:scale(.98)}
+.btn-submit:disabled{opacity:.4;cursor:not-allowed}
+
+.crit-row{background:#031C2E;border:1px solid #0F3050;border-radius:10px;padding:1rem 1.25rem;margin-bottom:.625rem;transition:border-color .2s}
+.crit-row.scored-row{border-color:rgba(62,207,142,.2)}
+
+/* Progress dots */
+.prog-dot{width:8px;height:8px;border-radius:50%;border:1px solid #1A3D5C;background:transparent;transition:all .2s}
+.prog-dot.done{background:#3ECF8E;border-color:#3ECF8E}
+.prog-dot.current{background:#0AC0E9;border-color:#0AC0E9}
+</style>
+</head>
+<body>
+
+<div class="relative z-10">
+
+  <!-- Header -->
+  <div style="background:rgba(11,39,64,.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:.875rem 1.5rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100">
+    <a href="https://www.tangrammedtech.com" style="text-decoration:none;display:flex;align-items:center">
+      <img src="../../brand_assets/Tangram_white logo.png" style="height:26px;display:block;opacity:.95">
+    </a>
+    <div style="display:flex;align-items:center;gap:.75rem">
+      <div id="participant-name-badge" style="display:none;font-size:.78rem;color:rgba(255,255,255,.45);font-family:'Inter',sans-serif"></div>
+      <div id="scale-badge" style="font-family:'Inter',sans-serif;font-weight:500;font-size:.68rem;color:#4A5770;letter-spacing:.06em"></div>
+    </div>
+  </div>
+
+  <!-- Loading / error states -->
+  <div id="loading" style="text-align:center;padding:5rem 1rem;color:#4A5770">Loading session…</div>
+
+  <!-- Name entry screen -->
+  <div id="name-state" style="display:none;max-width:480px;margin:0 auto;padding:3rem 1.5rem">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="font-size:2rem;margin-bottom:.75rem;opacity:.4">◈</div>
+      <h1 id="name-chart-title" style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.3rem;letter-spacing:-.02em;margin-bottom:.4rem;line-height:1.2"></h1>
+      <p style="color:#8A97B0;font-size:.875rem">Enter your name to begin scoring</p>
+    </div>
+    <div style="background:#031C2E;border:1px solid #0F3050;border-radius:12px;padding:1.5rem">
+      <label style="display:block;color:#8A97B0;font-size:.72rem;font-family:'Inter',sans-serif;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem">Your Name</label>
+      <input id="participant-name-input" type="text" placeholder="e.g. Alex Johnson"
+        style="width:100%;background:#0B2740;border:1px solid #1A3D5C;border-radius:7px;padding:.875rem 1rem;color:#E8ECF4;font-family:'Inter',sans-serif;font-size:1rem;outline:none;transition:border-color .15s,box-shadow .15s;margin-bottom:1rem"
+        onfocus="this.style.borderColor='#0AC0E9';this.style.boxShadow='0 0 0 3px rgba(10,192,233,.12)'"
+        onblur="this.style.borderColor='#1A3D5C';this.style.boxShadow='none'"
+        onkeydown="if(event.key==='Enter')submitName()">
+      <button onclick="submitName()" class="btn-submit">Begin Scoring →</button>
+    </div>
+  </div>
+  <div id="error-state" style="display:none;text-align:center;padding:5rem 1rem">
+    <div style="font-size:2rem;opacity:.15;margin-bottom:1rem">⊘</div>
+    <p id="error-msg" style="color:#4A5770;font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.02em"></p>
+    <p id="error-sub" style="color:#4A5770;font-size:.82rem;margin-top:.4rem"></p>
+  </div>
+
+  <!-- Published results visible state -->
+  <div id="published-state" style="display:none;text-align:center;padding:5rem 1rem">
+    <div style="font-size:2rem;margin-bottom:1rem;opacity:.5">◈</div>
+    <p style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:-.01em;color:#E8ECF4">Results Published</p>
+    <p style="color:#8A97B0;font-size:.875rem;margin-top:.5rem;margin-bottom:1.5rem">The host has published the final results.</p>
+    <a id="pub-results-link" href="#" class="btn-submit" style="display:inline-block;max-width:240px;text-decoration:none;padding:.75rem 1.5rem">View Results →</a>
+  </div>
+
+  <!-- Success / submitted state -->
+  <div id="success-state" style="display:none;padding:3rem 1.5rem;max-width:520px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:2rem">
+      <div style="width:56px;height:56px;border-radius:50%;background:rgba(62,207,142,.15);border:2px solid rgba(62,207,142,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="#3ECF8E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2 style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.4rem;letter-spacing:-.02em;margin-bottom:.4rem">Scores Submitted</h2>
+      <p style="color:#8A97B0;font-size:.875rem">Your responses have been recorded.</p>
+    </div>
+    <div id="success-summary" style="background:#031C2E;border:1px solid #0F3050;border-radius:10px;padding:1.25rem;margin-bottom:1.5rem"></div>
+    <button onclick="editScores()" style="width:100%;padding:.75rem;background:transparent;color:#8A97B0;font-family:'Inter',sans-serif;font-weight:500;font-size:.875rem;border:1px solid #1A3D5C;border-radius:7px;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#0F3050';this.style.color='#E8ECF4'" onmouseout="this.style.background='transparent';this.style.color='#8A97B0'">
+      Update My Scores
+    </button>
+  </div>
+
+  <!-- Main scoring UI -->
+  <div id="scoring-main" style="display:none;max-width:600px;margin:0 auto;padding:1.5rem 1rem 5rem">
+
+    <!-- Chart info -->
+    <div style="margin-bottom:1.5rem">
+      <h1 id="sc-title" style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.4rem;letter-spacing:-.02em;line-height:1.1;margin-bottom:.4rem"></h1>
+      <p id="sc-desc" style="color:#8A97B0;font-size:.875rem;line-height:1.6;display:none"></p>
+    </div>
+
+    <!-- Datum reference -->
+    <div id="datum-box" style="display:none;background:rgba(10,192,233,.06);border:1px solid rgba(10,192,233,.2);border-radius:8px;padding:.875rem 1rem;margin-bottom:1.25rem">
+      <p style="font-family:'Inter',sans-serif;font-weight:600;font-size:.65rem;color:#0AC0E9;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.25rem">Datum Reference</p>
+      <p id="datum-name" style="font-size:.875rem;color:#E8ECF4;font-weight:500"></p>
+      <p style="font-size:.78rem;color:#8A97B0;margin-top:.2rem">Score all other concepts relative to this one: −1 (worse), 0 (same), +1 (better)</p>
+    </div>
+
+    <!-- Concept tabs -->
+    <div style="margin-bottom:1.25rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+        <p style="font-family:'Inter',sans-serif;font-weight:500;font-size:.65rem;color:#4A5770;letter-spacing:.08em;text-transform:uppercase">Select Concept</p>
+        <div style="display:flex;gap:.3rem;align-items:center" id="progress-dots"></div>
+      </div>
+      <div id="concept-tabs" style="display:flex;gap:.5rem;flex-wrap:wrap"></div>
+    </div>
+
+    <!-- Scoring panel -->
+    <div id="scoring-panel">
+      <!-- Rendered per concept -->
+    </div>
+
+    <!-- Progress & Submit -->
+    <div style="position:fixed;bottom:0;left:0;right:0;padding:1rem 1.5rem;background:rgba(7,10,15,.95);border-top:1px solid #0F3050;backdrop-filter:blur(8px)">
+      <div style="max-width:600px;margin:0 auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.625rem">
+          <span id="progress-text" style="font-size:.78rem;color:#8A97B0;font-family:'Inter',sans-serif;font-weight:400"></span>
+          <span id="progress-pct" style="font-size:.78rem;color:#0AC0E9;font-family:'Inter',sans-serif;font-weight:600"></span>
+        </div>
+        <div style="height:3px;background:#0F3050;border-radius:2px;overflow:hidden;margin-bottom:.875rem">
+          <div id="progress-bar" style="height:100%;background:#0AC0E9;border-radius:2px;width:0%;transition:width .3s ease"></div>
+        </div>
+        <button id="submit-btn" class="btn-submit" onclick="submitScores()" disabled>Submit Scores</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+<script>
+const chartId = new URLSearchParams(location.search).get('id');
+let chart = null;
+let token = null;
+let participantName = '';
+let scores = {};
+let activeConcept = 0;
+
+async function init() {
+  if (!chartId) { showError('Invalid link', 'No session ID found in this link.'); return; }
+
+  chart = await DB.get(chartId);
+  if (!chart) { showError('SESSION NOT FOUND', 'This session may have been deleted or the link is incorrect.'); return; }
+
+  if (chart.status === 'published') {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('published-state').style.display = '';
+    document.getElementById('pub-results-link').href = `results.html?id=${chartId}`;
+    return;
+  }
+
+  if (chart.status === 'draft') { showError('SESSION NOT OPEN', 'This session hasn\'t been opened yet. Check back later.'); return; }
+  if (chart.status === 'closed') { showError('SESSION CLOSED', 'The host has closed this session. Results may be published soon.'); return; }
+
+  // Active session
+  token = DB.getParticipantToken();
+  document.getElementById('scale-badge').textContent = chart.scoringScale === 'pugh' ? '−1 / 0 / +1 SCALE' : '1 – 5 SCALE';
+
+  // Load any existing response from server
+  const allResponses = await DB.getResponses(chartId);
+  const existing = allResponses[token];
+
+  if (existing?.scores) scores = existing.scores;
+  else chart.concepts.forEach(c => { scores[c.id] = {}; });
+
+  // Restore saved name for returning participants
+  participantName = existing?.name || localStorage.getItem('pugh_pname_' + chartId) || '';
+
+  document.getElementById('loading').style.display = 'none';
+
+  if (existing?.submittedAt && participantName) {
+    setNameBadge(participantName);
+    showSuccess();
+    return;
+  }
+
+  // Always show name screen first if no name yet
+  if (!participantName) {
+    showNameScreen();
+    return;
+  }
+
+  setNameBadge(participantName);
+  showScoringUI();
+}
+
+function showNameScreen() {
+  document.getElementById('name-chart-title').textContent = chart.title;
+  document.getElementById('name-state').style.display = '';
+  setTimeout(() => document.getElementById('participant-name-input').focus(), 100);
+}
+
+function submitName() {
+  const val = document.getElementById('participant-name-input').value.trim();
+  if (!val) {
+    document.getElementById('participant-name-input').style.borderColor = '#E05555';
+    document.getElementById('participant-name-input').focus();
+    return;
+  }
+  participantName = val;
+  localStorage.setItem('pugh_pname_' + chartId, val);
+  document.getElementById('name-state').style.display = 'none';
+  setNameBadge(val);
+  showScoringUI();
+}
+
+function setNameBadge(name) {
+  const el = document.getElementById('participant-name-badge');
+  el.textContent = name;
+  el.style.display = '';
+}
+
+function showError(title, sub) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('error-state').style.display = '';
+  document.getElementById('error-msg').textContent = title;
+  document.getElementById('error-sub').textContent = sub;
+}
+
+function showScoringUI() {
+  document.getElementById('success-state').style.display = 'none';
+  document.getElementById('scoring-main').style.display = '';
+
+  const sc = document.getElementById('sc-title');
+  sc.textContent = chart.title;
+  if (chart.description) {
+    document.getElementById('sc-desc').textContent = chart.description;
+    document.getElementById('sc-desc').style.display = '';
+  }
+
+  if (chart.useDatum && chart.datumConceptId) {
+    const datum = chart.concepts.find(c => c.id === chart.datumConceptId);
+    if (datum) {
+      document.getElementById('datum-box').style.display = '';
+      document.getElementById('datum-name').textContent = datum.name;
+    }
+  }
+
+  renderTabs();
+  renderConcept(activeConcept);
+  updateProgress();
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('concept-tabs');
+  const dots = document.getElementById('progress-dots');
+  const nonDatumConcepts = getScorableConcepts();
+
+  tabs.innerHTML = nonDatumConcepts.map((c, i) => {
+    const conceptScores = scores[c.id] || {};
+    const scoredCount = Object.keys(conceptScores).length;
+    const complete = scoredCount >= chart.criteria.length;
+    const isActive = i === activeConcept;
+    return `
+      <button class="concept-tab ${isActive ? 'active' : ''} ${complete ? 'scored' : ''}" onclick="switchConcept(${i})" style="display:flex;align-items:center;gap:.4rem">
+        ${complete ? '<span class="check"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 4l2 2 4-4" stroke="#02192F" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : ''}
+        ${c.thumbnail ? `<img src="${c.thumbnail}" style="width:18px;height:18px;border-radius:3px;object-fit:cover;flex-shrink:0">` : ''}
+        ${escH(c.name)}
+      </button>
+    `;
+  }).join('');
+
+  dots.innerHTML = nonDatumConcepts.map((c, i) => {
+    const complete = Object.keys(scores[c.id] || {}).length >= chart.criteria.length;
+    const cls = complete ? 'done' : i === activeConcept ? 'current' : '';
+    return `<div class="prog-dot ${cls}"></div>`;
+  }).join('');
+}
+
+function getScorableConcepts() {
+  // If datum, exclude it from scoring (it's the reference)
+  if (chart.useDatum && chart.datumConceptId) {
+    return chart.concepts.filter(c => c.id !== chart.datumConceptId);
+  }
+  return chart.concepts;
+}
+
+function renderConcept(idx) {
+  const concept = getScorableConcepts()[idx];
+  if (!concept) return;
+
+  const panel = document.getElementById('scoring-panel');
+  panel.innerHTML = `
+    <div style="margin-bottom:1.25rem">
+      ${concept.thumbnail ? `<img src="${concept.thumbnail}" style="width:100%;max-height:160px;object-fit:cover;border-radius:10px;margin-bottom:.875rem;border:1px solid #0F3050">` : ''}
+      <h2 style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.15rem;letter-spacing:-.01em;margin-bottom:.2rem">${escH(concept.name)}</h2>
+      ${concept.description ? `<p style="color:#8A97B0;font-size:.82rem">${escH(concept.description)}</p>` : ''}
+    </div>
+    ${chart.criteria.map(crit => renderCriterionRow(concept, crit)).join('')}
+    <div style="display:flex;gap:.75rem;margin-top:1.5rem;padding-bottom:.5rem">
+      ${idx > 0 ? `<button onclick="switchConcept(${idx-1})" style="flex:1;padding:.6rem;background:transparent;color:#8A97B0;border:1px solid #1A3D5C;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.82rem;transition:all .15s" onmouseover="this.style.background='#0F3050'" onmouseout="this.style.background='transparent'">← Previous</button>` : '<div style="flex:1"></div>'}
+      ${idx < getScorableConcepts().length - 1 ? `<button onclick="switchConcept(${idx+1})" style="flex:1;padding:.6rem;background:#0F3050;color:#E8ECF4;border:1px solid #1A3D5C;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.82rem;transition:all .15s" onmouseover="this.style.background='#0D2A40'" onmouseout="this.style.background='#0F3050'">Next →</button>` : ''}
+    </div>
+  `;
+}
+
+function renderCriterionRow(concept, crit) {
+  const currentVal = scores[concept.id]?.[crit.id];
+  const isScored = currentVal !== undefined && currentVal !== null;
+
+  if (chart.scoringScale === 'pugh') {
+    const opts = [
+      { val: -1, label: '−1', cls: 'pugh-neg' },
+      { val: 0,  label: '0',  cls: 'pugh-zero' },
+      { val: 1,  label: '+1', cls: 'pugh-pos' },
+    ];
+    return `
+      <div class="crit-row ${isScored ? 'scored-row' : ''}">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+          <div>
+            <p style="font-size:.875rem;color:#E8ECF4;font-weight:500;margin-bottom:.1rem">${escH(crit.name)}</p>
+            <p style="font-size:.72rem;color:#4A5770;font-family:'Inter',sans-serif;font-weight:400">
+              ${Math.round(Number(crit.weight) / chart.criteria.reduce((s, c) => s + Number(c.weight), 0) * 100)}% weight
+            </p>
+          </div>
+          <div style="display:flex;gap:.4rem;align-items:center">
+            ${opts.map(o => `
+              <button class="pugh-btn ${o.cls} ${currentVal === o.val ? 'selected' : ''}"
+                onclick="setScore('${concept.id}', '${crit.id}', ${o.val}); renderConcept(${activeConcept}); renderTabs(); updateProgress()">
+                ${o.label}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    return `
+      <div class="crit-row ${isScored ? 'scored-row' : ''}">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+          <div>
+            <p style="font-size:.875rem;color:#E8ECF4;font-weight:500;margin-bottom:.1rem">${escH(crit.name)}</p>
+            <p style="font-size:.72rem;color:#4A5770;font-family:'Inter',sans-serif;font-weight:400">
+              ${Math.round(Number(crit.weight) / chart.criteria.reduce((s, c) => s + Number(c.weight), 0) * 100)}% weight
+              &nbsp;·&nbsp; 1 = Poor &nbsp;5 = Excellent
+            </p>
+          </div>
+          <div style="display:flex;gap:.35rem">
+            ${[1,2,3,4,5].map(n => `
+              <button class="num-btn ${currentVal === n ? 'selected-' + n : ''}"
+                onclick="setScore('${concept.id}', '${crit.id}', ${n}); renderConcept(${activeConcept}); renderTabs(); updateProgress()">
+                ${n}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function setScore(conceptId, critId, val) {
+  if (!scores[conceptId]) scores[conceptId] = {};
+  scores[conceptId][critId] = val;
+  autoSave();
+}
+
+function autoSave() {
+  fetch(`/api/response/${chartId}/${token}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, name: participantName, scores, submittedAt: null, updatedAt: new Date().toISOString() })
+  }).catch(() => {});
+}
+
+function switchConcept(idx) {
+  activeConcept = idx;
+  renderTabs();
+  renderConcept(idx);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  const scorable = getScorableConcepts();
+  const totalCells = scorable.length * chart.criteria.length;
+  const scored = scorable.reduce((s, c) => {
+    return s + Object.keys(scores[c.id] || {}).length;
+  }, 0);
+  const pct = totalCells > 0 ? Math.round(scored / totalCells * 100) : 0;
+
+  document.getElementById('progress-text').textContent = `${scored} / ${totalCells} criteria scored`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('submit-btn').disabled = scored < totalCells;
+  document.getElementById('submit-btn').textContent = scored < totalCells
+    ? `${totalCells - scored} remaining…`
+    : 'Submit Scores →';
+}
+
+async function submitScores() {
+  await DB.setResponse(chartId, token, scores, participantName);
+  showSuccess();
+}
+
+function showSuccess() {
+  document.getElementById('scoring-main').style.display = 'none';
+  document.getElementById('success-state').style.display = '';
+
+  const scorable = getScorableConcepts();
+  document.getElementById('success-summary').innerHTML = `
+    <p style="font-family:'Inter',sans-serif;font-weight:500;font-size:.65rem;color:#4A5770;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.875rem">Your Submission</p>
+    ${scorable.map(c => {
+      const scored = Object.keys(scores[c.id] || {}).length;
+      return `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid #0F3050">
+          <span style="font-size:.875rem;color:#E8ECF4">${escH(c.name)}</span>
+          <span style="font-size:.78rem;color:#3ECF8E;font-family:'Inter',sans-serif;font-weight:500">${scored}/${chart.criteria.length} scored</span>
+        </div>
+      `;
+    }).join('')}
+    <p style="font-size:.72rem;color:#4A5770;margin-top:.75rem;font-family:'Inter',sans-serif;font-weight:400">
+      Submitted ${fmtDateTime(new Date().toISOString())}
+    </p>
+  `;
+}
+
+function editScores() {
+  activeConcept = 0;
+  showScoringUI();
+}
+
+function escH(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+init();
+</script>
+
+<div style="background:#02192F;border-top:1px solid rgba(255,255,255,.04);padding:1.5rem;text-align:center;margin-top:2rem">
+  <img src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:22px;opacity:.35;display:inline-block;margin-bottom:.5rem">
+  <p style="font-size:.68rem;color:rgba(255,255,255,.18);font-family:'Inter',sans-serif">&copy; 2026 Tangram MedTech</p>
+</div>
+</body>
+</html>

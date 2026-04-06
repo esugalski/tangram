@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tangram Pugh · Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{box-sizing:border-box}
+*,*::before,*::after{font-family:'Inter',sans-serif}
+h1,h2,h3,h4,h5,h6{font-family:'Inter',sans-serif;font-weight:700}
+body{font-family:'Inter',sans-serif;background:#0B2740;color:#E8ECF4;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(10,192,233,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(10,192,233,.035) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");background-size:300px;pointer-events:none;z-index:0}
+/* ─── SITE NAV & FOOTER ─── */
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(11,39,64,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+.site-nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:72px;padding:0 2rem}
+.site-nav-links{display:flex;align-items:center;gap:2rem}
+.site-nav-link{font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);text-decoration:none;transition:color .2s;letter-spacing:.01em}
+.site-nav-link:hover{color:#0AC0E9}
+.site-btn-aqua{display:inline-flex;align-items:center;gap:.5rem;background:#0AC0E9;color:#0B2740 !important;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.01em;padding:.6rem 1.2rem;border-radius:6px;text-decoration:none;border:none;cursor:pointer;transition:background .2s,box-shadow .2s;box-shadow:0 4px 14px rgba(10,192,233,.25);white-space:nowrap}
+.site-btn-aqua:hover{background:#089bbf;box-shadow:0 6px 20px rgba(10,192,233,.4)}
+.site-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0}
+.site-hamburger span{display:block;height:2px;background:rgba(255,255,255,.8);border-radius:2px;transition:transform .25s,opacity .25s;transform-origin:center}
+.site-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.site-hamburger.open span:nth-child(2){opacity:0}
+.site-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.site-mobile-menu{display:none;position:fixed;top:72px;left:0;right:0;z-index:199;background:rgba(2,25,47,.98);backdrop-filter:blur(16px);padding:1.5rem 2rem 2rem;flex-direction:column;gap:.25rem;border-top:1px solid rgba(255,255,255,.08)}
+.site-mobile-menu.open{display:flex}
+.site-mobile-menu .site-nav-link{color:rgba(255,255,255,.72);font-size:1rem;padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:block}
+.site-mobile-menu .site-btn-aqua{margin-top:1rem;justify-content:center}
+@media(max-width:768px){.site-nav-links{display:none}.site-hamburger{display:flex}}
+.site-footer{background:#02192F;padding:4rem 2rem 2rem;border-top:1px solid rgba(255,255,255,.04)}
+.site-footer-inner{max-width:1280px;margin:0 auto}
+.site-footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.site-footer-brand-desc{font-size:.84rem;line-height:1.65;color:rgba(255,255,255,.32);margin-top:.875rem;max-width:280px}
+.site-footer-sub{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.06)}
+.site-footer-sub-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:.35rem}
+.site-footer-sub-name{font-size:.85rem;font-weight:600;color:rgba(10,192,233,.55)}
+.site-footer-col-title{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);margin-bottom:1.1rem}
+.site-footer-links{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.site-footer-link{color:rgba(255,255,255,.38);text-decoration:none;font-size:.84rem;transition:color .2s}
+.site-footer-link:hover{color:#0AC0E9}
+.site-footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:1.75rem;flex-wrap:wrap;gap:.75rem}
+.site-footer-copy{font-size:.74rem;color:rgba(255,255,255,.18)}
+.site-footer-legal{display:flex;gap:1.5rem}
+@media(max-width:768px){.site-footer-top{grid-template-columns:1fr 1fr;gap:2rem}}
+@media(max-width:480px){.site-footer-top{grid-template-columns:1fr}}
+/* Tools dropdown */
+.site-tools-dropdown{position:relative}
+.site-tools-btn{display:flex;align-items:center;gap:.35rem;font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);background:transparent;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s;letter-spacing:.01em;padding:0;white-space:nowrap}
+.site-tools-btn:hover,.site-tools-dropdown:hover .site-tools-btn{color:#0AC0E9}
+.site-tools-menu{position:absolute;top:calc(100% + 10px);left:0;background:#031C2E;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.4rem 0;min-width:200px;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;z-index:300;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.site-tools-dropdown:hover .site-tools-menu,.site-tools-dropdown:focus-within .site-tools-menu{opacity:1;pointer-events:auto;transform:translateY(0)}
+.site-tools-menu-item{display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;color:rgba(255,255,255,.55);font-size:.875rem;text-decoration:none;transition:color .15s,background .15s;font-family:'Inter',sans-serif;white-space:nowrap}
+.site-tools-menu-item:hover{color:#0AC0E9;background:rgba(10,192,233,.06)}
+.site-tools-menu-label{padding:.55rem 1rem .25rem;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.22)}
+.site-nav-auth-btn{font-size:.82rem;font-weight:500;color:rgba(255,255,255,.62);background:transparent;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:.45rem .875rem;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s,border-color .2s;white-space:nowrap}
+.site-nav-auth-btn:hover{color:#0AC0E9;border-color:rgba(10,192,233,.5)}
+/* Scroll effect */
+.site-nav{transition:background .3s,box-shadow .3s}
+.site-nav-logo-light{display:block}.site-nav-logo-dark{display:none}
+.site-nav.scrolled{background:rgba(255,255,255,.97) !important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.site-nav.scrolled .site-nav-logo-light{display:none}.site-nav.scrolled .site-nav-logo-dark{display:block}
+.site-nav.scrolled .site-nav-link{color:#304F6B}.site-nav.scrolled .site-nav-link:hover{color:#089bbf}
+.site-nav.scrolled .site-tools-btn{color:#304F6B}.site-nav.scrolled .site-tools-btn:hover{color:#089bbf}
+.site-nav.scrolled .site-tools-menu{background:#fff;border-color:rgba(0,0,0,.08);box-shadow:0 8px 32px rgba(11,39,64,.12)}
+.site-nav.scrolled .site-tools-menu-item{color:#304F6B}.site-nav.scrolled .site-tools-menu-item:hover{color:#089bbf;background:rgba(10,192,233,.06)}
+.site-nav.scrolled .site-tools-menu-label{color:rgba(11,39,64,.3)}
+.site-nav.scrolled .site-hamburger span{background:#0B2740}
+.site-nav.scrolled .site-nav-auth-btn{color:#304F6B;border-color:rgba(11,39,64,.2)}.site-nav.scrolled .site-nav-auth-btn:hover{color:#089bbf;border-color:rgba(10,192,233,.5)}
+.site-nav.scrolled .site-btn-aqua{background:#0AC0E9;color:#0B2740 !important}
+
+.field{width:100%;background:#0B2740;border:1px solid #1A3D5C;border-radius:7px;padding:.75rem 1rem;color:#E8ECF4;font-family:'Inter',sans-serif;font-size:.9rem;outline:none;transition:border-color .15s,box-shadow .15s}
+.field:focus{border-color:#0AC0E9;box-shadow:0 0 0 3px rgba(10,192,233,.12)}
+.field::placeholder{color:#4A5770}
+textarea.field{resize:vertical;min-height:80px}
+label{display:block;color:#8A97B0;font-size:.72rem;font-family:'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+
+.btn-primary{padding:.7rem 1.5rem;background:#0AC0E9;color:#02192F;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;border:none;border-radius:7px;cursor:pointer;transition:background .15s,box-shadow .15s;white-space:nowrap}
+.btn-primary:hover{background:#089bbf;box-shadow:0 4px 20px rgba(10,192,233,.25)}
+.btn-secondary{padding:.7rem 1.25rem;background:transparent;color:#8A97B0;font-family:'Inter',sans-serif;font-weight:500;font-size:.875rem;border:1px solid #1A3D5C;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-secondary:hover{background:#0F3050;color:#E8ECF4;border-color:#304F6B}
+.btn-add{display:flex;align-items:center;gap:.5rem;padding:.55rem 1rem;background:#0B2740;color:#8A97B0;font-family:'Inter',sans-serif;font-weight:500;font-size:.82rem;border:1px dashed #1A3D5C;border-radius:7px;cursor:pointer;transition:all .15s;width:100%;margin-top:.75rem}
+.btn-add:hover{background:#0F3050;color:#0AC0E9;border-color:#0AC0E950}
+.btn-del{background:none;border:none;cursor:pointer;color:#4A5770;padding:.25rem;border-radius:4px;transition:color .15s,background .15s;flex-shrink:0;line-height:0}
+.btn-del:hover{color:#E05555;background:rgba(224,85,85,.1)}
+
+.step-indicator{display:flex;align-items:center;gap:0}
+.step-dot{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-family:'Inter',sans-serif;font-size:.72rem;font-weight:500;flex-shrink:0;transition:all .2s}
+.step-dot.done{background:#0AC0E9;color:#02192F}
+.step-dot.current{background:#0F3050;color:#0AC0E9;border:2px solid #0AC0E9}
+.step-dot.future{background:#0B2740;color:#4A5770;border:2px solid #0F3050}
+.step-line{flex:1;height:1px;background:#0F3050;transition:background .2s;min-width:20px}
+.step-line.done{background:#0AC0E950}
+
+.card{background:#031C2E;border:1px solid #0F3050;border-radius:12px;padding:1.5rem}
+.item-row{display:flex;gap:.75rem;align-items:flex-start;background:#031C2E;border:1px solid #0F3050;border-radius:8px;padding:.875rem;margin-bottom:.5rem;transition:border-color .15s}
+.item-row:hover{border-color:#1A3D5C}
+
+.toggle-group{display:flex;background:#0B2740;border:1px solid #0F3050;border-radius:8px;padding:3px;gap:3px}
+.toggle-opt{flex:1;padding:.5rem 1rem;border-radius:5px;font-family:'Inter',sans-serif;font-weight:500;font-size:.85rem;border:none;cursor:pointer;transition:all .15s;color:#8A97B0;background:transparent;text-align:center}
+.toggle-opt.active{background:#0F3050;color:#E8ECF4;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+
+.weight-bar-outer{height:4px;background:#0F3050;border-radius:2px;margin-top:.4rem;overflow:hidden}
+.weight-bar-inner{height:100%;background:#0AC0E9;border-radius:2px;transition:width .3s ease}
+</style>
+</head>
+<body>
+
+<!-- Site Nav -->
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="https://www.tangrammedtech.com" style="text-decoration:none;display:flex;align-items:center;flex-shrink:0">
+      <img class="site-nav-logo-light" src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+      <img class="site-nav-logo-dark" src="../../brand_assets/Tangram_color logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+    </a>
+    <div class="site-nav-links">
+      <a href="https://www.tangrammedtech.com/#services" class="site-nav-link">Services</a>
+      <a href="https://www.tangrammedtech.com/#about" class="site-nav-link">About</a>
+      <a href="https://www.tangrammedtech.com/#newsletter" class="site-nav-link">Newsletter</a>
+      <div class="site-tools-dropdown">
+        <button class="site-tools-btn">Tools <svg style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="site-tools-menu">
+          <div class="site-tools-menu-label">Tools</div>
+          <a href="dashboard.html" class="site-tools-menu-item"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Pugh Chart</a>
+        </div>
+      </div>
+      <button id="nav-auth-btn" class="site-nav-auth-btn">Sign In</button>
+      <a href="https://www.tangrammedtech.com/#contact" class="site-btn-aqua">Work With Tangram <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <button class="site-hamburger" id="siteHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="site-mobile-menu" id="siteMobileMenu">
+  <a href="https://www.tangrammedtech.com/#services" class="site-nav-link">Services</a>
+  <a href="https://www.tangrammedtech.com/#about" class="site-nav-link">About</a>
+  <a href="https://www.tangrammedtech.com/#newsletter" class="site-nav-link">Newsletter</a>
+  <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:.75rem 0 .25rem;border-bottom:1px solid rgba(255,255,255,.07)">Tools</div>
+  <a href="dashboard.html" class="site-nav-link">Pugh Chart</a>
+  <a href="https://www.tangrammedtech.com/#contact" class="site-btn-aqua">Work With Tangram <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+</div>
+<script>
+document.getElementById('siteHamburger').addEventListener('click',function(){var o=document.getElementById('siteMobileMenu').classList.toggle('open');this.classList.toggle('open',o);});
+(function(){var u=JSON.parse(localStorage.getItem('pugh_user')||'null');var btn=document.getElementById('nav-auth-btn');if(!btn)return;if(u){btn.textContent='Sign Out';btn.onclick=function(){localStorage.removeItem('pugh_user');location.href='index.html'};}else{btn.textContent='Sign In';btn.onclick=function(){location.href='index.html';};}})();
+(function(){var nav=document.querySelector('.site-nav');function onScroll(){nav.classList.toggle('scrolled',window.scrollY>40);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();})();
+</script>
+
+<div class="relative z-10" style="max-width:800px;margin:0 auto;padding:2.5rem 1.5rem 4rem;padding-top:calc(72px + 2.5rem)">
+
+  <!-- Page title -->
+  <div style="margin-bottom:2rem">
+    <h1 id="page-title" style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-.04em">New Chart</h1>
+    <p style="color:#4A5770;font-size:.85rem;margin-top:.2rem">Build your decision matrix step by step</p>
+  </div>
+
+  <!-- Step indicator -->
+  <div class="step-indicator" style="margin-bottom:2.5rem" id="step-indicator">
+    <!-- Rendered by JS -->
+  </div>
+
+  <!-- Step content -->
+  <div id="step-content"></div>
+
+  <!-- Nav buttons -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2rem;gap:1rem">
+    <button id="btn-back" onclick="prevStep()" class="btn-secondary" style="display:none">← Back</button>
+    <div style="flex:1"></div>
+    <button id="btn-next" onclick="nextStep()" class="btn-primary">Continue →</button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+<script>
+let user;
+
+const STEPS = [
+  { id: 'info',     label: 'Info' },
+  { id: 'concepts', label: 'Concepts' },
+  { id: 'criteria', label: 'Criteria' },
+  { id: 'settings', label: 'Settings' },
+  { id: 'review',   label: 'Review' },
+];
+
+let currentStep = 0;
+let chartId = new URLSearchParams(location.search).get('id');
+
+// Default form state
+let form = {
+  title: '', description: '', date: new Date().toISOString().slice(0,10), tags: '',
+  concepts: [], criteria: [],
+  scoringScale: 'numeric', useDatum: false, datumConceptId: null,
+};
+
+// Async init: auth check + optional chart load
+(async () => {
+  user = await Auth.requireHost();
+  if (!user) return;
+
+  if (chartId) {
+    const existing = await DB.get(chartId);
+    if (existing && existing.hostId === user.uid) {
+      form = { ...form, ...existing };
+      document.getElementById('page-title').textContent = 'Edit Chart';
+    } else {
+      chartId = null;
+    }
+  }
+
+  renderStep();
+})();
+
+// ---- Render Step Indicator ----
+function renderStepIndicator() {
+  const el = document.getElementById('step-indicator');
+  el.innerHTML = STEPS.map((s, i) => {
+    const cls = i < currentStep ? 'done' : i === currentStep ? 'current' : 'future';
+    const lineCls = i < currentStep ? 'done' : '';
+    const dot = `<div class="step-dot ${cls}" title="${s.label}">${i < currentStep ? '✓' : i + 1}</div>`;
+    const line = i < STEPS.length - 1 ? `<div class="step-line ${lineCls}"></div>` : '';
+    return dot + line;
+  }).join('');
+
+  document.getElementById('btn-back').style.display = currentStep > 0 ? '' : 'none';
+  const isLast = currentStep === STEPS.length - 1;
+  document.getElementById('btn-next').style.display = isLast ? 'none' : '';
+  document.getElementById('btn-next').textContent = 'Continue →';
+}
+
+// ---- STEP RENDERS ----
+function renderStep() {
+  renderStepIndicator();
+  const el = document.getElementById('step-content');
+  const step = STEPS[currentStep].id;
+
+  if (step === 'info') el.innerHTML = renderInfo();
+  else if (step === 'concepts') el.innerHTML = renderConcepts();
+  else if (step === 'criteria') el.innerHTML = renderCriteria();
+  else if (step === 'settings') el.innerHTML = renderSettings();
+  else if (step === 'review') el.innerHTML = renderReview();
+
+  attachStepEvents();
+}
+
+function renderInfo() {
+  return `
+    <div class="card">
+      <h2 style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:1.25rem;letter-spacing:-.02em">Project Information</h2>
+      <div style="margin-bottom:1rem">
+        <label>Chart Title <span style="color:#0AC0E9">*</span></label>
+        <input type="text" id="f-title" class="field" placeholder="e.g. Concept Selection — Product A" value="${esc(form.title)}">
+      </div>
+      <div style="margin-bottom:1rem">
+        <label>Description</label>
+        <textarea id="f-desc" class="field" placeholder="What decision is this chart helping to make?">${esc(form.description)}</textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+        <div>
+          <label>Date</label>
+          <input type="date" id="f-date" class="field" value="${form.date}">
+        </div>
+        <div>
+          <label>Tags <span style="color:#4A5770;font-weight:400">optional</span></label>
+          <input type="text" id="f-tags" class="field" placeholder="e.g. phase-1, hardware" value="${esc(form.tags)}">
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderConcepts() {
+  const rows = form.concepts.map((c, i) => `
+    <div class="item-row" id="concept-row-${i}">
+      <div style="flex:1;display:flex;gap:.75rem;align-items:flex-start">
+        <!-- Thumbnail -->
+        <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:.3rem">
+          <div id="thumb-preview-${i}" onclick="triggerThumbUpload(${i})"
+            style="width:64px;height:64px;border-radius:8px;border:1px dashed #1A3D5C;background:#0B2740;cursor:pointer;overflow:hidden;display:flex;align-items:center;justify-content:center;transition:border-color .15s,background .15s"
+            onmouseover="this.style.borderColor='#0AC0E960';this.style.background='#0F3050'"
+            onmouseout="this.style.borderColor='#1A3D5C';this.style.background='${c.thumbnail ? 'transparent' : '#0B2740'}'">
+            ${c.thumbnail
+              ? `<img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover">`
+              : `<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="3" stroke="#4A5770" stroke-width="1.3"/><circle cx="6.5" cy="6.5" r="1.5" stroke="#4A5770" stroke-width="1.2"/><path d="M2 12l4-3.5 3 3 2.5-2.5 4.5 4" stroke="#4A5770" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+            }
+          </div>
+          <input type="file" id="thumb-input-${i}" accept="image/*" style="display:none" onchange="handleThumbUpload(${i}, this)">
+          ${c.thumbnail
+            ? `<button onclick="removeThumb(${i})" style="background:none;border:none;cursor:pointer;color:#4A5770;font-size:.65rem;font-family:'Inter',sans-serif;padding:.1rem;transition:color .15s" onmouseover="this.style.color='#E05555'" onmouseout="this.style.color='#4A5770'">remove</button>`
+            : `<span style="font-size:.62rem;color:#4A5770;font-family:'Inter',sans-serif;text-align:center;line-height:1.2;pointer-events:none">add<br>image</span>`
+          }
+        </div>
+        <!-- Fields -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:.5rem">
+          <input type="text" class="field" data-concept-name="${i}" placeholder="Concept name (e.g. Option A)" value="${esc(c.name)}" style="padding:.55rem .875rem">
+          <input type="text" class="field" data-concept-desc="${i}" placeholder="Short description (optional)" value="${esc(c.description || '')}" style="padding:.45rem .875rem;font-size:.82rem;color:#8A97B0">
+        </div>
+      </div>
+      <button class="btn-del" onclick="removeConcept(${i})" style="margin-left:.25rem">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  `).join('');
+
+  return `
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div>
+          <h2 style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:-.02em">Concepts to Evaluate</h2>
+          <p style="color:#4A5770;font-size:.8rem;margin-top:.15rem">Add the options or designs being compared. Minimum 2.</p>
+        </div>
+        <span style="font-family:'Inter',sans-serif;font-size:.72rem;color:#4A5770">${form.concepts.length} added</span>
+      </div>
+      <div id="concepts-list">${rows}</div>
+      <button class="btn-add" onclick="addConcept()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Add Concept
+      </button>
+    </div>
+  `;
+}
+
+function renderCriteria() {
+  const totalW = form.criteria.reduce((s, c) => s + (Number(c.weight) || 0), 0) || 1;
+
+  const rows = form.criteria.map((c, i) => {
+    const pct = Math.round((Number(c.weight) || 0) / totalW * 100);
+    return `
+      <div class="item-row" id="crit-row-${i}">
+        <div style="flex:1">
+          <input type="text" class="field" data-crit-name="${i}" placeholder="Criterion name (e.g. Cost, Performance)" value="${esc(c.name)}" style="padding:.55rem .875rem">
+          <div style="display:flex;align-items:center;gap:.75rem;margin-top:.5rem">
+            <div style="display:flex;align-items:center;gap:.4rem;flex:1">
+              <label style="margin:0;white-space:nowrap;font-size:.65rem">Weight</label>
+              <input type="number" class="field" data-crit-weight="${i}" value="${c.weight || 1}" min="0" max="100" style="width:72px;padding:.4rem .6rem;text-align:center;font-family:'Inter',sans-serif;font-size:.85rem">
+              <div style="flex:1">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="color:#4A5770;font-size:.68rem;font-family:'Inter',sans-serif">${pct}% of total</span>
+                </div>
+                <div class="weight-bar-outer">
+                  <div class="weight-bar-inner" style="width:${pct}%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="btn-del" onclick="removeCriteria(${i})">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div>
+          <h2 style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:-.02em">Criteria & Weights</h2>
+          <p style="color:#4A5770;font-size:.8rem;margin-top:.15rem">Define what matters. Weights are relative — they don't need to sum to 100.</p>
+        </div>
+      </div>
+      <div id="criteria-list">${rows}</div>
+      <button class="btn-add" onclick="addCriteria()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Add Criterion
+      </button>
+    </div>
+  `;
+}
+
+function renderSettings() {
+  const conceptOptions = form.concepts.map(c =>
+    `<option value="${c.id}" ${form.datumConceptId === c.id ? 'selected' : ''}>${esc(c.name)}</option>`
+  ).join('');
+
+  return `
+    <div style="display:flex;flex-direction:column;gap:1.25rem">
+      <div class="card">
+        <h2 style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:-.02em;margin-bottom:.4rem">Scoring Scale</h2>
+        <p style="color:#4A5770;font-size:.8rem;margin-bottom:1.25rem;line-height:1.6">Choose how participants will rate each concept against each criterion.</p>
+        <div class="toggle-group">
+          <button class="toggle-opt ${form.scoringScale === 'numeric' ? 'active' : ''}" onclick="setScoringScale('numeric')">
+            1 – 5 &nbsp;<span style="color:#4A5770;font-size:.75rem">Numeric scale</span>
+          </button>
+          <button class="toggle-opt ${form.scoringScale === 'pugh' ? 'active' : ''}" onclick="setScoringScale('pugh')">
+            −1 / 0 / +1 &nbsp;<span style="color:#4A5770;font-size:.75rem">Pugh scale</span>
+          </button>
+        </div>
+        <div style="margin-top:1rem;padding:.875rem;background:#0B2740;border-radius:7px;font-size:.82rem;color:#8A97B0;line-height:1.6">
+          ${form.scoringScale === 'pugh'
+            ? '<strong style="color:#E8ECF4">Pugh scale:</strong> Participants rate each concept as <span style="color:#3ECF8E">+1 (better than)</span>, <span style="color:#8A97B0">0 (same as)</span>, or <span style="color:#E05555">−1 (worse than)</span> a reference (datum) concept, or independently.'
+            : '<strong style="color:#E8ECF4">Numeric scale:</strong> Participants rate each concept from <span style="color:#E05555">1 (poor)</span> to <span style="color:#3ECF8E">5 (excellent)</span> on each criterion.'}
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:-.02em;margin-bottom:.4rem">Datum Concept</h2>
+        <p style="color:#4A5770;font-size:.8rem;margin-bottom:1.25rem;line-height:1.6">A datum is the reference concept that other concepts are scored relative to. Optional.</p>
+        <div class="toggle-group" style="margin-bottom:1rem">
+          <button class="toggle-opt ${!form.useDatum ? 'active' : ''}" onclick="setUseDatum(false)">No Datum — score independently</button>
+          <button class="toggle-opt ${form.useDatum ? 'active' : ''}" onclick="setUseDatum(true)">Use a Datum concept</button>
+        </div>
+        ${form.useDatum ? `
+          <div>
+            <label>Select Datum Concept</label>
+            <select id="datum-select" class="field">
+              <option value="">— Select —</option>
+              ${conceptOptions}
+            </select>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function renderReview() {
+  const totalW = form.criteria.reduce((s, c) => s + (Number(c.weight) || 0), 0) || 1;
+  const datum = form.useDatum && form.datumConceptId
+    ? form.concepts.find(c => c.id === form.datumConceptId)?.name || 'Not set'
+    : 'None';
+
+  return `
+    <div style="display:flex;flex-direction:column;gap:1rem">
+      <div class="card">
+        <h2 style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:-.02em;margin-bottom:1rem">Review Summary</h2>
+        <div style="display:grid;gap:.75rem">
+          <div style="display:flex;justify-content:space-between;padding:.75rem;background:#0B2740;border-radius:7px">
+            <span style="color:#8A97B0;font-size:.82rem">Title</span>
+            <span style="color:#E8ECF4;font-size:.85rem;font-weight:500;text-align:right;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(form.title)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:.75rem;background:#0B2740;border-radius:7px">
+            <span style="color:#8A97B0;font-size:.82rem">Date</span>
+            <span style="color:#E8ECF4;font-size:.85rem">${fmtDate(form.date)}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:.75rem;background:#0B2740;border-radius:7px">
+            <span style="color:#8A97B0;font-size:.82rem">Scoring Scale</span>
+            <span style="color:#E8ECF4;font-size:.85rem">${form.scoringScale === 'pugh' ? '−1 / 0 / +1' : '1 – 5'}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:.75rem;background:#0B2740;border-radius:7px">
+            <span style="color:#8A97B0;font-size:.82rem">Datum</span>
+            <span style="color:#E8ECF4;font-size:.85rem">${datum}</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="card">
+          <p style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem">Concepts (${form.concepts.length})</p>
+          ${form.concepts.map((c, i) => `
+            <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem">
+              <span style="width:18px;height:18px;background:#0F3050;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-family:'Inter',sans-serif;color:#4A5770;flex-shrink:0">${i+1}</span>
+              <span style="font-size:.85rem;color:#E8ECF4">${esc(c.name)}</span>
+              ${form.useDatum && form.datumConceptId === c.id ? '<span style="font-size:.65rem;color:#0AC0E9;font-family:Inter,sans-serif;padding:.1rem .3rem;background:rgba(10,192,233,.1);border-radius:3px">datum</span>' : ''}
+            </div>
+          `).join('')}
+        </div>
+        <div class="card">
+          <p style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem">Criteria (${form.criteria.length})</p>
+          ${form.criteria.map(c => {
+            const pct = Math.round((Number(c.weight) || 0) / totalW * 100);
+            return `
+              <div style="margin-bottom:.5rem">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-size:.85rem;color:#E8ECF4">${esc(c.name)}</span>
+                  <span style="font-family:'Inter',sans-serif;font-size:.72rem;color:#0AC0E9">${pct}%</span>
+                </div>
+                <div style="height:3px;background:#0F3050;border-radius:2px;margin-top:.3rem;overflow:hidden">
+                  <div style="height:100%;width:${pct}%;background:#0AC0E9;border-radius:2px"></div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- Action buttons override the normal nav -->
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;padding-top:.5rem">
+        <button onclick="saveChart('draft')" class="btn-secondary" style="flex:1">Save as Draft</button>
+        <button onclick="saveChart('active')" class="btn-primary" style="flex:2">
+          Open Session & Get QR Code →
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// ---- Events ----
+function attachStepEvents() {
+  const step = STEPS[currentStep].id;
+
+  if (step === 'info') {
+    document.getElementById('f-title')?.addEventListener('input', e => form.title = e.target.value);
+    document.getElementById('f-desc')?.addEventListener('input', e => form.description = e.target.value);
+    document.getElementById('f-date')?.addEventListener('input', e => form.date = e.target.value);
+    document.getElementById('f-tags')?.addEventListener('input', e => form.tags = e.target.value);
+  }
+
+  if (step === 'concepts') {
+    document.querySelectorAll('[data-concept-name]').forEach(inp => {
+      inp.addEventListener('input', e => { form.concepts[+e.target.dataset.conceptName].name = e.target.value; });
+    });
+    document.querySelectorAll('[data-concept-desc]').forEach(inp => {
+      inp.addEventListener('input', e => { form.concepts[+e.target.dataset.conceptDesc].description = e.target.value; });
+    });
+  }
+
+  if (step === 'criteria') {
+    document.querySelectorAll('[data-crit-name]').forEach(inp => {
+      inp.addEventListener('input', e => { form.criteria[+e.target.dataset.critName].name = e.target.value; updateWeightBars(); });
+    });
+    document.querySelectorAll('[data-crit-weight]').forEach(inp => {
+      inp.addEventListener('input', e => { form.criteria[+e.target.dataset.critWeight].weight = Number(e.target.value) || 0; updateWeightBars(); });
+    });
+  }
+
+  if (step === 'settings') {
+    document.getElementById('datum-select')?.addEventListener('change', e => { form.datumConceptId = e.target.value; });
+  }
+}
+
+function updateWeightBars() {
+  const totalW = form.criteria.reduce((s, c) => s + (Number(c.weight) || 0), 0) || 1;
+  form.criteria.forEach((c, i) => {
+    const pct = Math.round((Number(c.weight) || 0) / totalW * 100);
+    const bar = document.querySelector(`#crit-row-${i} .weight-bar-inner`);
+    const label = document.querySelector(`#crit-row-${i} .weight-bar-outer`);
+    if (bar) bar.style.width = pct + '%';
+    const pctEl = document.querySelector(`#crit-row-${i} [data-crit-weight="${i}"]`)?.closest('.item-row')?.querySelector('[style*="% of total"]');
+    if (pctEl) pctEl.textContent = pct + '% of total';
+  });
+}
+
+function addConcept() {
+  form.concepts.push({ id: uid(), name: '', description: '' });
+  renderStep();
+  const inputs = document.querySelectorAll('[data-concept-name]');
+  inputs[inputs.length - 1]?.focus();
+}
+
+function removeConcept(i) {
+  if (form.concepts.length <= 1) { showToast('Need at least one concept.', 'error'); return; }
+  form.concepts.splice(i, 1);
+  renderStep();
+}
+
+function addCriteria() {
+  form.criteria.push({ id: uid(), name: '', weight: 1 });
+  renderStep();
+  const inputs = document.querySelectorAll('[data-crit-name]');
+  inputs[inputs.length - 1]?.focus();
+}
+
+function removeCriteria(i) {
+  if (form.criteria.length <= 1) { showToast('Need at least one criterion.', 'error'); return; }
+  form.criteria.splice(i, 1);
+  renderStep();
+}
+
+function setScoringScale(s) { form.scoringScale = s; renderStep(); }
+function setUseDatum(v) { form.useDatum = v; if (!v) form.datumConceptId = null; renderStep(); }
+
+// ---- Validation ----
+function validateStep() {
+  const step = STEPS[currentStep].id;
+  if (step === 'info') {
+    if (!form.title.trim()) { showToast('Please enter a chart title.', 'error'); return false; }
+  }
+  if (step === 'concepts') {
+    if (form.concepts.length < 2) { showToast('Add at least 2 concepts.', 'error'); return false; }
+    if (form.concepts.some(c => !c.name.trim())) { showToast('All concepts need a name.', 'error'); return false; }
+  }
+  if (step === 'criteria') {
+    if (form.criteria.length < 1) { showToast('Add at least one criterion.', 'error'); return false; }
+    if (form.criteria.some(c => !c.name.trim())) { showToast('All criteria need a name.', 'error'); return false; }
+  }
+  if (step === 'settings') {
+    if (form.useDatum && !form.datumConceptId) { showToast('Select a datum concept.', 'error'); return false; }
+  }
+  return true;
+}
+
+function nextStep() {
+  if (currentStep === STEPS.length - 1) return;
+  if (!validateStep()) return;
+  currentStep++;
+  renderStep();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function prevStep() {
+  if (currentStep > 0) { currentStep--; renderStep(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+}
+
+async function saveChart(status) {
+  const payload = {
+    hostId: user.uid,
+    title: form.title.trim(),
+    description: form.description.trim(),
+    date: form.date,
+    tags: form.tags,
+    concepts: form.concepts,
+    criteria: form.criteria,
+    scoringScale: form.scoringScale,
+    useDatum: form.useDatum,
+    datumConceptId: form.datumConceptId,
+    status,
+  };
+
+  if (status === 'active') payload.openedAt = new Date().toISOString();
+
+  let saved;
+  if (chartId) {
+    saved = await DB.update(chartId, payload);
+  } else {
+    saved = await DB.create(payload);
+    chartId = saved.id;
+  }
+
+  if (status === 'active') {
+    location.href = `manage.html?id=${saved.id}`;
+  } else {
+    showToast('Chart saved as draft.');
+    setTimeout(() => location.href = 'dashboard.html', 1200);
+  }
+}
+
+// Helper
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// Thumbnail helpers
+function triggerThumbUpload(i) {
+  document.getElementById('thumb-input-' + i)?.click();
+}
+
+function handleThumbUpload(i, input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 4 * 1024 * 1024) { showToast('Image must be under 4 MB.', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    form.concepts[i].thumbnail = e.target.result;
+    renderStep();
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeThumb(i) {
+  form.concepts[i].thumbnail = null;
+  renderStep();
+}
+</script>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-top">
+      <div><img src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto"><p class="site-footer-brand-desc">A medtech consultancy providing fractional VP of Engineering support for companies navigating product development, FDA strategy, quality systems, and manufacturing readiness.</p></div>
+      <div><div class="site-footer-col-title">Company</div><ul class="site-footer-links"><li><a href="https://www.tangrammedtech.com/#services" class="site-footer-link">Services</a></li><li><a href="https://www.tangrammedtech.com/#about" class="site-footer-link">About Eric</a></li><li><a href="https://www.tangrammedtech.com/#newsletter" class="site-footer-link">Newsletter</a></li><li><a href="https://www.tangrammedtech.com/#contact" class="site-footer-link">Work With Tangram</a></li></ul></div>
+      <div><div class="site-footer-col-title">Tools</div><ul class="site-footer-links"><li><a href="dashboard.html" class="site-footer-link">Pugh Chart</a></li></ul></div>
+      <div><div class="site-footer-col-title">Connect</div><ul class="site-footer-links"><li><a href="https://www.linkedin.com/in/esugalski/" target="_blank" class="site-footer-link">LinkedIn</a></li><li><a href="https://www.skool.com/medtechmindset" target="_blank" class="site-footer-link">Skool Community</a></li><li><a href="https://www.linkedin.com/newsletters/medtech-mindset-7033233055771172864/" target="_blank" class="site-footer-link">MedTech Mindset</a></li></ul></div>
+    </div>
+    <div class="site-footer-bottom"><div class="site-footer-copy">&copy; 2026 Tangram MedTech. All rights reserved.</div><div class="site-footer-legal"><a href="#" class="site-footer-link" style="font-size:.74rem">Privacy Policy</a><a href="#" class="site-footer-link" style="font-size:.74rem">Terms of Use</a></div></div>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tangram Pugh · Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: {
+      b0:'#02192F',b1:'#031C2E',b2:'#0B2740',b3:'#0F3050',b4:'#0D2A40',
+      bd1:'#0F3050',bd2:'#1A3D5C',bd3:'#304F6B',
+      a:'#0AC0E9',a2:'#0891b2',a3:'#089bbf',
+      t1:'#E8ECF4',t2:'#8A97B0',t3:'#4A5770',
+      pos:'#3ECF8E',neg:'#E05555',
+    },
+    fontFamily:{
+      display:['Inter','sans-serif'],
+      body:['Inter','sans-serif'],
+      mono:['Inter','sans-serif'],
+    }
+  }}
+}
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+*,*::before,*::after{font-family:'Inter',sans-serif}
+h1,h2,h3,h4,h5,h6{font-family:'Inter',sans-serif;font-weight:700}
+body{font-family:'Inter',sans-serif;background:#0B2740;color:#E8ECF4;min-height:100vh;position:relative;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(10,192,233,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(10,192,233,.035) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");background-size:300px;pointer-events:none;z-index:0}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+/* ─── SITE NAV & FOOTER ─── */
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(11,39,64,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+.site-nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:72px;padding:0 2rem}
+.site-nav-links{display:flex;align-items:center;gap:2rem}
+.site-nav-link{font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);text-decoration:none;transition:color .2s;letter-spacing:.01em}
+.site-nav-link:hover{color:#0AC0E9}
+.site-btn-aqua{display:inline-flex;align-items:center;gap:.5rem;background:#0AC0E9;color:#0B2740 !important;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.01em;padding:.6rem 1.2rem;border-radius:6px;text-decoration:none;border:none;cursor:pointer;transition:background .2s,box-shadow .2s;box-shadow:0 4px 14px rgba(10,192,233,.25);white-space:nowrap}
+.site-btn-aqua:hover{background:#089bbf;box-shadow:0 6px 20px rgba(10,192,233,.4)}
+.site-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0}
+.site-hamburger span{display:block;height:2px;background:rgba(255,255,255,.8);border-radius:2px;transition:transform .25s,opacity .25s;transform-origin:center}
+.site-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.site-hamburger.open span:nth-child(2){opacity:0}
+.site-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.site-mobile-menu{display:none;position:fixed;top:72px;left:0;right:0;z-index:199;background:rgba(2,25,47,.98);backdrop-filter:blur(16px);padding:1.5rem 2rem 2rem;flex-direction:column;gap:.25rem;border-top:1px solid rgba(255,255,255,.08)}
+.site-mobile-menu.open{display:flex}
+.site-mobile-menu .site-nav-link{color:rgba(255,255,255,.72);font-size:1rem;padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:block}
+.site-mobile-menu .site-btn-aqua{margin-top:1rem;justify-content:center}
+@media(max-width:768px){.site-nav-links{display:none}.site-hamburger{display:flex}}
+.site-footer{background:#02192F;padding:4rem 2rem 2rem;border-top:1px solid rgba(255,255,255,.04)}
+.site-footer-inner{max-width:1280px;margin:0 auto}
+.site-footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.site-footer-brand-desc{font-size:.84rem;line-height:1.65;color:rgba(255,255,255,.32);margin-top:.875rem;max-width:280px}
+.site-footer-sub{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.06)}
+.site-footer-sub-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:.35rem}
+.site-footer-sub-name{font-size:.85rem;font-weight:600;color:rgba(10,192,233,.55)}
+.site-footer-col-title{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);margin-bottom:1.1rem}
+.site-footer-links{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.site-footer-link{color:rgba(255,255,255,.38);text-decoration:none;font-size:.84rem;transition:color .2s}
+.site-footer-link:hover{color:#0AC0E9}
+.site-footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:1.75rem;flex-wrap:wrap;gap:.75rem}
+.site-footer-copy{font-size:.74rem;color:rgba(255,255,255,.18)}
+.site-footer-legal{display:flex;gap:1.5rem}
+@media(max-width:768px){.site-footer-top{grid-template-columns:1fr 1fr;gap:2rem}}
+@media(max-width:480px){.site-footer-top{grid-template-columns:1fr}}
+/* Tools dropdown */
+.site-tools-dropdown{position:relative}
+.site-tools-btn{display:flex;align-items:center;gap:.35rem;font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);background:transparent;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s;letter-spacing:.01em;padding:0;white-space:nowrap}
+.site-tools-btn:hover,.site-tools-dropdown:hover .site-tools-btn{color:#0AC0E9}
+.site-tools-menu{position:absolute;top:calc(100% + 10px);left:0;background:#031C2E;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.4rem 0;min-width:200px;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;z-index:300;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.site-tools-dropdown:hover .site-tools-menu,.site-tools-dropdown:focus-within .site-tools-menu{opacity:1;pointer-events:auto;transform:translateY(0)}
+.site-tools-menu-item{display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;color:rgba(255,255,255,.55);font-size:.875rem;text-decoration:none;transition:color .15s,background .15s;font-family:'Inter',sans-serif;white-space:nowrap}
+.site-tools-menu-item:hover{color:#0AC0E9;background:rgba(10,192,233,.06)}
+.site-tools-menu-label{padding:.55rem 1rem .25rem;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.22)}
+.site-nav-auth-btn{font-size:.82rem;font-weight:500;color:rgba(255,255,255,.62);background:transparent;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:.45rem .875rem;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s,border-color .2s;white-space:nowrap}
+.site-nav-auth-btn:hover{color:#0AC0E9;border-color:rgba(10,192,233,.5)}
+/* Scroll effect */
+.site-nav{transition:background .3s,box-shadow .3s}
+.site-nav-logo-light{display:block}.site-nav-logo-dark{display:none}
+.site-nav.scrolled{background:rgba(255,255,255,.97) !important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.site-nav.scrolled .site-nav-logo-light{display:none}.site-nav.scrolled .site-nav-logo-dark{display:block}
+.site-nav.scrolled .site-nav-link{color:#304F6B}.site-nav.scrolled .site-nav-link:hover{color:#089bbf}
+.site-nav.scrolled .site-tools-btn{color:#304F6B}.site-nav.scrolled .site-tools-btn:hover{color:#089bbf}
+.site-nav.scrolled .site-tools-menu{background:#fff;border-color:rgba(0,0,0,.08);box-shadow:0 8px 32px rgba(11,39,64,.12)}
+.site-nav.scrolled .site-tools-menu-item{color:#304F6B}.site-nav.scrolled .site-tools-menu-item:hover{color:#089bbf;background:rgba(10,192,233,.06)}
+.site-nav.scrolled .site-tools-menu-label{color:rgba(11,39,64,.3)}
+.site-nav.scrolled .site-hamburger span{background:#0B2740}
+.site-nav.scrolled .site-nav-auth-btn{color:#304F6B;border-color:rgba(11,39,64,.2)}.site-nav.scrolled .site-nav-auth-btn:hover{color:#089bbf;border-color:rgba(10,192,233,.5)}
+.site-nav.scrolled .site-btn-aqua{background:#0AC0E9;color:#0B2740 !important}
+
+.btn-primary{display:block;width:100%;padding:.75rem 1.5rem;background:#0AC0E9;color:#02192F;font-family:'Inter',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.04em;border:none;border-radius:7px;cursor:pointer;transition:background .15s,box-shadow .15s,transform .1s;text-align:center;text-decoration:none}
+.btn-primary:hover{background:#089bbf;box-shadow:0 4px 24px rgba(10,192,233,.28)}
+.btn-primary:active{transform:scale(.98)}
+
+.btn-ghost{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;padding:.75rem 1.5rem;background:transparent;color:#E8ECF4;font-family:'Inter',sans-serif;font-weight:500;font-size:.9rem;border:1px solid #1A3D5C;border-radius:7px;cursor:pointer;transition:background .15s,border-color .15s}
+.btn-ghost:hover{background:#0F3050;border-color:#304F6B}
+
+.field{width:100%;background:#0B2740;border:1px solid #1A3D5C;border-radius:7px;padding:.75rem 1rem;color:#E8ECF4;font-family:'Inter',sans-serif;font-size:.9rem;outline:none;transition:border-color .15s,box-shadow .15s}
+.field:focus{border-color:#0AC0E9;box-shadow:0 0 0 3px rgba(10,192,233,.12)}
+.field::placeholder{color:#4A5770}
+
+.card{background:#031C2E;border:1px solid #0F3050;border-radius:14px}
+label{display:block;color:#8A97B0;font-size:.75rem;font-family:'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
+.err{color:#E05555;font-size:.8rem;margin-top:.4rem;display:none}
+.err.show{display:block}
+</style>
+</head>
+<body>
+
+<!-- Site Nav -->
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="https://www.tangrammedtech.com" style="text-decoration:none;display:flex;align-items:center;flex-shrink:0">
+      <img class="site-nav-logo-light" src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+      <img class="site-nav-logo-dark" src="../../brand_assets/Tangram_color logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+    </a>
+    <div class="site-nav-links">
+      <a href="https://www.tangrammedtech.com/#services" class="site-nav-link">Services</a>
+      <a href="https://www.tangrammedtech.com/#about" class="site-nav-link">About</a>
+      <a href="https://www.tangrammedtech.com/#newsletter" class="site-nav-link">Newsletter</a>
+      <div class="site-tools-dropdown">
+        <button class="site-tools-btn">Tools <svg style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="site-tools-menu">
+          <div class="site-tools-menu-label">Tools</div>
+          <a href="dashboard.html" class="site-tools-menu-item"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Pugh Chart</a>
+        </div>
+      </div>
+      <button id="nav-auth-btn" class="site-nav-auth-btn">Sign In</button>
+      <a href="https://www.tangrammedtech.com/#contact" class="site-btn-aqua">Work With Tangram <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <button class="site-hamburger" id="siteHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="site-mobile-menu" id="siteMobileMenu">
+  <a href="https://www.tangrammedtech.com/#services" class="site-nav-link">Services</a>
+  <a href="https://www.tangrammedtech.com/#about" class="site-nav-link">About</a>
+  <a href="https://www.tangrammedtech.com/#newsletter" class="site-nav-link">Newsletter</a>
+  <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:.75rem 0 .25rem;border-bottom:1px solid rgba(255,255,255,.07)">Tools</div>
+  <a href="dashboard.html" class="site-nav-link">Pugh Chart</a>
+  <a href="https://www.tangrammedtech.com/#contact" class="site-btn-aqua">Work With Tangram <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+</div>
+<script>
+document.getElementById('siteHamburger').addEventListener('click',function(){var o=document.getElementById('siteMobileMenu').classList.toggle('open');this.classList.toggle('open',o);});
+(function(){var u=JSON.parse(localStorage.getItem('pugh_user')||'null');var btn=document.getElementById('nav-auth-btn');if(!btn)return;if(u){btn.textContent='Sign Out';btn.onclick=function(){localStorage.removeItem('pugh_user');location.href='index.html'};}else{btn.textContent='Sign In';btn.onclick=function(){location.href='index.html';};}})();
+(function(){var nav=document.querySelector('.site-nav');function onScroll(){nav.classList.toggle('scrolled',window.scrollY>40);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();})();
+</script>
+
+<!-- Background atmosphere -->
+<div class="orb" style="width:500px;height:500px;top:-150px;right:-100px;background:#0AC0E9;opacity:.07"></div>
+<div class="orb" style="width:350px;height:350px;bottom:-80px;left:-80px;background:#304F6B;opacity:.18"></div>
+
+<div class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4" style="padding-top:calc(72px + 3rem);padding-bottom:4rem">
+
+  <!-- Tool heading -->
+  <div class="mb-10 text-center">
+    <p style="color:#0AC0E9;font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;font-family:'Inter',sans-serif;margin-bottom:.5rem">Tangram Tools</p>
+    <h1 style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-.03em;color:#E8ECF4;margin-bottom:.4rem">Pugh Decision Matrix</h1>
+    <p style="color:#4A5770;font-size:.82rem;font-family:'Inter',sans-serif;max-width:320px;margin:0 auto;line-height:1.55">A structured, weighted scoring tool for comparing and ranking design concepts against evaluation criteria.</p>
+  </div>
+
+  <!-- Card -->
+  <div class="card w-full" style="max-width:420px;padding:2rem">
+
+    <!-- Tabs -->
+    <div style="display:flex;border-bottom:1px solid #0F3050;margin-bottom:1.5rem">
+      <button id="t-in" onclick="setTab('in')"
+        style="padding:.6rem 0;margin-right:1.5rem;background:none;border:none;border-bottom:2px solid #0AC0E9;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;color:#E8ECF4;transition:color .15s">
+        SIGN IN
+      </button>
+      <button id="t-up" onclick="setTab('up')"
+        style="padding:.6rem 0;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;color:#4A5770;transition:color .15s">
+        CREATE ACCOUNT
+      </button>
+    </div>
+
+    <!-- Google -->
+    <button class="btn-ghost" onclick="googleIn()" style="margin-bottom:1rem">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+        <path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92A8.78 8.78 0 0 0 17.64 9.2z" fill="#4285F4"/>
+        <path d="M9 18a8.6 8.6 0 0 0 5.96-2.18l-2.92-2.26a5.44 5.44 0 0 1-8.1-2.85H.96v2.34A9 9 0 0 0 9 18z" fill="#34A853"/>
+        <path d="M3.94 10.71A5.41 5.41 0 0 1 3.66 9c0-.6.1-1.17.28-1.71V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.05l2.98-2.34z" fill="#FBBC05"/>
+        <path d="M9 3.58c1.32 0 2.5.45 3.44 1.34l2.58-2.58A8.95 8.95 0 0 0 9 0 9 9 0 0 0 .96 4.95l2.98 2.34A5.36 5.36 0 0 1 9 3.58z" fill="#EA4335"/>
+      </svg>
+      Continue with Google
+    </button>
+
+    <!-- Divider -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem">
+      <div style="flex:1;height:1px;background:#1A3D5C"></div>
+      <span style="color:#4A5770;font-size:.7rem;font-family:'Inter',sans-serif">OR</span>
+      <div style="flex:1;height:1px;background:#1A3D5C"></div>
+    </div>
+
+    <!-- Sign In Form -->
+    <form id="f-in" onsubmit="emailIn(event)">
+      <div style="margin-bottom:.875rem">
+        <label>Email</label>
+        <input type="email" id="in-email" class="field" placeholder="you@example.com" required>
+      </div>
+      <div style="margin-bottom:1rem">
+        <label>Password</label>
+        <input type="password" id="in-pw" class="field" placeholder="••••••••" required>
+      </div>
+      <div id="in-err" class="err"></div>
+      <button type="submit" class="btn-primary" style="margin-top:.75rem">Sign In</button>
+    </form>
+
+    <!-- Sign Up Form -->
+    <form id="f-up" class="hidden" onsubmit="emailUp(event)">
+      <div style="margin-bottom:.875rem">
+        <label>Full Name</label>
+        <input type="text" id="up-name" class="field" placeholder="Your name" required>
+      </div>
+      <div style="margin-bottom:.875rem">
+        <label>Email</label>
+        <input type="email" id="up-email" class="field" placeholder="you@example.com" required>
+      </div>
+      <div style="margin-bottom:1rem">
+        <label>Password</label>
+        <input type="password" id="up-pw" class="field" placeholder="Min. 6 characters" minlength="6" required>
+      </div>
+      <div id="up-err" class="err"></div>
+      <button type="submit" class="btn-primary" style="margin-top:.75rem">Create Account</button>
+    </form>
+
+  </div>
+
+  <!-- Participant note -->
+  <p style="margin-top:1.5rem;color:#4A5770;font-size:.8rem;text-align:center">
+    Joining a session?&nbsp;
+    <span style="color:#0AC0E9;cursor:pointer;text-decoration:underline" onclick="joinPrompt()">Enter a session ID</span>
+  </p>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+<script>
+Auth.redirectIfAuthed();
+
+function setTab(t) {
+  const isIn = t === 'in';
+  document.getElementById('t-in').style.borderBottomColor = isIn ? '#0AC0E9' : 'transparent';
+  document.getElementById('t-in').style.color = isIn ? '#E8ECF4' : '#4A5770';
+  document.getElementById('t-up').style.borderBottomColor = !isIn ? '#0AC0E9' : 'transparent';
+  document.getElementById('t-up').style.color = !isIn ? '#E8ECF4' : '#4A5770';
+  document.getElementById('f-in').classList.toggle('hidden', !isIn);
+  document.getElementById('f-up').classList.toggle('hidden', isIn);
+}
+
+async function googleIn() {
+  try { await Auth.googleSignIn(); location.href = 'dashboard.html'; }
+  catch(e) { showToast(e.message, 'error'); }
+}
+
+async function emailIn(e) {
+  e.preventDefault();
+  const err = document.getElementById('in-err');
+  err.classList.remove('show');
+  try {
+    await Auth.emailSignIn(document.getElementById('in-email').value, document.getElementById('in-pw').value);
+    location.href = 'dashboard.html';
+  } catch(ex) { err.textContent = ex.message; err.classList.add('show'); }
+}
+
+async function emailUp(e) {
+  e.preventDefault();
+  const err = document.getElementById('up-err');
+  err.classList.remove('show');
+  try {
+    await Auth.emailSignUp(
+      document.getElementById('up-email').value,
+      document.getElementById('up-pw').value,
+      document.getElementById('up-name').value
+    );
+    location.href = 'dashboard.html';
+  } catch(ex) { err.textContent = ex.message; err.classList.add('show'); }
+}
+
+function joinPrompt() {
+  const id = prompt('Paste the session ID or the full session link:');
+  if (!id) return;
+  const match = id.match(/[?&]id=([^&]+)/);
+  const clean = match ? match[1] : id.trim();
+  if (clean) location.href = `score.html?id=${clean}`;
+}
+</script>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-top">
+      <div>
+        <img src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+        <p class="site-footer-brand-desc">A medtech consultancy providing fractional VP of Engineering support for companies navigating product development, FDA strategy, quality systems, and manufacturing readiness.</p>
+              </div>
+      <div><div class="site-footer-col-title">Company</div><ul class="site-footer-links"><li><a href="https://www.tangrammedtech.com/#services" class="site-footer-link">Services</a></li><li><a href="https://www.tangrammedtech.com/#about" class="site-footer-link">About Eric</a></li><li><a href="https://www.tangrammedtech.com/#newsletter" class="site-footer-link">Newsletter</a></li><li><a href="https://www.tangrammedtech.com/#contact" class="site-footer-link">Work With Tangram</a></li></ul></div>
+      <div><div class="site-footer-col-title">Tools</div><ul class="site-footer-links"><li><a href="dashboard.html" class="site-footer-link">Pugh Chart</a></li></ul></div>
+      <div><div class="site-footer-col-title">Connect</div><ul class="site-footer-links"><li><a href="https://www.linkedin.com/in/esugalski/" target="_blank" class="site-footer-link">LinkedIn</a></li><li><a href="https://www.skool.com/medtechmindset" target="_blank" class="site-footer-link">Skool Community</a></li><li><a href="https://www.linkedin.com/newsletters/medtech-mindset-7033233055771172864/" target="_blank" class="site-footer-link">MedTech Mindset</a></li></ul></div>
+    </div>
+    <div class="site-footer-bottom"><div class="site-footer-copy">&copy; 2026 Tangram MedTech. All rights reserved.</div><div class="site-footer-legal"><a href="#" class="site-footer-link" style="font-size:.74rem">Privacy Policy</a><a href="#" class="site-footer-link" style="font-size:.74rem">Terms of Use</a></div></div>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tangram Pugh · Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{box-sizing:border-box}
+*,*::before,*::after{font-family:'Inter',sans-serif}
+h1,h2,h3,h4,h5,h6{font-family:'Inter',sans-serif;font-weight:700}
+body{font-family:'Inter',sans-serif;background:#0B2740;color:#E8ECF4;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(10,192,233,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(10,192,233,.035) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");background-size:300px;pointer-events:none;z-index:0}
+/* ─── SITE NAV & FOOTER ─── */
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(11,39,64,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+.site-nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:72px;padding:0 2rem}
+.site-nav-links{display:flex;align-items:center;gap:2rem}
+.site-nav-link{font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);text-decoration:none;transition:color .2s;letter-spacing:.01em}
+.site-nav-link:hover{color:#0AC0E9}
+.site-btn-aqua{display:inline-flex;align-items:center;gap:.5rem;background:#0AC0E9;color:#0B2740 !important;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.01em;padding:.6rem 1.2rem;border-radius:6px;text-decoration:none;border:none;cursor:pointer;transition:background .2s,box-shadow .2s;box-shadow:0 4px 14px rgba(10,192,233,.25);white-space:nowrap}
+.site-btn-aqua:hover{background:#089bbf;box-shadow:0 6px 20px rgba(10,192,233,.4)}
+.site-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0}
+.site-hamburger span{display:block;height:2px;background:rgba(255,255,255,.8);border-radius:2px;transition:transform .25s,opacity .25s;transform-origin:center}
+.site-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.site-hamburger.open span:nth-child(2){opacity:0}
+.site-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.site-mobile-menu{display:none;position:fixed;top:72px;left:0;right:0;z-index:199;background:rgba(2,25,47,.98);backdrop-filter:blur(16px);padding:1.5rem 2rem 2rem;flex-direction:column;gap:.25rem;border-top:1px solid rgba(255,255,255,.08)}
+.site-mobile-menu.open{display:flex}
+.site-mobile-menu .site-nav-link{color:rgba(255,255,255,.72);font-size:1rem;padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:block}
+.site-mobile-menu .site-btn-aqua{margin-top:1rem;justify-content:center}
+@media(max-width:768px){.site-nav-links{display:none}.site-hamburger{display:flex}}
+.site-footer{background:#02192F;padding:4rem 2rem 2rem;border-top:1px solid rgba(255,255,255,.04)}
+.site-footer-inner{max-width:1280px;margin:0 auto}
+.site-footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.site-footer-brand-desc{font-size:.84rem;line-height:1.65;color:rgba(255,255,255,.32);margin-top:.875rem;max-width:280px}
+.site-footer-sub{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.06)}
+.site-footer-sub-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:.35rem}
+.site-footer-sub-name{font-size:.85rem;font-weight:600;color:rgba(10,192,233,.55)}
+.site-footer-col-title{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);margin-bottom:1.1rem}
+.site-footer-links{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.site-footer-link{color:rgba(255,255,255,.38);text-decoration:none;font-size:.84rem;transition:color .2s}
+.site-footer-link:hover{color:#0AC0E9}
+.site-footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:1.75rem;flex-wrap:wrap;gap:.75rem}
+.site-footer-copy{font-size:.74rem;color:rgba(255,255,255,.18)}
+.site-footer-legal{display:flex;gap:1.5rem}
+@media(max-width:768px){.site-footer-top{grid-template-columns:1fr 1fr;gap:2rem}}
+@media(max-width:480px){.site-footer-top{grid-template-columns:1fr}}
+/* Tools dropdown */
+.site-tools-dropdown{position:relative}
+.site-tools-btn{display:flex;align-items:center;gap:.35rem;font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);background:transparent;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s;letter-spacing:.01em;padding:0;white-space:nowrap}
+.site-tools-btn:hover,.site-tools-dropdown:hover .site-tools-btn{color:#0AC0E9}
+.site-tools-menu{position:absolute;top:calc(100% + 10px);left:0;background:#031C2E;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.4rem 0;min-width:200px;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;z-index:300;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.site-tools-dropdown:hover .site-tools-menu,.site-tools-dropdown:focus-within .site-tools-menu{opacity:1;pointer-events:auto;transform:translateY(0)}
+.site-tools-menu-item{display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;color:rgba(255,255,255,.55);font-size:.875rem;text-decoration:none;transition:color .15s,background .15s;font-family:'Inter',sans-serif;white-space:nowrap}
+.site-tools-menu-item:hover{color:#0AC0E9;background:rgba(10,192,233,.06)}
+.site-tools-menu-label{padding:.55rem 1rem .25rem;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.22)}
+.site-nav-auth-btn{font-size:.82rem;font-weight:500;color:rgba(255,255,255,.62);background:transparent;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:.45rem .875rem;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s,border-color .2s;white-space:nowrap}
+.site-nav-auth-btn:hover{color:#0AC0E9;border-color:rgba(10,192,233,.5)}
+/* Scroll effect */
+.site-nav{transition:background .3s,box-shadow .3s}
+.site-nav-logo-light{display:block}.site-nav-logo-dark{display:none}
+.site-nav.scrolled{background:rgba(255,255,255,.97) !important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.site-nav.scrolled .site-nav-logo-light{display:none}.site-nav.scrolled .site-nav-logo-dark{display:block}
+.site-nav.scrolled .site-nav-link{color:#304F6B}.site-nav.scrolled .site-nav-link:hover{color:#089bbf}
+.site-nav.scrolled .site-tools-btn{color:#304F6B}.site-nav.scrolled .site-tools-btn:hover{color:#089bbf}
+.site-nav.scrolled .site-tools-menu{background:#fff;border-color:rgba(0,0,0,.08);box-shadow:0 8px 32px rgba(11,39,64,.12)}
+.site-nav.scrolled .site-tools-menu-item{color:#304F6B}.site-nav.scrolled .site-tools-menu-item:hover{color:#089bbf;background:rgba(10,192,233,.06)}
+.site-nav.scrolled .site-tools-menu-label{color:rgba(11,39,64,.3)}
+.site-nav.scrolled .site-hamburger span{background:#0B2740}
+.site-nav.scrolled .site-nav-auth-btn{color:#304F6B;border-color:rgba(11,39,64,.2)}.site-nav.scrolled .site-nav-auth-btn:hover{color:#089bbf;border-color:rgba(10,192,233,.5)}
+.site-nav.scrolled .site-btn-aqua{background:#0AC0E9;color:#0B2740 !important}
+
+.card{background:#031C2E;border:1px solid #0F3050;border-radius:12px;padding:1.5rem}
+.btn-primary{padding:.65rem 1.25rem;background:#0AC0E9;color:#02192F;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;border:none;border-radius:7px;cursor:pointer;transition:background .15s,box-shadow .15s;white-space:nowrap}
+.btn-primary:hover{background:#089bbf;box-shadow:0 4px 16px rgba(10,192,233,.25)}
+.btn-secondary{padding:.65rem 1.1rem;background:transparent;color:#8A97B0;font-family:'Inter',sans-serif;font-weight:500;font-size:.82rem;border:1px solid #1A3D5C;border-radius:7px;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap}
+.btn-secondary:hover{background:#0F3050;color:#E8ECF4;border-color:#304F6B}
+
+/* Matrix table */
+.matrix-table{width:100%;border-collapse:separate;border-spacing:0;font-family:'Inter',sans-serif}
+.matrix-table th{font-family:'Inter',sans-serif;font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:#4A5770;padding:.6rem .75rem;text-align:center;border-bottom:1px solid #0F3050;white-space:nowrap;position:sticky;top:0;background:#031C2E;z-index:10}
+.matrix-table th.crit-header{text-align:left;color:#8A97B0;max-width:160px}
+.matrix-table th.concept-header{min-width:130px;max-width:160px}
+.matrix-table th.concept-header.best{color:#0AC0E9}
+
+.matrix-table td{padding:.55rem .75rem;border-bottom:1px solid #031C2E;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;transition:background .2s}
+.matrix-table td.crit-name{text-align:left;color:#E8ECF4;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:500;white-space:nowrap;min-width:140px}
+.matrix-table td.crit-weight{text-align:center;font-size:.72rem;color:#4A5770;padding-right:.5rem}
+.matrix-table tr:hover td{background:#111820}
+.matrix-table tr.total-row td{border-top:2px solid #1A3D5C;padding-top:.875rem;padding-bottom:.875rem;font-weight:600;font-size:.9rem;background:#0B2740 !important}
+.matrix-table tr.total-row td.crit-name{font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.04em;color:#8A97B0;text-transform:uppercase}
+
+.cell-score{display:inline-flex;align-items:center;justify-content:center;width:52px;height:30px;border-radius:5px;font-size:.8rem;font-weight:500;letter-spacing:.01em}
+.cell-empty{color:#0F3050;font-size:.72rem}
+
+.weight-slider-wrap{display:flex;align-items:center;gap:.5rem}
+.weight-slider{-webkit-appearance:none;appearance:none;width:80px;height:3px;background:#0F3050;border-radius:2px;outline:none;cursor:pointer}
+.weight-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:#0AC0E9;cursor:pointer;transition:transform .1s}
+.weight-slider::-webkit-slider-thumb:hover{transform:scale(1.3)}
+
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:3px}
+
+.best-glow{box-shadow:0 0 0 2px rgba(10,192,233,.5),0 4px 20px rgba(10,192,233,.15) !important;position:relative}
+
+input[type=range]{accent-color:#0AC0E9}
+
+/* Clickable criterion row */
+.crit-name-btn{cursor:pointer;transition:color .15s}
+.crit-name-btn:hover{color:#0AC0E9 !important}
+.crit-name-btn .drill-icon{opacity:0;transition:opacity .15s;margin-left:.4rem;font-size:.7rem;color:#0AC0E9;vertical-align:middle}
+.crit-name-btn:hover .drill-icon{opacity:1}
+
+/* Criterion detail modal */
+.detail-modal{position:fixed;inset:0;background:rgba(7,10,15,.88);z-index:300;display:flex;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(4px)}
+.detail-card{background:#031C2E;border:1px solid #1A3D5C;border-radius:14px;width:100%;max-width:860px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.detail-header{padding:1.25rem 1.5rem;border-bottom:1px solid #0F3050;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.detail-body{overflow-y:auto;padding:1.25rem 1.5rem}
+
+/* Detail table */
+.detail-table{width:100%;border-collapse:separate;border-spacing:0}
+.detail-table th{font-family:'Inter',sans-serif;font-size:.65rem;letter-spacing:.06em;text-transform:uppercase;color:#4A5770;padding:.5rem .75rem;text-align:center;border-bottom:1px solid #0F3050;white-space:nowrap;background:#031C2E;position:sticky;top:0;z-index:5}
+.detail-table th.p-header{text-align:left}
+.detail-table td{padding:.45rem .75rem;border-bottom:1px solid #031C2E;text-align:center;font-family:'Inter',sans-serif;font-size:.8rem}
+.detail-table td.p-label{text-align:left;color:#8A97B0;font-size:.75rem}
+.detail-table tr:hover td{background:#111820}
+.detail-table tr.stat-row td{border-top:2px solid #0F3050;background:#0B2740 !important;font-weight:600}
+.detail-table tr.stat-row td.p-label{font-family:'Inter',sans-serif;font-size:.78rem;letter-spacing:.02em}
+</style>
+</head>
+<body>
+
+<!-- Site Nav -->
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="https://www.tangrammedtech.com" style="text-decoration:none;display:flex;align-items:center;flex-shrink:0">
+      <img class="site-nav-logo-light" src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+      <img class="site-nav-logo-dark" src="../../brand_assets/Tangram_color logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+    </a>
+    <div class="site-nav-links">
+      <a href="https://www.tangrammedtech.com/#services" class="site-nav-link">Services</a>
+      <a href="https://www.tangrammedtech.com/#about" class="site-nav-link">About</a>
+      <a href="https://www.tangrammedtech.com/#newsletter" class="site-nav-link">Newsletter</a>
+      <div class="site-tools-dropdown">
+        <button class="site-tools-btn">Tools <svg style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="site-tools-menu">
+          <div class="site-tools-menu-label">Tools</div>
+          <a href="dashboard.html" class="site-tools-menu-item"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Pugh Chart</a>
+        </div>
+      </div>
+      <button id="nav-auth-btn" class="site-nav-auth-btn">Sign In</button>
+      <a href="https://www.tangrammedtech.com/#contact" class="site-btn-aqua">Work With Tangram <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <button class="site-hamburger" id="siteHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="site-mobile-menu" id="siteMobileMenu">
+  <a href="https://www.tangrammedtech.com/#services" class="site-nav-link">Services</a>
+  <a href="https://www.tangrammedtech.com/#about" class="site-nav-link">About</a>
+  <a href="https://www.tangrammedtech.com/#newsletter" class="site-nav-link">Newsletter</a>
+  <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:.75rem 0 .25rem;border-bottom:1px solid rgba(255,255,255,.07)">Tools</div>
+  <a href="dashboard.html" class="site-nav-link">Pugh Chart</a>
+  <a href="https://www.tangrammedtech.com/#contact" class="site-btn-aqua">Work With Tangram <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+</div>
+<script>
+document.getElementById('siteHamburger').addEventListener('click',function(){var o=document.getElementById('siteMobileMenu').classList.toggle('open');this.classList.toggle('open',o);});
+(function(){var u=JSON.parse(localStorage.getItem('pugh_user')||'null');var btn=document.getElementById('nav-auth-btn');if(!btn)return;if(u){btn.textContent='Sign Out';btn.onclick=function(){localStorage.removeItem('pugh_user');location.href='index.html'};}else{btn.textContent='Sign In';btn.onclick=function(){location.href='index.html';};}})();
+(function(){var nav=document.querySelector('.site-nav');function onScroll(){nav.classList.toggle('scrolled',window.scrollY>40);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();})();
+</script>
+
+<!-- Results utility bar -->
+<div style="background:#031C2E;border-bottom:1px solid #0F3050;position:sticky;top:72px;z-index:99">
+  <div style="max-width:1200px;margin:0 auto;padding:0 1.5rem;height:44px;display:flex;align-items:center;justify-content:space-between">
+    <a href="dashboard.html" style="color:#4A5770;font-size:.78rem;text-decoration:none;display:flex;align-items:center;gap:.35rem;transition:color .15s" onmouseover="this.style.color='#8A97B0'" onmouseout="this.style.color='#4A5770'">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Dashboard
+    </a>
+    <div style="display:flex;align-items:center;gap:.75rem">
+      <a id="manage-link" href="#" style="color:#4A5770;font-size:.78rem;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#8A97B0'" onmouseout="this.style.color='#4A5770'">← Session</a>
+      <a id="embed-link" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .65rem;background:rgba(10,192,233,.12);color:#0AC0E9;font-size:.72rem;text-decoration:none;font-weight:500;border:1px solid rgba(10,192,233,.25);border-radius:5px;transition:background .15s" onmouseover="this.style.background='rgba(10,192,233,.2)'" onmouseout="this.style.background='rgba(10,192,233,.12)'">
+        <svg width="10" height="10" viewBox="0 0 11 11" fill="none"><rect x="1" y="1" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 4h3v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 4L4 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Present
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="relative z-10" style="max-width:1200px;margin:0 auto;padding:2rem 1.5rem 4rem;padding-top:calc(72px + 44px + 2rem)">
+
+  <div id="loading" style="text-align:center;padding:5rem;color:#4A5770">Loading results…</div>
+  <div id="main" style="display:none">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+          <h1 id="chart-title" style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-.04em"></h1>
+          <span id="pub-badge"></span>
+        </div>
+        <div id="chart-meta" style="color:#4A5770;font-size:.8rem;margin-top:.3rem;font-family:'Inter',sans-serif"></div>
+      </div>
+      <div style="display:flex;gap:.625rem;align-items:center;flex-wrap:wrap">
+        <button id="toggle-weights-btn" onclick="toggleWeightEdit()" class="btn-secondary">Adjust Weights</button>
+        <button onclick="exportCSV()" class="btn-secondary">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v7M3 5.5l3.5 3.5L10 5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 10v1.5a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Export CSV
+        </button>
+        <button id="save-weights-btn" onclick="saveWeights()" style="display:none" class="btn-primary">Save Weights</button>
+      </div>
+    </div>
+
+    <!-- Weight edit banner -->
+    <div id="weight-edit-banner" style="display:none;background:rgba(10,192,233,.08);border:1px solid rgba(10,192,233,.2);border-radius:8px;padding:.875rem 1.25rem;margin-bottom:1.25rem;font-size:.82rem;color:#0AC0E9;align-items:center;gap:.5rem">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v6M7 10v.5" stroke="#0AC0E9" stroke-width="1.5" stroke-linecap="round"/><circle cx="7" cy="7" r="6" stroke="#0AC0E9" stroke-width="1.3"/></svg>
+      Weight edit mode: use the sliders to adjust criterion weights and see live recalculation. Save when done.
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" style="display:none;text-align:center;padding:4rem;background:#031C2E;border:1px solid #0F3050;border-radius:12px">
+      <div style="font-size:2.5rem;opacity:.15;margin-bottom:1rem">◻</div>
+      <p style="color:#4A5770;font-family:'Inter',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.04em">NO RESPONSES YET</p>
+      <p style="color:#4A5770;font-size:.82rem;margin-top:.4rem">Share the session link to collect participant scores</p>
+    </div>
+
+    <!-- Matrix -->
+    <div id="matrix-wrap" style="background:#031C2E;border:1px solid #0F3050;border-radius:12px;overflow:hidden;margin-bottom:1.5rem">
+      <div id="matrix-scroll" style="overflow-x:auto;-webkit-overflow-scrolling:touch" onscroll="updateScrollHint()">
+        <table class="matrix-table" id="matrix-table"></table>
+      </div>
+      <div id="scroll-hint" style="display:none;text-align:center;padding:.4rem;background:#031C2E;border-top:1px solid #0F3050">
+        <span style="font-size:.68rem;color:#4A5770;font-family:'Inter',sans-serif;letter-spacing:.06em">← SCROLL TO SEE ALL CONCEPTS →</span>
+      </div>
+    </div>
+
+    <!-- Legend + stats row -->
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:1.25rem;align-items:start">
+      <div id="legend" class="card" style="padding:1rem 1.25rem"></div>
+      <div id="ranking-card" class="card" style="padding:1rem 1.25rem"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Criterion Detail Modal -->
+<div id="crit-modal" class="detail-modal" style="display:none" onclick="if(event.target===this)closeCritModal()">
+  <div class="detail-card">
+    <div class="detail-header">
+      <div>
+        <p style="font-family:'Inter',sans-serif;font-size:.62rem;color:#4A5770;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.2rem">Criterion Breakdown</p>
+        <h2 id="modal-crit-name" style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:-.02em;color:#E8ECF4"></h2>
+      </div>
+      <button onclick="closeCritModal()" style="background:#0B2740;border:1px solid #1A3D5C;border-radius:7px;width:32px;height:32px;cursor:pointer;color:#8A97B0;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0" onmouseover="this.style.color='#E8ECF4';this.style.background='#0F3050'" onmouseout="this.style.color='#8A97B0';this.style.background='#0B2740'">×</button>
+    </div>
+    <div class="detail-body">
+      <div id="modal-body"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+<script>
+const chartId = new URLSearchParams(location.search).get('id');
+let chart = null;
+let weightOverrides = {};
+let editingWeights = false;
+let isHost = false;
+let cachedResponses = {};
+
+async function init() {
+  if (!chartId) { location.href = 'dashboard.html'; return; }
+
+  await Auth.waitReady();
+  chart = await DB.get(chartId);
+  if (!chart) { location.href = 'dashboard.html'; return; }
+
+  const user = Auth.getUser();
+  isHost = !!(user && user.uid === chart.hostId);
+  const isPublished = chart.status === 'published';
+
+  // Access control: host always allowed; participants only after publishing
+  if (!isHost && !isPublished) { location.href = 'index.html'; return; }
+
+  // Hide host-only controls for participants
+  if (!isHost) {
+    document.getElementById('toggle-weights-btn').style.display = 'none';
+    document.getElementById('save-weights-btn').style.display = 'none';
+    document.querySelector('[onclick="exportCSV()"]').style.display = 'none';
+    document.getElementById('manage-link').style.display = 'none';
+    document.getElementById('embed-link').style.display = 'none';
+    document.querySelector('a[href="dashboard.html"]').style.display = 'none';
+  }
+
+  document.getElementById('manage-link').href = `manage.html?id=${chartId}`;
+  document.getElementById('embed-link').href = `embed.html?id=${chartId}`;
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('main').style.display = '';
+
+  chart.criteria.forEach(c => { weightOverrides[c.id] = Number(c.weight) || 1; });
+  renderAll();
+}
+
+async function renderAll() {
+  cachedResponses = await DB.getResponses(chartId);
+  const responses = cachedResponses;
+  const results = DB.calcResults(chart, responses, weightOverrides);
+
+  // Header
+  document.getElementById('chart-title').textContent = chart.title;
+  document.getElementById('chart-meta').textContent = [
+    chart.date ? fmtDate(chart.date) : null,
+    `${Object.keys(responses).length} response${Object.keys(responses).length !== 1 ? 's' : ''}`,
+    chart.scoringScale === 'pugh' ? '−1/0/+1 scale' : '1–5 scale',
+    chart.useDatum && chart.datumConceptId ? `Datum: ${chart.concepts.find(c => c.id === chart.datumConceptId)?.name}` : null,
+  ].filter(Boolean).join('  ·  ');
+
+  // Published badge
+  const pb = document.getElementById('pub-badge');
+  if (chart.status === 'published') {
+    pb.innerHTML = `<span style="background:rgba(62,207,142,.15);color:#3ECF8E;border:1px solid rgba(62,207,142,.3);border-radius:4px;padding:.2rem .6rem;font-size:.7rem;font-family:'Inter',sans-serif;letter-spacing:.04em">PUBLISHED</span>`;
+  } else if (chart.status === 'active') {
+    pb.innerHTML = `<span style="background:rgba(10,192,233,.15);color:#0AC0E9;border:1px solid rgba(10,192,233,.3);border-radius:4px;padding:.2rem .6rem;font-size:.7rem;font-family:'Inter',sans-serif;letter-spacing:.04em">LIVE</span>`;
+  }
+
+  if (!results) {
+    document.getElementById('empty-state').style.display = '';
+    document.getElementById('matrix-wrap').style.display = 'none';
+    document.getElementById('legend').style.display = 'none';
+    document.getElementById('ranking-card').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('matrix-wrap').style.display = '';
+  document.getElementById('legend').style.display = '';
+  document.getElementById('ranking-card').style.display = '';
+
+  renderMatrix(results);
+  renderLegend();
+  renderRanking(results);
+}
+
+function renderMatrix(results) {
+  const { matrix, totals, n } = results;
+  const totalW = Object.values(weightOverrides).reduce((a, b) => a + b, 0) || 1;
+
+  // Find best concept
+  const bestId = Object.entries(totals)
+    .filter(([, v]) => v != null)
+    .sort((a, b) => b[1] - a[1])[0]?.[0];
+
+  const conceptHeaders = chart.concepts.map((c, i) => {
+    const isBest = c.id === bestId;
+    const isDatum = chart.useDatum && chart.datumConceptId === c.id;
+    return `<th class="concept-header ${isBest ? 'best' : ''}" style="position:relative">
+      ${c.thumbnail ? `<div style="width:80px;height:80px;border-radius:8px;overflow:hidden;margin:0 auto .5rem;border:1px solid ${isBest ? 'rgba(10,192,233,.4)' : '#0F3050'}"><img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover"></div>` : ''}
+      <div style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${isBest ? 'color:#0AC0E9' : ''}">${escH(c.name)}</div>
+      ${isDatum ? '<div style="font-size:.58rem;color:#4A5770;margin-top:.1rem">DATUM</div>' : ''}
+      ${isBest ? '<div style="font-size:.58rem;color:#0AC0E9;margin-top:.1rem">▲ BEST</div>' : ''}
+    </th>`;
+  }).join('');
+
+  const rows = chart.criteria.map(crit => {
+    const pct = Math.round(weightOverrides[crit.id] / totalW * 100);
+    const cells = chart.concepts.map(concept => {
+      const cell = matrix[concept.id]?.[crit.id];
+      if (!cell || cell.avg == null) return `<td><span class="cell-empty">—</span></td>`;
+      const { bg, text } = DB.cellColor(cell.avg, chart.scoringScale);
+      const display = chart.scoringScale === 'pugh'
+        ? (cell.avg > 0 ? '+' : '') + cell.avg.toFixed(2)
+        : cell.avg.toFixed(2);
+      return `<td><span class="cell-score" style="background:${bg};color:${text}">${display}</span></td>`;
+    }).join('');
+
+    const weightCell = editingWeights
+      ? `<td class="crit-weight">
+          <div class="weight-slider-wrap">
+            <input type="range" class="weight-slider" min="0" max="20" step="0.5" value="${weightOverrides[crit.id]}"
+              oninput="liveWeightDisplay('${crit.id}', this.value)"
+              onchange="onWeightChange('${crit.id}', this.value)"
+              style="width:80px">
+            <span data-weight-pct="${crit.id}" style="font-family:'Inter',sans-serif;font-size:.7rem;color:#0AC0E9;min-width:32px;text-align:right">${pct}%</span>
+          </div>
+        </td>`
+      : `<td class="crit-weight">
+          <div style="display:flex;align-items:center;gap:.4rem">
+            <div style="width:32px;height:3px;background:#0F3050;border-radius:2px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:#0AC0E9;border-radius:2px"></div>
+            </div>
+            <span style="font-family:'Inter',sans-serif;font-size:.68rem;color:#4A5770">${pct}%</span>
+          </div>
+        </td>`;
+
+    return `<tr>
+      <td class="crit-name crit-name-btn" onclick="showCritDetail('${crit.id}')" title="Click to see individual scores">
+        ${escH(crit.name)}<span class="drill-icon">&#9654;</span>
+      </td>
+      ${weightCell}${cells}
+    </tr>`;
+  }).join('');
+
+  // Total row
+  const totalCells = chart.concepts.map(concept => {
+    const t = totals[concept.id];
+    const isBest = concept.id === bestId;
+    if (t == null) return `<td><span class="cell-empty">—</span></td>`;
+    const { bg, text } = DB.cellColor(t, chart.scoringScale);
+    const display = chart.scoringScale === 'pugh'
+      ? (t > 0 ? '+' : '') + t.toFixed(3)
+      : t.toFixed(3);
+    return `<td><span class="cell-score" style="width:64px;height:34px;font-size:.85rem;font-weight:700;background:${bg};color:${text};${isBest ? 'box-shadow:0 0 0 2px rgba(10,192,233,.5)' : ''}">${display}</span></td>`;
+  }).join('');
+
+  document.getElementById('matrix-table').innerHTML = `
+    <thead>
+      <tr>
+        <th class="crit-header">Criterion</th>
+        <th class="crit-header" style="min-width:80px">Weight</th>
+        ${conceptHeaders}
+      </tr>
+    </thead>
+    <tbody>
+      ${rows}
+      <tr class="total-row">
+        <td class="crit-name" style="font-family:'Inter',sans-serif;font-size:.78rem;letter-spacing:.06em;color:#8A97B0">WEIGHTED SCORE</td>
+        <td class="crit-weight"></td>
+        ${totalCells}
+      </tr>
+    </tbody>
+  `;
+  // Show scroll hint if table overflows
+  requestAnimationFrame(updateScrollHint);
+}
+
+function renderLegend() {
+  const isPugh = chart.scoringScale === 'pugh';
+  document.getElementById('legend').innerHTML = `
+    <p style="font-family:'Inter',sans-serif;font-size:.62rem;color:#4A5770;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem">Legend</p>
+    <div style="display:flex;flex-direction:column;gap:.4rem">
+      ${isPugh ? `
+        <div style="display:flex;align-items:center;gap:.5rem"><span class="legend-dot" style="background:rgba(224,85,85,.25);border:1px solid rgba(224,85,85,.3)"></span><span style="font-size:.78rem;color:#8A97B0">Below datum (avg &lt; −0.33)</span></div>
+        <div style="display:flex;align-items:center;gap:.5rem"><span class="legend-dot" style="background:rgba(74,87,112,.3);border:1px solid #1A3D5C"></span><span style="font-size:.78rem;color:#8A97B0">Same as datum (−0.33–0.33)</span></div>
+        <div style="display:flex;align-items:center;gap:.5rem"><span class="legend-dot" style="background:rgba(62,207,142,.25);border:1px solid rgba(62,207,142,.3)"></span><span style="font-size:.78rem;color:#8A97B0">Above datum (avg &gt; 0.33)</span></div>
+      ` : `
+        <div style="display:flex;align-items:center;gap:.5rem"><span class="legend-dot" style="background:rgba(224,85,85,.25);border:1px solid rgba(224,85,85,.3)"></span><span style="font-size:.78rem;color:#8A97B0">Poor (avg &lt; 2.0)</span></div>
+        <div style="display:flex;align-items:center;gap:.5rem"><span class="legend-dot" style="background:rgba(232,131,58,.22);border:1px solid rgba(232,131,58,.35)"></span><span style="font-size:.78rem;color:#8A97B0">Fair (avg 2.0–3.0)</span></div>
+        <div style="display:flex;align-items:center;gap:.5rem"><span class="legend-dot" style="background:rgba(236,201,75,.22);border:1px solid rgba(236,201,75,.35)"></span><span style="font-size:.78rem;color:#8A97B0">Neutral (avg 3.0–3.5)</span></div>
+        <div style="display:flex;align-items:center;gap:.5rem"><span class="legend-dot" style="background:rgba(126,200,122,.22);border:1px solid rgba(126,200,122,.35)"></span><span style="font-size:.78rem;color:#8A97B0">Good (avg 3.5–4.5)</span></div>
+        <div style="display:flex;align-items:center;gap:.5rem"><span class="legend-dot" style="background:rgba(62,207,142,.25);border:1px solid rgba(62,207,142,.3)"></span><span style="font-size:.78rem;color:#8A97B0">Excellent (avg ≥ 4.5)</span></div>
+      `}
+    </div>
+    <div style="margin-top:.875rem;padding-top:.75rem;border-top:1px solid #0F3050;font-size:.72rem;color:#4A5770;font-family:'Inter',sans-serif">
+      Cells show average across ${Object.keys(cachedResponses).length} response(s)
+    </div>
+  `;
+}
+
+function renderRanking(results) {
+  const { totals, n } = results;
+  const ranked = chart.concepts
+    .map(c => ({ ...c, score: totals[c.id] }))
+    .filter(c => c.score != null)
+    .sort((a, b) => b.score - a.score);
+
+  document.getElementById('ranking-card').innerHTML = `
+    <p style="font-family:'Inter',sans-serif;font-size:.62rem;color:#4A5770;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.875rem">Concept Ranking</p>
+    ${ranked.map((c, i) => {
+      const isPugh = chart.scoringScale === 'pugh';
+      const { text } = DB.cellColor(c.score, chart.scoringScale);
+      return `
+        <div style="display:flex;align-items:center;gap:.875rem;margin-bottom:.6rem">
+          <span style="width:22px;height:22px;border-radius:50%;background:${i === 0 ? 'rgba(10,192,233,.2)' : '#0B2740'};border:1px solid ${i === 0 ? 'rgba(10,192,233,.4)' : '#0F3050'};display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:.7rem;color:${i === 0 ? '#0AC0E9' : '#4A5770'};flex-shrink:0;font-weight:600">${i+1}</span>
+          ${c.thumbnail ? `<div style="width:52px;height:52px;border-radius:7px;overflow:hidden;border:1px solid ${i===0?'rgba(10,192,233,.3)':'#0F3050'};flex-shrink:0"><img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover"></div>` : ''}
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.875rem;color:#E8ECF4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:${i===0?'600':'400'}">${escH(c.name)}</div>
+            <div style="height:3px;background:#0F3050;border-radius:2px;margin-top:.3rem;overflow:hidden">
+              ${(() => {
+                const max = ranked[0]?.score || 1;
+                const min = isPugh ? -1 : 1;
+                const range = (isPugh ? 2 : 4);
+                const pct = Math.max(0, Math.round((c.score - min) / range * 100));
+                return `<div style="height:100%;width:${pct}%;background:${text};border-radius:2px"></div>`;
+              })()}
+            </div>
+          </div>
+          <span style="font-family:'Inter',sans-serif;font-size:.78rem;color:${text};min-width:48px;text-align:right">
+            ${isPugh ? (c.score > 0 ? '+' : '') : ''}${c.score.toFixed(3)}
+          </span>
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+// Called on every slider tick — only updates the % labels, no DOM rebuild
+function liveWeightDisplay(critId, val) {
+  weightOverrides[critId] = Number(val);
+  const totalW = Object.values(weightOverrides).reduce((a, b) => a + b, 0) || 1;
+  document.querySelectorAll('[data-weight-pct]').forEach(el => {
+    const cid = el.dataset.weightPct;
+    el.textContent = Math.round((weightOverrides[cid] || 0) / totalW * 100) + '%';
+  });
+}
+
+// Called on slider release — full recalculation using already-cached responses
+function onWeightChange(critId, val) {
+  weightOverrides[critId] = Number(val);
+  const results = DB.calcResults(chart, cachedResponses, weightOverrides);
+  if (results) {
+    renderMatrix(results);
+    renderRanking(results);
+    renderLegend();
+  }
+}
+
+function toggleWeightEdit() {
+  editingWeights = !editingWeights;
+  document.getElementById('toggle-weights-btn').textContent = editingWeights ? 'Done Editing' : 'Adjust Weights';
+  document.getElementById('save-weights-btn').style.display = editingWeights ? '' : 'none';
+  const banner = document.getElementById('weight-edit-banner');
+  banner.style.display = editingWeights ? 'flex' : 'none';
+  renderAll();
+}
+
+function saveWeights() {
+  chart.criteria = chart.criteria.map(c => ({ ...c, weight: weightOverrides[c.id] ?? c.weight }));
+  DB.update(chartId, { criteria: chart.criteria });
+  toggleWeightEdit();
+  showToast('Weights saved successfully.', 'success');
+}
+
+async function exportCSV() {
+  const responses = await DB.getResponses(chartId);
+  const results = DB.calcResults(chart, responses, weightOverrides);
+  if (!results) { showToast('No data to export.', 'error'); return; }
+
+  const totalW = Object.values(weightOverrides).reduce((a, b) => a + b, 0) || 1;
+  const { matrix, totals } = results;
+
+  const header = ['Criterion', 'Weight (%)', ...chart.concepts.map(c => c.name)].join(',');
+  const rows = chart.criteria.map(crit => {
+    const pct = Math.round(weightOverrides[crit.id] / totalW * 100);
+    const cells = chart.concepts.map(concept => {
+      const avg = matrix[concept.id]?.[crit.id]?.avg;
+      return avg != null ? avg.toFixed(3) : '';
+    });
+    return [crit.name, pct, ...cells].map(v => `"${v}"`).join(',');
+  });
+  const totalRow = ['WEIGHTED SCORE', '', ...chart.concepts.map(c => totals[c.id] != null ? totals[c.id].toFixed(3) : '')].map(v => `"${v}"`).join(',');
+
+  const csv = [header, ...rows, totalRow].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `${chart.title.replace(/\s+/g, '_')}_results.csv` });
+  a.click();
+  showToast('CSV exported.');
+}
+
+// ---- Criterion detail modal ----------------------------------------
+
+function stddev(values) {
+  if (values.length < 2) return 0;
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  return Math.sqrt(values.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / values.length);
+}
+
+function showCritDetail(critId) {
+  const crit = chart.criteria.find(c => c.id === critId);
+  if (!crit) return;
+
+  const responses = cachedResponses;
+  const respList = Object.values(responses);
+  if (!respList.length) { showToast('No responses yet.', 'info'); return; }
+
+  // Filter to participants who scored this criterion on at least one concept
+  const participants = respList.filter(r =>
+    chart.concepts.some(concept => r.scores?.[concept.id]?.[critId] != null)
+  );
+
+  document.getElementById('modal-crit-name').textContent = crit.name;
+
+  const conceptCols = chart.concepts.map(c =>
+    `<th>${c.thumbnail ? `<div style="width:80px;height:80px;border-radius:8px;overflow:hidden;margin:0 auto .5rem;border:1px solid #0F3050"><img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover"></div>` : ''}<div style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0 auto">${escH(c.name)}</div></th>`
+  ).join('');
+
+  // Participant rows
+  const participantRows = participants.map((r, i) => {
+    const cells = chart.concepts.map(concept => {
+      const val = r.scores?.[concept.id]?.[critId];
+      if (val == null) return `<td><span style="color:#0F3050">—</span></td>`;
+      const { bg, text } = DB.cellColor(val, chart.scoringScale);
+      const display = chart.scoringScale === 'pugh' ? (val > 0 ? '+' : '') + val : val;
+      return `<td><span class="cell-score" style="background:${bg};color:${text};width:44px;height:26px;font-size:.78rem">${display}</span></td>`;
+    }).join('');
+    return `<tr>
+      <td class="p-label">
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <span style="width:20px;height:20px;border-radius:50%;background:#0F3050;border:1px solid #1A3D5C;display:flex;align-items:center;justify-content:center;font-size:.62rem;color:#4A5770;flex-shrink:0">${i+1}</span>
+          ${escH(r.name || 'Anonymous')}
+        </div>
+      </td>
+      ${cells}
+    </tr>`;
+  }).join('');
+
+  // Avg + StDev rows per concept
+  const avgCells = chart.concepts.map(concept => {
+    const vals = participants
+      .map(r => r.scores?.[concept.id]?.[critId])
+      .filter(v => v != null);
+    if (!vals.length) return `<td><span style="color:#0F3050">—</span></td>`;
+    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+    const { bg, text } = DB.cellColor(avg, chart.scoringScale);
+    const display = chart.scoringScale === 'pugh' ? (avg > 0 ? '+' : '') + avg.toFixed(2) : avg.toFixed(2);
+    return `<td><span class="cell-score" style="background:${bg};color:${text};width:54px;height:28px;font-size:.8rem;font-weight:700">${display}</span></td>`;
+  }).join('');
+
+  const sdCells = chart.concepts.map(concept => {
+    const vals = participants
+      .map(r => r.scores?.[concept.id]?.[critId])
+      .filter(v => v != null);
+    if (vals.length < 2) return `<td><span style="color:#4A5770;font-size:.72rem">—</span></td>`;
+    const sd = stddev(vals);
+    return `<td><span style="font-family:'Inter',sans-serif;font-size:.8rem;color:#8A97B0">${sd.toFixed(2)}</span></td>`;
+  }).join('');
+
+  const totalW = Object.values(weightOverrides).reduce((a, b) => a + b, 0) || 1;
+  const pct = Math.round(weightOverrides[critId] / totalW * 100);
+
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:flex;gap:1.25rem;margin-bottom:1.25rem;flex-wrap:wrap">
+      <div style="background:#0B2740;border:1px solid #0F3050;border-radius:7px;padding:.6rem 1rem">
+        <div style="font-family:'Inter',sans-serif;font-size:.6rem;color:#4A5770;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.2rem">Weight</div>
+        <div style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.25rem;color:#0AC0E9">${pct}%</div>
+      </div>
+      <div style="background:#0B2740;border:1px solid #0F3050;border-radius:7px;padding:.6rem 1rem">
+        <div style="font-family:'Inter',sans-serif;font-size:.6rem;color:#4A5770;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.2rem">Responses</div>
+        <div style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.25rem;color:#E8ECF4">${participants.length}</div>
+      </div>
+      <div style="background:#0B2740;border:1px solid #0F3050;border-radius:7px;padding:.6rem 1rem">
+        <div style="font-family:'Inter',sans-serif;font-size:.6rem;color:#4A5770;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.2rem">Scale</div>
+        <div style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.25rem;color:#E8ECF4">${chart.scoringScale === 'pugh' ? '−1/0/+1' : '1–5'}</div>
+      </div>
+    </div>
+
+    <div style="overflow-x:auto">
+      <table class="detail-table">
+        <thead>
+          <tr>
+            <th class="p-header" style="min-width:120px">Participant</th>
+            ${conceptCols}
+          </tr>
+        </thead>
+        <tbody>
+          ${participantRows}
+          <tr class="stat-row">
+            <td class="p-label" style="color:#0AC0E9;font-weight:600">Average</td>
+            ${avgCells}
+          </tr>
+          <tr class="stat-row">
+            <td class="p-label" style="color:#8A97B0">Std Dev</td>
+            ${sdCells}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:1rem;font-size:.72rem;color:#4A5770;font-family:'Inter',sans-serif">
+      Std Dev measures spread of opinion — higher values indicate less consensus among participants.
+    </p>
+  `;
+
+  document.getElementById('crit-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCritModal() {
+  document.getElementById('crit-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function updateScrollHint() {
+  const el = document.getElementById('matrix-scroll');
+  const hint = document.getElementById('scroll-hint');
+  if (!el || !hint) return;
+  hint.style.display = el.scrollWidth > el.clientWidth ? '' : 'none';
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCritModal(); });
+
+function escH(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+init();
+</script>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-top">
+      <div><img src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto"><p class="site-footer-brand-desc">A medtech consultancy providing fractional VP of Engineering support for companies navigating product development, FDA strategy, quality systems, and manufacturing readiness.</p></div>
+      <div><div class="site-footer-col-title">Company</div><ul class="site-footer-links"><li><a href="https://www.tangrammedtech.com/#services" class="site-footer-link">Services</a></li><li><a href="https://www.tangrammedtech.com/#about" class="site-footer-link">About Eric</a></li><li><a href="https://www.tangrammedtech.com/#newsletter" class="site-footer-link">Newsletter</a></li><li><a href="https://www.tangrammedtech.com/#contact" class="site-footer-link">Work With Tangram</a></li></ul></div>
+      <div><div class="site-footer-col-title">Tools</div><ul class="site-footer-links"><li><a href="dashboard.html" class="site-footer-link">Pugh Chart</a></li></ul></div>
+      <div><div class="site-footer-col-title">Connect</div><ul class="site-footer-links"><li><a href="https://www.linkedin.com/in/esugalski/" target="_blank" class="site-footer-link">LinkedIn</a></li><li><a href="https://www.skool.com/medtechmindset" target="_blank" class="site-footer-link">Skool Community</a></li><li><a href="https://www.linkedin.com/newsletters/medtech-mindset-7033233055771172864/" target="_blank" class="site-footer-link">MedTech Mindset</a></li></ul></div>
+    </div>
+    <div class="site-footer-bottom"><div class="site-footer-copy">&copy; 2026 Tangram MedTech. All rights reserved.</div><div class="site-footer-legal"><a href="#" class="site-footer-link" style="font-size:.74rem">Privacy Policy</a><a href="#" class="site-footer-link" style="font-size:.74rem">Terms of Use</a></div></div>
+  </div>
+</footer>
+</body>
+</html>

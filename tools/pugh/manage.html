@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tangram Pugh · Session</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{box-sizing:border-box}
+*,*::before,*::after{font-family:'Inter',sans-serif}
+h1,h2,h3,h4,h5,h6{font-family:'Inter',sans-serif;font-weight:700}
+body{font-family:'Inter',sans-serif;background:#0B2740;color:#E8ECF4;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(10,192,233,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(10,192,233,.035) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");background-size:300px;pointer-events:none;z-index:0}
+/* ─── SITE NAV & FOOTER ─── */
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(11,39,64,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+.site-nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:72px;padding:0 2rem}
+.site-nav-links{display:flex;align-items:center;gap:2rem}
+.site-nav-link{font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);text-decoration:none;transition:color .2s;letter-spacing:.01em}
+.site-nav-link:hover{color:#0AC0E9}
+.site-btn-aqua{display:inline-flex;align-items:center;gap:.5rem;background:#0AC0E9;color:#0B2740 !important;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.01em;padding:.6rem 1.2rem;border-radius:6px;text-decoration:none;border:none;cursor:pointer;transition:background .2s,box-shadow .2s;box-shadow:0 4px 14px rgba(10,192,233,.25);white-space:nowrap}
+.site-btn-aqua:hover{background:#089bbf;box-shadow:0 6px 20px rgba(10,192,233,.4)}
+.site-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0}
+.site-hamburger span{display:block;height:2px;background:rgba(255,255,255,.8);border-radius:2px;transition:transform .25s,opacity .25s;transform-origin:center}
+.site-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.site-hamburger.open span:nth-child(2){opacity:0}
+.site-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.site-mobile-menu{display:none;position:fixed;top:72px;left:0;right:0;z-index:199;background:rgba(2,25,47,.98);backdrop-filter:blur(16px);padding:1.5rem 2rem 2rem;flex-direction:column;gap:.25rem;border-top:1px solid rgba(255,255,255,.08)}
+.site-mobile-menu.open{display:flex}
+.site-mobile-menu .site-nav-link{color:rgba(255,255,255,.72);font-size:1rem;padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:block}
+.site-mobile-menu .site-btn-aqua{margin-top:1rem;justify-content:center}
+@media(max-width:768px){.site-nav-links{display:none}.site-hamburger{display:flex}}
+.site-footer{background:#02192F;padding:4rem 2rem 2rem;border-top:1px solid rgba(255,255,255,.04)}
+.site-footer-inner{max-width:1280px;margin:0 auto}
+.site-footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.site-footer-brand-desc{font-size:.84rem;line-height:1.65;color:rgba(255,255,255,.32);margin-top:.875rem;max-width:280px}
+.site-footer-sub{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.06)}
+.site-footer-sub-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:.35rem}
+.site-footer-sub-name{font-size:.85rem;font-weight:600;color:rgba(10,192,233,.55)}
+.site-footer-col-title{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);margin-bottom:1.1rem}
+.site-footer-links{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.site-footer-link{color:rgba(255,255,255,.38);text-decoration:none;font-size:.84rem;transition:color .2s}
+.site-footer-link:hover{color:#0AC0E9}
+.site-footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:1.75rem;flex-wrap:wrap;gap:.75rem}
+.site-footer-copy{font-size:.74rem;color:rgba(255,255,255,.18)}
+.site-footer-legal{display:flex;gap:1.5rem}
+@media(max-width:768px){.site-footer-top{grid-template-columns:1fr 1fr;gap:2rem}}
+@media(max-width:480px){.site-footer-top{grid-template-columns:1fr}}
+/* Tools dropdown */
+.site-tools-dropdown{position:relative}
+.site-tools-btn{display:flex;align-items:center;gap:.35rem;font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);background:transparent;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s;letter-spacing:.01em;padding:0;white-space:nowrap}
+.site-tools-btn:hover,.site-tools-dropdown:hover .site-tools-btn{color:#0AC0E9}
+.site-tools-menu{position:absolute;top:calc(100% + 10px);left:0;background:#031C2E;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.4rem 0;min-width:200px;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;z-index:300;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.site-tools-dropdown:hover .site-tools-menu,.site-tools-dropdown:focus-within .site-tools-menu{opacity:1;pointer-events:auto;transform:translateY(0)}
+.site-tools-menu-item{display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;color:rgba(255,255,255,.55);font-size:.875rem;text-decoration:none;transition:color .15s,background .15s;font-family:'Inter',sans-serif;white-space:nowrap}
+.site-tools-menu-item:hover{color:#0AC0E9;background:rgba(10,192,233,.06)}
+.site-tools-menu-label{padding:.55rem 1rem .25rem;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.22)}
+.site-nav-auth-btn{font-size:.82rem;font-weight:500;color:rgba(255,255,255,.62);background:transparent;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:.45rem .875rem;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s,border-color .2s;white-space:nowrap}
+.site-nav-auth-btn:hover{color:#0AC0E9;border-color:rgba(10,192,233,.5)}
+/* Scroll effect */
+.site-nav{transition:background .3s,box-shadow .3s}
+.site-nav-logo-light{display:block}.site-nav-logo-dark{display:none}
+.site-nav.scrolled{background:rgba(255,255,255,.97) !important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.site-nav.scrolled .site-nav-logo-light{display:none}.site-nav.scrolled .site-nav-logo-dark{display:block}
+.site-nav.scrolled .site-nav-link{color:#304F6B}.site-nav.scrolled .site-nav-link:hover{color:#089bbf}
+.site-nav.scrolled .site-tools-btn{color:#304F6B}.site-nav.scrolled .site-tools-btn:hover{color:#089bbf}
+.site-nav.scrolled .site-tools-menu{background:#fff;border-color:rgba(0,0,0,.08);box-shadow:0 8px 32px rgba(11,39,64,.12)}
+.site-nav.scrolled .site-tools-menu-item{color:#304F6B}.site-nav.scrolled .site-tools-menu-item:hover{color:#089bbf;background:rgba(10,192,233,.06)}
+.site-nav.scrolled .site-tools-menu-label{color:rgba(11,39,64,.3)}
+.site-nav.scrolled .site-hamburger span{background:#0B2740}
+.site-nav.scrolled .site-nav-auth-btn{color:#304F6B;border-color:rgba(11,39,64,.2)}.site-nav.scrolled .site-nav-auth-btn:hover{color:#089bbf;border-color:rgba(10,192,233,.5)}
+.site-nav.scrolled .site-btn-aqua{background:#0AC0E9;color:#0B2740 !important}
+
+.card{background:#031C2E;border:1px solid #0F3050;border-radius:12px;padding:1.5rem}
+.badge-active{display:inline-flex;align-items:center;gap:.35rem;background:rgba(10,192,233,.15);color:#0AC0E9;border:1px solid rgba(10,192,233,.3);border-radius:4px;padding:.2rem .65rem;font-size:.7rem;font-family:'Inter',sans-serif;letter-spacing:.04em}
+.badge-closed{display:inline-flex;align-items:center;gap:.35rem;background:rgba(74,87,112,.15);color:#4A5770;border:1px solid #0F3050;border-radius:4px;padding:.2rem .65rem;font-size:.7rem;font-family:'Inter',sans-serif;letter-spacing:.04em}
+.badge-published{display:inline-flex;align-items:center;gap:.35rem;background:rgba(62,207,142,.15);color:#3ECF8E;border:1px solid rgba(62,207,142,.3);border-radius:4px;padding:.2rem .65rem;font-size:.7rem;font-family:'Inter',sans-serif;letter-spacing:.04em}
+.badge-draft{display:inline-flex;align-items:center;gap:.35rem;background:rgba(74,87,112,.2);color:#8A97B0;border:1px solid #1A3D5C;border-radius:4px;padding:.2rem .65rem;font-size:.7rem;font-family:'Inter',sans-serif;letter-spacing:.04em}
+
+.btn-primary{padding:.7rem 1.5rem;background:#0AC0E9;color:#02192F;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;border:none;border-radius:7px;cursor:pointer;transition:background .15s,box-shadow .15s;white-space:nowrap}
+.btn-primary:hover{background:#089bbf;box-shadow:0 4px 20px rgba(10,192,233,.25)}
+.btn-secondary{padding:.7rem 1.25rem;background:transparent;color:#8A97B0;font-family:'Inter',sans-serif;font-weight:500;font-size:.875rem;border:1px solid #1A3D5C;border-radius:7px;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;white-space:nowrap}
+.btn-secondary:hover{background:#0F3050;color:#E8ECF4;border-color:#304F6B}
+.btn-danger{padding:.7rem 1.25rem;background:transparent;color:#E05555;font-family:'Inter',sans-serif;font-weight:500;font-size:.875rem;border:1px solid rgba(224,85,85,.3);border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-danger:hover{background:rgba(224,85,85,.1)}
+
+.pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:#0AC0E9;animation:pulse 1.5s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+
+.link-box{display:flex;align-items:center;background:#0B2740;border:1px solid #1A3D5C;border-radius:8px;padding:.75rem 1rem;gap:.75rem;font-family:'Inter',sans-serif;font-size:.78rem;color:#8A97B0;overflow:hidden}
+.link-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#E8ECF4}
+
+.resp-row{display:flex;align-items:center;justify-content:space-between;padding:.65rem .875rem;border-radius:6px;background:#0B2740;margin-bottom:.3rem;font-size:.8rem}
+
+.stat-big{font-family:'Inter',sans-serif;font-weight:800;font-size:2.5rem;letter-spacing:-.05em;line-height:1;color:#E8ECF4}
+</style>
+</head>
+<body>
+
+<!-- Site Nav -->
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="https://www.tangrammedtech.com" style="text-decoration:none;display:flex;align-items:center;flex-shrink:0">
+      <img class="site-nav-logo-light" src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+      <img class="site-nav-logo-dark" src="../../brand_assets/Tangram_color logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+    </a>
+    <div class="site-nav-links">
+      <a href="https://www.tangrammedtech.com/#services" class="site-nav-link">Services</a>
+      <a href="https://www.tangrammedtech.com/#about" class="site-nav-link">About</a>
+      <a href="https://www.tangrammedtech.com/#newsletter" class="site-nav-link">Newsletter</a>
+      <div class="site-tools-dropdown">
+        <button class="site-tools-btn">Tools <svg style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="site-tools-menu">
+          <div class="site-tools-menu-label">Tools</div>
+          <a href="dashboard.html" class="site-tools-menu-item"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Pugh Chart</a>
+        </div>
+      </div>
+      <button id="nav-auth-btn" class="site-nav-auth-btn">Sign In</button>
+      <a href="https://www.tangrammedtech.com/#contact" class="site-btn-aqua">Work With Tangram <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <button class="site-hamburger" id="siteHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="site-mobile-menu" id="siteMobileMenu">
+  <a href="https://www.tangrammedtech.com/#services" class="site-nav-link">Services</a>
+  <a href="https://www.tangrammedtech.com/#about" class="site-nav-link">About</a>
+  <a href="https://www.tangrammedtech.com/#newsletter" class="site-nav-link">Newsletter</a>
+  <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:.75rem 0 .25rem;border-bottom:1px solid rgba(255,255,255,.07)">Tools</div>
+  <a href="dashboard.html" class="site-nav-link">Pugh Chart</a>
+  <a href="https://www.tangrammedtech.com/#contact" class="site-btn-aqua">Work With Tangram <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+</div>
+<script>
+document.getElementById('siteHamburger').addEventListener('click',function(){var o=document.getElementById('siteMobileMenu').classList.toggle('open');this.classList.toggle('open',o);});
+(function(){var u=JSON.parse(localStorage.getItem('pugh_user')||'null');var btn=document.getElementById('nav-auth-btn');if(!btn)return;if(u){btn.textContent='Sign Out';btn.onclick=function(){localStorage.removeItem('pugh_user');location.href='index.html'};}else{btn.textContent='Sign In';btn.onclick=function(){location.href='index.html';};}})();
+(function(){var nav=document.querySelector('.site-nav');function onScroll(){nav.classList.toggle('scrolled',window.scrollY>40);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();})();
+</script>
+
+<!-- Session utility bar -->
+<div style="background:#031C2E;border-bottom:1px solid #0F3050;position:sticky;top:72px;z-index:99">
+  <div style="max-width:1100px;margin:0 auto;padding:0 1.5rem;height:44px;display:flex;align-items:center;justify-content:space-between">
+    <a href="dashboard.html" style="color:#4A5770;font-size:.78rem;text-decoration:none;display:flex;align-items:center;gap:.35rem;transition:color .15s" onmouseover="this.style.color='#8A97B0'" onmouseout="this.style.color='#4A5770'">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Dashboard
+    </a>
+    <div style="display:flex;align-items:center;gap:.75rem">
+      <a href="" id="results-link" style="color:#0AC0E9;font-size:.78rem;text-decoration:none;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s">Results →</a>
+      <a href="" id="embed-link" style="display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .65rem;background:rgba(10,192,233,.12);color:#0AC0E9;font-size:.72rem;text-decoration:none;font-weight:500;border:1px solid rgba(10,192,233,.25);border-radius:5px;opacity:0;pointer-events:none;transition:opacity .2s" target="_blank">
+        <svg width="10" height="10" viewBox="0 0 11 11" fill="none"><rect x="1" y="1" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 4h3v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 4L4 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        Present
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="relative z-10" style="max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem;padding-top:calc(72px + 44px + 2.5rem)">
+
+  <!-- Loading state -->
+  <div id="loading" style="text-align:center;padding:5rem;color:#4A5770">Loading session…</div>
+
+  <!-- Main content (hidden until loaded) -->
+  <div id="main" style="display:none">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem">
+          <h1 id="chart-title" style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.75rem;letter-spacing:-.04em;line-height:1"></h1>
+          <span id="status-badge"></span>
+        </div>
+        <div id="chart-meta" style="color:#4A5770;font-size:.82rem;font-family:'Inter',sans-serif"></div>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap" id="action-buttons"></div>
+    </div>
+
+    <!-- Grid layout -->
+    <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:1.5rem;align-items:start">
+
+      <!-- Left: QR + link -->
+      <div style="display:flex;flex-direction:column;gap:1rem">
+
+        <!-- QR Card -->
+        <div class="card" style="text-align:center">
+          <p style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem">Participant QR Code</p>
+          <div id="qr-wrapper" style="display:inline-block;padding:16px;background:#F5F2EC;border-radius:10px;margin-bottom:1rem">
+            <img id="qr-img" width="180" height="180" style="display:block;border-radius:4px" alt="QR Code">
+          </div>
+          <p style="font-size:.78rem;color:#4A5770;line-height:1.5">Participants scan this to access<br>the scoring page</p>
+        </div>
+
+        <!-- Base URL override -->
+        <div class="card" style="padding:1rem 1.25rem">
+          <p style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.6rem">Network Address <span style="color:#0F3050;font-size:.6rem">for QR code</span></p>
+          <div style="display:flex;gap:.5rem;align-items:center">
+            <input id="base-url-input" type="text" placeholder="http://192.168.1.228:3000"
+              style="flex:1;background:#0B2740;border:1px solid #1A3D5C;border-radius:6px;padding:.5rem .75rem;color:#E8ECF4;font-family:'Inter',sans-serif;font-size:.75rem;outline:none;transition:border-color .15s"
+              onfocus="this.style.borderColor='#0AC0E9'" onblur="this.style.borderColor='#1A3D5C'"
+              onkeydown="if(event.key==='Enter') applyBaseUrl()">
+            <button onclick="applyBaseUrl()" style="padding:.5rem .875rem;background:#0AC0E9;color:#02192F;font-family:'Inter',sans-serif;font-weight:700;font-size:.75rem;border:none;border-radius:6px;cursor:pointer;white-space:nowrap;transition:background .15s" onmouseover="this.style.background='#089bbf'" onmouseout="this.style.background='#0AC0E9'">Update QR</button>
+          </div>
+          <p style="font-size:.7rem;color:#4A5770;margin-top:.5rem;font-family:'Inter',sans-serif;line-height:1.5">
+            For mobile testing: enter your Wi-Fi IP, e.g. <span style="color:#8A97B0">http://192.168.1.228:3000</span>
+          </p>
+        </div>
+
+        <!-- Link -->
+        <div class="card">
+          <p style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.75rem">Session Link</p>
+          <div class="link-box">
+            <span id="session-link-text" class="link-text"></span>
+            <button onclick="copyLink()" style="background:none;border:none;cursor:pointer;color:#8A97B0;padding:.15rem;transition:color .15s;flex-shrink:0" onmouseover="this.style.color='#0AC0E9'" onmouseout="this.style.color='#8A97B0'" title="Copy link">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 5.5V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v6.5a1 1 0 0 0 1 1H5.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right: Stats + participants -->
+      <div style="display:flex;flex-direction:column;gap:1rem">
+
+        <!-- Response stats -->
+        <div class="card">
+          <p style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1.25rem">Response Activity</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+            <div>
+              <div class="stat-big" id="stat-responses">0</div>
+              <div style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.06em;text-transform:uppercase;margin-top:.2rem">Responses</div>
+            </div>
+            <div>
+              <div class="stat-big" id="stat-concepts">—</div>
+              <div style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.06em;text-transform:uppercase;margin-top:.2rem">Concepts</div>
+            </div>
+            <div>
+              <div class="stat-big" id="stat-criteria">—</div>
+              <div style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.06em;text-transform:uppercase;margin-top:.2rem">Criteria</div>
+            </div>
+          </div>
+
+          <!-- Progress bar -->
+          <div style="margin-bottom:.4rem;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:.78rem;color:#8A97B0">Completion</span>
+            <span id="completion-pct" style="font-family:'Inter',sans-serif;font-size:.75rem;color:#0AC0E9">0%</span>
+          </div>
+          <div style="height:5px;background:#0F3050;border-radius:3px;overflow:hidden">
+            <div id="completion-bar" style="height:100%;background:#0AC0E9;border-radius:3px;width:0%;transition:width .4s ease"></div>
+          </div>
+          <p id="last-update" style="font-size:.72rem;color:#4A5770;margin-top:.5rem;font-family:'Inter',sans-serif"></p>
+        </div>
+
+        <!-- Participant list -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <p style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.12em;text-transform:uppercase">Participants</p>
+            <button onclick="refreshData()" style="background:none;border:none;cursor:pointer;color:#4A5770;font-size:.75rem;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:.3rem;transition:color .15s" onmouseover="this.style.color='#0AC0E9'" onmouseout="this.style.color='#4A5770'">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M10.5 6A4.5 4.5 0 1 1 9 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M9 .5v2h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Refresh
+            </button>
+          </div>
+          <div id="participants-list" style="max-height:280px;overflow-y:auto">
+            <p style="color:#4A5770;font-size:.82rem;text-align:center;padding:1.5rem 0">No responses yet</p>
+          </div>
+        </div>
+
+        <!-- Session notes -->
+        <div class="card" style="background:#031C2E;border-style:dashed">
+          <p style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.5rem">Session Notes</p>
+          <textarea id="session-notes" placeholder="Notes visible only to you (not saved)…" style="width:100%;background:transparent;border:none;color:#8A97B0;font-family:'Inter',sans-serif;font-size:.82rem;resize:none;outline:none;min-height:80px;line-height:1.6"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Publish confirmation modal -->
+<div id="pub-modal" style="display:none;position:fixed;inset:0;background:rgba(7,10,15,.85);z-index:200;align-items:center;justify-content:center">
+  <div style="background:#031C2E;border:1px solid #1A3D5C;border-radius:14px;padding:2rem;max-width:420px;width:90%">
+    <p style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:.5rem">Publish Results?</p>
+    <p style="color:#8A97B0;font-size:.875rem;margin-bottom:1.5rem;line-height:1.65">This will make the results visible to all participants who have a session link. The session will be closed to new scoring.</p>
+    <div style="display:flex;gap:.75rem;justify-content:flex-end">
+      <button onclick="closePubModal()" style="padding:.65rem 1rem;background:transparent;color:#8A97B0;border:1px solid #1A3D5C;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.875rem">Cancel</button>
+      <button onclick="confirmPublish()" class="btn-primary">Publish Results</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+<script>
+let user;
+const chartId = new URLSearchParams(location.search).get('id');
+let chart = null;
+let pollTimer = null;
+
+async function init() {
+  user = await Auth.requireHost();
+  if (!user) return;
+  if (!chartId) { location.href = 'dashboard.html'; return; }
+  chart = await DB.get(chartId);
+  if (!chart || chart.hostId !== user.uid) { location.href = 'dashboard.html'; return; }
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('main').style.display = '';
+
+  renderPage();
+  startPolling();
+}
+
+async function renderPage() {
+  const responses = await DB.getResponses(chartId);
+  const n = Object.keys(responses).length;
+
+  // Title & meta
+  document.getElementById('chart-title').textContent = chart.title;
+  document.getElementById('chart-meta').textContent = [
+    chart.date ? fmtDate(chart.date) : null,
+    `${chart.concepts?.length} concepts`,
+    `${chart.criteria?.length} criteria`,
+    chart.scoringScale === 'pugh' ? '−1/0/+1 scale' : '1–5 scale',
+  ].filter(Boolean).join('  ·  ');
+
+  // Status badge
+  const badgeMap = {
+    active: `<span class="badge-active"><span class="pulse"></span>ACTIVE</span>`,
+    closed: `<span class="badge-closed">CLOSED</span>`,
+    published: `<span class="badge-published">PUBLISHED</span>`,
+    draft: `<span class="badge-draft">DRAFT</span>`,
+  };
+  document.getElementById('status-badge').innerHTML = badgeMap[chart.status] || badgeMap.draft;
+
+  // Results link
+  const rl = document.getElementById('results-link');
+  rl.href = `results.html?id=${chartId}`;
+  rl.style.opacity = '1';
+  rl.style.pointerEvents = '';
+
+  // Presentation embed link
+  const el = document.getElementById('embed-link');
+  el.href = `embed.html?id=${chartId}`;
+  el.style.opacity = '1';
+  el.style.pointerEvents = '';
+
+  // Action buttons
+  const ab = document.getElementById('action-buttons');
+  if (chart.status === 'draft') {
+    ab.innerHTML = `<button onclick="changeStatus('active')" class="btn-primary">Open Session</button>`;
+  } else if (chart.status === 'active') {
+    ab.innerHTML = `
+      <a href="results.html?id=${chartId}" class="btn-secondary">View Results</a>
+      <button onclick="changeStatus('closed')" style="padding:.7rem 1.25rem;background:transparent;color:#8A97B0;font-family:'Inter',sans-serif;font-weight:500;font-size:.875rem;border:1px solid #1A3D5C;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap" onmouseover="this.style.background='#0F3050';this.style.color='#E8ECF4'" onmouseout="this.style.background='transparent';this.style.color='#8A97B0'">Close Session</button>
+      <button onclick="showPubModal()" class="btn-primary">Publish Results</button>
+    `;
+  } else if (chart.status === 'closed') {
+    ab.innerHTML = `
+      <a href="results.html?id=${chartId}" class="btn-secondary">View Results</a>
+      <button onclick="changeStatus('active')" style="padding:.7rem 1.25rem;background:transparent;color:#8A97B0;font-family:'Inter',sans-serif;font-weight:500;font-size:.875rem;border:1px solid #1A3D5C;border-radius:7px;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#0F3050'" onmouseout="this.style.background='transparent'">Reopen</button>
+      <button onclick="showPubModal()" class="btn-primary">Publish Results</button>
+    `;
+  } else {
+    ab.innerHTML = `<a href="results.html?id=${chartId}" class="btn-primary">View Published Results</a>`;
+  }
+
+  // Stats
+  document.getElementById('stat-responses').textContent = n;
+  document.getElementById('stat-concepts').textContent = chart.concepts?.length || 0;
+  document.getElementById('stat-criteria').textContent = chart.criteria?.length || 0;
+
+  // Completion (rough estimate: % participants who scored ALL cells)
+  const totalCells = (chart.concepts?.length || 0) * (chart.criteria?.length || 0);
+  const completedCount = Object.values(responses).filter(r => {
+    const scored = Object.values(r.scores || {}).reduce((s, v) => s + Object.keys(v).length, 0);
+    return scored >= totalCells;
+  }).length;
+  const pct = n > 0 ? Math.round(completedCount / n * 100) : 0;
+  document.getElementById('completion-pct').textContent = pct + '%';
+  document.getElementById('completion-bar').style.width = pct + '%';
+
+  // Last update
+  const updates = Object.values(responses).map(r => r.updatedAt).filter(Boolean).sort().reverse();
+  document.getElementById('last-update').textContent = updates[0] ? `Last response: ${fmtDateTime(updates[0])}` : 'No responses yet';
+
+  // Participants list
+  const pl = document.getElementById('participants-list');
+  if (!n) {
+    pl.innerHTML = `<p style="color:#4A5770;font-size:.82rem;text-align:center;padding:1.5rem 0">No responses yet</p>`;
+  } else {
+    const list = Object.values(responses).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    pl.innerHTML = list.map((r, i) => {
+      const scored = Object.values(r.scores || {}).reduce((s, v) => s + Object.keys(v).length, 0);
+      const complete = scored >= totalCells;
+      return `
+        <div class="resp-row">
+          <div style="display:flex;align-items:center;gap:.6rem">
+            <div style="width:24px;height:24px;border-radius:50%;background:#0F3050;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;flex-shrink:0">${i+1}</div>
+            <span style="color:#E8ECF4;font-size:.82rem;font-weight:500">${r.name || 'Anonymous'}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem">
+            <span style="font-size:.72rem;color:#4A5770;font-family:'Inter',sans-serif">${scored}/${totalCells} scored</span>
+            <span style="width:8px;height:8px;border-radius:50%;background:${complete ? '#3ECF8E' : '#0AC0E9'};flex-shrink:0" title="${complete ? 'Complete' : 'In progress'}"></span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Pre-fill base URL input
+  document.getElementById('base-url-input').value = getBaseUrl();
+
+  // QR code
+  generateQR();
+}
+
+function getBaseUrl() {
+  // Use manually overridden base URL if set, otherwise current origin,
+  // falling back to localhost when opened via file://
+  const stored = localStorage.getItem('pugh_base_url');
+  if (stored) return stored.replace(/\/$/, '');
+  const origin = (location.origin && location.origin !== 'null')
+    ? location.origin
+    : 'http://localhost:3000';
+  return origin;
+}
+
+function getSessionUrl() {
+  return `${getBaseUrl()}/score.html?id=${chartId}`;
+}
+
+function applyBaseUrl() {
+  const val = document.getElementById('base-url-input').value.trim();
+  if (val) {
+    localStorage.setItem('pugh_base_url', val);
+    generateQR();
+    showToast('QR code updated.');
+  }
+}
+
+function generateQR() {
+  const url = getSessionUrl();
+  document.getElementById('session-link-text').textContent = url;
+  const encoded = encodeURIComponent(url);
+  document.getElementById('qr-img').src =
+    `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encoded}&bgcolor=F5F2EC&color=0D1117&margin=8`;
+}
+
+function copyLink() {
+  const url = getSessionUrl();
+  navigator.clipboard.writeText(url).then(() => showToast('Link copied!'));
+}
+
+async function changeStatus(s) {
+  const patch = { status: s };
+  if (s === 'active') patch.openedAt = new Date().toISOString();
+  if (s === 'closed') patch.closedAt = new Date().toISOString();
+  chart = await DB.update(chartId, patch);
+  renderPage();
+  showToast(`Session ${s === 'active' ? 'opened' : 'closed'}.`);
+}
+
+function showPubModal() {
+  document.getElementById('pub-modal').style.display = 'flex';
+}
+
+function closePubModal() {
+  document.getElementById('pub-modal').style.display = 'none';
+}
+
+async function confirmPublish() {
+  chart = await DB.update(chartId, { status: 'published', publishedAt: new Date().toISOString() });
+  closePubModal();
+  renderPage();
+  showToast('Results published! Participants can now view them.', 'success');
+}
+
+async function refreshData() {
+  chart = await DB.get(chartId);
+  renderPage();
+}
+
+function startPolling() {
+  pollTimer = setInterval(async () => {
+    chart = await DB.get(chartId);
+    renderPage();
+  }, 8000);
+}
+
+document.getElementById('pub-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('pub-modal')) closePubModal();
+});
+
+init();
+</script>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-top">
+      <div><img src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto"><p class="site-footer-brand-desc">A medtech consultancy providing fractional VP of Engineering support for companies navigating product development, FDA strategy, quality systems, and manufacturing readiness.</p></div>
+      <div><div class="site-footer-col-title">Company</div><ul class="site-footer-links"><li><a href="https://www.tangrammedtech.com/#services" class="site-footer-link">Services</a></li><li><a href="https://www.tangrammedtech.com/#about" class="site-footer-link">About Eric</a></li><li><a href="https://www.tangrammedtech.com/#newsletter" class="site-footer-link">Newsletter</a></li><li><a href="https://www.tangrammedtech.com/#contact" class="site-footer-link">Work With Tangram</a></li></ul></div>
+      <div><div class="site-footer-col-title">Tools</div><ul class="site-footer-links"><li><a href="dashboard.html" class="site-footer-link">Pugh Chart</a></li></ul></div>
+      <div><div class="site-footer-col-title">Connect</div><ul class="site-footer-links"><li><a href="https://www.linkedin.com/in/esugalski/" target="_blank" class="site-footer-link">LinkedIn</a></li><li><a href="https://www.skool.com/medtechmindset" target="_blank" class="site-footer-link">Skool Community</a></li><li><a href="https://www.linkedin.com/newsletters/medtech-mindset-7033233055771172864/" target="_blank" class="site-footer-link">MedTech Mindset</a></li></ul></div>
+    </div>
+    <div class="site-footer-bottom"><div class="site-footer-copy">&copy; 2026 Tangram MedTech. All rights reserved.</div><div class="site-footer-legal"><a href="#" class="site-footer-link" style="font-size:.74rem">Privacy Policy</a><a href="#" class="site-footer-link" style="font-size:.74rem">Terms of Use</a></div></div>
+  </div>
+</footer>
+</body>
+</html>

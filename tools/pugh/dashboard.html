@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tangram Pugh · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{b0:'#02192F',b1:'#031C2E',b2:'#0B2740',b3:'#0F3050',b4:'#0D2A40',bd1:'#0F3050',bd2:'#1A3D5C',bd3:'#304F6B',a:'#0AC0E9',a2:'#0891b2',a3:'#089bbf',t1:'#E8ECF4',t2:'#8A97B0',t3:'#4A5770',pos:'#3ECF8E',neg:'#E05555'},fontFamily:{display:['Inter','sans-serif'],body:['Inter','sans-serif'],mono:['Inter','sans-serif']}}}}
+</script>
+<style>
+*{box-sizing:border-box}
+*,*::before,*::after{font-family:'Inter',sans-serif}
+h1,h2,h3,h4,h5,h6{font-family:'Inter',sans-serif;font-weight:700}
+body{font-family:'Inter',sans-serif;background:#0B2740;color:#E8ECF4;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(10,192,233,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(10,192,233,.035) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");background-size:300px;pointer-events:none;z-index:0}
+/* ─── SITE NAV & FOOTER ─── */
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(11,39,64,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+.site-nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:72px;padding:0 2rem}
+.site-nav-links{display:flex;align-items:center;gap:2rem}
+.site-nav-link{font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);text-decoration:none;transition:color .2s;letter-spacing:.01em}
+.site-nav-link:hover{color:#0AC0E9}
+.site-btn-aqua{display:inline-flex;align-items:center;gap:.5rem;background:#0AC0E9;color:#0B2740 !important;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.01em;padding:.6rem 1.2rem;border-radius:6px;text-decoration:none;border:none;cursor:pointer;transition:background .2s,box-shadow .2s;box-shadow:0 4px 14px rgba(10,192,233,.25);white-space:nowrap}
+.site-btn-aqua:hover{background:#089bbf;box-shadow:0 6px 20px rgba(10,192,233,.4)}
+.site-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;background:none;border:none;cursor:pointer;padding:6px;flex-shrink:0}
+.site-hamburger span{display:block;height:2px;background:rgba(255,255,255,.8);border-radius:2px;transition:transform .25s,opacity .25s;transform-origin:center}
+.site-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.site-hamburger.open span:nth-child(2){opacity:0}
+.site-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.site-mobile-menu{display:none;position:fixed;top:72px;left:0;right:0;z-index:199;background:rgba(2,25,47,.98);backdrop-filter:blur(16px);padding:1.5rem 2rem 2rem;flex-direction:column;gap:.25rem;border-top:1px solid rgba(255,255,255,.08)}
+.site-mobile-menu.open{display:flex}
+.site-mobile-menu .site-nav-link{color:rgba(255,255,255,.72);font-size:1rem;padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:block}
+.site-mobile-menu .site-btn-aqua{margin-top:1rem;justify-content:center}
+@media(max-width:768px){.site-nav-links{display:none}.site-hamburger{display:flex}}
+.site-footer{background:#02192F;padding:4rem 2rem 2rem;border-top:1px solid rgba(255,255,255,.04)}
+.site-footer-inner{max-width:1280px;margin:0 auto}
+.site-footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.site-footer-brand-desc{font-size:.84rem;line-height:1.65;color:rgba(255,255,255,.32);margin-top:.875rem;max-width:280px}
+.site-footer-sub{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.06)}
+.site-footer-sub-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:.35rem}
+.site-footer-sub-name{font-size:.85rem;font-weight:600;color:rgba(10,192,233,.55)}
+.site-footer-col-title{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);margin-bottom:1.1rem}
+.site-footer-links{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.site-footer-link{color:rgba(255,255,255,.38);text-decoration:none;font-size:.84rem;transition:color .2s}
+.site-footer-link:hover{color:#0AC0E9}
+.site-footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:1.75rem;flex-wrap:wrap;gap:.75rem}
+.site-footer-copy{font-size:.74rem;color:rgba(255,255,255,.18)}
+.site-footer-legal{display:flex;gap:1.5rem}
+@media(max-width:768px){.site-footer-top{grid-template-columns:1fr 1fr;gap:2rem}}
+@media(max-width:480px){.site-footer-top{grid-template-columns:1fr}}
+/* Tools dropdown */
+.site-tools-dropdown{position:relative}
+.site-tools-btn{display:flex;align-items:center;gap:.35rem;font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);background:transparent;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s;letter-spacing:.01em;padding:0;white-space:nowrap}
+.site-tools-btn:hover,.site-tools-dropdown:hover .site-tools-btn{color:#0AC0E9}
+.site-tools-menu{position:absolute;top:calc(100% + 10px);left:0;background:#031C2E;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.4rem 0;min-width:200px;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .18s,transform .18s;z-index:300;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.site-tools-dropdown:hover .site-tools-menu,.site-tools-dropdown:focus-within .site-tools-menu{opacity:1;pointer-events:auto;transform:translateY(0)}
+.site-tools-menu-item{display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;color:rgba(255,255,255,.55);font-size:.875rem;text-decoration:none;transition:color .15s,background .15s;font-family:'Inter',sans-serif;white-space:nowrap}
+.site-tools-menu-item:hover{color:#0AC0E9;background:rgba(10,192,233,.06)}
+.site-tools-menu-label{padding:.55rem 1rem .25rem;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.22)}
+.site-nav-auth-btn{font-size:.82rem;font-weight:500;color:rgba(255,255,255,.62);background:transparent;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:.45rem .875rem;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s,border-color .2s;white-space:nowrap}
+.site-nav-auth-btn:hover{color:#0AC0E9;border-color:rgba(10,192,233,.5)}
+/* Scroll effect */
+.site-nav{transition:background .3s,box-shadow .3s}
+.site-nav-logo-light{display:block}.site-nav-logo-dark{display:none}
+.site-nav.scrolled{background:rgba(255,255,255,.97) !important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.site-nav.scrolled .site-nav-logo-light{display:none}.site-nav.scrolled .site-nav-logo-dark{display:block}
+.site-nav.scrolled .site-nav-link{color:#304F6B}.site-nav.scrolled .site-nav-link:hover{color:#089bbf}
+.site-nav.scrolled .site-tools-btn{color:#304F6B}.site-nav.scrolled .site-tools-btn:hover{color:#089bbf}
+.site-nav.scrolled .site-tools-menu{background:#fff;border-color:rgba(0,0,0,.08);box-shadow:0 8px 32px rgba(11,39,64,.12)}
+.site-nav.scrolled .site-tools-menu-item{color:#304F6B}.site-nav.scrolled .site-tools-menu-item:hover{color:#089bbf;background:rgba(10,192,233,.06)}
+.site-nav.scrolled .site-tools-menu-label{color:rgba(11,39,64,.3)}
+.site-nav.scrolled .site-hamburger span{background:#0B2740}
+.site-nav.scrolled .site-nav-auth-btn{color:#304F6B;border-color:rgba(11,39,64,.2)}.site-nav.scrolled .site-nav-auth-btn:hover{color:#089bbf;border-color:rgba(10,192,233,.5)}
+.site-nav.scrolled .site-btn-aqua{background:#0AC0E9;color:#0B2740 !important}
+
+.badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:4px;font-size:.7rem;font-family:'Inter',sans-serif;letter-spacing:.04em;font-weight:600}
+.badge-draft{background:rgba(74,87,112,.25);color:#8A97B0;border:1px solid #1A3D5C}
+.badge-active{background:rgba(10,192,233,.15);color:#0AC0E9;border:1px solid rgba(10,192,233,.3)}
+.badge-closed{background:rgba(74,87,112,.15);color:#4A5770;border:1px solid #0F3050}
+.badge-published{background:rgba(62,207,142,.15);color:#3ECF8E;border:1px solid rgba(62,207,142,.3)}
+
+.chart-card{background:#031C2E;border:1px solid #0F3050;border-radius:12px;padding:1.5rem;transition:border-color .2s,box-shadow .2s;cursor:default;position:relative;overflow:hidden}
+.chart-card:hover{border-color:#1A3D5C;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.chart-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#0AC0E930,transparent);opacity:0;transition:opacity .2s}
+.chart-card:hover::before{opacity:1}
+
+.btn-sm{padding:.35rem .75rem;border-radius:5px;font-size:.78rem;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;transition:background .15s,color .15s;border:1px solid transparent;white-space:nowrap}
+.btn-sm-primary{background:#0AC0E9;color:#02192F;border-color:#0AC0E9}
+.btn-sm-primary:hover{background:#089bbf}
+.btn-sm-ghost{background:transparent;color:#8A97B0;border-color:#1A3D5C}
+.btn-sm-ghost:hover{background:#0F3050;color:#E8ECF4;border-color:#304F6B}
+.btn-sm-danger{background:transparent;color:#4A5770;border-color:transparent}
+.btn-sm-danger:hover{background:rgba(224,85,85,.12);color:#E05555;border-color:rgba(224,85,85,.3)}
+
+.stat-chip{background:#0B2740;border:1px solid #0F3050;border-radius:5px;padding:.25rem .6rem;font-size:.72rem;font-family:'Inter',sans-serif;font-weight:400;color:#4A5770;display:inline-flex;align-items:center;gap:.3rem}
+
+.filter-btn{padding:.4rem .875rem;border-radius:6px;font-size:.78rem;font-family:'Inter',sans-serif;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .15s;background:transparent;color:#4A5770}
+.filter-btn.active{background:#0F3050;color:#E8ECF4;border-color:#1A3D5C}
+.filter-btn:not(.active):hover{color:#8A97B0}
+
+.pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:#0AC0E9;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+</style>
+</head>
+<body>
+
+<!-- Site Nav -->
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a href="https://www.tangrammedtech.com" style="text-decoration:none;display:flex;align-items:center;flex-shrink:0">
+      <img class="site-nav-logo-light" src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+      <img class="site-nav-logo-dark" src="../../brand_assets/Tangram_color logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+    </a>
+    <div class="site-nav-links">
+      <a href="https://www.tangrammedtech.com/#services" class="site-nav-link">Services</a>
+      <a href="https://www.tangrammedtech.com/#about" class="site-nav-link">About</a>
+      <a href="https://www.tangrammedtech.com/#newsletter" class="site-nav-link">Newsletter</a>
+      <div class="site-tools-dropdown">
+        <button class="site-tools-btn">Tools <svg style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="site-tools-menu">
+          <div class="site-tools-menu-label">Tools</div>
+          <a href="dashboard.html" class="site-tools-menu-item"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>Pugh Chart</a>
+        </div>
+      </div>
+      <button id="nav-auth-btn" class="site-nav-auth-btn">Sign In</button>
+      <a href="https://www.tangrammedtech.com/#contact" class="site-btn-aqua">Work With Tangram <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    </div>
+    <button class="site-hamburger" id="siteHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<span id="user-name" style="display:none"></span>
+<div class="site-mobile-menu" id="siteMobileMenu">
+  <a href="https://www.tangrammedtech.com/#services" class="site-nav-link">Services</a>
+  <a href="https://www.tangrammedtech.com/#about" class="site-nav-link">About</a>
+  <a href="https://www.tangrammedtech.com/#newsletter" class="site-nav-link">Newsletter</a>
+  <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);padding:.75rem 0 .25rem;border-bottom:1px solid rgba(255,255,255,.07)">Tools</div>
+  <a href="dashboard.html" class="site-nav-link">Pugh Chart</a>
+  <a href="https://www.tangrammedtech.com/#contact" class="site-btn-aqua">Work With Tangram <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+</div>
+<script>
+document.getElementById('siteHamburger').addEventListener('click',function(){var o=document.getElementById('siteMobileMenu').classList.toggle('open');this.classList.toggle('open',o);});
+(function(){var u=JSON.parse(localStorage.getItem('pugh_user')||'null');var btn=document.getElementById('nav-auth-btn');if(!btn)return;if(u){btn.textContent='Sign Out';btn.onclick=function(){localStorage.removeItem('pugh_user');location.href='index.html'};}else{btn.textContent='Sign In';btn.onclick=function(){location.href='index.html';};}})();
+(function(){var nav=document.querySelector('.site-nav');function onScroll(){nav.classList.toggle('scrolled',window.scrollY>40);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();})();
+</script>
+
+<div class="relative z-10" style="max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem;padding-top:calc(72px + 2.5rem)">
+
+  <!-- Header row -->
+  <div style="margin-bottom:2rem">
+    <h1 style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.75rem;letter-spacing:-.02em;color:#E8ECF4;line-height:1">My Charts</h1>
+    <p style="color:#4A5770;font-size:.85rem;margin-top:.3rem">Manage your Pugh decision matrices</p>
+  </div>
+
+  <!-- Filter bar -->
+  <div style="display:flex;gap:.4rem;margin-bottom:1.75rem;flex-wrap:wrap">
+    <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+    <button class="filter-btn" onclick="setFilter('draft', this)">Draft</button>
+    <button class="filter-btn" onclick="setFilter('active', this)">Active</button>
+    <button class="filter-btn" onclick="setFilter('published', this)">Published</button>
+  </div>
+
+  <!-- Stats strip -->
+  <div id="stats-strip" style="display:flex;gap:.75rem;margin-bottom:2rem;flex-wrap:wrap"></div>
+
+  <!-- Charts grid -->
+  <div id="charts-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem"></div>
+
+  <!-- Empty state -->
+  <div id="empty-state" class="hidden" style="text-align:center;padding:5rem 1rem">
+    <div style="font-size:3rem;margin-bottom:1rem;opacity:.2">◻</div>
+    <p style="color:#4A5770;font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.04em">NO CHARTS YET</p>
+    <p style="color:#4A5770;font-size:.85rem;margin-top:.4rem">Create your first Pugh decision matrix</p>
+    <a href="builder.html" style="display:inline-block;margin-top:1.5rem;padding:.65rem 1.5rem;background:#0AC0E9;color:#fff;font-family:'Inter',sans-serif;font-weight:600;font-size:.85rem;border-radius:7px;text-decoration:none">Create Chart</a>
+  </div>
+
+</div>
+
+<!-- Delete confirm modal -->
+<div id="del-modal" style="display:none;position:fixed;inset:0;background:rgba(6,13,24,.8);z-index:200;align-items:center;justify-content:center">
+  <div style="background:#031C2E;border:1px solid #1A3D5C;border-radius:12px;padding:2rem;max-width:380px;width:90%">
+    <p style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:.5rem">Delete Chart?</p>
+    <p style="color:#8A97B0;font-size:.875rem;margin-bottom:1.5rem;line-height:1.6">This will permanently delete the chart and all participant responses. This cannot be undone.</p>
+    <div style="display:flex;gap:.75rem;justify-content:flex-end">
+      <button onclick="closeDelModal()" style="padding:.6rem 1rem;background:transparent;color:#8A97B0;border:1px solid #1A3D5C;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;font-size:.85rem">Cancel</button>
+      <button id="del-confirm-btn" style="padding:.6rem 1rem;background:#E05555;color:#fff;border:none;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;font-size:.85rem">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="app.js"></script>
+<script>
+let user;
+(async () => {
+  user = await Auth.requireHost();
+  if (!user) return;
+  document.getElementById('user-name').textContent = user.name;
+  await renderCharts();
+})();
+
+let currentFilter = 'all';
+let pendingDeleteId = null;
+
+const STATUS_ORDER = { active: 0, draft: 1, closed: 2, published: 3 };
+
+function statusBadge(s) {
+  const map = {
+    draft: ['badge-draft', 'DRAFT'],
+    active: ['badge-active', '<span class="pulse"></span>ACTIVE'],
+    closed: ['badge-closed', 'CLOSED'],
+    published: ['badge-published', 'PUBLISHED'],
+  };
+  const [cls, label] = map[s] || map.draft;
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+async function renderCharts() {
+  const charts = await DB.list(user.uid);
+  const filtered = currentFilter === 'all' ? charts : charts.filter(c => c.status === currentFilter);
+  const grid = document.getElementById('charts-grid');
+  const empty = document.getElementById('empty-state');
+
+  // Stats
+  const strip = document.getElementById('stats-strip');
+  const active = charts.filter(c => c.status === 'active').length;
+  const total = charts.length;
+  const respCounts = await Promise.all(charts.map(c => DB.getResponses(c.id).then(r => Object.keys(r).length)));
+  const totalResp = respCounts.reduce((s, n) => s + n, 0);
+  strip.innerHTML = [
+    [total, 'Charts'],
+    [active, 'Active Sessions'],
+    [totalResp, 'Total Responses'],
+  ].map(([v, l]) => `
+    <div style="background:#0B2740;border:1px solid #0F3050;border-radius:8px;padding:.75rem 1.25rem;min-width:120px">
+      <div style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.5rem;color:#E8ECF4;letter-spacing:-.02em">${v}</div>
+      <div style="font-family:'Inter',sans-serif;font-weight:500;font-size:.72rem;color:#4A5770;letter-spacing:.02em;text-transform:uppercase;margin-top:.1rem">${l}</div>
+    </div>
+  `).join('');
+
+  empty.classList.add('hidden');
+  if (!filtered.length) {
+    grid.innerHTML = newChartCard;
+    return;
+  }
+
+  const newChartCard = `
+    <a href="builder.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.875rem;background:transparent;border:1.5px dashed #1A3D5C;border-radius:12px;padding:2rem 1.5rem;text-decoration:none;transition:border-color .2s,background .2s;min-height:180px;cursor:pointer" onmouseover="this.style.borderColor='rgba(10,192,233,.45)';this.style.background='rgba(10,192,233,.04)'" onmouseout="this.style.borderColor='#1A3D5C';this.style.background='transparent'">
+      <div style="width:40px;height:40px;border-radius:50%;background:#0B2740;border:1px solid #1A3D5C;display:flex;align-items:center;justify-content:center">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v14M2 9h14" stroke="#0AC0E9" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <div style="text-align:center">
+        <p style="font-family:'Inter',sans-serif;font-weight:600;font-size:.9rem;color:#E8ECF4;margin-bottom:.25rem">New Chart</p>
+        <p style="font-family:'Inter',sans-serif;font-size:.78rem;color:#4A5770;line-height:1.4">Build a new Pugh decision matrix</p>
+      </div>
+    </a>`;
+
+  const filteredResp = await Promise.all(filtered.map(c => DB.getResponses(c.id)));
+  grid.innerHTML = filtered.map((chart, idx) => {
+    const respCount = Object.keys(filteredResp[idx]).length;
+    return `
+      <div class="chart-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem">
+          <div style="flex:1;min-width:0;margin-right:.75rem">
+            <h3 style="font-family:'Inter',sans-serif;font-weight:600;font-size:1rem;letter-spacing:-.01em;color:#E8ECF4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${chart.title}</h3>
+            ${chart.date ? `<div style="color:#4A5770;font-size:.72rem;font-family:'Inter',sans-serif;font-weight:400;margin-top:.15rem">${fmtDate(chart.date)}</div>` : ''}
+          </div>
+          ${statusBadge(chart.status)}
+        </div>
+
+        ${chart.description ? `<p style="color:#8A97B0;font-size:.82rem;line-height:1.5;margin-bottom:.875rem;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${chart.description}</p>` : ''}
+
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem">
+          <span class="stat-chip">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><rect x="1" y="1" width="3" height="3" rx=".5" fill="#4A5770"/><rect x="6" y="1" width="3" height="3" rx=".5" fill="#4A5770"/><rect x="1" y="6" width="3" height="3" rx=".5" fill="#4A5770"/><rect x="6" y="6" width="3" height="3" rx=".5" fill="#4A5770"/></svg>
+            ${chart.concepts?.length || 0} concepts
+          </span>
+          <span class="stat-chip">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 2.5h8M1 5h6M1 7.5h4" stroke="#4A5770" stroke-width="1.2" stroke-linecap="round"/></svg>
+            ${chart.criteria?.length || 0} criteria
+          </span>
+          <span class="stat-chip" style="${respCount > 0 ? 'color:#0AC0E9;border-color:rgba(10,192,233,.2)' : ''}">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="3.5" r="2" stroke="${respCount > 0 ? '#0AC0E9' : '#4A5770'}" stroke-width="1.2"/><path d="M1 8.5c0-2 1.8-3 4-3s4 1 4 3" stroke="${respCount > 0 ? '#0AC0E9' : '#4A5770'}" stroke-width="1.2" stroke-linecap="round"/></svg>
+            ${respCount} response${respCount !== 1 ? 's' : ''}
+          </span>
+          <span class="stat-chip" style="color:#4A5770">${chart.scoringScale === 'numeric' ? '1–5' : '−1/0/+1'}</span>
+        </div>
+
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+          ${chart.status === 'draft' ? `
+            <a href="builder.html?id=${chart.id}" class="btn-sm btn-sm-ghost">Edit</a>
+            <button onclick="activateChart('${chart.id}')" class="btn-sm btn-sm-primary">Open Session</button>
+          ` : chart.status === 'active' ? `
+            <a href="manage.html?id=${chart.id}" class="btn-sm btn-sm-primary">Manage</a>
+            <a href="results.html?id=${chart.id}" class="btn-sm btn-sm-ghost">Results</a>
+          ` : chart.status === 'closed' ? `
+            <a href="results.html?id=${chart.id}" class="btn-sm btn-sm-ghost">Results</a>
+            <button onclick="activateChart('${chart.id}')" class="btn-sm btn-sm-ghost">Reopen</button>
+          ` : `
+            <a href="results.html?id=${chart.id}" class="btn-sm btn-sm-primary">View Results</a>
+          `}
+          <button onclick="confirmDelete('${chart.id}')" class="btn-sm btn-sm-danger" style="margin-left:auto">Delete</button>
+        </div>
+      </div>
+    `;
+  }).join('') + newChartCard;
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCharts();
+}
+
+async function activateChart(id) {
+  await DB.update(id, { status: 'active', openedAt: new Date().toISOString() });
+  location.href = `manage.html?id=${id}`;
+}
+
+function confirmDelete(id) {
+  pendingDeleteId = id;
+  const modal = document.getElementById('del-modal');
+  modal.style.display = 'flex';
+  document.getElementById('del-confirm-btn').onclick = async () => {
+    await DB.remove(pendingDeleteId);
+    closeDelModal();
+    showToast('Chart deleted.');
+    await renderCharts();
+  };
+}
+
+function closeDelModal() {
+  document.getElementById('del-modal').style.display = 'none';
+  pendingDeleteId = null;
+}
+
+document.getElementById('del-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('del-modal')) closeDelModal();
+});
+</script>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-top">
+      <div><img src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto"><p class="site-footer-brand-desc">A medtech consultancy providing fractional VP of Engineering support for companies navigating product development, FDA strategy, quality systems, and manufacturing readiness.</p></div>
+      <div><div class="site-footer-col-title">Company</div><ul class="site-footer-links"><li><a href="https://www.tangrammedtech.com/#services" class="site-footer-link">Services</a></li><li><a href="https://www.tangrammedtech.com/#about" class="site-footer-link">About Eric</a></li><li><a href="https://www.tangrammedtech.com/#newsletter" class="site-footer-link">Newsletter</a></li><li><a href="https://www.tangrammedtech.com/#contact" class="site-footer-link">Work With Tangram</a></li></ul></div>
+      <div><div class="site-footer-col-title">Tools</div><ul class="site-footer-links"><li><a href="dashboard.html" class="site-footer-link">Pugh Chart</a></li></ul></div>
+      <div><div class="site-footer-col-title">Connect</div><ul class="site-footer-links"><li><a href="https://www.linkedin.com/in/esugalski/" target="_blank" class="site-footer-link">LinkedIn</a></li><li><a href="https://www.skool.com/medtechmindset" target="_blank" class="site-footer-link">Skool Community</a></li><li><a href="https://www.linkedin.com/newsletters/medtech-mindset-7033233055771172864/" target="_blank" class="site-footer-link">MedTech Mindset</a></li></ul></div>
+    </div>
+    <div class="site-footer-bottom"><div class="site-footer-copy">&copy; 2026 Tangram MedTech. All rights reserved.</div><div class="site-footer-legal"><a href="#" class="site-footer-link" style="font-size:.74rem">Privacy Policy</a><a href="#" class="site-footer-link" style="font-size:.74rem">Terms of Use</a></div></div>
+  </div>
+</footer>
+</body>
+</html>
