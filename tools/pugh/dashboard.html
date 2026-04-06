@@ -142,7 +142,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 </div>
 <script>
 document.getElementById('siteHamburger').addEventListener('click',function(){var o=document.getElementById('siteMobileMenu').classList.toggle('open');this.classList.toggle('open',o);});
-(function(){var u=JSON.parse(localStorage.getItem('pugh_user')||'null');var btn=document.getElementById('nav-auth-btn');if(!btn)return;if(u){btn.textContent='Sign Out';btn.onclick=function(){localStorage.removeItem('pugh_user');location.href='index.html'};}else{btn.textContent='Sign In';btn.onclick=function(){location.href='index.html';};}})();
+// nav auth btn updated after app.js loads (see bottom of page)
 (function(){var nav=document.querySelector('.site-nav');function onScroll(){nav.classList.toggle('scrolled',window.scrollY>40);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();})();
 </script>
 
@@ -198,6 +198,12 @@ let user;
   user = await Auth.requireHost();
   if (!user) return;
   document.getElementById('user-name').textContent = user.name;
+  // Update nav auth button now that auth is resolved
+  const btn = document.getElementById('nav-auth-btn');
+  if (btn) {
+    btn.textContent = 'Sign Out';
+    btn.onclick = () => Auth.signOut();
+  }
   await renderCharts();
 })();
 
@@ -240,12 +246,6 @@ async function renderCharts() {
     </div>
   `).join('');
 
-  empty.classList.add('hidden');
-  if (!filtered.length) {
-    grid.innerHTML = newChartCard;
-    return;
-  }
-
   const newChartCard = `
     <a href="builder.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.875rem;background:transparent;border:1.5px dashed #1A3D5C;border-radius:12px;padding:2rem 1.5rem;text-decoration:none;transition:border-color .2s,background .2s;min-height:180px;cursor:pointer" onmouseover="this.style.borderColor='rgba(10,192,233,.45)';this.style.background='rgba(10,192,233,.04)'" onmouseout="this.style.borderColor='#1A3D5C';this.style.background='transparent'">
       <div style="width:40px;height:40px;border-radius:50%;background:#0B2740;border:1px solid #1A3D5C;display:flex;align-items:center;justify-content:center">
@@ -256,6 +256,12 @@ async function renderCharts() {
         <p style="font-family:'Inter',sans-serif;font-size:.78rem;color:#4A5770;line-height:1.4">Build a new Pugh decision matrix</p>
       </div>
     </a>`;
+
+  empty.classList.add('hidden');
+  if (!filtered.length) {
+    grid.innerHTML = newChartCard;
+    return;
+  }
 
   const filteredResp = await Promise.all(filtered.map(c => DB.getResponses(c.id)));
   grid.innerHTML = filtered.map((chart, idx) => {

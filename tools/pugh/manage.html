@@ -133,7 +133,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 </div>
 <script>
 document.getElementById('siteHamburger').addEventListener('click',function(){var o=document.getElementById('siteMobileMenu').classList.toggle('open');this.classList.toggle('open',o);});
-(function(){var u=JSON.parse(localStorage.getItem('pugh_user')||'null');var btn=document.getElementById('nav-auth-btn');if(!btn)return;if(u){btn.textContent='Sign Out';btn.onclick=function(){localStorage.removeItem('pugh_user');location.href='index.html'};}else{btn.textContent='Sign In';btn.onclick=function(){location.href='index.html';};}})();
+// nav auth btn updated after app.js loads (see async init below)
 (function(){var nav=document.querySelector('.site-nav');function onScroll(){nav.classList.toggle('scrolled',window.scrollY>40);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();})();
 </script>
 
@@ -298,6 +298,8 @@ let pollTimer = null;
 async function init() {
   user = await Auth.requireHost();
   if (!user) return;
+  const _navBtn = document.getElementById('nav-auth-btn');
+  if (_navBtn) { _navBtn.textContent = 'Sign Out'; _navBtn.onclick = () => Auth.signOut(); }
   if (!chartId) { location.href = 'dashboard.html'; return; }
   chart = await DB.get(chartId);
   if (!chart || chart.hostId !== user.uid) { location.href = 'dashboard.html'; return; }
