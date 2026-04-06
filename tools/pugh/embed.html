@@ -134,6 +134,7 @@ input[type=range]{accent-color:#0AC0E9}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="app.js"></script>
 <script>
+document.getElementById('loading').textContent = 'JS running…';
 const chartId = new URLSearchParams(location.search).get('id');
 let chart = null;
 let weightOverrides = {};
