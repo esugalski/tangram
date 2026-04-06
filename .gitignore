@@ -1,0 +1,10 @@
+# Environment variables — never commit these
+.env
+.env.local
+.env*.local
+
+# Temp files
+temporary screenshots/
+
+# Node
+node_modules/
