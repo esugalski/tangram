@@ -205,6 +205,16 @@ document.getElementById('siteHamburger').addEventListener('click',function(){var
           </p>
         </div>
 
+        <!-- Results Visibility toggle -->
+        <div class="card" id="results-visibility-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
+            <p style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.12em;text-transform:uppercase">Results Visibility</p>
+            <span id="rv-badge" style="font-size:.65rem;font-weight:600;letter-spacing:.06em;padding:.15rem .5rem;border-radius:4px"></span>
+          </div>
+          <p id="rv-description" style="font-size:.78rem;color:#8A97B0;line-height:1.55;margin-bottom:.875rem;font-family:'Inter',sans-serif"></p>
+          <button id="rv-toggle-btn" onclick="toggleResultsVisible()" style="width:100%;padding:.6rem 1rem;font-family:'Inter',sans-serif;font-weight:600;font-size:.8rem;border-radius:6px;cursor:pointer;border:1px solid;transition:background .15s,color .15s,border-color .15s"></button>
+        </div>
+
         <!-- Link -->
         <div class="card">
           <p style="font-family:'Inter',sans-serif;font-size:.65rem;color:#4A5770;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.75rem">Session Link</p>
@@ -414,6 +424,9 @@ async function renderPage() {
 
   // QR code
   generateQR();
+
+  // Results visibility toggle
+  renderResultsVisibility();
 }
 
 function getBaseUrl() {
@@ -475,6 +488,38 @@ async function confirmPublish() {
   closePubModal();
   renderPage();
   showToast('Results published! Participants can now view them.', 'success');
+}
+
+function renderResultsVisibility() {
+  const badge = document.getElementById('rv-badge');
+  const desc  = document.getElementById('rv-description');
+  const btn   = document.getElementById('rv-toggle-btn');
+  if (!badge || !chart) return;
+
+  if (chart.resultsVisible) {
+    badge.textContent = 'ON';
+    badge.style.cssText = 'font-size:.65rem;font-weight:600;letter-spacing:.06em;padding:.15rem .5rem;border-radius:4px;background:rgba(62,207,142,.15);color:#3ECF8E;border:1px solid rgba(62,207,142,.3)';
+    desc.textContent = 'Participants see a link to the results immediately after submitting.';
+    btn.textContent  = 'Hide Results from Participants';
+    btn.style.cssText = 'width:100%;padding:.6rem 1rem;font-family:Inter,sans-serif;font-weight:600;font-size:.8rem;border-radius:6px;cursor:pointer;border:1px solid #1A3D5C;background:transparent;color:#8A97B0;transition:background .15s,color .15s';
+    btn.onmouseover = () => { btn.style.background='#0F3050'; btn.style.color='#E8ECF4'; };
+    btn.onmouseout  = () => { btn.style.background='transparent'; btn.style.color='#8A97B0'; };
+  } else {
+    badge.textContent = 'HOST ONLY';
+    badge.style.cssText = 'font-size:.65rem;font-weight:600;letter-spacing:.06em;padding:.15rem .5rem;border-radius:4px;background:rgba(10,192,233,.1);color:#0AC0E9;border:1px solid rgba(10,192,233,.25)';
+    desc.textContent = 'Results are hidden from participants. They see a confirmation only.';
+    btn.textContent  = 'Allow Participants to See Results';
+    btn.style.cssText = 'width:100%;padding:.6rem 1rem;font-family:Inter,sans-serif;font-weight:600;font-size:.8rem;border-radius:6px;cursor:pointer;border:1px solid rgba(10,192,233,.4);background:rgba(10,192,233,.08);color:#0AC0E9;transition:background .15s,color .15s';
+    btn.onmouseover = () => { btn.style.background='rgba(10,192,233,.18)'; };
+    btn.onmouseout  = () => { btn.style.background='rgba(10,192,233,.08)'; };
+  }
+}
+
+async function toggleResultsVisible() {
+  const newVal = !chart.resultsVisible;
+  chart = await DB.update(chartId, { resultsVisible: newVal });
+  renderResultsVisibility();
+  showToast(newVal ? 'Results are now visible to participants.' : 'Results hidden — host controls sharing.', 'success');
 }
 
 async function refreshData() {

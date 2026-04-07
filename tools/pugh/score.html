@@ -455,6 +455,18 @@ function showSuccess() {
       Submitted ${fmtDateTime(new Date().toISOString())}
     </p>
   `;
+
+  // Show results link if host has enabled immediate visibility
+  const existingLink = document.getElementById('success-results-link');
+  if (existingLink) existingLink.remove();
+  if (chart.resultsVisible) {
+    const linkEl = document.createElement('a');
+    linkEl.id = 'success-results-link';
+    linkEl.href = `results.html?id=${chartId}`;
+    linkEl.style.cssText = 'display:block;width:100%;margin-top:.875rem;padding:.75rem 1.5rem;background:#0AC0E9;color:#02192F;font-family:Inter,sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.04em;border:none;border-radius:7px;cursor:pointer;text-align:center;text-decoration:none;box-sizing:border-box';
+    linkEl.textContent = 'View Results →';
+    document.getElementById('success-state').appendChild(linkEl);
+  }
 }
 
 function editScores() {

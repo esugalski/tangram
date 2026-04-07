@@ -194,7 +194,7 @@ let chartId = new URLSearchParams(location.search).get('id');
 let form = {
   title: '', description: '', date: new Date().toISOString().slice(0,10), tags: '',
   concepts: [], criteria: [],
-  scoringScale: 'numeric', useDatum: false, datumConceptId: null,
+  scoringScale: 'numeric', useDatum: false, datumConceptId: null, resultsVisible: false,
 };
 
 // Async init: auth check + optional chart load
@@ -416,6 +416,24 @@ function renderSettings() {
           </div>
         ` : ''}
       </div>
+
+      <div class="card">
+        <h2 style="font-family:'Inter',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:-.02em;margin-bottom:.4rem">Results Visibility</h2>
+        <p style="color:#4A5770;font-size:.8rem;margin-bottom:1.25rem;line-height:1.6">Control whether participants can see the aggregated results after they submit their scores.</p>
+        <div class="toggle-group">
+          <button class="toggle-opt ${!form.resultsVisible ? 'active' : ''}" onclick="setResultsVisible(false)">
+            Host controls &nbsp;<span style="color:#4A5770;font-size:.75rem">Hidden until you share</span>
+          </button>
+          <button class="toggle-opt ${form.resultsVisible ? 'active' : ''}" onclick="setResultsVisible(true)">
+            Show immediately &nbsp;<span style="color:#4A5770;font-size:.75rem">Auto-revealed on submit</span>
+          </button>
+        </div>
+        <div style="margin-top:1rem;padding:.875rem;background:#0B2740;border-radius:7px;font-size:.82rem;color:#8A97B0;line-height:1.6">
+          ${form.resultsVisible
+            ? '<strong style="color:#E8ECF4">Show immediately:</strong> After submitting, participants will see a link to the live results. Good for open discussions and LinkedIn-style engagement.'
+            : '<strong style="color:#E8ECF4">Host controls:</strong> Results are hidden after submission. Participants see a confirmation only. Use this for classroom exercises, formal reviews, or when you want to present results yourself.'}
+        </div>
+      </div>
     </div>
   `;
 }
@@ -446,6 +464,10 @@ function renderReview() {
           <div style="display:flex;justify-content:space-between;padding:.75rem;background:#0B2740;border-radius:7px">
             <span style="color:#8A97B0;font-size:.82rem">Datum</span>
             <span style="color:#E8ECF4;font-size:.85rem">${datum}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:.75rem;background:#0B2740;border-radius:7px">
+            <span style="color:#8A97B0;font-size:.82rem">Results Visibility</span>
+            <span style="color:#E8ECF4;font-size:.85rem">${form.resultsVisible ? 'Show immediately' : 'Host controls'}</span>
           </div>
         </div>
       </div>
@@ -565,6 +587,7 @@ function removeCriteria(i) {
 
 function setScoringScale(s) { form.scoringScale = s; renderStep(); }
 function setUseDatum(v) { form.useDatum = v; if (!v) form.datumConceptId = null; renderStep(); }
+function setResultsVisible(v) { form.resultsVisible = v; renderStep(); }
 
 // ---- Validation ----
 function validateStep() {
@@ -610,6 +633,7 @@ async function saveChart(status) {
     scoringScale: form.scoringScale,
     useDatum: form.useDatum,
     datumConceptId: form.datumConceptId,
+    resultsVisible: form.resultsVisible,
     status,
   };
 
