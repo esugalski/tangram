@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tangram Pugh · Sign In</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pugh Chart · Tangram MedTech Tools</title>
+<meta name="description" content="Collaborative, weighted concept scoring for medtech teams. Bring structure and objectivity to design reviews.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -18,24 +19,25 @@ tailwind.config = {
       t1:'#E8ECF4',t2:'#8A97B0',t3:'#4A5770',
       pos:'#3ECF8E',neg:'#E05555',
     },
-    fontFamily:{
-      display:['Inter','sans-serif'],
-      body:['Inter','sans-serif'],
-      mono:['Inter','sans-serif'],
-    }
+    fontFamily:{display:['Inter','sans-serif'],body:['Inter','sans-serif'],mono:['Inter','sans-serif']}
   }}
 }
 </script>
 <style>
+/* ─── RESET & BASE ─── */
 *{box-sizing:border-box;margin:0;padding:0}
 *,*::before,*::after{font-family:'Inter',sans-serif}
 h1,h2,h3,h4,h5,h6{font-family:'Inter',sans-serif;font-weight:700}
+html{scroll-behavior:smooth}
 body{font-family:'Inter',sans-serif;background:#0B2740;color:#E8ECF4;min-height:100vh;position:relative;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(10,192,233,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(10,192,233,.035) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+
+/* ─── BACKGROUND TEXTURE ─── */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(10,192,233,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(10,192,233,.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
 body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");background-size:300px;pointer-events:none;z-index:0}
-.orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
-/* ─── SITE NAV & FOOTER ─── */
-.site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(11,39,64,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
+
+/* ─── SITE NAV ─── */
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(11,39,64,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);transition:background .3s,box-shadow .3s}
 .site-nav-inner{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:72px;padding:0 2rem}
 .site-nav-links{display:flex;align-items:center;gap:2rem}
 .site-nav-link{font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);text-decoration:none;transition:color .2s;letter-spacing:.01em}
@@ -52,23 +54,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .site-mobile-menu .site-nav-link{color:rgba(255,255,255,.72);font-size:1rem;padding:.8rem 0;border-bottom:1px solid rgba(255,255,255,.06);display:block}
 .site-mobile-menu .site-btn-aqua{margin-top:1rem;justify-content:center}
 @media(max-width:768px){.site-nav-links{display:none}.site-hamburger{display:flex}}
-.site-footer{background:#02192F;padding:4rem 2rem 2rem;border-top:1px solid rgba(255,255,255,.04)}
-.site-footer-inner{max-width:1280px;margin:0 auto}
-.site-footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(255,255,255,.06)}
-.site-footer-brand-desc{font-size:.84rem;line-height:1.65;color:rgba(255,255,255,.32);margin-top:.875rem;max-width:280px}
-.site-footer-sub{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.06)}
-.site-footer-sub-label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:.35rem}
-.site-footer-sub-name{font-size:.85rem;font-weight:600;color:rgba(10,192,233,.55)}
-.site-footer-col-title{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);margin-bottom:1.1rem}
-.site-footer-links{list-style:none;display:flex;flex-direction:column;gap:.6rem}
-.site-footer-link{color:rgba(255,255,255,.38);text-decoration:none;font-size:.84rem;transition:color .2s}
-.site-footer-link:hover{color:#0AC0E9}
-.site-footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:1.75rem;flex-wrap:wrap;gap:.75rem}
-.site-footer-copy{font-size:.74rem;color:rgba(255,255,255,.18)}
-.site-footer-legal{display:flex;gap:1.5rem}
-@media(max-width:768px){.site-footer-top{grid-template-columns:1fr 1fr;gap:2rem}}
-@media(max-width:480px){.site-footer-top{grid-template-columns:1fr}}
-/* Tools dropdown */
 .site-tools-dropdown{position:relative}
 .site-tools-btn{display:flex;align-items:center;gap:.35rem;font-size:.875rem;font-weight:500;color:rgba(255,255,255,.68);background:transparent;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s;letter-spacing:.01em;padding:0;white-space:nowrap}
 .site-tools-btn:hover,.site-tools-dropdown:hover .site-tools-btn{color:#0AC0E9}
@@ -79,8 +64,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .site-tools-menu-label{padding:.55rem 1rem .25rem;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.22)}
 .site-nav-auth-btn{font-size:.82rem;font-weight:500;color:rgba(255,255,255,.62);background:transparent;border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:.45rem .875rem;cursor:pointer;font-family:'Inter',sans-serif;transition:color .2s,border-color .2s;white-space:nowrap}
 .site-nav-auth-btn:hover{color:#0AC0E9;border-color:rgba(10,192,233,.5)}
-/* Scroll effect */
-.site-nav{transition:background .3s,box-shadow .3s}
 .site-nav-logo-light{display:block}.site-nav-logo-dark{display:none}
 .site-nav.scrolled{background:rgba(255,255,255,.97) !important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 1px 0 rgba(0,0,0,.08)}
 .site-nav.scrolled .site-nav-logo-light{display:none}.site-nav.scrolled .site-nav-logo-dark{display:block}
@@ -93,26 +76,145 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .site-nav.scrolled .site-nav-auth-btn{color:#304F6B;border-color:rgba(11,39,64,.2)}.site-nav.scrolled .site-nav-auth-btn:hover{color:#089bbf;border-color:rgba(10,192,233,.5)}
 .site-nav.scrolled .site-btn-aqua{background:#0AC0E9;color:#0B2740 !important}
 
+/* ─── AUTH FORM ELEMENTS ─── */
 .btn-primary{display:block;width:100%;padding:.75rem 1.5rem;background:#0AC0E9;color:#02192F;font-family:'Inter',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.04em;border:none;border-radius:7px;cursor:pointer;transition:background .15s,box-shadow .15s,transform .1s;text-align:center;text-decoration:none}
 .btn-primary:hover{background:#089bbf;box-shadow:0 4px 24px rgba(10,192,233,.28)}
 .btn-primary:active{transform:scale(.98)}
-
 .btn-ghost{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;padding:.75rem 1.5rem;background:transparent;color:#E8ECF4;font-family:'Inter',sans-serif;font-weight:500;font-size:.9rem;border:1px solid #1A3D5C;border-radius:7px;cursor:pointer;transition:background .15s,border-color .15s}
 .btn-ghost:hover{background:#0F3050;border-color:#304F6B}
-
 .field{width:100%;background:#0B2740;border:1px solid #1A3D5C;border-radius:7px;padding:.75rem 1rem;color:#E8ECF4;font-family:'Inter',sans-serif;font-size:.9rem;outline:none;transition:border-color .15s,box-shadow .15s}
 .field:focus{border-color:#0AC0E9;box-shadow:0 0 0 3px rgba(10,192,233,.12)}
 .field::placeholder{color:#4A5770}
-
 .card{background:#031C2E;border:1px solid #0F3050;border-radius:14px}
 label{display:block;color:#8A97B0;font-size:.75rem;font-family:'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem}
 .err{color:#E05555;font-size:.8rem;margin-top:.4rem;display:none}
 .err.show{display:block}
+
+/* ─── FOOTER ─── */
+.site-footer{background:#02192F;padding:4rem 2rem 2rem;border-top:1px solid rgba(255,255,255,.04)}
+.site-footer-inner{max-width:1280px;margin:0 auto}
+.site-footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(255,255,255,.06)}
+.site-footer-brand-desc{font-size:.84rem;line-height:1.65;color:rgba(255,255,255,.32);margin-top:.875rem;max-width:280px}
+.site-footer-col-title{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);margin-bottom:1.1rem}
+.site-footer-links{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+.site-footer-link{color:rgba(255,255,255,.38);text-decoration:none;font-size:.84rem;transition:color .2s}
+.site-footer-link:hover{color:#0AC0E9}
+.site-footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:1.75rem;flex-wrap:wrap;gap:.75rem}
+.site-footer-copy{font-size:.74rem;color:rgba(255,255,255,.18)}
+.site-footer-legal{display:flex;gap:1.5rem}
+@media(max-width:768px){.site-footer-top{grid-template-columns:1fr 1fr;gap:2rem}}
+@media(max-width:480px){.site-footer-top{grid-template-columns:1fr}}
+
+/* ─── LANDING: HERO ─── */
+.lp-hero{position:relative;z-index:10;padding:calc(72px + 6rem) 2rem 6rem;text-align:center;overflow:hidden}
+.lp-hero-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:900px;height:500px;background:radial-gradient(ellipse at 50% 30%,rgba(10,192,233,.13) 0%,transparent 70%);pointer-events:none}
+.lp-eyebrow{display:inline-flex;align-items:center;gap:.5rem;background:rgba(10,192,233,.1);border:1px solid rgba(10,192,233,.22);color:#0AC0E9;font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:.35rem .9rem;border-radius:100px;margin-bottom:1.75rem}
+.lp-h1{font-size:clamp(2rem,4.5vw,4rem);font-weight:900;letter-spacing:-.04em;line-height:1.05;color:#E8ECF4;margin-bottom:1.5rem;max-width:820px;margin-left:auto;margin-right:auto}
+.lp-h1 .grad{background:linear-gradient(100deg,#0AC0E9 0%,#3ECF8E 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lp-hero-sub{font-size:1.1rem;line-height:1.72;color:rgba(232,236,244,.58);max-width:540px;margin:0 auto 2.5rem}
+.lp-hero-ctas{display:flex;align-items:center;justify-content:center;gap:.875rem;flex-wrap:wrap}
+.lp-cta-primary{display:inline-flex;align-items:center;gap:.45rem;background:#0AC0E9;color:#02192F;font-weight:700;font-size:.9rem;letter-spacing:.015em;padding:.85rem 1.85rem;border-radius:8px;text-decoration:none;border:none;cursor:pointer;box-shadow:0 4px 22px rgba(10,192,233,.38),0 1px 6px rgba(10,192,233,.2);transition:background .2s,box-shadow .2s,transform .15s}
+.lp-cta-primary:hover{background:#089bbf;box-shadow:0 8px 36px rgba(10,192,233,.48);transform:translateY(-1px)}
+.lp-cta-primary:active{transform:scale(.98)}
+.lp-cta-ghost{display:inline-flex;align-items:center;gap:.45rem;background:transparent;color:rgba(232,236,244,.65);font-weight:500;font-size:.9rem;padding:.85rem 1.5rem;border-radius:8px;text-decoration:none;border:1px solid rgba(255,255,255,.14);cursor:pointer;transition:color .2s,border-color .2s,background .2s}
+.lp-cta-ghost:hover{color:#E8ECF4;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04)}
+.lp-hero-trust{margin-top:2.25rem;font-size:.76rem;color:rgba(232,236,244,.28);letter-spacing:.04em}
+
+/* ─── LANDING: SHARED ─── */
+.lp-section{position:relative;z-index:10;padding:6rem 2rem}
+.lp-section-light{position:relative;z-index:10;padding:6rem 2rem;background:#F5F5F5;color:#0B2740}
+.lp-container{max-width:1160px;margin:0 auto}
+.lp-section-eyebrow{font-size:.63rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#0AC0E9;margin-bottom:.875rem}
+.lp-section-light .lp-section-eyebrow{color:#0891b2}
+.lp-section-h2{font-size:clamp(1.9rem,3.5vw,2.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.15;color:#E8ECF4;margin-bottom:.875rem}
+.lp-section-light .lp-section-h2{color:#0B2740}
+.lp-section-desc{font-size:1rem;line-height:1.72;color:rgba(232,236,244,.5);max-width:580px}
+.lp-section-light .lp-section-desc{color:#4A5770}
+
+/* ─── LANDING: WHAT IS IT ─── */
+.lp-what-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+@media(max-width:800px){.lp-what-grid{grid-template-columns:1fr;gap:2.5rem}}
+.lp-what-body{font-size:.97rem;line-height:1.75;color:#304F6B}
+.lp-what-body p+p{margin-top:1rem}
+.lp-callout{background:#0B2740;border:1px solid rgba(10,192,233,.18);border-left:3px solid #0AC0E9;border-radius:10px;padding:1.75rem}
+.lp-callout-text{font-size:.92rem;font-style:italic;line-height:1.7;color:rgba(232,236,244,.68);margin-bottom:.875rem}
+.lp-callout-attr{font-size:.72rem;font-weight:700;color:#0AC0E9;letter-spacing:.08em;text-transform:uppercase}
+.lp-tag-list{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem}
+.lp-tag{background:rgba(10,192,233,.08);border:1px solid rgba(10,192,233,.18);color:#0891b2;font-size:.72rem;font-weight:600;letter-spacing:.04em;padding:.25rem .65rem;border-radius:100px}
+
+/* ─── LANDING: HOW IT WORKS ─── */
+.lp-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2.5rem;margin-top:3.5rem;position:relative}
+.lp-steps::before{content:'';position:absolute;top:21px;left:calc(12.5% + 20px);right:calc(12.5% + 20px);height:1px;background:linear-gradient(90deg,transparent,rgba(10,192,233,.25) 20%,rgba(10,192,233,.25) 80%,transparent);pointer-events:none}
+@media(max-width:860px){.lp-steps{grid-template-columns:1fr 1fr;gap:2rem}.lp-steps::before{display:none}}
+@media(max-width:480px){.lp-steps{grid-template-columns:1fr}}
+.lp-step-icon-wrap{width:42px;height:42px;background:rgba(10,192,233,.1);border:1px solid rgba(10,192,233,.22);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;color:#0AC0E9;flex-shrink:0;position:relative;z-index:1}
+.lp-step-num{font-size:3.5rem;font-weight:900;color:rgba(10,192,233,.12);line-height:1;letter-spacing:-.04em;position:absolute;top:-1.5rem;right:-.5rem;pointer-events:none}
+.lp-step{position:relative;padding-top:.5rem}
+.lp-step-title{font-size:.92rem;font-weight:700;color:#E8ECF4;margin-bottom:.45rem;letter-spacing:-.015em}
+.lp-step-desc{font-size:.82rem;line-height:1.65;color:rgba(232,236,244,.44)}
+
+/* ─── LANDING: EXAMPLE OUTPUT ─── */
+.lp-demo-wrap{margin-top:3rem;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(11,39,64,.06),0 12px 48px rgba(11,39,64,.12),0 32px 80px rgba(11,39,64,.08)}
+.lp-demo-header{background:#0B2740;padding:1.2rem 1.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.lp-demo-title-row{display:flex;align-items:center;gap:.875rem}
+.lp-demo-title{font-size:.95rem;font-weight:700;color:#E8ECF4;letter-spacing:-.01em}
+.lp-demo-meta{font-size:.72rem;color:rgba(232,236,244,.35)}
+.lp-demo-badge{background:rgba(62,207,142,.12);border:1px solid rgba(62,207,142,.25);color:#3ECF8E;font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .65rem;border-radius:100px}
+.lp-demo-body{display:grid;grid-template-columns:1fr 260px}
+@media(max-width:760px){.lp-demo-body{grid-template-columns:1fr}}
+.lp-matrix-wrap{overflow-x:auto;padding:1.5rem 1.75rem}
+.lp-matrix{width:100%;border-collapse:collapse;min-width:460px}
+.lp-matrix thead th{padding:.65rem 1rem;font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#8A97B0;border-bottom:2px solid #E8ECF4;text-align:center}
+.lp-matrix thead th:first-child{text-align:left;color:#304F6B}
+.lp-matrix tbody td{padding:.6rem 1rem;text-align:center;font-size:.84rem;color:#0B2740;border-bottom:1px solid rgba(11,39,64,.055)}
+.lp-matrix tbody td:first-child{text-align:left}
+.lp-crit-name{font-size:.84rem;font-weight:600;color:#0B2740}
+.lp-crit-weight{font-size:.7rem;color:#8A97B0;font-weight:400;margin-top:.1rem}
+.lp-chip{display:inline-block;border-radius:5px;padding:.28rem .65rem;font-size:.82rem;font-weight:700;min-width:48px;text-align:center}
+.lp-matrix tfoot td{padding:.875rem 1rem;font-weight:800;font-size:.88rem;text-align:center;background:#fafafa;border-top:2px solid #E8ECF4}
+.lp-matrix tfoot td:first-child{text-align:left;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8A97B0}
+.lp-best-col-label{display:flex;flex-direction:column;align-items:center;gap:.25rem}
+.lp-best-badge{display:inline-flex;align-items:center;gap:.2rem;background:#0AC0E9;color:#02192F;font-size:.58rem;font-weight:800;letter-spacing:.08em;padding:.18rem .5rem;border-radius:3px}
+.lp-rankings-panel{border-left:1px solid #E8ECF4;padding:1.5rem;background:#fafafa}
+@media(max-width:760px){.lp-rankings-panel{border-left:none;border-top:1px solid #E8ECF4}}
+.lp-rankings-heading{font-size:.62rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#8A97B0;margin-bottom:1.1rem}
+.lp-rank-item{display:flex;align-items:center;gap:.875rem;padding:.75rem;background:#fff;border-radius:10px;margin-bottom:.5rem;box-shadow:0 1px 3px rgba(11,39,64,.06)}
+.lp-rank-medal{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;flex-shrink:0}
+.lp-rank-info{flex:1;min-width:0}
+.lp-rank-name{font-size:.82rem;font-weight:700;color:#0B2740;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp-rank-bar-row{display:flex;align-items:center;gap:.5rem;margin-top:.3rem}
+.lp-rank-bar-track{flex:1;height:4px;background:#E8ECF4;border-radius:100px;overflow:hidden}
+.lp-rank-bar-fill{height:100%;border-radius:100px}
+.lp-rank-score{font-size:.78rem;font-weight:700;color:#304F6B;flex-shrink:0}
+.lp-demo-legend{padding:1rem 1.75rem;border-top:1px solid #E8ECF4;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:#fafafa}
+.lp-legend-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8A97B0;margin-right:.5rem}
+.lp-legend-item{display:flex;align-items:center;gap:.3rem;font-size:.72rem;color:#304F6B}
+.lp-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ─── LANDING: FEATURES ─── */
+.lp-features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-top:3.5rem}
+@media(max-width:860px){.lp-features-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.lp-features-grid{grid-template-columns:1fr}}
+.lp-feat{background:rgba(3,28,46,.55);border:1px solid rgba(255,255,255,.055);border-radius:12px;padding:1.5rem;transition:border-color .2s,background .2s,transform .2s}
+.lp-feat:hover{border-color:rgba(10,192,233,.22);background:rgba(3,28,46,.75);transform:translateY(-2px)}
+.lp-feat-icon{width:40px;height:40px;background:rgba(10,192,233,.1);border:1px solid rgba(10,192,233,.15);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;color:#0AC0E9}
+.lp-feat-title{font-size:.9rem;font-weight:700;color:#E8ECF4;margin-bottom:.4rem;letter-spacing:-.015em}
+.lp-feat-desc{font-size:.81rem;line-height:1.65;color:rgba(232,236,244,.4)}
+
+/* ─── LANDING: SIGN-IN SECTION ─── */
+.lp-signin{position:relative;z-index:10;padding:6rem 2rem 8rem;text-align:center}
+.lp-signin-card{background:#031C2E;border:1px solid #0F3050;border-radius:14px;padding:2rem;max-width:420px;margin:2.5rem auto 0;text-align:left;box-shadow:0 8px 40px rgba(0,0,0,.25),0 2px 12px rgba(0,0,0,.15)}
+
+/* ─── ANIMATIONS ─── */
+@keyframes lp-fade-up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+/* Only animate when JS has initialised — elements remain visible if JS is slow or absent */
+html.js-ready .lp-fade{opacity:0;transform:translateY(18px);transition:opacity .65s cubic-bezier(.22,1,.36,1),transform .65s cubic-bezier(.22,1,.36,1)}
+html.js-ready .lp-fade.visible{opacity:1;transform:translateY(0)}
 </style>
 </head>
 <body>
 
-<!-- Site Nav -->
+<!-- ─── SITE NAV ─── -->
 <nav class="site-nav">
   <div class="site-nav-inner">
     <a href="https://www.tangrammedtech.com" style="text-decoration:none;display:flex;align-items:center;flex-shrink:0">
@@ -136,6 +238,8 @@ label{display:block;color:#8A97B0;font-size:.75rem;font-family:'Inter',sans-seri
     <button class="site-hamburger" id="siteHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
+
+<!-- Mobile menu -->
 <div class="site-mobile-menu" id="siteMobileMenu">
   <a href="https://www.tangrammedtech.com/#services" class="site-nav-link">Services</a>
   <a href="https://www.tangrammedtech.com/#about" class="site-nav-link">About</a>
@@ -144,99 +248,483 @@ label{display:block;color:#8A97B0;font-size:.75rem;font-family:'Inter',sans-seri
   <a href="dashboard.html" class="site-nav-link">Pugh Chart</a>
   <a href="https://www.tangrammedtech.com/#contact" class="site-btn-aqua">Work With Tangram <svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
 </div>
-<script>
-document.getElementById('siteHamburger').addEventListener('click',function(){var o=document.getElementById('siteMobileMenu').classList.toggle('open');this.classList.toggle('open',o);});
-// nav auth btn updated after app.js loads (see async init below)
-(function(){var nav=document.querySelector('.site-nav');function onScroll(){nav.classList.toggle('scrolled',window.scrollY>40);}window.addEventListener('scroll',onScroll,{passive:true});onScroll();})();
-</script>
 
 <!-- Background atmosphere -->
-<div class="orb" style="width:500px;height:500px;top:-150px;right:-100px;background:#0AC0E9;opacity:.07"></div>
-<div class="orb" style="width:350px;height:350px;bottom:-80px;left:-80px;background:#304F6B;opacity:.18"></div>
+<div class="orb" style="width:600px;height:600px;top:-200px;right:-150px;background:#0AC0E9;opacity:.06"></div>
+<div class="orb" style="width:400px;height:400px;bottom:10%;left:-120px;background:#304F6B;opacity:.2"></div>
 
-<div class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4" style="padding-top:calc(72px + 3rem);padding-bottom:4rem">
-
-  <!-- Tool heading -->
-  <div class="mb-10 text-center">
-    <p style="color:#0AC0E9;font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;font-family:'Inter',sans-serif;margin-bottom:.5rem">Tangram Tools</p>
-    <h1 style="font-family:'Inter',sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:-.03em;color:#E8ECF4;margin-bottom:.4rem">Pugh Decision Matrix</h1>
-    <p style="color:#4A5770;font-size:.82rem;font-family:'Inter',sans-serif;max-width:320px;margin:0 auto;line-height:1.55">A structured, weighted scoring tool for comparing and ranking design concepts against evaluation criteria.</p>
+<!-- ─── HERO ─── -->
+<section class="lp-hero">
+  <div class="lp-hero-glow"></div>
+  <div style="position:relative;z-index:1">
+    <div class="lp-eyebrow" style="animation:lp-fade-up .5s cubic-bezier(.22,1,.36,1) both;animation-delay:.05s">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="3"/></svg>
+      Tangram Tools
+    </div>
+    <h1 class="lp-h1" style="animation:lp-fade-up .6s cubic-bezier(.22,1,.36,1) both;animation-delay:.15s">
+      Force the conversation. <span class="grad">Own the decision.</span>
+    </h1>
+    <p class="lp-hero-sub" style="animation:lp-fade-up .6s cubic-bezier(.22,1,.36,1) both;animation-delay:.25s">
+      Traditional Pugh Charts are run as group exercises — and the loudest voice drives the outcome. This one distributes scoring to individuals first, aggregates the results, and surfaces exactly where the team disagrees. That's where the real debate starts.
+    </p>
+    <div class="lp-hero-ctas" style="animation:lp-fade-up .6s cubic-bezier(.22,1,.36,1) both;animation-delay:.35s">
+      <a href="#signin" class="lp-cta-primary">
+        Get Started Free
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="#example" class="lp-cta-ghost">
+        See an example
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
+    </div>
+    <p class="lp-hero-trust" style="animation:lp-fade-up .6s cubic-bezier(.22,1,.36,1) both;animation-delay:.45s">Free to use &nbsp;·&nbsp; No login required for participants &nbsp;·&nbsp; Built for medtech teams</p>
   </div>
+</section>
 
-  <!-- Card -->
-  <div class="card w-full" style="max-width:420px;padding:2rem">
+<!-- ─── WHAT IS IT ─── -->
+<section class="lp-section-light">
+  <div class="lp-container">
+    <div class="lp-what-grid">
+      <div class="lp-fade" style="transition-delay:.1s">
+        <p class="lp-section-eyebrow">The method</p>
+        <h2 class="lp-section-h2">The right decision starts<br>with the right debate.</h2>
+        <p class="lp-section-desc" style="margin-bottom:1.5rem">Most teams skip the debate. That's where bad decisions come from.</p>
+        <div class="lp-what-body">
+          <p>The traditional Pugh Chart is a group exercise. Someone puts criteria on a whiteboard, the team scores together, and the most senior voice in the room shapes the outcome. The debate never happens — it's been pre-empted by social dynamics before it even starts.</p>
+          <p style="margin-top:1rem">This platform works differently. Each team member scores independently, without seeing anyone else's responses. Once the scores are in, everything is aggregated into a single matrix the whole team reviews together. That's when the real conversation begins — because now you can see exactly where opinions diverge, which criteria generated the most disagreement, and who weighted things differently than everyone else assumed.</p>
+          <p style="margin-top:1rem">Those deviations aren't noise. They're the most valuable output of the whole exercise. They surface unspoken assumptions, misaligned priorities, and risks that haven't been named yet. Use it for product concept selection, regulatory pathway decisions, manufacturing partner evaluation, commercial strategy — any decision where multiple perspectives need to be on the record before a direction is chosen.</p>
+        </div>
+        <div class="lp-tag-list" style="margin-top:1.75rem">
+          <span class="lp-tag">Product Concept Selection</span>
+          <span class="lp-tag">Regulatory Pathway Analysis</span>
+          <span class="lp-tag">Commercial Strategy</span>
+          <span class="lp-tag">Manufacturing Partner Evaluation</span>
+          <span class="lp-tag">Strategic Trade-off Analysis</span>
+        </div>
+      </div>
+      <div class="lp-fade" style="transition-delay:.2s">
+        <div class="lp-callout">
+          <p class="lp-callout-text">The traditional Pugh Chart has a flaw: run it as a group exercise and you don't get consensus — you get conformity. Independent scoring breaks that pattern. It puts every voice on the record before the loudest one in the room has a chance to set the tone.</p>
+          <p class="lp-callout-attr">Designed to surface disagreement, not suppress it</p>
+        </div>
+        <div style="margin-top:1.5rem;background:#0B2740;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:1.5rem">
+          <p style="font-size:.7rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(232,236,244,.3);margin-bottom:1rem">Scoring methods</p>
+          <div style="display:flex;flex-direction:column;gap:.75rem">
+            <div style="display:flex;align-items:flex-start;gap:.875rem">
+              <div style="width:36px;height:36px;background:rgba(10,192,233,.1);border:1px solid rgba(10,192,233,.18);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#0AC0E9;font-size:.75rem;font-weight:800">1–5</div>
+              <div>
+                <p style="font-size:.84rem;font-weight:600;color:#E8ECF4;margin-bottom:.2rem">Numeric Scale</p>
+                <p style="font-size:.78rem;line-height:1.5;color:rgba(232,236,244,.4)">Absolute scoring. Rate each concept from Poor (1) to Excellent (5) per criterion.</p>
+              </div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:.875rem">
+              <div style="width:36px;height:36px;background:rgba(62,207,142,.08);border:1px solid rgba(62,207,142,.18);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#3ECF8E;font-size:.72rem;font-weight:800">±1</div>
+              <div>
+                <p style="font-size:.84rem;font-weight:600;color:#E8ECF4;margin-bottom:.2rem">Pugh Scale</p>
+                <p style="font-size:.78rem;line-height:1.5;color:rgba(232,236,244,.4)">Relative scoring. Compare each concept against a datum: better (+1), same (0), or worse (−1).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Tabs -->
-    <div style="display:flex;border-bottom:1px solid #0F3050;margin-bottom:1.5rem">
-      <button id="t-in" onclick="setTab('in')"
-        style="padding:.6rem 0;margin-right:1.5rem;background:none;border:none;border-bottom:2px solid #0AC0E9;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;color:#E8ECF4;transition:color .15s">
-        SIGN IN
-      </button>
-      <button id="t-up" onclick="setTab('up')"
-        style="padding:.6rem 0;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;color:#4A5770;transition:color .15s">
-        CREATE ACCOUNT
-      </button>
+<!-- ─── HOW IT WORKS ─── -->
+<section class="lp-section">
+  <div class="lp-container">
+    <div class="lp-fade" style="text-align:center;max-width:560px;margin:0 auto">
+      <p class="lp-section-eyebrow">How it works</p>
+      <h2 class="lp-section-h2">From setup to results<br>in under 10 minutes.</h2>
+    </div>
+    <div class="lp-steps">
+      <!-- Step 1 -->
+      <div class="lp-step lp-fade" style="transition-delay:.05s">
+        <div style="position:relative">
+          <div class="lp-step-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M3 9h6"/><path d="M3 15h6"/></svg>
+          </div>
+          <span class="lp-step-num">01</span>
+        </div>
+        <h3 class="lp-step-title">Define your concepts</h3>
+        <p class="lp-step-desc">Add the design options your team is considering. Give each one a name, description, and optional thumbnail image.</p>
+      </div>
+      <!-- Step 2 -->
+      <div class="lp-step lp-fade" style="transition-delay:.12s">
+        <div style="position:relative">
+          <div class="lp-step-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="10" cy="6" r="2.5" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="2.5" fill="currentColor" stroke="none"/><circle cx="8" cy="18" r="2.5" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <span class="lp-step-num">02</span>
+        </div>
+        <h3 class="lp-step-title">Set criteria &amp; weights</h3>
+        <p class="lp-step-desc">Define what matters — trackability, cost, manufacturability, safety — and assign relative weights to each criterion.</p>
+      </div>
+      <!-- Step 3 -->
+      <div class="lp-step lp-fade" style="transition-delay:.19s">
+        <div style="position:relative">
+          <div class="lp-step-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <span class="lp-step-num">03</span>
+        </div>
+        <h3 class="lp-step-title">Invite your team to score</h3>
+        <p class="lp-step-desc">Share a session link. Each person scores on their own — privately, without seeing anyone else's responses. No account needed.</p>
+      </div>
+      <!-- Step 4 -->
+      <div class="lp-step lp-fade" style="transition-delay:.26s">
+        <div style="position:relative">
+          <div class="lp-step-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+          </div>
+          <span class="lp-step-num">04</span>
+        </div>
+        <h3 class="lp-step-title">Review ranked results</h3>
+        <p class="lp-step-desc">See a color-coded matrix ranked by weighted score. Adjust weights live. Drill into any criterion. Export to CSV.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── EXAMPLE OUTPUT ─── -->
+<section class="lp-section-light" id="example">
+  <div class="lp-container">
+    <div class="lp-fade" style="text-align:center;max-width:560px;margin:0 auto">
+      <p class="lp-section-eyebrow">See it in action</p>
+      <h2 class="lp-section-h2">What a completed<br>Pugh Chart looks like.</h2>
+      <p class="lp-section-desc" style="margin:0 auto">In this example, a medtech team used Pugh Chart to evaluate three competing catheter tip concepts against four weighted performance criteria. The matrix below shows the scored results.</p>
     </div>
 
-    <!-- Google -->
-    <button class="btn-ghost" onclick="googleIn()" style="margin-bottom:1rem">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92A8.78 8.78 0 0 0 17.64 9.2z" fill="#4285F4"/>
-        <path d="M9 18a8.6 8.6 0 0 0 5.96-2.18l-2.92-2.26a5.44 5.44 0 0 1-8.1-2.85H.96v2.34A9 9 0 0 0 9 18z" fill="#34A853"/>
-        <path d="M3.94 10.71A5.41 5.41 0 0 1 3.66 9c0-.6.1-1.17.28-1.71V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.05l2.98-2.34z" fill="#FBBC05"/>
-        <path d="M9 3.58c1.32 0 2.5.45 3.44 1.34l2.58-2.58A8.95 8.95 0 0 0 9 0 9 9 0 0 0 .96 4.95l2.98 2.34A5.36 5.36 0 0 1 9 3.58z" fill="#EA4335"/>
-      </svg>
-      Continue with Google
-    </button>
+    <div class="lp-demo-wrap lp-fade" style="transition-delay:.1s">
+      <!-- Header -->
+      <div class="lp-demo-header">
+        <div class="lp-demo-title-row">
+          <div>
+            <p class="lp-demo-title">Catheter Tip Design — Concept Selection</p>
+            <p class="lp-demo-meta">5 responses · Scoring scale: 1–5 Numeric · Apr 7, 2026</p>
+          </div>
+        </div>
+        <span class="lp-demo-badge">Session Complete</span>
+      </div>
 
-    <!-- Divider -->
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem">
-      <div style="flex:1;height:1px;background:#1A3D5C"></div>
-      <span style="color:#4A5770;font-size:.7rem;font-family:'Inter',sans-serif">OR</span>
-      <div style="flex:1;height:1px;background:#1A3D5C"></div>
+      <!-- Matrix + Rankings -->
+      <div class="lp-demo-body">
+        <!-- Matrix table -->
+        <div class="lp-matrix-wrap">
+          <table class="lp-matrix">
+            <thead>
+              <tr>
+                <th style="width:180px">Criterion</th>
+                <th>
+                  <div style="font-size:.72rem;font-weight:700;color:#304F6B;letter-spacing:.02em;text-transform:none">Polymer Flex</div>
+                </th>
+                <th>
+                  <div style="font-size:.72rem;font-weight:700;color:#304F6B;letter-spacing:.02em;text-transform:none">Nitinol Braid</div>
+                </th>
+                <th>
+                  <div class="lp-best-col-label">
+                    <span class="lp-best-badge">▲ BEST</span>
+                    <span style="font-size:.72rem;font-weight:700;color:#0B2740;letter-spacing:.02em;text-transform:none">Hybrid Composite</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="lp-crit-name">Trackability</div>
+                  <div class="lp-crit-weight">Weight: 30%</div>
+                </td>
+                <td><span class="lp-chip" style="background:rgba(126,200,122,.18);color:#2a6e30;border:1px solid rgba(126,200,122,.35)">3.8</span></td>
+                <td><span class="lp-chip" style="background:rgba(126,200,122,.18);color:#2a6e30;border:1px solid rgba(126,200,122,.35)">4.2</span></td>
+                <td><span class="lp-chip" style="background:rgba(62,207,142,.18);color:#0d6e3e;border:1px solid rgba(62,207,142,.4)">4.5</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="lp-crit-name">Pushability</div>
+                  <div class="lp-crit-weight">Weight: 25%</div>
+                </td>
+                <td><span class="lp-chip" style="background:rgba(126,200,122,.18);color:#2a6e30;border:1px solid rgba(126,200,122,.35)">4.1</span></td>
+                <td><span class="lp-chip" style="background:rgba(126,200,122,.18);color:#2a6e30;border:1px solid rgba(126,200,122,.35)">3.5</span></td>
+                <td><span class="lp-chip" style="background:rgba(126,200,122,.18);color:#2a6e30;border:1px solid rgba(126,200,122,.35)">4.3</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="lp-crit-name">Kink Resistance</div>
+                  <div class="lp-crit-weight">Weight: 25%</div>
+                </td>
+                <td><span class="lp-chip" style="background:rgba(232,131,58,.15);color:#a85200;border:1px solid rgba(232,131,58,.35)">2.4</span></td>
+                <td><span class="lp-chip" style="background:rgba(62,207,142,.18);color:#0d6e3e;border:1px solid rgba(62,207,142,.4)">4.7</span></td>
+                <td><span class="lp-chip" style="background:rgba(126,200,122,.18);color:#2a6e30;border:1px solid rgba(126,200,122,.35)">4.1</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="lp-crit-name">Manufacturability</div>
+                  <div class="lp-crit-weight">Weight: 20%</div>
+                </td>
+                <td><span class="lp-chip" style="background:rgba(62,207,142,.18);color:#0d6e3e;border:1px solid rgba(62,207,142,.4)">4.6</span></td>
+                <td><span class="lp-chip" style="background:rgba(232,131,58,.15);color:#a85200;border:1px solid rgba(232,131,58,.35)">2.8</span></td>
+                <td><span class="lp-chip" style="background:rgba(126,200,122,.18);color:#2a6e30;border:1px solid rgba(126,200,122,.35)">3.9</span></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>Weighted Score</td>
+                <td><span class="lp-chip" style="background:rgba(126,200,122,.18);color:#2a6e30;border:1px solid rgba(126,200,122,.35)">3.69</span></td>
+                <td><span class="lp-chip" style="background:rgba(126,200,122,.18);color:#2a6e30;border:1px solid rgba(126,200,122,.35)">3.87</span></td>
+                <td><span class="lp-chip" style="background:rgba(10,192,233,.15);color:#0B2740;border:2px solid rgba(10,192,233,.5);font-size:.88rem">4.23</span></td>
+              </tr>
+            </tfoot>
+          </table>
+          <!-- Legend -->
+          <div class="lp-demo-legend">
+            <span class="lp-legend-label">Score</span>
+            <div class="lp-legend-item"><span class="lp-legend-dot" style="background:#E05555"></span>Poor (1–2)</div>
+            <div class="lp-legend-item"><span class="lp-legend-dot" style="background:#E8833A"></span>Fair (2–3)</div>
+            <div class="lp-legend-item"><span class="lp-legend-dot" style="background:#ECC94B"></span>Neutral (3–3.5)</div>
+            <div class="lp-legend-item"><span class="lp-legend-dot" style="background:#7EC87A"></span>Good (3.5–4.5)</div>
+            <div class="lp-legend-item"><span class="lp-legend-dot" style="background:#3ECF8E"></span>Excellent (4.5+)</div>
+          </div>
+        </div>
+
+        <!-- Rankings panel -->
+        <div class="lp-rankings-panel">
+          <p class="lp-rankings-heading">Rankings</p>
+
+          <!-- 1st -->
+          <div class="lp-rank-item" style="border:1px solid rgba(10,192,233,.2)">
+            <div class="lp-rank-medal" style="background:#0AC0E9;color:#02192F">1</div>
+            <div class="lp-rank-info">
+              <div class="lp-rank-name">Hybrid Composite</div>
+              <div class="lp-rank-bar-row">
+                <div class="lp-rank-bar-track"><div class="lp-rank-bar-fill" style="width:85%;background:#0AC0E9"></div></div>
+                <span class="lp-rank-score" style="color:#0AC0E9">4.23</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2nd -->
+          <div class="lp-rank-item">
+            <div class="lp-rank-medal" style="background:#E8ECF4;color:#304F6B">2</div>
+            <div class="lp-rank-info">
+              <div class="lp-rank-name">Nitinol Braid</div>
+              <div class="lp-rank-bar-row">
+                <div class="lp-rank-bar-track"><div class="lp-rank-bar-fill" style="width:77%;background:#7EC87A"></div></div>
+                <span class="lp-rank-score">3.87</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3rd -->
+          <div class="lp-rank-item">
+            <div class="lp-rank-medal" style="background:#E8ECF4;color:#304F6B">3</div>
+            <div class="lp-rank-info">
+              <div class="lp-rank-name">Polymer Flex</div>
+              <div class="lp-rank-bar-row">
+                <div class="lp-rank-bar-track"><div class="lp-rank-bar-fill" style="width:74%;background:#7EC87A"></div></div>
+                <span class="lp-rank-score">3.69</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid #E8ECF4">
+            <p style="font-size:.72rem;color:#8A97B0;line-height:1.6"><strong style="color:#304F6B">Hybrid Composite</strong> leads across all four criteria. Polymer Flex struggles on kink resistance. Nitinol Braid's manufacturability score is the deciding factor in second place.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES ─── -->
+<section class="lp-section">
+  <div class="lp-container">
+    <div class="lp-fade" style="text-align:center;max-width:540px;margin:0 auto">
+      <p class="lp-section-eyebrow">Features</p>
+      <h2 class="lp-section-h2">Built for decisions<br>that actually matter.</h2>
+    </div>
+    <div class="lp-features-grid">
+      <!-- Feature 1 -->
+      <div class="lp-feat lp-fade" style="transition-delay:.05s">
+        <div class="lp-feat-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3 class="lp-feat-title">Independent, bias-free scoring</h3>
+        <p class="lp-feat-desc">Each team member scores privately before seeing anyone else's responses. No anchoring. No groupthink. Just unfiltered individual judgment.</p>
+      </div>
+      <!-- Feature 2 -->
+      <div class="lp-feat lp-fade" style="transition-delay:.1s">
+        <div class="lp-feat-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="10" cy="6" r="2.5" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="2.5" fill="currentColor" stroke="none"/><circle cx="8" cy="18" r="2.5" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3 class="lp-feat-title">Live weight adjustment</h3>
+        <p class="lp-feat-desc">Change criterion weights after scores are collected and watch results recalculate instantly. Perfect for sensitivity analysis.</p>
+      </div>
+      <!-- Feature 3 -->
+      <div class="lp-feat lp-fade" style="transition-delay:.15s">
+        <div class="lp-feat-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="9" height="9" rx="1"/><rect x="13" y="2" width="9" height="9" rx="1"/><rect x="2" y="13" width="9" height="9" rx="1"/><rect x="13" y="13" width="9" height="9" rx="1"/></svg>
+        </div>
+        <h3 class="lp-feat-title">Dual scoring scales</h3>
+        <p class="lp-feat-desc">Choose a 1–5 numeric scale for absolute ratings, or the classic Pugh ±1 scale for relative comparison against a datum concept.</p>
+      </div>
+      <!-- Feature 4 -->
+      <div class="lp-feat lp-fade" style="transition-delay:.2s">
+        <div class="lp-feat-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        </div>
+        <h3 class="lp-feat-title">Deviation analysis</h3>
+        <p class="lp-feat-desc">See every individual score alongside the average and standard deviation. Where the team diverges is where the most important conversations live.</p>
+      </div>
+      <!-- Feature 5 -->
+      <div class="lp-feat lp-fade" style="transition-delay:.25s">
+        <div class="lp-feat-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <h3 class="lp-feat-title">CSV export</h3>
+        <p class="lp-feat-desc">Export all raw scores, weighted results, and participant data to CSV. Drop it straight into your design history file.</p>
+      </div>
+      <!-- Feature 6 -->
+      <div class="lp-feat lp-fade" style="transition-delay:.3s">
+        <div class="lp-feat-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3 class="lp-feat-title">No login for participants</h3>
+        <p class="lp-feat-desc">Only the chart creator needs an account. Everyone else scores via link — no friction, more responses, better data.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SIGN-IN SECTION ─── -->
+<section class="lp-signin" id="signin">
+  <div style="position:relative;z-index:1">
+    <div class="lp-fade">
+      <p class="lp-section-eyebrow" style="text-align:center">Get started</p>
+      <h2 class="lp-section-h2" style="text-align:center;font-size:clamp(1.6rem,3vw,2.4rem)">Ready to run your first<br>Pugh Chart?</h2>
+      <p style="font-size:.95rem;line-height:1.7;color:rgba(232,236,244,.45);text-align:center;max-width:400px;margin:.75rem auto 0">Free to use. No credit card required. Your team scores without creating accounts.</p>
     </div>
 
-    <!-- Sign In Form -->
-    <form id="f-in" onsubmit="emailIn(event)">
-      <div style="margin-bottom:.875rem">
-        <label>Email</label>
-        <input type="email" id="in-email" class="field" placeholder="you@example.com" required>
+    <div class="lp-signin-card lp-fade" style="transition-delay:.1s">
+      <!-- Tabs -->
+      <div style="display:flex;border-bottom:1px solid #0F3050;margin-bottom:1.5rem">
+        <button id="t-in" onclick="setTab('in')"
+          style="padding:.6rem 0;margin-right:1.5rem;background:none;border:none;border-bottom:2px solid #0AC0E9;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;color:#E8ECF4;transition:color .15s">
+          SIGN IN
+        </button>
+        <button id="t-up" onclick="setTab('up')"
+          style="padding:.6rem 0;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;color:#4A5770;transition:color .15s">
+          CREATE ACCOUNT
+        </button>
       </div>
-      <div style="margin-bottom:1rem">
-        <label>Password</label>
-        <input type="password" id="in-pw" class="field" placeholder="••••••••" required>
-      </div>
-      <div id="in-err" class="err"></div>
-      <button type="submit" class="btn-primary" style="margin-top:.75rem">Sign In</button>
-    </form>
 
-    <!-- Sign Up Form -->
-    <form id="f-up" class="hidden" onsubmit="emailUp(event)">
-      <div style="margin-bottom:.875rem">
-        <label>Full Name</label>
-        <input type="text" id="up-name" class="field" placeholder="Your name" required>
-      </div>
-      <div style="margin-bottom:.875rem">
-        <label>Email</label>
-        <input type="email" id="up-email" class="field" placeholder="you@example.com" required>
-      </div>
-      <div style="margin-bottom:1rem">
-        <label>Password</label>
-        <input type="password" id="up-pw" class="field" placeholder="Min. 6 characters" minlength="6" required>
-      </div>
-      <div id="up-err" class="err"></div>
-      <button type="submit" class="btn-primary" style="margin-top:.75rem">Create Account</button>
-    </form>
+      <!-- Google -->
+      <button class="btn-ghost" onclick="googleIn()" style="margin-bottom:1rem">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M17.64 9.2a10.34 10.34 0 0 0-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92A8.78 8.78 0 0 0 17.64 9.2z" fill="#4285F4"/>
+          <path d="M9 18a8.6 8.6 0 0 0 5.96-2.18l-2.92-2.26a5.44 5.44 0 0 1-8.1-2.85H.96v2.34A9 9 0 0 0 9 18z" fill="#34A853"/>
+          <path d="M3.94 10.71A5.41 5.41 0 0 1 3.66 9c0-.6.1-1.17.28-1.71V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.82.96 4.05l2.98-2.34z" fill="#FBBC05"/>
+          <path d="M9 3.58c1.32 0 2.5.45 3.44 1.34l2.58-2.58A8.95 8.95 0 0 0 9 0 9 9 0 0 0 .96 4.95l2.98 2.34A5.36 5.36 0 0 1 9 3.58z" fill="#EA4335"/>
+        </svg>
+        Continue with Google
+      </button>
 
+      <!-- Divider -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem">
+        <div style="flex:1;height:1px;background:#1A3D5C"></div>
+        <span style="color:#4A5770;font-size:.7rem;font-family:'Inter',sans-serif">OR</span>
+        <div style="flex:1;height:1px;background:#1A3D5C"></div>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="f-in" onsubmit="emailIn(event)">
+        <div style="margin-bottom:.875rem">
+          <label>Email</label>
+          <input type="email" id="in-email" class="field" placeholder="you@example.com" required>
+        </div>
+        <div style="margin-bottom:1rem">
+          <label>Password</label>
+          <input type="password" id="in-pw" class="field" placeholder="••••••••" required>
+        </div>
+        <div id="in-err" class="err"></div>
+        <button type="submit" class="btn-primary" style="margin-top:.75rem">Sign In</button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="f-up" class="hidden" onsubmit="emailUp(event)">
+        <div style="margin-bottom:.875rem">
+          <label>Full Name</label>
+          <input type="text" id="up-name" class="field" placeholder="Your name" required>
+        </div>
+        <div style="margin-bottom:.875rem">
+          <label>Email</label>
+          <input type="email" id="up-email" class="field" placeholder="you@example.com" required>
+        </div>
+        <div style="margin-bottom:1rem">
+          <label>Password</label>
+          <input type="password" id="up-pw" class="field" placeholder="Min. 6 characters" minlength="6" required>
+        </div>
+        <div id="up-err" class="err"></div>
+        <button type="submit" class="btn-primary" style="margin-top:.75rem">Create Account</button>
+      </form>
+    </div>
+
+    <!-- Participant note -->
+    <p style="margin-top:1.5rem;color:#4A5770;font-size:.8rem;text-align:center">
+      Joining a session?&nbsp;
+      <span style="color:#0AC0E9;cursor:pointer;text-decoration:underline" onclick="joinPrompt()">Enter a session ID</span>
+    </p>
   </div>
+</section>
 
-  <!-- Participant note -->
-  <p style="margin-top:1.5rem;color:#4A5770;font-size:.8rem;text-align:center">
-    Joining a session?&nbsp;
-    <span style="color:#0AC0E9;cursor:pointer;text-decoration:underline" onclick="joinPrompt()">Enter a session ID</span>
-  </p>
+<!-- ─── FOOTER ─── -->
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-top">
+      <div>
+        <img src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
+        <p class="site-footer-brand-desc">A medtech consultancy providing fractional VP of Engineering support for companies navigating product development, FDA strategy, quality systems, and manufacturing readiness.</p>
+      </div>
+      <div><div class="site-footer-col-title">Company</div><ul class="site-footer-links"><li><a href="https://www.tangrammedtech.com/#services" class="site-footer-link">Services</a></li><li><a href="https://www.tangrammedtech.com/#about" class="site-footer-link">About Eric</a></li><li><a href="https://www.tangrammedtech.com/#newsletter" class="site-footer-link">Newsletter</a></li><li><a href="https://www.tangrammedtech.com/#contact" class="site-footer-link">Work With Tangram</a></li></ul></div>
+      <div><div class="site-footer-col-title">Tools</div><ul class="site-footer-links"><li><a href="dashboard.html" class="site-footer-link">Pugh Chart</a></li></ul></div>
+      <div><div class="site-footer-col-title">Connect</div><ul class="site-footer-links"><li><a href="https://www.linkedin.com/in/esugalski/" target="_blank" class="site-footer-link">LinkedIn</a></li><li><a href="https://www.skool.com/medtechmindset" target="_blank" class="site-footer-link">Skool Community</a></li><li><a href="https://www.linkedin.com/newsletters/medtech-mindset-7033233055771172864/" target="_blank" class="site-footer-link">MedTech Mindset</a></li></ul></div>
+    </div>
+    <div class="site-footer-bottom">
+      <div class="site-footer-copy">&copy; 2026 Tangram MedTech. All rights reserved.</div>
+      <div class="site-footer-legal"><a href="#" class="site-footer-link" style="font-size:.74rem">Privacy Policy</a><a href="#" class="site-footer-link" style="font-size:.74rem">Terms of Use</a></div>
+    </div>
+  </div>
+</footer>
 
-</div>
+<!-- ─── SCRIPTS ─── -->
+<script>
+// Nav hamburger
+document.getElementById('siteHamburger').addEventListener('click', function() {
+  var o = document.getElementById('siteMobileMenu').classList.toggle('open');
+  this.classList.toggle('open', o);
+});
+// Nav scroll effect
+(function() {
+  var nav = document.querySelector('.site-nav');
+  function onScroll() { nav.classList.toggle('scrolled', window.scrollY > 40); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+// Scroll-triggered fade-in — add js-ready FIRST so elements start hidden, then observe
+(function() {
+  document.documentElement.classList.add('js-ready');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.lp-fade').forEach(function(el) { observer.observe(el); });
+})();
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="app.js"></script>
@@ -256,7 +744,6 @@ function setTab(t) {
 async function googleIn() {
   try {
     await Auth.googleSignIn();
-    // signInWithOAuth redirects the browser — if we reach this line, the redirect didn't fire
     showToast('Google sign-in did not redirect. Check Supabase Google provider config.', 'error');
   } catch(e) {
     showToast(e.message, 'error');
@@ -296,19 +783,5 @@ function joinPrompt() {
 }
 </script>
 
-<footer class="site-footer">
-  <div class="site-footer-inner">
-    <div class="site-footer-top">
-      <div>
-        <img src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" style="height:32px;width:auto">
-        <p class="site-footer-brand-desc">A medtech consultancy providing fractional VP of Engineering support for companies navigating product development, FDA strategy, quality systems, and manufacturing readiness.</p>
-              </div>
-      <div><div class="site-footer-col-title">Company</div><ul class="site-footer-links"><li><a href="https://www.tangrammedtech.com/#services" class="site-footer-link">Services</a></li><li><a href="https://www.tangrammedtech.com/#about" class="site-footer-link">About Eric</a></li><li><a href="https://www.tangrammedtech.com/#newsletter" class="site-footer-link">Newsletter</a></li><li><a href="https://www.tangrammedtech.com/#contact" class="site-footer-link">Work With Tangram</a></li></ul></div>
-      <div><div class="site-footer-col-title">Tools</div><ul class="site-footer-links"><li><a href="dashboard.html" class="site-footer-link">Pugh Chart</a></li></ul></div>
-      <div><div class="site-footer-col-title">Connect</div><ul class="site-footer-links"><li><a href="https://www.linkedin.com/in/esugalski/" target="_blank" class="site-footer-link">LinkedIn</a></li><li><a href="https://www.skool.com/medtechmindset" target="_blank" class="site-footer-link">Skool Community</a></li><li><a href="https://www.linkedin.com/newsletters/medtech-mindset-7033233055771172864/" target="_blank" class="site-footer-link">MedTech Mindset</a></li></ul></div>
-    </div>
-    <div class="site-footer-bottom"><div class="site-footer-copy">&copy; 2026 Tangram MedTech. All rights reserved.</div><div class="site-footer-legal"><a href="#" class="site-footer-link" style="font-size:.74rem">Privacy Policy</a><a href="#" class="site-footer-link" style="font-size:.74rem">Terms of Use</a></div></div>
-  </div>
-</footer>
 </body>
 </html>
