@@ -177,7 +177,7 @@ export default async function handler(req, res) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'Tangram MedTech Tools <noreply@tangrammedtech.com>',
+      from: 'Tangram Tools <noreply@tangrammedtech.com>',
       to: [email],
       subject: `Pugh Chart Results: ${chart.title || 'Your Session'}`,
       html: buildEmailHtml(chart, winner, winnerScore, n, fileName),
