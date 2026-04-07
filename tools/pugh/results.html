@@ -236,9 +236,29 @@ document.getElementById('siteHamburger').addEventListener('click',function(){var
     </div>
 
     <!-- Legend + stats row -->
-    <div style="display:grid;grid-template-columns:auto 1fr;gap:1.25rem;align-items:start">
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:1.25rem;align-items:start;margin-bottom:1.25rem">
       <div id="legend" class="card" style="padding:1rem 1.25rem"></div>
       <div id="ranking-card" class="card" style="padding:1rem 1.25rem"></div>
+    </div>
+
+    <!-- Email results -->
+    <div class="card" style="padding:1.25rem;display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <p style="font-family:'Inter',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4A5770;margin-bottom:.3rem">Email Results</p>
+        <p style="font-size:.82rem;color:#8A97B0;line-height:1.5">Get the full results + your scores as an Excel file in your inbox.</p>
+      </div>
+      <div style="display:flex;gap:.5rem;align-items:center;flex:1;min-width:240px">
+        <input id="results-email-input" type="email" placeholder="your@email.com"
+          style="flex:1;background:#0B2740;border:1px solid #1A3D5C;border-radius:6px;padding:.6rem .875rem;color:#E8ECF4;font-family:'Inter',sans-serif;font-size:.875rem;outline:none;transition:border-color .15s"
+          onfocus="this.style.borderColor='#0AC0E9'" onblur="this.style.borderColor='#1A3D5C'"
+          onkeydown="if(event.key==='Enter') sendResultsEmailFromResults()">
+        <button onclick="sendResultsEmailFromResults()" id="results-email-btn"
+          style="padding:.6rem 1rem;background:#0AC0E9;color:#0B2740;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;border:none;border-radius:6px;cursor:pointer;white-space:nowrap;transition:background .15s"
+          onmouseover="this.style.background='#089bbf'" onmouseout="this.style.background='#0AC0E9'">
+          Send →
+        </button>
+      </div>
+      <p id="results-email-msg" style="display:none;font-size:.8rem;width:100%;font-family:'Inter',sans-serif"></p>
     </div>
 
   </div>
@@ -693,6 +713,51 @@ function updateScrollHint() {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCritModal(); });
 
 function escH(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+async function sendResultsEmailFromResults() {
+  const input = document.getElementById('results-email-input');
+  const btn   = document.getElementById('results-email-btn');
+  const msg   = document.getElementById('results-email-msg');
+  const email = input?.value?.trim();
+
+  if (!email || !email.includes('@')) {
+    msg.style.display = '';
+    msg.style.color   = '#E05555';
+    msg.textContent   = 'Please enter a valid email address.';
+    return;
+  }
+
+  btn.disabled    = true;
+  btn.textContent = 'Sending…';
+  msg.style.display = 'none';
+
+  // Use participant token if available, otherwise a generic placeholder
+  const tok = DB.getParticipantToken();
+
+  try {
+    const res = await fetch('/api/email-results', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chartId, token: tok, email })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to send.');
+
+    msg.style.display = '';
+    msg.style.color   = '#3ECF8E';
+    msg.textContent   = `✓ Sent to ${email}`;
+    input.value = '';
+    btn.textContent      = 'Sent ✓';
+    btn.style.background = 'rgba(62,207,142,.15)';
+    btn.style.color      = '#3ECF8E';
+  } catch(e) {
+    msg.style.display = '';
+    msg.style.color   = '#E05555';
+    msg.textContent   = e.message || 'Something went wrong. Please try again.';
+    btn.disabled    = false;
+    btn.textContent = 'Send →';
+  }
+}
 
 init();
 </script>
