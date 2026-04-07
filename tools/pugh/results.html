@@ -283,8 +283,8 @@ async function init() {
   isHost = !!(user && user.uid === chart.hostId);
   const isPublished = chart.status === 'published';
 
-  // Access control: host always allowed; participants only after publishing
-  if (!isHost && !isPublished) { location.href = 'index.html'; return; }
+  // Access control: host always allowed; participants allowed if published or resultsVisible
+  if (!isHost && !isPublished && !chart.resultsVisible) { location.href = 'index.html'; return; }
 
   // Hide host-only controls for participants
   if (!isHost) {
