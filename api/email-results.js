@@ -158,6 +158,94 @@ export default async function handler(req, res) {
 
   XLSX.utils.book_append_sheet(wb, wsMine, 'Your Scores');
 
+  // ── Tab 3: Summary ────────────────────────────────────────────────────────
+  const summaryRows = [];
+  summaryRows.push([chart.title || 'Pugh Chart Results']);
+  summaryRows.push(['Results Summary']);
+  summaryRows.push([]);
+
+  // Use stored custom summary if available, otherwise auto-generate plain text
+  if (chart.summary_text) {
+    chart.summary_text.split('\n').filter(Boolean).forEach(line => summaryRows.push([line]));
+  } else {
+    // Auto-generate plain text summary
+    const respList = Object.values(responses);
+
+    function _stddev(vals) {
+      if (vals.length < 2) return 0;
+      const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+      return Math.sqrt(vals.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / vals.length);
+    }
+
+    const fmt2 = v => v != null ? Math.round(v * 100) / 100 : '—';
+
+    const rankedForSummary = [...ranked]; // already sorted best→worst
+
+    // Per-concept paragraphs
+    rankedForSummary.forEach((concept, i) => {
+      const rank = i + 1;
+      const score = totals[concept.id];
+
+      // Strengths: criteria where this concept leads all others
+      const strengths = criteria.filter(crit => {
+        const myAvg = avgMatrix[concept.id][crit.id];
+        if (myAvg == null) return false;
+        return concepts.every(other =>
+          other.id === concept.id || (avgMatrix[other.id][crit.id] ?? -Infinity) <= myAvg
+        );
+      });
+
+      // Weaknesses: criteria where another concept scores higher
+      const weaknesses = criteria.filter(crit => {
+        const myAvg = avgMatrix[concept.id][crit.id];
+        if (myAvg == null) return false;
+        return concepts.some(other =>
+          other.id !== concept.id && (avgMatrix[other.id][crit.id] ?? -Infinity) > myAvg
+        );
+      });
+
+      let line = `${rank}. ${concept.name} — Score: ${fmt2(score)}`;
+      if (strengths.length) line += `. Led on: ${strengths.map(c => c.name).join(', ')}`;
+      if (weaknesses.length) line += `. Trailed on: ${weaknesses.slice(-1).map(c => c.name).join(', ')}`;
+      summaryRows.push([line]);
+    });
+
+    // Close runner-up note
+    if (rankedForSummary.length >= 2) {
+      const gap = (totals[rankedForSummary[0].id] ?? 0) - (totals[rankedForSummary[1].id] ?? 0);
+      if (gap < 0.3) {
+        summaryRows.push([`Note: ${rankedForSummary[0].name} and ${rankedForSummary[1].name} are closely ranked (gap: ${gap.toFixed(2)}) — further discussion recommended.`]);
+      }
+    }
+
+    summaryRows.push([]);
+    summaryRows.push(['Criteria to Discuss (participant disagreement):']);
+
+    // Std dev per criterion across all participants
+    const critSDs = criteria.map(crit => {
+      const allVals = [];
+      concepts.forEach(concept => {
+        respList.forEach(r => {
+          const v = r.scores?.[concept.id]?.[crit.id];
+          if (v != null) allVals.push(Number(v));
+        });
+      });
+      return { name: crit.name, sd: _stddev(allVals), count: allVals.length };
+    }).filter(x => x.count >= 2 && x.sd > 0.5).sort((a, b) => b.sd - a.sd);
+
+    if (critSDs.length) {
+      critSDs.slice(0, 2).forEach(({ name, sd }) => {
+        summaryRows.push([`- ${name}: std dev ${sd.toFixed(2)} — participants disagreed most on this criterion`]);
+      });
+    } else {
+      summaryRows.push(['- No criteria showed significant participant disagreement (std dev ≤ 0.5)']);
+    }
+  }
+
+  const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
+  wsSummary['!cols'] = [{ wch: 90 }];
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
+
   // ── Serialize to base64 ───────────────────────────────────────────────────
   const xlsxBuffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
   const xlsxBase64 = Buffer.from(xlsxBuffer).toString('base64');

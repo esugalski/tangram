@@ -164,7 +164,9 @@ function _chartFromDb(row) {
     createdAt:      row.created_at,
     updatedAt:      row.updated_at,
     openedAt:        row.opened_at,
-    resultsVisible:  row.results_visible ?? false,
+    resultsVisible:  row.results_visible  ?? false,
+    summaryText:     row.summary_text     ?? null,
+    summaryVisible:  row.summary_visible  ?? true,
   };
 }
 
@@ -186,6 +188,8 @@ function _chartToDb(chart) {
   if (chart.updatedAt      !== undefined) out.updated_at       = chart.updatedAt;
   if (chart.openedAt       !== undefined) out.opened_at        = chart.openedAt;
   if (chart.resultsVisible !== undefined) out.results_visible  = chart.resultsVisible;
+  if (chart.summaryText    !== undefined) out.summary_text     = chart.summaryText;
+  if (chart.summaryVisible !== undefined) out.summary_visible  = chart.summaryVisible;
   return out;
 }
 

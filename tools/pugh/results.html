@@ -109,10 +109,12 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 input[type=range]{accent-color:#0AC0E9}
 
 /* Clickable criterion row */
-.crit-name-btn{cursor:pointer;transition:color .15s}
-.crit-name-btn:hover{color:#0AC0E9 !important}
-.crit-name-btn .drill-icon{opacity:0;transition:opacity .15s;margin-left:.4rem;font-size:.7rem;color:#0AC0E9;vertical-align:middle}
+.crit-name-btn{cursor:pointer;transition:color .15s,border-color .15s;color:#E8ECF4 !important;border-bottom:1px dashed rgba(10,192,233,.35)}
+.crit-name-btn:hover{color:#0AC0E9 !important;border-bottom-color:rgba(10,192,233,.8)}
+.crit-name-btn .drill-icon{opacity:.45;transition:opacity .15s;margin-left:.4rem;font-size:.7rem;color:#0AC0E9;vertical-align:middle}
 .crit-name-btn:hover .drill-icon{opacity:1}
+.summary-crit-link{background:none;border:none;border-bottom:1px dashed rgba(10,192,233,.5);color:#0AC0E9;font-family:'Inter',sans-serif;font-size:.875rem;cursor:pointer;padding:0;transition:border-color .15s,color .15s;line-height:inherit}
+.summary-crit-link:hover{color:#7dd8f0;border-bottom-color:#0AC0E9}
 
 /* Criterion detail modal */
 .detail-modal{position:fixed;inset:0;background:rgba(7,10,15,.88);z-index:300;display:flex;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(4px)}
@@ -232,6 +234,41 @@ document.getElementById('siteHamburger').addEventListener('click',function(){var
       </div>
       <div id="scroll-hint" style="display:none;text-align:center;padding:.4rem;background:#031C2E;border-top:1px solid #0F3050">
         <span style="font-size:.68rem;color:#4A5770;font-family:'Inter',sans-serif;letter-spacing:.06em">← SCROLL TO SEE ALL CONCEPTS →</span>
+      </div>
+    </div>
+
+    <!-- Results Summary -->
+    <div id="summary-card" style="display:none;background:#031C2E;border:1px solid #0F3050;border-radius:12px;padding:1.5rem;margin-bottom:1.25rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.75rem">
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <p style="font-family:'Inter',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5770">Results Summary</p>
+          <span id="summary-auto-badge" style="font-size:.6rem;font-weight:600;letter-spacing:.06em;padding:.1rem .45rem;border-radius:3px;background:rgba(10,192,233,.1);color:#0AC0E9;border:1px solid rgba(10,192,233,.2)">AUTO-GENERATED</span>
+        </div>
+        <div id="summary-host-controls" style="display:none;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+          <button id="summary-visibility-btn" onclick="toggleSummaryVisibility()"
+            style="padding:.35rem .75rem;font-family:'Inter',sans-serif;font-size:.75rem;font-weight:600;border-radius:5px;cursor:pointer;border:1px solid;transition:all .15s"></button>
+          <button onclick="startEditSummary()"
+            style="padding:.35rem .75rem;background:transparent;color:#8A97B0;font-family:'Inter',sans-serif;font-size:.75rem;font-weight:500;border:1px solid #1A3D5C;border-radius:5px;cursor:pointer;transition:all .15s"
+            onmouseover="this.style.color='#E8ECF4';this.style.borderColor='#304F6B'" onmouseout="this.style.color='#8A97B0';this.style.borderColor='#1A3D5C'">Edit</button>
+        </div>
+      </div>
+
+      <!-- Read view -->
+      <div id="summary-read" style="font-size:.875rem;color:#8A97B0;line-height:1.75"></div>
+
+      <!-- Edit view (host only) -->
+      <div id="summary-edit" style="display:none">
+        <textarea id="summary-textarea"
+          style="width:100%;min-height:160px;background:#0B2740;border:1px solid #1A3D5C;border-radius:7px;padding:.875rem 1rem;color:#E8ECF4;font-family:'Inter',sans-serif;font-size:.875rem;line-height:1.7;outline:none;resize:vertical;transition:border-color .15s"
+          onfocus="this.style.borderColor='#0AC0E9'" onblur="this.style.borderColor='#1A3D5C'"></textarea>
+        <div style="display:flex;gap:.5rem;margin-top:.625rem;justify-content:flex-end">
+          <button onclick="cancelEditSummary()"
+            style="padding:.5rem 1rem;background:transparent;color:#8A97B0;font-family:'Inter',sans-serif;font-size:.82rem;border:1px solid #1A3D5C;border-radius:6px;cursor:pointer;transition:all .15s"
+            onmouseover="this.style.color='#E8ECF4'" onmouseout="this.style.color='#8A97B0'">Cancel</button>
+          <button onclick="saveSummaryEdit()"
+            style="padding:.5rem 1rem;background:#0AC0E9;color:#02192F;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;border:none;border-radius:6px;cursor:pointer;transition:background .15s"
+            onmouseover="this.style.background='#089bbf'" onmouseout="this.style.background='#0AC0E9'">Save</button>
+        </div>
       </div>
     </div>
 
@@ -363,6 +400,7 @@ async function renderAll() {
   renderMatrix(results);
   renderLegend();
   renderRanking(results);
+  renderSummary(results);
 }
 
 function renderMatrix(results) {
@@ -546,6 +584,181 @@ function toggleWeightEdit() {
   banner.style.display = editingWeights ? 'flex' : 'none';
   renderAll();
 }
+
+// ---- Results Summary -------------------------------------------------------
+
+function stddevValues(vals) {
+  if (vals.length < 2) return 0;
+  const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+  return Math.sqrt(vals.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / vals.length);
+}
+
+function generateSummaryText(results) {
+  const { matrix, totals } = results;
+  const respList = Object.values(cachedResponses);
+  const scale = chart.scoringScale;
+  const totalW = Object.values(weightOverrides).reduce((a, b) => a + b, 0) || 1;
+
+  // Rank concepts
+  const ranked = [...chart.concepts]
+    .map(c => ({ ...c, score: totals[c.id] }))
+    .filter(c => c.score != null)
+    .sort((a, b) => b.score - a.score);
+  if (!ranked.length) return null;
+
+  const winner = ranked[0];
+  const runnerUp = ranked[1];
+  const fmt = v => v != null ? v.toFixed(2) : '—';
+
+  // Per-criterion std dev across all participant scores (pooled across concepts)
+  const critStdDevs = chart.criteria.map(crit => {
+    const allVals = [];
+    chart.concepts.forEach(concept => {
+      respList.forEach(r => {
+        const v = r.scores?.[concept.id]?.[crit.id];
+        if (v != null) allVals.push(Number(v));
+      });
+    });
+    return { crit, sd: stddevValues(allVals), count: allVals.length };
+  }).filter(x => x.count >= 2).sort((a, b) => b.sd - a.sd);
+
+  // Find each concept's strongest and weakest criterion
+  function conceptStrengthsWeaknesses(concept) {
+    const scores = chart.criteria.map(crit => ({
+      crit,
+      avg: matrix[concept.id]?.[crit.id]?.avg,
+    })).filter(x => x.avg != null);
+    if (!scores.length) return { best: null, worst: null };
+    scores.sort((a, b) => b.avg - a.avg);
+    // Weakness = criterion where this concept is NOT the top scorer
+    const weaknesses = scores.filter(({ crit, avg }) => {
+      const others = chart.concepts.filter(c => c.id !== concept.id);
+      return others.some(other => (matrix[other.id]?.[crit.id]?.avg ?? 0) > avg);
+    });
+    // Strength = criterion where this concept leads all others
+    const strengths = scores.filter(({ crit, avg }) => {
+      return chart.concepts.every(other =>
+        other.id === concept.id || (matrix[other.id]?.[crit.id]?.avg ?? 0) <= avg
+      );
+    });
+    return {
+      bestCrit: strengths[0]?.crit || null,
+      worstCrit: weaknesses[weaknesses.length - 1]?.crit || null,
+    };
+  }
+
+  // Build paragraphs
+  const parts = [];
+
+  // Winner paragraph
+  const { bestCrit: wBest, worstCrit: wWorst } = conceptStrengthsWeaknesses(winner);
+  let winnerPara = `<strong style="color:#E8ECF4">${escH(winner.name)}</strong> is the top-ranked concept with a weighted score of <strong style="color:#E8ECF4">${fmt(winner.score)}</strong>.`;
+  if (wBest) winnerPara += ` It led the field on <button class="summary-crit-link" onclick="showCritDetail('${wBest.id}')">${escH(wBest.name)}</button>.`;
+  if (wWorst) winnerPara += ` Its relative weakness was <button class="summary-crit-link" onclick="showCritDetail('${wWorst.id}')">${escH(wWorst.name)}</button> — worth discussing if that criterion becomes more weighted in a future evaluation.`;
+  if (runnerUp && (winner.score - runnerUp.score) < 0.3) {
+    winnerPara += ` Note: <strong style="color:#E8ECF4">${escH(runnerUp.name)}</strong> is a close second (${fmt(runnerUp.score)}) — the gap is narrow enough to warrant further discussion.`;
+  }
+  parts.push(`<p style="margin-bottom:.875rem">${winnerPara}</p>`);
+
+  // Other concepts
+  ranked.slice(1).forEach((concept, i) => {
+    const { bestCrit, worstCrit } = conceptStrengthsWeaknesses(concept);
+    let para = `<strong style="color:#E8ECF4">${escH(concept.name)}</strong> ranked ${i + 2} with a score of ${fmt(concept.score)}.`;
+    if (bestCrit) para += ` Its notable strength was <button class="summary-crit-link" onclick="showCritDetail('${bestCrit.id}')">${escH(bestCrit.name)}</button>.`;
+    if (worstCrit) para += ` It scored lowest on <button class="summary-crit-link" onclick="showCritDetail('${worstCrit.id}')">${escH(worstCrit.name)}</button>.`;
+    parts.push(`<p style="margin-bottom:.875rem">${para}</p>`);
+  });
+
+  // Criteria to discuss
+  const flagged = critStdDevs.slice(0, 2).filter(x => x.sd > 0.5);
+  if (flagged.length) {
+    let discussPara = `<strong style="color:#E8ECF4">Criteria to discuss:</strong> `;
+    discussPara += flagged.map(({ crit, sd }) =>
+      `<button class="summary-crit-link" onclick="showCritDetail('${crit.id}')">${escH(crit.name)}</button> generated the most disagreement among participants (std dev ${sd.toFixed(2)})`
+    ).join('; ') + '. These are worth examining further — diverging scores often signal unspoken assumptions or differing priorities on the team.';
+    parts.push(`<p>${discussPara}</p>`);
+  }
+
+  return parts.join('');
+}
+
+// Plain-text version for Excel export (strips HTML)
+function generateSummaryPlainText(results) {
+  const html = generateSummaryText(results);
+  if (!html) return '';
+  return html
+    .replace(/<button[^>]*>/g, '').replace(/<\/button>/g, '')
+    .replace(/<strong[^>]*>/g, '').replace(/<\/strong>/g, '')
+    .replace(/<p[^>]*>/g, '').replace(/<\/p>/g, '\n')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"')
+    .trim();
+}
+
+function renderSummary(results) {
+  const card = document.getElementById('summary-card');
+  const readDiv = document.getElementById('summary-read');
+  const hostControls = document.getElementById('summary-host-controls');
+  const visBtn = document.getElementById('summary-visibility-btn');
+  const autoBadge = document.getElementById('summary-auto-badge');
+
+  // Participants: hide if summaryVisible is false
+  if (!isHost && chart.summaryVisible === false) {
+    card.style.display = 'none';
+    return;
+  }
+
+  card.style.display = '';
+
+  // Determine content
+  const hasCustom = !!chart.summaryText;
+  const html = hasCustom
+    ? chart.summaryText.split('\n').filter(Boolean).map(p => `<p style="margin-bottom:.875rem">${escH(p)}</p>`).join('')
+    : generateSummaryText(results);
+
+  readDiv.innerHTML = html || '<p style="color:#4A5770">Not enough data to generate a summary yet.</p>';
+  autoBadge.style.display = hasCustom ? 'none' : '';
+
+  // Host controls
+  if (isHost) {
+    hostControls.style.display = 'flex';
+    const hidden = chart.summaryVisible === false;
+    visBtn.textContent = hidden ? 'Show to Participants' : 'Hide from Participants';
+    visBtn.style.cssText = hidden
+      ? 'padding:.35rem .75rem;font-family:Inter,sans-serif;font-size:.75rem;font-weight:600;border-radius:5px;cursor:pointer;border:1px solid rgba(10,192,233,.4);background:rgba(10,192,233,.08);color:#0AC0E9;transition:all .15s'
+      : 'padding:.35rem .75rem;font-family:Inter,sans-serif;font-size:.75rem;font-weight:600;border-radius:5px;cursor:pointer;border:1px solid #1A3D5C;background:transparent;color:#8A97B0;transition:all .15s';
+  }
+}
+
+async function toggleSummaryVisibility() {
+  const newVal = chart.summaryVisible === false ? true : false;
+  chart = await DB.update(chartId, { summaryVisible: newVal });
+  renderSummary(DB.calcResults(chart, cachedResponses, weightOverrides));
+  showToast(newVal ? 'Summary visible to participants.' : 'Summary hidden from participants.', 'success');
+}
+
+let _originalSummaryHtml = '';
+function startEditSummary() {
+  const results = DB.calcResults(chart, cachedResponses, weightOverrides);
+  const plain = chart.summaryText || generateSummaryPlainText(results);
+  document.getElementById('summary-textarea').value = plain;
+  document.getElementById('summary-read').style.display = 'none';
+  document.getElementById('summary-edit').style.display = '';
+}
+
+function cancelEditSummary() {
+  document.getElementById('summary-edit').style.display = 'none';
+  document.getElementById('summary-read').style.display = '';
+}
+
+async function saveSummaryEdit() {
+  const text = document.getElementById('summary-textarea').value.trim();
+  chart = await DB.update(chartId, { summaryText: text || null });
+  cancelEditSummary();
+  renderSummary(DB.calcResults(chart, cachedResponses, weightOverrides));
+  showToast('Summary saved.', 'success');
+}
+
+// ---- Weights ---------------------------------------------------------------
 
 function saveWeights() {
   chart.criteria = chart.criteria.map(c => ({ ...c, weight: weightOverrides[c.id] ?? c.weight }));
