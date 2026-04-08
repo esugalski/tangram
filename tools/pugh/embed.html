@@ -23,7 +23,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 .matrix-table td{padding:.75rem 1rem;border-bottom:1px solid #031C2E;text-align:center;font-family:'Inter',sans-serif;font-size:1rem;transition:background .2s}
 .matrix-table td.crit-name{text-align:left;color:#E8ECF4;font-family:'Inter',sans-serif;font-size:1rem;font-weight:500;white-space:nowrap;min-width:180px}
-.matrix-table td.crit-weight{text-align:center;font-size:.82rem;color:#4A5770;padding-right:.5rem}
+.matrix-table td.crit-weight{text-align:center;font-size:1rem;color:#8A97B0;padding-right:.5rem}
 .matrix-table tr:hover td{background:#0B2740}
 .matrix-table tr.total-row td{border-top:2px solid #1A3D5C;padding-top:1.1rem;padding-bottom:1.1rem;font-weight:600;font-size:1.05rem;background:#0B2740 !important}
 .matrix-table tr.total-row td.crit-name{font-family:'Inter',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.06em;color:#8A97B0;text-transform:uppercase}
@@ -235,11 +235,11 @@ function renderMatrix(results) {
           </div>
         </td>`
       : `<td class="crit-weight">
-          <div style="display:flex;align-items:center;gap:.4rem">
-            <div style="width:36px;height:3px;background:#0F3050;border-radius:2px;overflow:hidden">
-              <div style="height:100%;width:${pct}%;background:#0AC0E9;border-radius:2px"></div>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <div style="width:48px;height:5px;background:#0F3050;border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:#0AC0E9;border-radius:3px"></div>
             </div>
-            <span style="font-size:.82rem;color:#4A5770">${pct}%</span>
+            <span style="font-size:1rem;color:#8A97B0;font-weight:500">${pct}%</span>
           </div>
         </td>`;
 
