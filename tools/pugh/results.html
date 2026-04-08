@@ -131,6 +131,26 @@ input[type=range]{accent-color:#0AC0E9}
 .detail-table tr:hover td{background:#111820}
 .detail-table tr.stat-row td{border-top:2px solid #0F3050;background:#0B2740 !important;font-weight:600}
 .detail-table tr.stat-row td.p-label{font-family:'Inter',sans-serif;font-size:.78rem;letter-spacing:.02em}
+
+/* Mobile concept cards */
+#matrix-cards{display:none}
+@media(max-width:767px){
+  #matrix-scroll{display:none}
+  #scroll-hint{display:none !important}
+  #matrix-cards{display:flex;flex-direction:column;gap:.75rem}
+}
+.concept-card{background:#031C2E;border:1px solid #0F3050;border-radius:12px;overflow:hidden}
+.concept-card.best{border-color:rgba(10,192,233,.45);box-shadow:0 0 0 1px rgba(10,192,233,.15),0 4px 24px rgba(10,192,233,.08)}
+.concept-card-header{display:flex;align-items:center;justify-content:space-between;padding:.875rem 1rem;border-bottom:1px solid #0F3050;gap:.75rem}
+.concept-card-name{font-size:1rem;font-weight:700;color:#E8ECF4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.concept-card-name.best{color:#0AC0E9}
+.concept-card-total-score{font-size:1.1rem;font-weight:800;letter-spacing:-.02em}
+.concept-card-total-label{font-size:.58rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#4A5770;margin-top:.1rem;text-align:right}
+.concept-crit-row{display:flex;align-items:center;gap:.5rem;padding:.45rem 1rem;transition:background .15s}
+.concept-crit-row:hover{background:#111820}
+.concept-crit-name-btn{font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;color:#E8ECF4;background:none;border:none;border-bottom:1px dashed rgba(10,192,233,.35);padding:0;cursor:pointer;text-align:left;transition:color .15s,border-color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.concept-crit-name-btn:hover{color:#0AC0E9;border-bottom-color:rgba(10,192,233,.8)}
+.concept-crit-weight{font-size:.7rem;color:#4A5770;flex-shrink:0;min-width:28px}
 </style>
 </head>
 <body>
@@ -236,6 +256,9 @@ document.getElementById('siteHamburger').addEventListener('click',function(){var
         <span style="font-size:.68rem;color:#4A5770;font-family:'Inter',sans-serif;letter-spacing:.06em">← SCROLL TO SEE ALL CONCEPTS →</span>
       </div>
     </div>
+
+    <!-- Mobile concept cards (shown instead of table on small screens) -->
+    <div id="matrix-cards" style="margin-bottom:1.5rem"></div>
 
     <!-- Results Summary -->
     <div id="summary-card" style="display:none;background:#031C2E;border:1px solid #0F3050;border-radius:12px;padding:1.5rem;margin-bottom:1.25rem">
@@ -493,6 +516,66 @@ function renderMatrix(results) {
   `;
   // Show scroll hint if table overflows
   requestAnimationFrame(updateScrollHint);
+
+  // Build mobile concept cards (sorted winner-first)
+  const sortedConcepts = [...chart.concepts].sort((a, b) => {
+    const ta = totals[a.id] ?? -Infinity;
+    const tb = totals[b.id] ?? -Infinity;
+    return tb - ta;
+  });
+
+  const cardsHtml = sortedConcepts.map((concept, rank) => {
+    const isBest = concept.id === bestId;
+    const total = totals[concept.id];
+    const { text: totalText } = total != null ? DB.cellColor(total, chart.scoringScale) : { text: '#4A5770' };
+    const totalDisplay = total != null
+      ? (chart.scoringScale === 'pugh' ? (total > 0 ? '+' : '') + total.toFixed(3) : total.toFixed(3))
+      : '—';
+    const thumbHtml = concept.thumbnail
+      ? `<div style="width:36px;height:36px;border-radius:6px;overflow:hidden;border:1px solid ${isBest ? 'rgba(10,192,233,.4)' : '#0F3050'};flex-shrink:0"><img src="${concept.thumbnail}" style="width:100%;height:100%;object-fit:cover"></div>`
+      : '';
+
+    const critRows = chart.criteria.map(crit => {
+      const cell = matrix[concept.id]?.[crit.id];
+      const pct = Math.round(weightOverrides[crit.id] / totalW * 100);
+      let scoreHtml;
+      if (!cell || cell.avg == null) {
+        scoreHtml = `<span style="font-size:.72rem;color:#0F3050">—</span>`;
+      } else {
+        const { bg, text } = DB.cellColor(cell.avg, chart.scoringScale);
+        const display = chart.scoringScale === 'pugh'
+          ? (cell.avg > 0 ? '+' : '') + cell.avg.toFixed(2)
+          : cell.avg.toFixed(2);
+        scoreHtml = `<span class="cell-score" style="background:${bg};color:${text};width:52px;height:28px;font-size:.78rem">${display}</span>`;
+      }
+      return `<div class="concept-crit-row">
+        <div style="flex:1;min-width:0;display:flex;align-items:center;gap:.4rem">
+          <button class="concept-crit-name-btn" onclick="showCritDetail('${crit.id}')">${escH(crit.name)}<span style="opacity:.45;margin-left:.3rem;font-size:.65rem;color:#0AC0E9">&#9654;</span></button>
+          <span class="concept-crit-weight">${pct}%</span>
+        </div>
+        ${scoreHtml}
+      </div>`;
+    }).join('');
+
+    return `<div class="concept-card ${isBest ? 'best' : ''}">
+      <div class="concept-card-header">
+        <div style="display:flex;align-items:center;gap:.6rem;min-width:0;flex:1">
+          ${thumbHtml}
+          <div style="min-width:0">
+            <div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${isBest ? '#0AC0E9' : '#4A5770'};margin-bottom:.15rem">${isBest ? '▲ BEST · ' : ''}#${rank + 1}</div>
+            <div class="concept-card-name ${isBest ? 'best' : ''}">${escH(concept.name)}</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0">
+          <span class="concept-card-total-score" style="color:${totalText}">${totalDisplay}</span>
+          <span class="concept-card-total-label">weighted score</span>
+        </div>
+      </div>
+      <div style="padding:.5rem 0">${critRows}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('matrix-cards').innerHTML = cardsHtml;
 }
 
 function renderLegend() {
