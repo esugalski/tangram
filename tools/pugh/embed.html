@@ -43,9 +43,9 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 input[type=range]{accent-color:#0AC0E9}
 
 /* Clickable criterion rows */
-.crit-name-clickable{cursor:pointer;transition:color .15s}
-.crit-name-clickable:hover{color:#0AC0E9 !important}
-.crit-name-clickable .hint{opacity:0;transition:opacity .15s;margin-left:.4rem;font-size:.7rem;color:#0AC0E9}
+.crit-name-clickable{cursor:pointer;transition:color .15s;color:#E8ECF4 !important;border-bottom:1px dashed rgba(10,192,233,.35)}
+.crit-name-clickable:hover{color:#0AC0E9 !important;border-bottom-color:rgba(10,192,233,.8)}
+.crit-name-clickable .hint{opacity:.5;transition:opacity .15s;margin-left:.5rem;font-size:.78rem;color:#0AC0E9}
 .crit-name-clickable:hover .hint{opacity:1}
 
 /* Criterion detail overlay — full screen */
@@ -56,13 +56,13 @@ input[type=range]{accent-color:#0AC0E9}
 
 /* Detail table */
 .detail-table{width:100%;border-collapse:separate;border-spacing:0}
-.detail-table th{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:#4A5770;padding:.7rem 1rem;text-align:center;border-bottom:1px solid #0F3050;white-space:nowrap;background:#031C2E;position:sticky;top:0;z-index:5}
+.detail-table th{font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:#4A5770;padding:.75rem 1rem;text-align:center;border-bottom:1px solid #0F3050;white-space:nowrap;background:#031C2E;position:sticky;top:0;z-index:5}
 .detail-table th.p-header{text-align:left}
-.detail-table td{padding:.65rem 1rem;border-bottom:1px solid #031C2E;text-align:center;font-size:.95rem}
-.detail-table td.p-label{text-align:left;color:#8A97B0;font-size:.92rem}
+.detail-table td{padding:.75rem 1rem;border-bottom:1px solid #031C2E;text-align:center;font-size:1rem}
+.detail-table td.p-label{text-align:left;color:#8A97B0;font-size:1rem}
 .detail-table tr:hover td{background:#0B2740}
-.detail-table tr.stat-row td{border-top:2px solid #0F3050;background:#0B2740 !important;font-weight:600}
-.detail-table tr.stat-row td.p-label{font-size:.92rem}
+.detail-table tr.stat-row td{border-top:2px solid #0F3050;background:#0B2740 !important;font-weight:600;font-size:1rem}
+.detail-table tr.stat-row td.p-label{font-size:1rem}
 </style>
 </head>
 <body>
