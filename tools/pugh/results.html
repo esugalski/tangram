@@ -151,6 +151,10 @@ input[type=range]{accent-color:#0AC0E9}
 .concept-crit-name-btn{font-family:'Inter',sans-serif;font-size:.82rem;font-weight:500;color:#E8ECF4;background:none;border:none;border-bottom:1px dashed rgba(10,192,233,.35);padding:0;cursor:pointer;text-align:left;transition:color .15s,border-color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
 .concept-crit-name-btn:hover{color:#0AC0E9;border-bottom-color:rgba(10,192,233,.8)}
 .concept-crit-weight{font-size:.7rem;color:#4A5770;flex-shrink:0;min-width:28px}
+
+/* Legend + ranking responsive row */
+.legend-ranking-row{display:grid;grid-template-columns:auto 1fr;gap:1.25rem;align-items:start;margin-bottom:1.25rem}
+@media(max-width:767px){.legend-ranking-row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -296,7 +300,7 @@ document.getElementById('siteHamburger').addEventListener('click',function(){var
     </div>
 
     <!-- Legend + stats row -->
-    <div style="display:grid;grid-template-columns:auto 1fr;gap:1.25rem;align-items:start;margin-bottom:1.25rem">
+    <div class="legend-ranking-row">
       <div id="legend" class="card" style="padding:1rem 1.25rem"></div>
       <div id="ranking-card" class="card" style="padding:1rem 1.25rem"></div>
     </div>
