@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quality Manual — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --gray:       #D2D2D2;
+      --light-gray: #F7F8FA;
+      --white:      #FFFFFF;
+      --sidebar-w:  232px;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
+    .project-switcher-wrap { padding: 0.75rem 0.75rem 0; }
+    .project-switcher { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); border-radius: 8px; padding: 0.55rem 0.75rem; cursor: default; display: flex; align-items: center; gap: 0.55rem; }
+    .project-switcher-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--aqua); }
+    .project-switcher-text { flex: 1; min-width: 0; }
+    .project-switcher-label { font-size: 0.58rem; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.1rem; }
+    .project-switcher-name { font-size: 0.8rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-section-label { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); padding: 0.6rem 0.75rem 0.2rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.88); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-badge { margin-left: auto; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.06em; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.22); padding: 0.14rem 0.42rem; border-radius: 3px; text-transform: uppercase; }
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.5rem 0.75rem; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); }
+    .sidebar-sign-out { margin-left: auto; }
+    .sidebar-sign-out a { font-size: 0.66rem; color: rgba(255,255,255,0.22); text-decoration: none; transition: color 0.2s; }
+    .sidebar-sign-out a:hover { color: rgba(255,255,255,0.5); }
+
+    /* ─── MAIN ─── */
+    .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 1.5rem; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 10; }
+    .topbar-left { display: flex; align-items: center; gap: 0.65rem; }
+    .topbar-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+    .topbar-crumb { color: rgba(11,39,64,0.35); font-weight: 400; font-size: 0.85rem; }
+    .topbar-right { display: flex; align-items: center; gap: 0.65rem; }
+    .ver-badge { font-size: 0.68rem; font-weight: 700; background: rgba(11,39,64,0.07); border: 1px solid rgba(11,39,64,0.12); color: var(--mid-blue); padding: 0.2rem 0.6rem; border-radius: 5px; }
+    .status-pill { font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 20px; }
+    .status-pill.draft    { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .status-pill.approved { background: rgba(16,185,129,0.12); color: #059669; }
+    .status-pill.none     { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.4); }
+    .btn-outline { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.48rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: all 0.15s; }
+    .btn-outline:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-outline svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-approve { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: #047857; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.48rem 1rem; border-radius: 7px; border: 1.5px solid rgba(16,185,129,0.35); cursor: pointer; transition: all 0.15s; }
+    .btn-approve:hover { border-color: var(--green); background: rgba(16,185,129,0.06); }
+    .btn-approve svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── CONTENT ─── */
+    .content-area { flex: 1; overflow-y: auto; padding: 2rem; }
+    .content-area::-webkit-scrollbar { width: 5px; }
+    .content-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+    .doc-wrap { max-width: 860px; margin: 0 auto; }
+
+    /* ─── DOCUMENT HEADER ─── */
+    .doc-cover { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 14px; padding: 2rem 2.25rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+    .doc-cover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary), var(--aqua)); }
+    .doc-cover-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+    .doc-cover-meta { display: flex; flex-direction: column; gap: 0.25rem; text-align: right; flex-shrink: 0; }
+    .doc-cover-meta-row { font-size: 0.7rem; color: rgba(11,39,64,0.4); }
+    .doc-cover-meta-row strong { color: var(--primary); font-weight: 600; }
+    .doc-company { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.5rem; }
+    .doc-name { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 0.35rem; }
+    .doc-subtitle { font-size: 0.82rem; color: rgba(11,39,64,0.5); line-height: 1.5; }
+    .doc-cover-divider { height: 1px; background: rgba(11,39,64,0.08); margin: 1.5rem 0; }
+    .doc-cover-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    .doc-field { display: flex; flex-direction: column; gap: 0.2rem; }
+    .doc-field-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.3); }
+    .doc-field-input { font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; font-family: 'Inter', sans-serif; background: var(--light-gray); outline: none; transition: border-color 0.15s; }
+    .doc-field-input:focus { border-color: var(--aqua); background: white; }
+    .doc-field-input[readonly] { background: rgba(11,39,64,0.02); cursor: default; border-color: transparent; }
+
+    /* ─── SECTION CARD ─── */
+    .section-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; margin-bottom: 1.25rem; }
+    .section-card-head { display: flex; align-items: center; padding: 1rem 1.5rem; cursor: pointer; user-select: none; border-bottom: 1px solid rgba(11,39,64,0.07); transition: background 0.12s; }
+    .section-card-head:hover { background: rgba(11,39,64,0.01); }
+    .section-card.closed .section-card-head { border-bottom-color: transparent; }
+    .section-num { width: 26px; height: 26px; border-radius: 7px; background: rgba(11,39,64,0.07); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: rgba(11,39,64,0.45); flex-shrink: 0; margin-right: 0.85rem; }
+    .section-card-title { font-size: 0.88rem; font-weight: 700; color: var(--primary); flex: 1; }
+    .section-card-chevron { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2.5; transition: transform 0.2s; flex-shrink: 0; }
+    .section-card.closed .section-card-chevron { transform: rotate(-90deg); }
+    .section-card-body { padding: 1.25rem 1.5rem; display: block; }
+    .section-card.closed .section-card-body { display: none; }
+    .field-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 0.35rem; }
+    .field-textarea { width: 100%; min-height: 100px; font-family: 'Inter', sans-serif; font-size: 0.82rem; line-height: 1.65; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.75rem; resize: vertical; outline: none; background: var(--light-gray); transition: border-color 0.15s; }
+    .field-textarea:focus { border-color: var(--aqua); background: white; }
+    .field-textarea[readonly] { background: rgba(11,39,64,0.02); cursor: default; resize: none; }
+    .field-input { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.5rem 0.75rem; outline: none; background: var(--light-gray); transition: border-color 0.15s; }
+    .field-input:focus { border-color: var(--aqua); background: white; }
+    .field-input[readonly] { background: rgba(11,39,64,0.02); cursor: default; }
+    .field-row { margin-bottom: 1rem; }
+    .field-row:last-child { margin-bottom: 0; }
+    .field-hint { font-size: 0.68rem; color: rgba(11,39,64,0.35); margin-top: 0.3rem; font-style: italic; }
+
+    /* ─── PROCEDURE REGISTRY ─── */
+    .registry-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+    .registry-table thead th { padding: 0.55rem 0.75rem; font-size: 0.63rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.38); background: #FAFBFC; border-bottom: 1px solid rgba(11,39,64,0.08); text-align: left; }
+    .registry-table tbody tr { border-bottom: 1px solid rgba(11,39,64,0.06); transition: background 0.1s; }
+    .registry-table tbody tr:last-child { border-bottom: none; }
+    .registry-table tbody tr:hover { background: rgba(10,192,233,0.02); }
+    .registry-table td { padding: 0.7rem 0.75rem; font-size: 0.78rem; color: var(--primary); vertical-align: middle; }
+    .reg-id { font-family: monospace; font-size: 0.72rem; font-weight: 700; color: rgba(11,39,64,0.5); }
+    .reg-status { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 20px; }
+    .reg-status.planned    { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); }
+    .reg-status.draft      { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .reg-status.review     { background: rgba(245,158,11,0.12); color: #b45309; }
+    .reg-status.approved   { background: rgba(16,185,129,0.12); color: #059669; }
+    .reg-status.superseded { background: rgba(239,68,68,0.1); color: #dc2626; }
+    .reg-status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .reg-link { font-size: 0.72rem; color: var(--aqua-dark); text-decoration: none; font-weight: 600; }
+    .reg-link:hover { text-decoration: underline; }
+    .registry-summary { display: flex; gap: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .reg-stat { display: flex; flex-direction: column; gap: 0.1rem; }
+    .reg-stat-value { font-size: 1.1rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; }
+    .reg-stat-label { font-size: 0.65rem; font-weight: 600; color: rgba(11,39,64,0.38); text-transform: uppercase; letter-spacing: 0.06em; }
+    .reg-stat.green .reg-stat-value { color: var(--green); }
+    .reg-stat.amber .reg-stat-value { color: var(--amber); }
+
+    /* ─── SIGNATURE BLOCK ─── */
+    .sig-card { background: rgba(16,185,129,0.04); border: 1px solid rgba(16,185,129,0.2); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+    .sig-card-head { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #059669; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.4rem; }
+    .sig-card-head svg { width: 13px; height: 13px; stroke: #059669; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sig-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.85rem; }
+    .sig-field-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.2rem; }
+    .sig-field-value { font-size: 0.82rem; font-weight: 600; color: var(--primary); }
+    .sig-field-sub { font-size: 0.7rem; color: rgba(11,39,64,0.4); margin-top: 0.1rem; }
+    .sig-meaning { font-size: 0.75rem; color: var(--mid-blue); font-style: italic; margin-top: 0.65rem; padding-top: 0.65rem; border-top: 1px solid rgba(16,185,129,0.15); }
+
+    /* ─── STICKY FOOTER ─── */
+    .doc-footer { background: white; border-top: 1px solid rgba(11,39,64,0.08); padding: 0.9rem 2rem; display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+    .btn-save { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.48rem 1rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s; }
+    .btn-save:hover { background: var(--aqua-dark); }
+    .save-flash { font-size: 0.74rem; font-weight: 600; color: var(--green); opacity: 0; transition: opacity 0.3s; }
+    .save-flash.show { opacity: 1; }
+    .locked-note { font-size: 0.76rem; color: rgba(11,39,64,0.4); }
+
+    /* ─── AI ASSIST PANEL ─── */
+    .btn-ai { display: inline-flex; align-items: center; gap: 0.4rem; background: linear-gradient(135deg, rgba(10,192,233,0.12), rgba(99,102,241,0.12)); color: var(--aqua-dark); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.48rem 1rem; border-radius: 7px; border: 1.5px solid rgba(10,192,233,0.3); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+    .btn-ai:hover { border-color: rgba(10,192,233,0.5); background: linear-gradient(135deg, rgba(10,192,233,0.18), rgba(99,102,241,0.18)); }
+    .btn-ai svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-generate { display: inline-flex; align-items: center; gap: 0.3rem; background: transparent; color: var(--aqua-dark); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.65rem; padding: 0.22rem 0.6rem; border-radius: 5px; border: 1.5px solid rgba(10,192,233,0.28); cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em; }
+    .btn-generate:hover { border-color: var(--aqua); background: rgba(10,192,233,0.07); }
+    .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-generate svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .field-label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .ai-panel { position: fixed; top: 58px; right: 0; bottom: 0; width: 380px; background: var(--primary); color: white; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: -8px 0 32px rgba(2,25,47,0.25); z-index: 500; pointer-events: none; }
+    .ai-panel.open { transform: translateX(0); pointer-events: auto; }
+    .ai-panel-head { padding: 1.1rem 1.25rem 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 0.65rem; flex-shrink: 0; }
+    .ai-panel-icon { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, rgba(10,192,233,0.2), rgba(99,102,241,0.2)); border: 1px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ai-panel-icon svg { width: 15px; height: 15px; stroke: var(--aqua); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .ai-panel-head-text { flex: 1; min-width: 0; }
+    .ai-panel-title { font-size: 0.8rem; font-weight: 700; color: white; }
+    .ai-panel-subtitle { font-size: 0.67rem; color: rgba(255,255,255,0.38); margin-top: 0.1rem; }
+    .ai-panel-close { width: 28px; height: 28px; border-radius: 6px; background: rgba(255,255,255,0.06); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.4); transition: background 0.15s, color 0.15s; flex-shrink: 0; }
+    .ai-panel-close:hover { background: rgba(255,255,255,0.12); color: white; }
+    .ai-panel-close svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .ai-panel-body { flex: 1; overflow-y: auto; padding: 1rem 1.25rem; }
+    .ai-panel-body::-webkit-scrollbar { width: 3px; }
+    .ai-panel-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
+    .ai-section { margin-bottom: 1.25rem; }
+    .ai-section-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.28); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem; }
+    .ai-section-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
+    .ai-completeness { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 0.5rem; }
+    .ai-completeness-bar-wrap { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.5rem; }
+    .ai-completeness-label { font-size: 0.72rem; font-weight: 600; color: white; flex-shrink: 0; }
+    .ai-completeness-pct { font-size: 0.72rem; font-weight: 700; color: var(--aqua); margin-left: auto; flex-shrink: 0; }
+    .ai-bar-bg { flex: 1; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+    .ai-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--aqua), #6366f1); transition: width 0.4s ease; }
+    .ai-section-pills { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .ai-pill { font-size: 0.62rem; font-weight: 600; padding: 0.18rem 0.5rem; border-radius: 20px; display: flex; align-items: center; gap: 0.28rem; }
+    .ai-pill.filled { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+    .ai-pill.empty  { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.35); border: 1px solid rgba(255,255,255,0.08); }
+    .ai-pill svg { width: 8px; height: 8px; stroke: currentColor; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .ai-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 0.75rem 0.9rem; margin-bottom: 0.45rem; }
+    .ai-card-head { display: flex; align-items: flex-start; gap: 0.55rem; margin-bottom: 0.4rem; }
+    .ai-card-icon { width: 22px; height: 22px; border-radius: 6px; background: rgba(10,192,233,0.12); border: 1px solid rgba(10,192,233,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.05rem; }
+    .ai-card-icon svg { width: 11px; height: 11px; stroke: var(--aqua); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .ai-card-title { font-size: 0.72rem; font-weight: 700; color: white; line-height: 1.3; }
+    .ai-card-body { font-size: 0.7rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+    .ai-card-body strong { color: rgba(255,255,255,0.8); font-weight: 600; }
+    .ai-checklist { list-style: none; padding: 0; }
+    .ai-checklist li { font-size: 0.7rem; color: rgba(255,255,255,0.55); padding: 0.28rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: flex-start; gap: 0.45rem; line-height: 1.5; }
+    .ai-checklist li:last-child { border-bottom: none; }
+    .ai-checklist li::before { content: ''; width: 14px; height: 14px; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 3px; flex-shrink: 0; margin-top: 0.05rem; }
+    .ai-checklist li.ok { color: rgba(255,255,255,0.38); }
+    .ai-checklist li.ok::before { content: ''; background: rgba(16,185,129,0.2); border-color: rgba(16,185,129,0.35); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2334d399' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; }
+    .ai-citation { font-size: 0.67rem; color: rgba(255,255,255,0.45); font-family: monospace; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.07); border-radius: 5px; padding: 0.18rem 0.45rem; display: inline-block; margin: 0.15rem 0.15rem 0 0; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title">
+          <span class="topbar-crumb">System</span>
+          <span style="color:rgba(11,39,64,0.2);margin:0 0.3rem;">/</span>
+          Quality Manual
+        </div>
+        <span class="ver-badge" id="verBadge">v1</span>
+        <span class="status-pill none" id="statusPill">Not Approved</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-ai" onclick="openAiPanel()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          AI Assist
+        </button>
+        <button class="btn-outline" onclick="openAuditLog()">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Audit Log
+        </button>
+        <button class="btn-approve" id="btnApprove" onclick="approveManual()">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Finalize &amp; Approve
+        </button>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <div class="doc-wrap" id="docWrap">
+        <!-- rendered by JS -->
+      </div>
+    </div>
+
+    <div class="doc-footer" id="docFooter">
+      <button class="btn-save" onclick="saveManual()">Save Draft</button>
+      <span class="save-flash" id="saveFlash">Saved ✓</span>
+    </div>
+  </div>
+
+  <!-- Audit Log Modal -->
+  <div style="display:none;position:fixed;inset:0;background:rgba(2,25,47,0.55);z-index:9000;align-items:center;justify-content:center;backdrop-filter:blur(3px);" id="auditOverlay">
+    <div style="background:white;border-radius:14px;box-shadow:0 24px 80px rgba(2,25,47,0.22);width:680px;max-width:calc(100vw - 2rem);max-height:80vh;display:flex;flex-direction:column;">
+      <div style="padding:1.1rem 1.35rem;border-bottom:1px solid rgba(11,39,64,0.08);display:flex;align-items:center;">
+        <div style="font-size:0.9rem;font-weight:700;color:var(--primary);flex:1;">Electronic Signature Audit Log</div>
+        <button onclick="document.getElementById('auditOverlay').style.display='none';" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:7px;border:1px solid rgba(11,39,64,0.12);background:transparent;cursor:pointer;color:rgba(11,39,64,0.4);font-size:1rem;">✕</button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:1rem 1.35rem;" id="auditBody"></div>
+    </div>
+  </div>
+
+  <!-- AI Assist Panel -->
+  <div class="ai-panel" id="aiPanel">
+    <div class="ai-panel-head">
+      <div class="ai-panel-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </div>
+      <div class="ai-panel-head-text">
+        <div class="ai-panel-title">AI Assist</div>
+        <div class="ai-panel-subtitle">Quality Manual · QM-001</div>
+      </div>
+      <button class="ai-panel-close" onclick="closeAiPanel()">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="ai-panel-body" id="aiPanelBody"></div>
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script src="esign.js"></script>
+  <script src="versions.js"></script>
+  <script>
+    initSidebar({ activePage: 'quality-manual' });
+
+    const LS_KEY   = 'qms_quality_manual';
+    const LS_PROCS = 'qms_procedures';
+    const LS_CTX   = 'qms_context';
+
+    // ── REDIRECT if no setup context ──────────────────────────────────────
+    (function() {
+      try {
+        const raw = localStorage.getItem(LS_CTX);
+        if (!raw || !JSON.parse(raw).setupComplete) {
+          window.location.href = 'qms-setup.html';
+        }
+      } catch(e) {
+        window.location.href = 'qms-setup.html';
+      }
+    })();
+
+    function getCtx() {
+      try { return JSON.parse(localStorage.getItem(LS_CTX) || '{}'); } catch(e) { return {}; }
+    }
+
+    const DEFAULTS = {
+      version: 1, status: 'draft',
+      companyName: '', deviceName: '', regulatoryBasis: 'ISO 13485:2016; 21 CFR Part 820',
+      qualityPolicy: '',
+      scopeIncluded: '', scopeExcluded: '',
+      orgOverview: '',
+      processInteraction: '',
+      approvalSignature: null, history: [],
+    };
+
+    let QM = {};
+    let locked = false;
+
+    // ── STORAGE ───────────────────────────────────────────────────────────
+    function saveManual() {
+      collectFields();
+      try { localStorage.setItem(LS_KEY, JSON.stringify(QM)); } catch(e) {}
+      const flash = document.getElementById('saveFlash');
+      if (flash) { flash.classList.add('show'); setTimeout(function(){ flash.classList.remove('show'); }, 2000); }
+    }
+
+    function loadManual() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (raw) {
+          QM = Object.assign({}, DEFAULTS, JSON.parse(raw));
+        } else {
+          // First visit — pre-populate from qms_context
+          QM = Object.assign({}, DEFAULTS);
+          const ctx = getCtx();
+          if (ctx.companyName)    QM.companyName      = ctx.companyName;
+          if (ctx.deviceName)     QM.deviceName       = ctx.deviceName;
+          if (ctx.regulatoryBasis) QM.regulatoryBasis  = ctx.regulatoryBasis;
+        }
+      } catch(e) { QM = Object.assign({}, DEFAULTS); }
+    }
+
+    function loadProcs() {
+      try { return JSON.parse(localStorage.getItem(LS_PROCS) || '{}'); } catch(e) { return {}; }
+    }
+
+    // ── HELPERS ───────────────────────────────────────────────────────────
+    function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function fmtDateTime(iso) { if (!iso) return '—'; try { return new Date(iso).toLocaleString('en-US',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}); } catch(e){ return iso; } }
+
+    // ── COLLECT ───────────────────────────────────────────────────────────
+    function collectFields() {
+      var g = function(id){ var el = document.getElementById(id); return el ? el.value : ''; };
+      QM.companyName       = g('fCompany');
+      QM.deviceName        = g('fDevice');
+      QM.regulatoryBasis   = g('fRegBasis');
+      QM.qualityPolicy     = g('fPolicy');
+      QM.scopeIncluded     = g('fScopeIn');
+      QM.scopeExcluded     = g('fScopeEx');
+      QM.orgOverview       = g('fOrg');
+      QM.processInteraction = g('fProcess');
+    }
+
+    // ── RENDER ────────────────────────────────────────────────────────────
+    function render() {
+      locked = QM.status === 'approved';
+      const ro = locked ? ' readonly' : '';
+      const roDis = locked ? ' disabled' : '';
+
+      // Update topbar
+      document.getElementById('verBadge').textContent = 'v' + (QM.version||1);
+      const sp = document.getElementById('statusPill');
+      sp.textContent = locked ? 'Approved' : 'Draft';
+      sp.className = 'status-pill ' + (locked ? 'approved' : 'draft');
+      const btnApprove = document.getElementById('btnApprove');
+      if (btnApprove) btnApprove.style.display = locked ? 'none' : '';
+
+      // Footer
+      const footer = document.getElementById('docFooter');
+      if (locked) {
+        footer.innerHTML = '<span class="locked-note">✓ Quality Manual v' + (QM.version||1) + ' is approved and locked. Changes require a new version via Change Control.</span>';
+      }
+
+      // Build document
+      const procs = loadProcs();
+      const procKeys = Object.keys(procs).sort();
+      const approvedCount = procKeys.filter(function(k){ return procs[k].status === 'approved'; }).length;
+      const plannedCount  = procKeys.filter(function(k){ return procs[k].status === 'planned'; }).length;
+      const draftCount    = procKeys.filter(function(k){ return procs[k].status === 'draft' || procs[k].status === 'review'; }).length;
+
+      const STATUS_LABELS = { planned:'Planned', draft:'Draft', review:'Under Review', approved:'Approved', superseded:'Superseded' };
+
+      // Registry rows
+      const registryRows = procKeys.length ? procKeys.map(function(k) {
+        const p = procs[k];
+        const statusCls = p.status || 'planned';
+        return '<tr>' +
+          '<td><span class="reg-id">' + esc(k) + '</span></td>' +
+          '<td style="font-weight:600;">' + esc(p.title||'—') + '</td>' +
+          '<td>' + esc(p.owner||'—') + '</td>' +
+          '<td><span class="reg-status ' + esc(statusCls) + '">' + esc(STATUS_LABELS[statusCls]||statusCls) + '</span></td>' +
+          '<td>' + esc(p.approvalSignature ? fmtDateTime(p.approvalSignature.timestamp).split(',')[0] : '—') + '</td>' +
+          '<td><a class="reg-link" href="process-library.html">View →</a></td>' +
+        '</tr>';
+      }).join('') : '<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:rgba(11,39,64,0.35);font-size:0.78rem;">No procedures in the Process Library yet.</td></tr>';
+
+      // Signature block
+      let sigHTML = '';
+      if (QM.approvalSignature) {
+        const sig = QM.approvalSignature;
+        sigHTML = '<div class="sig-card">' +
+          '<div class="sig-card-head"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Approval Signature — Quality Manual v' + (QM.version||1) + '</div>' +
+          '<div class="sig-grid">' +
+            '<div><div class="sig-field-label">Approved By</div><div class="sig-field-value">' + esc(sig.signerName||'—') + '</div><div class="sig-field-sub">' + esc(sig.signerRole||'') + '</div></div>' +
+            '<div><div class="sig-field-label">Date &amp; Time</div><div class="sig-field-value">' + esc(fmtDateTime(sig.timestamp)) + '</div></div>' +
+            '<div><div class="sig-field-label">Record ID</div><div class="sig-field-value" style="font-family:monospace;font-size:0.75rem;">' + esc(sig.recordId||'—') + '</div></div>' +
+          '</div>' +
+          '<div class="sig-meaning">"' + esc(sig.meaning||'') + '"</div>' +
+        '</div>';
+      }
+
+      document.getElementById('docWrap').innerHTML =
+        // ── COVER ──
+        '<div class="doc-cover">' +
+          '<div class="doc-cover-top">' +
+            '<div>' +
+              '<div class="doc-company" id="coverCompany">' + esc(QM.companyName||'Your Company Name') + '</div>' +
+              '<div class="doc-name">Quality Manual</div>' +
+              '<div class="doc-subtitle">This document establishes the Quality Management System, defines quality policy and scope, and provides the foundational authority for all controlled procedures and records.</div>' +
+            '</div>' +
+            '<div class="doc-cover-meta">' +
+              '<div class="doc-cover-meta-row">Document No. <strong>QM-001</strong></div>' +
+              '<div class="doc-cover-meta-row">Revision <strong>' + esc(QM.version ? String(QM.version) : '1') + '</strong></div>' +
+              '<div class="doc-cover-meta-row">Status <strong>' + esc(locked ? 'Approved' : 'Draft') + '</strong></div>' +
+              (QM.approvalSignature ? '<div class="doc-cover-meta-row">Approved <strong>' + esc(fmtDateTime(QM.approvalSignature.timestamp).split(',')[0]) + '</strong></div>' : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="doc-cover-divider"></div>' +
+          '<div class="doc-cover-fields">' +
+            '<div class="doc-field"><div class="doc-field-label">Company / Organization</div><input class="doc-field-input" id="fCompany" type="text" value="' + esc(QM.companyName||'') + '" placeholder="Legal company name"' + ro + '></div>' +
+            '<div class="doc-field"><div class="doc-field-label">Device / Product Scope</div><input class="doc-field-input" id="fDevice" type="text" value="' + esc(QM.deviceName||'') + '" placeholder="e.g. CardioSync Pro"' + ro + '></div>' +
+            '<div class="doc-field"><div class="doc-field-label">Regulatory Basis</div><input class="doc-field-input" id="fRegBasis" type="text" value="' + esc(QM.regulatoryBasis||'') + '" placeholder="e.g. ISO 13485:2016; 21 CFR Part 820"' + ro + '></div>' +
+          '</div>' +
+        '</div>' +
+
+        sigHTML +
+
+        // ── SECTION 1: Quality Policy ──
+        buildSection('sec1', 1, 'Quality Policy', true,
+          '<div class="field-row">' +
+            '<div class="field-label-row"><div class="field-label">Policy Statement</div>' + genBtn('fPolicy', 'quality-policy') + '</div>' +
+            '<textarea class="field-textarea" id="fPolicy" rows="5"' + ro + '>' + esc(QM.qualityPolicy||'') + '</textarea>' +
+            '<div class="field-hint">State the organization\'s commitment to quality, patient safety, and continual improvement. This statement is signed by top management and must be communicated to all personnel.</div>' +
+          '</div>'
+        ) +
+
+        // ── SECTION 2: Scope ──
+        buildSection('sec2', 2, 'Scope of the Quality Management System', false,
+          '<div class="field-row">' +
+            '<div class="field-label-row"><div class="field-label">Included Activities &amp; Products</div>' + genBtn('fScopeIn', 'scope-included') + '</div>' +
+            '<textarea class="field-textarea" id="fScopeIn" rows="4"' + ro + '>' + esc(QM.scopeIncluded||'') + '</textarea>' +
+            '<div class="field-hint">Describe what products, services, and activities are covered by this QMS.</div>' +
+          '</div>' +
+          '<div class="field-row">' +
+            '<div class="field-label-row"><div class="field-label">Exclusions &amp; Justifications</div>' + genBtn('fScopeEx', 'scope-exclusions') + '</div>' +
+            '<textarea class="field-textarea" id="fScopeEx" rows="3"' + ro + '>' + esc(QM.scopeExcluded||'') + '</textarea>' +
+            '<div class="field-hint">Identify any ISO 13485 clauses excluded and provide justification (e.g., no servicing activities).</div>' +
+          '</div>'
+        ) +
+
+        // ── SECTION 3: Procedure Registry ──
+        buildSection('sec3', 3, 'Controlled Procedures Registry', false,
+          '<div class="registry-summary">' +
+            '<div class="reg-stat green"><div class="reg-stat-value">' + approvedCount + '</div><div class="reg-stat-label">Approved</div></div>' +
+            '<div class="reg-stat amber"><div class="reg-stat-value">' + draftCount + '</div><div class="reg-stat-label">In Progress</div></div>' +
+            '<div class="reg-stat"><div class="reg-stat-value">' + plannedCount + '</div><div class="reg-stat-label">Planned</div></div>' +
+            '<div class="reg-stat"><div class="reg-stat-value">' + procKeys.length + '</div><div class="reg-stat-label">Total</div></div>' +
+          '</div>' +
+          '<div style="font-size:0.72rem;color:rgba(11,39,64,0.4);margin-bottom:0.75rem;font-style:italic;">This table is automatically populated from the <a href="process-library.html" style="color:var(--aqua-dark);">Process Library</a>. Statuses reflect the current live state.</div>' +
+          '<table class="registry-table">' +
+            '<thead><tr><th>Doc No.</th><th>Title</th><th>Owner Role</th><th>Status</th><th>Approved</th><th></th></tr></thead>' +
+            '<tbody>' + registryRows + '</tbody>' +
+          '</table>'
+        ) +
+
+        // ── SECTION 4: Organization Overview ──
+        buildSection('sec4', 4, 'Organization Overview & Responsibilities', false,
+          '<div class="field-row">' +
+            '<div class="field-label-row"><div class="field-label">Organizational Description</div>' + genBtn('fOrg', 'org-overview') + '</div>' +
+            '<textarea class="field-textarea" id="fOrg" rows="5"' + ro + '>' + esc(QM.orgOverview||'') + '</textarea>' +
+            '<div class="field-hint">Describe the organizational structure relevant to the QMS: key roles, reporting relationships, and management responsibility for quality. Detailed role definitions will be established in individual procedures.</div>' +
+          '</div>'
+        ) +
+
+        // ── SECTION 5: Process Interaction ──
+        buildSection('sec5', 5, 'Interaction of QMS Processes', false,
+          '<div class="field-row">' +
+            '<div class="field-label-row"><div class="field-label">Process Interaction Description</div>' + genBtn('fProcess', 'process-interaction') + '</div>' +
+            '<textarea class="field-textarea" id="fProcess" rows="5"' + ro + '>' + esc(QM.processInteraction||'') + '</textarea>' +
+            '<div class="field-hint">Describe how the key QMS processes interact with one another — e.g., how Design Control feeds into Risk Management, how Change Control feeds back into Document Control. ISO 13485 §4.1 requires this to be documented.</div>' +
+          '</div>'
+        );
+
+      // Re-wire section toggles
+      document.querySelectorAll('.section-card-head').forEach(function(hdr) {
+        hdr.addEventListener('click', function() {
+          hdr.closest('.section-card').classList.toggle('closed');
+        });
+      });
+    }
+
+    function buildSection(id, num, title, defaultOpen, bodyHTML) {
+      return '<div class="section-card' + (defaultOpen ? '' : ' closed') + '" id="' + id + '">' +
+        '<div class="section-card-head">' +
+          '<div class="section-num">' + num + '</div>' +
+          '<div class="section-card-title">' + esc(title) + '</div>' +
+          '<svg class="section-card-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>' +
+        '</div>' +
+        '<div class="section-card-body">' + bodyHTML + '</div>' +
+      '</div>';
+    }
+
+    // ── APPROVE ───────────────────────────────────────────────────────────
+    function approveManual() {
+      if (!ESign.hasUserProfile()) { ESign.setupUserProfile(); return; }
+      collectFields();
+      if (!QM.qualityPolicy) { alert('Please complete the Quality Policy before approving the Quality Manual.'); return; }
+      const snapshot = JSON.parse(JSON.stringify(QM));
+      ESign.open({
+        recordId:       'QM-001',
+        recordType:     'quality-manual',
+        meaning:        'I approve Quality Manual v' + (QM.version||1) + ' as the governing document for the Quality Management System. This document is authorized to serve as the QMS foundation for all controlled procedures and records.',
+        recordSnapshot: snapshot,
+        onSuccess: function(sig) {
+          QM.status = 'approved';
+          QM.approvalSignature = sig;
+          try {
+            localStorage.setItem(LS_KEY, JSON.stringify(QM));
+            // Write to qms_documents
+            var docs = JSON.parse(localStorage.getItem('qms_documents') || '{}');
+            var existing = docs['QM-001'];
+            var history = existing ? (existing.history || []) : [];
+            if (existing) history.push({ version: existing.version, frozenAt: new Date().toISOString(), approvalSignature: existing.approvalSignature, itemSnapshot: existing.itemSnapshot });
+            docs['QM-001'] = { type: 'quality-manual', name: 'Quality Manual', version: QM.version||1, status: 'approved', approvedAt: sig.timestamp, approvalSignature: sig, itemSnapshot: snapshot, changeRef: null, history: history };
+            localStorage.setItem('qms_documents', JSON.stringify(docs));
+          } catch(e) {}
+          render();
+        },
+        onCancel: function() {},
+      });
+    }
+
+    // ── AUDIT LOG ─────────────────────────────────────────────────────────
+    function openAuditLog() {
+      const log = ESign.getAuditLog ? ESign.getAuditLog() : [];
+      const body = document.getElementById('auditBody');
+      if (!log.length) {
+        body.innerHTML = '<div style="text-align:center;padding:2rem;font-size:0.8rem;color:rgba(11,39,64,0.35);">No signature events recorded yet.</div>';
+      } else {
+        const sorted = log.slice().sort(function(a,b){ return (b.timestamp||'') > (a.timestamp||'') ? 1 : -1; });
+        body.innerHTML = sorted.map(function(e) {
+          return '<div style="padding:0.75rem 0;border-bottom:1px solid rgba(11,39,64,0.06);">' +
+            '<div style="display:flex;justify-content:space-between;gap:0.5rem;">' +
+              '<div><span style="font-size:0.82rem;font-weight:600;color:var(--primary);">' + esc(e.signerName||'—') + '</span>' +
+              (e.signerRole ? ' <span style="font-size:0.72rem;color:rgba(11,39,64,0.45);">· ' + esc(e.signerRole) + '</span>' : '') + '</div>' +
+              '<span style="font-size:0.7rem;color:rgba(11,39,64,0.4);white-space:nowrap;">' + esc(fmtDateTime(e.timestamp)) + '</span>' +
+            '</div>' +
+            '<div style="font-size:0.74rem;color:var(--mid-blue);margin-top:0.2rem;font-style:italic;">"' + esc(e.meaning||'') + '"</div>' +
+            '<div style="font-size:0.68rem;color:rgba(11,39,64,0.38);margin-top:0.15rem;">Record: ' + esc(e.recordType||'') + ' / ' + esc(e.recordId||'') + '</div>' +
+          '</div>';
+        }).join('');
+      }
+      document.getElementById('auditOverlay').style.display = 'flex';
+    }
+
+    // ── GENERATE BUTTON HELPER ────────────────────────────────────────────
+    function genBtn(fieldId, section) {
+      if (locked) return '';
+      return '<button class="btn-generate" onclick="generateField(\'' + fieldId + '\',\'' + section + '\')" id="genbtn-' + fieldId + '">' +
+        '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>' +
+        '✦ Generate' +
+      '</button>';
+    }
+
+    // ── AI GENERATION ─────────────────────────────────────────────────────
+    async function generateField(fieldId, section) {
+      const ctx = getCtx();
+      const apiKey = ctx.anthropicApiKey;
+      if (!apiKey) {
+        const entered = prompt('Enter your Anthropic API key to enable AI generation:\n(It will be saved to your QMS context for future use)');
+        if (!entered || !entered.trim()) return;
+        ctx.anthropicApiKey = entered.trim();
+        try { localStorage.setItem(LS_CTX, JSON.stringify(ctx)); } catch(e) {}
+      }
+
+      const key = ctx.anthropicApiKey;
+      const btn = document.getElementById('genbtn-' + fieldId);
+      const textarea = document.getElementById(fieldId);
+      if (!textarea) return;
+
+      // Loading state
+      if (btn) { btn.disabled = true; btn.innerHTML = '<svg viewBox="0 0 24 24" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Generating…'; }
+
+      const promptText = buildPrompt(section, ctx);
+
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': key,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json',
+            'anthropic-dangerous-direct-browser-access': 'true',
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 600,
+            messages: [{ role: 'user', content: promptText }],
+          }),
+        });
+
+        if (!resp.ok) {
+          const err = await resp.json().catch(function(){ return {}; });
+          throw new Error((err.error && err.error.message) || 'API error ' + resp.status);
+        }
+
+        const data = await resp.json();
+        const text = (data.content && data.content[0] && data.content[0].text) || '';
+        textarea.value = text.trim();
+        textarea.dispatchEvent(new Event('input'));
+      } catch(e) {
+        alert('Generation failed: ' + e.message + '\n\nCheck your API key in QMS Setup.');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>✦ Generate';
+        }
+      }
+    }
+
+    function buildPrompt(section, ctx) {
+      const co   = ctx.companyName      || 'the company';
+      const dev  = ctx.deviceName       || 'the medical device';
+      const cls  = { i:'Class I', ii:'Class II', iii:'Class III', ivd:'IVD' }[ctx.deviceClass] || 'Class II';
+      const type = { hardware:'hardware', samd:'software (SaMD)', combination:'hardware/software combination', ivd:'IVD' }[ctx.deviceType] || 'hardware';
+      const use  = ctx.intendedUse      || '';
+      const pop  = ctx.patientPopulation || '';
+      const mkt  = (ctx.regulatoryMarkets||['us']).map(function(m){ return ({us:'US FDA',eu:'EU MDR',canada:'Health Canada',apac:'APAC'})[m]||m; }).join(', ');
+      const size = { startup:'a startup (<20 people)', small:'a small company (20–100 people)', medium:'a mid-size company (100–500 people)', large:'a large company (500+ people)' }[ctx.companySize] || 'a company';
+      const acts = (ctx.scopeActivities||[]).join(', ') || 'design and manufacturing';
+      const excl = ctx.knownExclusions || 'none stated';
+      const reg  = ctx.regulatoryBasis || 'ISO 13485:2016; 21 CFR Part 820';
+      const stage = { building:'building its QMS for the first time', 'pre-sub':'preparing for first regulatory submission', cleared:'maintaining a cleared/approved device', 'post-market':'in active post-market surveillance' }[ctx.companyStage] || 'building its QMS';
+
+      const context = [
+        'Company: ' + co + ' (' + size + ', ' + stage + ')',
+        'Device: ' + dev + ' (' + cls + ' ' + type + ')',
+        use  ? 'Intended use: ' + use   : null,
+        pop  ? 'Patient population: ' + pop : null,
+        'Markets: ' + mkt,
+        'QMS activities in scope: ' + acts,
+        'Known exclusions: ' + excl,
+        'Regulatory basis: ' + reg,
+      ].filter(Boolean).join('\n');
+
+      const PROMPTS = {
+        'quality-policy': 'Write a Quality Policy statement for a medical device company Quality Manual.\n\nContext:\n' + context + '\n\nRequirements:\n- 2–4 paragraphs\n- Must include commitment to: product safety and effectiveness, regulatory compliance (' + reg + '), continual improvement\n- Reference the device and its patient population specifically\n- Appropriate for top management signature\n- Professional, clear, audit-ready tone\n- Do NOT include a heading or title — just the policy text itself',
+
+        'scope-included': 'Write the "Scope — Included Activities & Products" section of a Quality Manual.\n\nContext:\n' + context + '\n\nRequirements:\n- 2–3 paragraphs\n- Clearly state what products, device families, and lifecycle activities are covered\n- Reference the specific device name and classification\n- Reference all in-scope activities: ' + acts + '\n- Reference the regulatory standards that define the scope\n- Professional, specific, audit-ready tone\n- Do NOT include a heading — just the scope text',
+
+        'scope-exclusions': 'Write the "Exclusions & Justifications" section of a Quality Manual.\n\nContext:\n' + context + '\n\nKnown exclusions specified by the user: ' + excl + '\n\nRequirements:\n- If no exclusions are stated, write a brief paragraph confirming no ISO 13485 clauses are excluded and why all clauses apply\n- If exclusions are stated, document each with the clause number, what is excluded, and the justification\n- Professional, specific, audit-ready tone\n- Do NOT include a heading — just the text',
+
+        'org-overview': 'Write the "Organization Overview & Responsibilities" section of a Quality Manual.\n\nContext:\n' + context + '\n\nRequirements:\n- 2–3 paragraphs\n- Describe the organizational structure appropriate for ' + size + ' in the medical device industry\n- Identify key QMS roles and their high-level responsibilities (do not over-specify — detailed role definitions belong in procedures)\n- Reference Management Representative responsibility as required by ISO 13485 §5.5\n- Note that detailed responsibilities are defined in individual controlled procedures\n- Professional tone\n- Do NOT include a heading — just the text',
+
+        'process-interaction': 'Write the "Interaction of QMS Processes" section of a Quality Manual.\n\nContext:\n' + context + '\n\nRequirements:\n- 2–3 paragraphs\n- Describe how the key QMS processes interact, specifically for ' + dev + '\n- Required by ISO 13485 §4.1\n- Cover the flow: design control → risk management → change control → document control → CAPA, and any relevant to the scope activities: ' + acts + '\n- Be specific about inputs and outputs between processes\n- Professional tone\n- Do NOT include a heading — just the text',
+      };
+
+      return PROMPTS[section] || ('Write a brief, professional paragraph for the "' + section + '" section of a medical device Quality Manual for ' + co + '\'s ' + dev + '.');
+    }
+
+    // ── AI ASSIST ─────────────────────────────────────────────────────────
+    const QM_FIELDS = [
+      { id: 'fCompany',  label: 'Company Name',          field: 'companyName' },
+      { id: 'fDevice',   label: 'Device / Product Scope', field: 'deviceName' },
+      { id: 'fRegBasis', label: 'Regulatory Basis',       field: 'regulatoryBasis' },
+      { id: 'fPolicy',   label: 'Quality Policy',         field: 'qualityPolicy' },
+      { id: 'fScopeIn',  label: 'Scope — Included',       field: 'scopeIncluded' },
+      { id: 'fScopeEx',  label: 'Scope — Exclusions',     field: 'scopeExcluded' },
+      { id: 'fOrg',      label: 'Organization Overview',  field: 'orgOverview' },
+      { id: 'fProcess',  label: 'Process Interaction',    field: 'processInteraction' },
+    ];
+
+    const QM_TIPS = {
+      fCompany:  'Enter the full legal company name as it appears on your regulatory submissions and device labeling.',
+      fDevice:   'Describe the device family or specific product this QMS covers. Be specific enough that an auditor can confirm alignment with your regulatory filings.',
+      fRegBasis: 'List the specific standards and regulations your QMS is built to. Common entries: "ISO 13485:2016; 21 CFR Part 820; EU MDR 2017/745".',
+      fPolicy:   'The Quality Policy must be: (1) appropriate to the organization, (2) include a commitment to compliance and continual improvement, (3) be communicated to all personnel, and (4) be reviewed for continuing suitability. ISO 13485 §5.3 requires all of this.',
+      fScopeIn:  'Describe products, activities, and processes in scope. Reference device class, regulatory markets, and lifecycle stages covered (design, manufacturing, distribution, post-market).',
+      fScopeEx:  'If excluding any ISO 13485 clauses, identify the clause number and justify why it does not apply (e.g., "§7.5.6 excluded — no sterile manufacturing"). Unjustified exclusions are a common audit finding.',
+      fOrg:      'Describe key roles and their QMS responsibilities. ISO 13485 §5.5 requires top management to define responsibilities and authorities. At minimum, identify who holds Management Representative responsibility.',
+      fProcess:  'ISO 13485 §4.1 requires documented process interactions. Map key inputs and outputs: e.g., Design Control → Risk Management (design outputs feed FMEA), Change Control → Document Control (approved CRs trigger document revision).',
+    };
+
+    const QM_REQUIREMENTS = [
+      { text: 'Quality Policy statement present and complete',              field: 'qualityPolicy' },
+      { text: 'QMS scope defined with product and activity boundaries',     field: 'scopeIncluded' },
+      { text: 'Exclusions documented with justification (or none stated)',  field: 'scopeExcluded' },
+      { text: 'Organizational roles and QMS responsibilities described',    field: 'orgOverview' },
+      { text: 'Process interactions documented per ISO 13485 §4.1',        field: 'processInteraction' },
+      { text: 'Company name matches regulatory submission entity',          field: 'companyName' },
+      { text: 'Regulatory basis lists applicable standards and regulations', field: 'regulatoryBasis' },
+      { text: 'Procedure Registry reflects all controlled QMS procedures',  field: null }, // live from process-library
+    ];
+
+    function openAiPanel() {
+      collectFields(); // get latest values before rendering
+      document.getElementById('aiPanelBody').innerHTML = buildAiContent();
+      document.getElementById('aiPanel').classList.add('open');
+    }
+
+    function closeAiPanel() {
+      document.getElementById('aiPanel').classList.remove('open');
+    }
+
+    function buildAiContent() {
+      // Completeness: count fields with meaningful content
+      const filled = QM_FIELDS.filter(function(f) {
+        return (QM[f.field] || '').trim().length > 0;
+      });
+      const pct = Math.round((filled.length / QM_FIELDS.length) * 100);
+
+      const pillsHTML = QM_FIELDS.map(function(f) {
+        const isFilled = (QM[f.field] || '').trim().length > 0;
+        return '<span class="ai-pill ' + (isFilled ? 'filled' : 'empty') + '">' +
+          (isFilled ? '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' : '') +
+          f.label + '</span>';
+      }).join('');
+
+      // Procedure registry stats from live data
+      const procs = loadProcs();
+      const procKeys = Object.keys(procs);
+      const approvedProcs  = procKeys.filter(function(k){ return procs[k].status === 'approved'; }).length;
+      const pendingProcs   = procKeys.length - approvedProcs;
+
+      let html = '';
+
+      // ── DOCUMENT COMPLETENESS ──────────────────────────────────────────
+      html += '<div class="ai-section">';
+      html += '<div class="ai-section-label">Document Completeness</div>';
+      html += '<div class="ai-completeness">';
+      html += '<div class="ai-completeness-bar-wrap">';
+      html += '<div class="ai-completeness-label">' + filled.length + ' of ' + QM_FIELDS.length + ' fields completed</div>';
+      html += '<div class="ai-completeness-pct">' + pct + '%</div>';
+      html += '</div>';
+      html += '<div class="ai-bar-bg"><div class="ai-bar-fill" style="width:' + pct + '%"></div></div>';
+      html += '</div>';
+      html += '<div class="ai-section-pills" style="margin-top:0.5rem;">' + pillsHTML + '</div>';
+      html += '</div>';
+
+      // ── PROCEDURE REGISTRY STATUS ─────────────────────────────────────
+      html += '<div class="ai-section">';
+      html += '<div class="ai-section-label">Procedure Registry</div>';
+      html += '<div class="ai-card">';
+      html += '<div class="ai-card-head"><div class="ai-card-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>';
+      html += '<div class="ai-card-title">Live from Process Library</div></div>';
+      if (!procKeys.length) {
+        html += '<div class="ai-card-body">No procedures defined yet. The Quality Manual references your procedure library — start by creating procedures in the <strong>Process Library</strong>.</div>';
+      } else {
+        html += '<div class="ai-card-body">';
+        html += '<strong>' + approvedProcs + '</strong> approved · <strong>' + pendingProcs + '</strong> pending approval';
+        if (pendingProcs > 0) {
+          html += '<br><br>The Quality Manual can be approved with pending procedures — it honestly represents the current QMS state. Approve pending procedures in the Process Library as they are completed.';
+        } else {
+          html += '<br><br>All defined procedures are approved. The Quality Manual accurately reflects a fully authorized procedure set.';
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+      html += '</div>';
+
+      // ── REGULATORY CITATIONS ──────────────────────────────────────────
+      html += '<div class="ai-section">';
+      html += '<div class="ai-section-label">Applicable Regulations & Standards</div>';
+      html += '<div class="ai-card">';
+      html += '<div class="ai-card-head"><div class="ai-card-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>';
+      html += '<div class="ai-card-title">Quality Manual requirements</div></div>';
+      html += '<div class="ai-card-body">';
+      ['ISO 13485:2016 §4', 'ISO 13485:2016 §5', 'ISO 13485:2016 §6.1', '21 CFR 820.20', '21 CFR 820.22'].forEach(function(c) {
+        html += '<span class="ai-citation">' + c + '</span>';
+      });
+      // Also parse regulatoryBasis field
+      var regBasis = (QM.regulatoryBasis || '').split(/[;,]/).map(function(s){ return s.trim(); }).filter(Boolean);
+      regBasis.forEach(function(c) {
+        html += '<span class="ai-citation">' + esc(c) + '</span>';
+      });
+      html += '</div></div>';
+      html += '</div>';
+
+      // ── AUDITOR CHECKLIST ─────────────────────────────────────────────
+      html += '<div class="ai-section">';
+      html += '<div class="ai-section-label">Key Requirements Checklist</div>';
+      html += '<div class="ai-card">';
+      html += '<div class="ai-card-head"><div class="ai-card-icon"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>';
+      html += '<div class="ai-card-title">Auditor-facing checklist</div></div>';
+      html += '<ul class="ai-checklist">';
+      QM_REQUIREMENTS.forEach(function(req) {
+        var isOk = req.field === null
+          ? (procKeys.length > 0)  // Registry: ok if any procedures exist
+          : (QM[req.field] || '').trim().length > 10;
+        html += '<li class="' + (isOk ? 'ok' : '') + '">' + req.text + '</li>';
+      });
+      html += '</ul>';
+      html += '</div>';
+      html += '</div>';
+
+      // ── GUIDANCE FOR EMPTY FIELDS ─────────────────────────────────────
+      const emptyFields = QM_FIELDS.filter(function(f){ return (QM[f.field]||'').trim().length === 0; });
+      if (emptyFields.length > 0) {
+        html += '<div class="ai-section">';
+        html += '<div class="ai-section-label">Guidance for Empty Fields</div>';
+        emptyFields.forEach(function(f) {
+          const tip = QM_TIPS[f.id];
+          if (!tip) return;
+          html += '<div class="ai-card">';
+          html += '<div class="ai-card-head"><div class="ai-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>';
+          html += '<div class="ai-card-title">' + esc(f.label) + '</div></div>';
+          html += '<div class="ai-card-body">' + esc(tip) + '</div>';
+          html += '</div>';
+        });
+        html += '</div>';
+      } else {
+        html += '<div class="ai-section">';
+        html += '<div class="ai-section-label">Guidance</div>';
+        html += '<div class="ai-card"><div class="ai-card-body" style="color:rgba(255,255,255,0.5);">All fields are complete. Review the requirements checklist above before approving.</div></div>';
+        html += '</div>';
+      }
+
+      return html;
+    }
+
+    // ── INIT ──────────────────────────────────────────────────────────────
+    loadManual();
+    render();
+  </script>
+</body>
+</html>

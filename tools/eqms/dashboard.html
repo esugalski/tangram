@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --gray:       #D2D2D2;
+      --light-gray: #F7F8FA;
+      --white:      #FFFFFF;
+      --sidebar-w:  232px;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; min-height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+
+    /* Brand */
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
+
+    /* Project switcher */
+    .project-switcher-wrap { padding: 0.75rem 0.75rem 0; }
+    .project-switcher { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); border-radius: 8px; padding: 0.55rem 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 0.55rem; transition: background 0.15s, border-color 0.15s; position: relative; }
+    .project-switcher:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.15); }
+    .project-switcher-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .project-switcher-text { flex: 1; min-width: 0; }
+    .project-switcher-label { font-size: 0.58rem; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.1rem; }
+    .project-switcher-name { font-size: 0.8rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .project-switcher-chevron { flex-shrink: 0; opacity: 0.35; transition: transform 0.2s, opacity 0.2s; }
+    .project-switcher.open .project-switcher-chevron { transform: rotate(180deg); opacity: 0.6; }
+    .project-switcher-chevron svg { display: block; }
+
+    .project-dropdown { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #0d2b43; border: 1px solid rgba(255,255,255,0.1); border-radius: 9px; overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.4); z-index: 200; display: none; }
+    .project-dropdown.open { display: block; }
+    .project-dropdown-header { padding: 0.6rem 0.85rem; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.25); border-bottom: 1px solid rgba(255,255,255,0.07); }
+    .project-option { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.85rem; cursor: pointer; transition: background 0.12s; }
+    .project-option:hover { background: rgba(255,255,255,0.06); }
+    .project-option.selected { background: rgba(10,192,233,0.1); }
+    .project-option-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .project-option-text { flex: 1; min-width: 0; }
+    .project-option-name { font-size: 0.8rem; font-weight: 600; color: white; }
+    .project-option-meta { font-size: 0.66rem; color: rgba(255,255,255,0.35); margin-top: 0.05rem; }
+    .project-option-check { width: 14px; height: 14px; flex-shrink: 0; }
+    .project-dropdown-footer { border-top: 1px solid rgba(255,255,255,0.07); padding: 0.5rem 0.85rem; }
+    .project-dropdown-footer button { background: none; border: none; font-family: 'Inter', sans-serif; font-size: 0.76rem; font-weight: 600; color: var(--aqua); cursor: pointer; display: flex; align-items: center; gap: 0.35rem; padding: 0; transition: opacity 0.15s; }
+    .project-dropdown-footer button:hover { opacity: 0.75; }
+
+    /* Nav */
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-section-label { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); padding: 0.6rem 0.75rem 0.2rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.72); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-badge { margin-left: auto; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.06em; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.22); padding: 0.14rem 0.42rem; border-radius: 3px; text-transform: uppercase; }
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.5rem 0.75rem; }
+
+    /* Footer */
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); }
+    .sidebar-sign-out { margin-left: auto; }
+    .sidebar-sign-out a { font-size: 0.66rem; color: rgba(255,255,255,0.22); text-decoration: none; transition: color 0.2s; }
+    .sidebar-sign-out a:hover { color: rgba(255,255,255,0.5); }
+
+    /* ─── MAIN ─── */
+    .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 100vh; }
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 2rem; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: sticky; top: 0; z-index: 10; }
+    .topbar-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.6rem; }
+    .topbar-crumb { color: rgba(11,39,64,0.35); font-weight: 400; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .topbar-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(10,192,233,0.08); border: 1px solid rgba(10,192,233,0.18); color: var(--aqua-dark); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.28rem 0.7rem; border-radius: 100px; }
+    .topbar-pulse { width: 5px; height: 5px; border-radius: 50%; background: var(--aqua); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .content { flex: 1; padding: 2rem; }
+    .content-inner { max-width: 1100px; }
+
+    /* ─── VIEWS ─── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ─── PORTFOLIO VIEW ─── */
+    .portfolio-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 2rem; gap: 1.5rem; }
+    .portfolio-header-text h1 { font-size: 1.45rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 0.3rem; }
+    .portfolio-header-text p { font-size: 0.875rem; color: var(--mid-blue); line-height: 1.55; }
+    .btn-new-project { display: inline-flex; align-items: center; gap: 0.45rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.82rem; padding: 0.6rem 1.15rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; box-shadow: 0 3px 12px rgba(10,192,233,0.28); white-space: nowrap; text-decoration: none; }
+    .btn-new-project:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .btn-new-project svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-import-docs { display: inline-flex; align-items: center; gap: 0.45rem; background: white; color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.82rem; padding: 0.6rem 1.15rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.12); cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.15s; white-space: nowrap; text-decoration: none; }
+    .btn-import-docs:hover { border-color: var(--aqua); background: rgba(10,192,233,0.04); transform: translateY(-1px); }
+    .btn-import-docs svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .portfolio-header-actions { display: flex; align-items: center; gap: 0.65rem; }
+
+    .portfolio-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; padding: 1.1rem 1.25rem; }
+    .stat-card-label { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 0.4rem; }
+    .stat-card-value { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; line-height: 1; }
+    .stat-card-sub { font-size: 0.72rem; color: var(--mid-blue); margin-top: 0.25rem; }
+
+    .portfolio-section-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 1rem; }
+    .device-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem; }
+
+    .device-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 13px; padding: 1.5rem; cursor: pointer; transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s; position: relative; overflow: hidden; }
+    .device-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 13px 13px 0 0; }
+    .device-card.phase-design::before { background: linear-gradient(90deg, var(--aqua), var(--aqua-dark)); }
+    .device-card.phase-planning::before { background: linear-gradient(90deg, var(--amber), #d97706); }
+    .device-card.phase-verification::before { background: linear-gradient(90deg, var(--green), #059669); }
+    .device-card:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(11,39,64,0.1); border-color: rgba(11,39,64,0.14); }
+
+    .device-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; }
+    .device-card-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .device-card-icon svg { width: 18px; height: 18px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .phase-badge { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 4px; }
+    .phase-badge.design { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .phase-badge.planning { background: rgba(245,158,11,0.12); color: #b45309; }
+    .phase-badge.verification { background: rgba(16,185,129,0.1); color: #047857; }
+
+    .device-card-name { font-size: 1rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 0.2rem; }
+    .device-card-type { font-size: 0.76rem; color: var(--mid-blue); margin-bottom: 1.1rem; }
+    .device-card-modules { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1.1rem; }
+    .dcm-row { display: flex; align-items: center; gap: 0.6rem; }
+    .dcm-label { font-size: 0.72rem; color: var(--mid-blue); width: 110px; flex-shrink: 0; }
+    .dcm-bar { flex: 1; height: 3px; background: rgba(11,39,64,0.07); border-radius: 3px; overflow: hidden; }
+    .dcm-fill { height: 100%; border-radius: 3px; }
+    .dcm-fill.aqua { background: linear-gradient(90deg, var(--aqua), var(--aqua-dark)); }
+    .dcm-fill.amber { background: linear-gradient(90deg, var(--amber), #d97706); }
+    .dcm-fill.green { background: linear-gradient(90deg, var(--green), #059669); }
+    .dcm-pct { font-size: 0.68rem; font-weight: 600; color: rgba(11,39,64,0.4); width: 28px; text-align: right; flex-shrink: 0; }
+    .device-card-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 1rem; border-top: 1px solid rgba(11,39,64,0.06); }
+    .device-card-activity { font-size: 0.72rem; color: rgba(11,39,64,0.38); }
+    .device-card-open { font-size: 0.76rem; font-weight: 600; color: var(--aqua-dark); display: flex; align-items: center; gap: 0.3rem; }
+    .device-card-open svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.15s; }
+    .device-card:hover .device-card-open svg { transform: translateX(2px); }
+
+    .device-card-add { background: transparent; border: 1.5px dashed rgba(11,39,64,0.15); border-radius: 13px; padding: 1.5rem; cursor: pointer; transition: border-color 0.18s, background 0.18s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.65rem; min-height: 180px; }
+    .device-card-add:hover { border-color: var(--aqua); background: rgba(10,192,233,0.03); }
+    .device-card-add-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(11,39,64,0.05); display: flex; align-items: center; justify-content: center; transition: background 0.18s; }
+    .device-card-add:hover .device-card-add-icon { background: rgba(10,192,233,0.1); }
+    .device-card-add-icon svg { width: 16px; height: 16px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.18s; }
+    .device-card-add:hover .device-card-add-icon svg { stroke: var(--aqua-dark); }
+    .device-card-add-label { font-size: 0.82rem; font-weight: 600; color: rgba(11,39,64,0.35); transition: color 0.18s; }
+    .device-card-add:hover .device-card-add-label { color: var(--aqua-dark); }
+
+    /* ─── PROJECT VIEW ─── */
+    .founding-banner { background: linear-gradient(135deg, var(--primary) 0%, #0d3350 100%); border-radius: 13px; padding: 1.75rem 2.25rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; position: relative; overflow: hidden; }
+    .founding-banner::before { content: ''; position: absolute; top: -80px; right: -80px; width: 280px; height: 280px; background: radial-gradient(circle, rgba(10,192,233,0.1) 0%, transparent 70%); }
+    .founding-banner-left { position: relative; z-index: 1; }
+    .founding-banner-tag { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(10,192,233,0.15); border: 1px solid rgba(10,192,233,0.25); color: #5DDAF5; font-size: 0.63rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.22rem 0.6rem; border-radius: 100px; margin-bottom: 0.7rem; }
+    .founding-banner-title { font-size: 1.35rem; font-weight: 800; color: white; letter-spacing: -0.02em; margin-bottom: 0.45rem; }
+    .founding-banner-sub { font-size: 0.86rem; color: rgba(255,255,255,0.52); line-height: 1.6; max-width: 480px; }
+    .founding-banner-right { position: relative; z-index: 1; flex-shrink: 0; text-align: center; }
+    .founding-banner-num { font-size: 2.25rem; font-weight: 800; color: var(--aqua); letter-spacing: -0.03em; }
+    .founding-banner-label { font-size: 0.66rem; font-weight: 600; color: rgba(255,255,255,0.32); letter-spacing: 0.07em; text-transform: uppercase; margin-top: 0.1rem; }
+
+    .section-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 1rem; }
+    .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .module-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; padding: 1.4rem; position: relative; overflow: hidden; transition: transform 0.18s, box-shadow 0.18s; }
+    .module-card::after { content: 'COMING SOON'; position: absolute; top: 0.7rem; right: 0.7rem; font-size: 0.53rem; font-weight: 700; letter-spacing: 0.08em; background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.28); padding: 0.16rem 0.48rem; border-radius: 3px; }
+    .module-card.active::after { content: 'ACTIVE'; background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .module-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(11,39,64,0.08); }
+    .module-card-icon { width: 38px; height: 38px; background: rgba(10,192,233,0.08); border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.8rem; }
+    .module-card-icon svg { width: 17px; height: 17px; stroke: var(--aqua-dark); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .module-card-name { font-size: 0.86rem; font-weight: 700; color: var(--primary); margin-bottom: 0.28rem; }
+    .module-card-desc { font-size: 0.76rem; color: var(--mid-blue); line-height: 1.55; }
+    .module-card-progress { margin-top: 0.8rem; }
+    .module-progress-bar { height: 3px; background: rgba(11,39,64,0.07); border-radius: 3px; overflow: hidden; }
+    .module-progress-fill { height: 100%; background: linear-gradient(90deg, var(--aqua), var(--aqua-dark)); border-radius: 3px; }
+    .module-progress-label { font-size: 0.6rem; color: rgba(11,39,64,0.33); margin-top: 0.28rem; }
+
+    .bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .info-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; padding: 1.4rem; }
+    .info-card-title { font-size: 0.76rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.45rem; }
+    .info-card-title svg { width: 13px; height: 13px; stroke: var(--aqua-dark); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .roadmap-items { display: flex; flex-direction: column; gap: 0.6rem; }
+    .roadmap-item { display: flex; align-items: flex-start; gap: 0.7rem; }
+    .roadmap-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+    .roadmap-dot.done { background: var(--green); }
+    .roadmap-dot.current { background: var(--aqua); box-shadow: 0 0 0 3px rgba(10,192,233,0.2); }
+    .roadmap-dot.soon { background: rgba(11,39,64,0.15); }
+    .roadmap-text { font-size: 0.78rem; color: var(--mid-blue); line-height: 1.45; }
+    .roadmap-text strong { color: var(--primary); font-weight: 600; }
+    .roadmap-text .tag { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.08rem 0.38rem; border-radius: 3px; margin-left: 0.3rem; }
+    .roadmap-text .tag.live { background: rgba(16,185,129,0.1); color: #059669; }
+    .roadmap-text .tag.building { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .roadmap-text .tag.next { background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.38); }
+    .contact-info { font-size: 0.8rem; color: var(--mid-blue); line-height: 1.65; margin-bottom: 0.85rem; }
+    .contact-info strong { color: var(--primary); }
+    .contact-link { display: inline-flex; align-items: center; gap: 0.38rem; font-size: 0.8rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; transition: color 0.2s; }
+    .contact-link:hover { color: var(--primary); }
+    .contact-link svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR (rendered by sidebar.js) -->
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title" id="topbarTitle">
+        <span class="topbar-crumb" id="topbarCrumb" style="display:none">All Projects /</span>
+        <span id="topbarText">Alignment Dashboard</span>
+      </span>
+      <div class="topbar-right">
+        <span class="topbar-badge">
+          <span class="topbar-pulse"></span>
+          Founding Member Access
+        </span>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="content-inner">
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- PORTFOLIO VIEW                             -->
+        <!-- ══════════════════════════════════════════ -->
+        <div class="view" id="view-portfolio">
+
+          <div class="portfolio-header">
+            <div class="portfolio-header-text">
+              <h1>Your Devices</h1>
+              <p>Each device is its own project with a full set of design controls under your shared QMS.</p>
+            </div>
+            <div class="portfolio-header-actions">
+              <a href="import.html" class="btn-import-docs">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Import Existing Docs
+              </a>
+              <a href="#" class="btn-new-project">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New Device Project
+              </a>
+            </div>
+          </div>
+
+          <div class="portfolio-stats">
+            <div class="stat-card">
+              <div class="stat-card-label">Active projects</div>
+              <div class="stat-card-value">2</div>
+              <div class="stat-card-sub">Across 1 QMS</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-label">Open design controls</div>
+              <div class="stat-card-value">14</div>
+              <div class="stat-card-sub">Across all projects</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-label">QMS health</div>
+              <div class="stat-card-value" style="color:var(--green)">Good</div>
+              <div class="stat-card-sub">No critical gaps</div>
+            </div>
+          </div>
+
+          <div class="portfolio-section-label">Device Projects</div>
+          <div class="device-cards">
+
+            <!-- Device 1 -->
+            <div class="device-card phase-design" onclick="selectProjectCard('CardioSync Pro','var(--aqua)','design')">
+              <div class="device-card-top">
+                <div class="device-card-icon" style="background:rgba(10,192,233,0.08)">
+                  <svg viewBox="0 0 24 24" stroke="var(--aqua-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </div>
+                <span class="phase-badge design">Design Phase</span>
+              </div>
+              <div class="device-card-name">CardioSync Pro</div>
+              <div class="device-card-type">Class II Implantable Cardiac Monitor · 21 CFR 870</div>
+              <div class="device-card-modules">
+                <div class="dcm-row">
+                  <span class="dcm-label">Clarity Hub</span>
+                  <div class="dcm-bar"><div class="dcm-fill aqua" style="width:40%"></div></div>
+                  <span class="dcm-pct">40%</span>
+                </div>
+                <div class="dcm-row">
+                  <span class="dcm-label">Risk Radar</span>
+                  <div class="dcm-bar"><div class="dcm-fill aqua" style="width:25%"></div></div>
+                  <span class="dcm-pct">25%</span>
+                </div>
+                <div class="dcm-row">
+                  <span class="dcm-label">Change Stream</span>
+                  <div class="dcm-bar"><div class="dcm-fill aqua" style="width:10%"></div></div>
+                  <span class="dcm-pct">10%</span>
+                </div>
+              </div>
+              <div class="device-card-footer">
+                <span class="device-card-activity">Last activity 2 hours ago</span>
+                <span class="device-card-open">Open <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+              </div>
+            </div>
+
+            <!-- Device 2 -->
+            <div class="device-card phase-planning" onclick="selectProjectCard('NovaBand SW','var(--amber)','planning')">
+              <div class="device-card-top">
+                <div class="device-card-icon" style="background:rgba(245,158,11,0.08)">
+                  <svg viewBox="0 0 24 24" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18" stroke-width="3"/></svg>
+                </div>
+                <span class="phase-badge planning">Planning</span>
+              </div>
+              <div class="device-card-name">NovaBand SW</div>
+              <div class="device-card-type">SaMD Companion App · IEC 62304 / FDA SaMD Guidance</div>
+              <div class="device-card-modules">
+                <div class="dcm-row">
+                  <span class="dcm-label">Clarity Hub</span>
+                  <div class="dcm-bar"><div class="dcm-fill amber" style="width:8%"></div></div>
+                  <span class="dcm-pct">8%</span>
+                </div>
+                <div class="dcm-row">
+                  <span class="dcm-label">Risk Radar</span>
+                  <div class="dcm-bar"><div class="dcm-fill amber" style="width:0%"></div></div>
+                  <span class="dcm-pct">0%</span>
+                </div>
+                <div class="dcm-row">
+                  <span class="dcm-label">Change Stream</span>
+                  <div class="dcm-bar"><div class="dcm-fill amber" style="width:0%"></div></div>
+                  <span class="dcm-pct">0%</span>
+                </div>
+              </div>
+              <div class="device-card-footer">
+                <span class="device-card-activity">Last activity 3 days ago</span>
+                <span class="device-card-open">Open <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+              </div>
+            </div>
+
+            <!-- Add new -->
+            <div class="device-card-add">
+              <div class="device-card-add-icon">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <span class="device-card-add-label">Add another device project</span>
+            </div>
+
+          </div>
+
+          <!-- QMS-wide callout -->
+          <div style="background:white;border:1px solid rgba(11,39,64,0.08);border-radius:12px;padding:1.4rem 1.75rem;display:flex;align-items:center;gap:1.5rem;">
+            <div style="width:36px;height:36px;background:rgba(10,192,233,0.08);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--aqua-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:0.82rem;font-weight:700;color:var(--primary);margin-bottom:0.2rem;">QMS-Wide modules are shared across all projects</div>
+              <div style="font-size:0.76rem;color:var(--mid-blue);line-height:1.5;">Process Library, Team &amp; Training, Learning Center, and Audit Ready apply to your entire organization — not just one device. Find them in the sidebar under <strong>QMS-Wide</strong>.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ══════════════════════════════════════════ -->
+        <!-- PROJECT / ALIGNMENT DASHBOARD VIEW         -->
+        <!-- ══════════════════════════════════════════ -->
+        <div class="view active" id="view-project">
+
+          <div class="founding-banner">
+            <div class="founding-banner-left">
+              <div class="founding-banner-tag">
+                <span style="width:5px;height:5px;border-radius:50%;background:var(--aqua);display:inline-block;"></span>
+                You're a Founding Member
+              </div>
+              <h2 class="founding-banner-title">Tangram eQMS is actively being built.</h2>
+              <p class="founding-banner-sub">You have early access to the platform as it takes shape. Modules will unlock progressively over the coming weeks. Your feedback directly shapes what we build next — reach out anytime.</p>
+            </div>
+            <div class="founding-banner-right">
+              <div class="founding-banner-num">9</div>
+              <div class="founding-banner-label">Modules Planned</div>
+            </div>
+          </div>
+
+          <div class="section-label">Design Controls — <span id="activeProjectLabel">CardioSync Pro</span></div>
+          <div class="modules-grid">
+            <div class="module-card active">
+              <div class="module-card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+              <div class="module-card-name">Alignment Dashboard</div>
+              <div class="module-card-desc">Daily quality health view with open questions, risk alerts, and phase gate status.</div>
+              <div class="module-card-progress"><div class="module-progress-bar"><div class="module-progress-fill" style="width:30%"></div></div><div class="module-progress-label">In progress · skeleton live</div></div>
+            </div>
+            <div class="module-card">
+              <div class="module-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+              <div class="module-card-name">Clarity Hub</div>
+              <div class="module-card-desc">User needs → design inputs → outputs with enforced traceability. Heart of 21 CFR 820.30.</div>
+              <div class="module-card-progress"><div class="module-progress-bar"><div class="module-progress-fill" style="width:0%"></div></div><div class="module-progress-label">Coming next</div></div>
+            </div>
+            <div class="module-card">
+              <div class="module-card-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <div class="module-card-name">Risk Radar</div>
+              <div class="module-card-desc">Living ISO 14971 risk management from concept stage. Hazard library, heat map, benefit-risk.</div>
+              <div class="module-card-progress"><div class="module-progress-bar"><div class="module-progress-fill" style="width:0%"></div></div><div class="module-progress-label">Planned</div></div>
+            </div>
+            <div class="module-card">
+              <div class="module-card-icon"><svg viewBox="0 0 24 24"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9V6M6 15v-3M6 15l5.5-5.5"/></svg></div>
+              <div class="module-card-name">Change Stream</div>
+              <div class="module-card-desc">Log changes in seconds. AI traces impact and assigns change level proportionally.</div>
+              <div class="module-card-progress"><div class="module-progress-bar"><div class="module-progress-fill" style="width:0%"></div></div><div class="module-progress-label">Planned</div></div>
+            </div>
+            <div class="module-card">
+              <div class="module-card-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+              <div class="module-card-name">V&amp;V Module</div>
+              <div class="module-card-desc">Hardware and software V&V built in. Test protocols, manufacturing validation (IQ/OQ/PQ), and SaMD verification.</div>
+              <div class="module-card-progress"><div class="module-progress-bar"><div class="module-progress-fill" style="width:0%"></div></div><div class="module-progress-label">Planned</div></div>
+            </div>
+          </div>
+
+          <div class="section-label" style="margin-top:0.5rem">QMS-Wide</div>
+          <div class="modules-grid">
+            <div class="module-card">
+              <div class="module-card-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+              <div class="module-card-name">Process Library</div>
+              <div class="module-card-desc">SOPs with the "why" embedded. Regulatory reasoning in plain language, not just the form.</div>
+              <div class="module-card-progress"><div class="module-progress-bar"><div class="module-progress-fill" style="width:0%"></div></div><div class="module-progress-label">Planned</div></div>
+            </div>
+            <div class="module-card">
+              <div class="module-card-icon"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div>
+              <div class="module-card-name">Learning Center</div>
+              <div class="module-card-desc">Role-based quality education with foundational tracks and embedded micro-lessons.</div>
+              <div class="module-card-progress"><div class="module-progress-bar"><div class="module-progress-fill" style="width:0%"></div></div><div class="module-progress-label">Planned</div></div>
+            </div>
+            <div class="module-card">
+              <div class="module-card-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+              <div class="module-card-name">Team &amp; Training</div>
+              <div class="module-card-desc">Competency tracking, training matrix, and 21 CFR Part 11 training records.</div>
+              <div class="module-card-progress"><div class="module-progress-bar"><div class="module-progress-fill" style="width:0%"></div></div><div class="module-progress-label">Planned</div></div>
+            </div>
+            <div class="module-card">
+              <div class="module-card-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div>
+              <div class="module-card-name">Audit Ready</div>
+              <div class="module-card-desc">DHF completeness index, e-signatures, and one-click regulatory export.</div>
+              <div class="module-card-progress"><div class="module-progress-bar"><div class="module-progress-fill" style="width:0%"></div></div><div class="module-progress-label">Planned</div></div>
+            </div>
+          </div>
+
+          <div class="bottom-row">
+            <div class="info-card">
+              <div class="info-card-title">
+                <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Build Roadmap
+              </div>
+              <div class="roadmap-items">
+                <div class="roadmap-item"><div class="roadmap-dot done"></div><div class="roadmap-text"><strong>Landing page &amp; early access</strong> <span class="tag live">Live</span><br>Marketing site, auth flow, founding member access</div></div>
+                <div class="roadmap-item"><div class="roadmap-dot current"></div><div class="roadmap-text"><strong>Clarity Hub</strong> <span class="tag building">Building</span><br>User needs, design inputs, traceability matrix</div></div>
+                <div class="roadmap-item"><div class="roadmap-dot soon"></div><div class="roadmap-text"><strong>Risk Radar</strong> <span class="tag next">Next</span><br>Hazard identification, risk estimation, control tracking</div></div>
+                <div class="roadmap-item"><div class="roadmap-dot soon"></div><div class="roadmap-text"><strong>Change Stream + V&V</strong> <span class="tag next">Planned</span><br>Lightweight change log with AI impact assessment</div></div>
+                <div class="roadmap-item"><div class="roadmap-dot soon"></div><div class="roadmap-text"><strong>Learning Center + Process Library</strong> <span class="tag next">Planned</span><br>Education-first SOPs and role-based learning tracks</div></div>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-title">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                You're building with us
+              </div>
+              <p class="contact-info">As a founding member, you have <strong>direct access to Eric Sugalski</strong> and the Tangram team. We're building this platform with active feedback from early users like you.</p>
+              <p class="contact-info">Tell us what you need most. Which module should we build first? What pain point is most acute for your team right now? Your input shapes the product.</p>
+              <a href="mailto:eric@tangrammedtech.com" class="contact-link">Reach out to Eric <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script>
+    // Init global sidebar
+    initSidebar({ activePage: 'dashboard' });
+
+    // Replace static project switcher with the interactive dropdown version
+    (function() {
+      const wrap = document.querySelector('.project-switcher-wrap');
+      if (wrap) {
+        wrap.innerHTML =
+          '<div class="project-switcher" id="projectSwitcher" onclick="toggleDropdown()" style="cursor:pointer;position:relative;">' +
+            '<div class="project-switcher-dot" id="switcherDot" style="background:var(--aqua)"></div>' +
+            '<div class="project-switcher-text">' +
+              '<span class="project-switcher-label">Active project</span>' +
+              '<span class="project-switcher-name" id="switcherName">CardioSync Pro</span>' +
+            '</div>' +
+            '<div class="project-switcher-chevron">' +
+              '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l4 4 4-4"/></svg>' +
+            '</div>' +
+            '<div class="project-dropdown" id="projectDropdown">' +
+              '<div class="project-dropdown-header">Your devices</div>' +
+              '<div class="project-option selected" onclick="selectProject(event,\'CardioSync Pro\',\'var(--aqua)\',\'design\')">' +
+                '<div class="project-option-dot" style="background:var(--aqua)"></div>' +
+                '<div class="project-option-text">' +
+                  '<div class="project-option-name">CardioSync Pro</div>' +
+                  '<div class="project-option-meta">Implantable cardiac monitor · Design</div>' +
+                '</div>' +
+                '<svg class="project-option-check" viewBox="0 0 14 14" fill="none" stroke="#0AC0E9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7l3 3 6-6"/></svg>' +
+              '</div>' +
+              '<div class="project-option" onclick="selectProject(event,\'NovaBand SW\',\'var(--amber)\',\'planning\')">' +
+                '<div class="project-option-dot" style="background:var(--amber)"></div>' +
+                '<div class="project-option-text">' +
+                  '<div class="project-option-name">NovaBand SW</div>' +
+                  '<div class="project-option-meta">SaMD companion app · Planning</div>' +
+                '</div>' +
+                '<svg class="project-option-check" viewBox="0 0 14 14" fill="none" stroke="transparent" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7l3 3 6-6"/></svg>' +
+              '</div>' +
+              '<div class="project-dropdown-footer">' +
+                '<button onclick="showPortfolio(event)">' +
+                  '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h8M6 2l4 4-4 4"/></svg>' +
+                  'All projects' +
+                '</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+      }
+    })();
+
+    let currentProject = 'CardioSync Pro';
+
+    function toggleDropdown() {
+      const switcher = document.getElementById('projectSwitcher');
+      const dropdown = document.getElementById('projectDropdown');
+      const isOpen = dropdown.classList.contains('open');
+      if (isOpen) {
+        dropdown.classList.remove('open');
+        switcher.classList.remove('open');
+      } else {
+        dropdown.classList.add('open');
+        switcher.classList.add('open');
+      }
+    }
+
+    function closeDropdown() {
+      document.getElementById('projectDropdown').classList.remove('open');
+      document.getElementById('projectSwitcher').classList.remove('open');
+    }
+
+    function selectProject(e, name, color, phase) {
+      e.stopPropagation();
+      currentProject = name;
+      document.getElementById('switcherName').textContent = name;
+      document.getElementById('switcherDot').style.background = color;
+      document.getElementById('activeProjectLabel').textContent = name;
+
+      // Update checkmarks
+      document.querySelectorAll('.project-option').forEach(opt => {
+        opt.classList.remove('selected');
+        opt.querySelector('.project-option-check').setAttribute('stroke', 'transparent');
+      });
+      const clicked = e.currentTarget;
+      clicked.classList.add('selected');
+      clicked.querySelector('.project-option-check').setAttribute('stroke', '#0AC0E9');
+
+      closeDropdown();
+      showProjectView();
+    }
+
+    function selectProjectCard(name, color, phase) {
+      currentProject = name;
+      document.getElementById('switcherName').textContent = name;
+      document.getElementById('switcherDot').style.background = color;
+      document.getElementById('activeProjectLabel').textContent = name;
+
+      document.querySelectorAll('.project-option').forEach(opt => {
+        opt.classList.remove('selected');
+        opt.querySelector('.project-option-check').setAttribute('stroke', 'transparent');
+        if (opt.querySelector('.project-option-name').textContent === name) {
+          opt.classList.add('selected');
+          opt.querySelector('.project-option-check').setAttribute('stroke', '#0AC0E9');
+        }
+      });
+
+      showProjectView();
+    }
+
+    function showPortfolio(e) {
+      if (e) e.preventDefault();
+      closeDropdown();
+      document.getElementById('view-portfolio').classList.add('active');
+      document.getElementById('view-project').classList.remove('active');
+      document.getElementById('nav-portfolio').classList.add('active');
+      document.getElementById('nav-dashboard').classList.remove('active');
+      document.getElementById('topbarText').textContent = 'All Projects';
+      document.getElementById('topbarCrumb').style.display = 'none';
+    }
+
+    function showProject(e) {
+      if (e) e.preventDefault();
+      showProjectView();
+    }
+
+    function showProjectView() {
+      document.getElementById('view-project').classList.add('active');
+      document.getElementById('view-portfolio').classList.remove('active');
+      document.getElementById('nav-dashboard').classList.add('active');
+      document.getElementById('nav-portfolio').classList.remove('active');
+      document.getElementById('topbarText').textContent = 'Alignment Dashboard';
+      document.getElementById('topbarCrumb').style.display = 'inline';
+      document.getElementById('topbarCrumb').textContent = currentProject + ' /';
+    }
+
+    // Wire up global sidebar nav links to switch views on this page
+    (function() {
+      const navPortfolio = document.getElementById('nav-portfolio');
+      const navDashboard = document.getElementById('nav-dashboard');
+      if (navPortfolio) { navPortfolio.href = '#'; navPortfolio.onclick = showPortfolio; }
+      if (navDashboard)  { navDashboard.href = '#';  navDashboard.onclick = showProject;  }
+    })();
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', e => {
+      if (!document.getElementById('projectSwitcher').contains(e.target)) {
+        closeDropdown();
+      }
+    });
+  </script>
+</body>
+</html>

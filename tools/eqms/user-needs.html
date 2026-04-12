@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Needs — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --gray:       #D2D2D2;
+      --light-gray: #F7F8FA;
+      --white:      #FFFFFF;
+      --sidebar-w:  232px;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
+    .project-switcher-wrap { padding: 0.75rem 0.75rem 0; }
+    .project-switcher { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); border-radius: 8px; padding: 0.55rem 0.75rem; cursor: default; display: flex; align-items: center; gap: 0.55rem; position: relative; }
+    .project-switcher-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--aqua); }
+    .project-switcher-text { flex: 1; min-width: 0; }
+    .project-switcher-label { font-size: 0.58rem; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.1rem; }
+    .project-switcher-name { font-size: 0.8rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-section-label { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); padding: 0.6rem 0.75rem 0.2rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.72); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-badge { margin-left: auto; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.06em; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.22); padding: 0.14rem 0.42rem; border-radius: 3px; text-transform: uppercase; }
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.5rem 0.75rem; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); }
+    .sidebar-sign-out { margin-left: auto; }
+    .sidebar-sign-out a { font-size: 0.66rem; color: rgba(255,255,255,0.22); text-decoration: none; transition: color 0.2s; }
+    .sidebar-sign-out a:hover { color: rgba(255,255,255,0.5); }
+
+    /* ─── MAIN ─── */
+    .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; position: relative; }
+
+    /* ─── TOPBAR ─── */
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 1.5rem; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: relative; z-index: 10; }
+    .topbar-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+    .topbar-crumb { color: rgba(11,39,64,0.35); font-weight: 400; font-size: 0.85rem; }
+    .topbar-sep { color: rgba(11,39,64,0.2); font-size: 0.85rem; }
+    .topbar-right { display: flex; align-items: center; gap: 0.65rem; }
+
+    .btn-add-un { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; box-shadow: 0 2px 8px rgba(10,192,233,0.28); white-space: nowrap; }
+    .btn-add-un:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .btn-add-un svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .btn-ai { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+    .btn-ai:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-ai svg { width: 13px; height: 13px; }
+
+    .btn-export { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+    .btn-export:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-export svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .gap-pill { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #b45309; font-size: 0.72rem; font-weight: 700; padding: 0.38rem 0.75rem; border-radius: 100px; cursor: pointer; transition: background 0.15s; }
+    .gap-pill:hover { background: rgba(245,158,11,0.18); }
+    .gap-pill svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── CONTENT AREA ─── */
+    .content-area { flex: 1; overflow-y: auto; padding: 2rem; }
+    .content-area::-webkit-scrollbar { width: 5px; }
+    .content-area::-webkit-scrollbar-track { background: transparent; }
+    .content-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    /* ─── TOPBAR EXTRAS ─── */
+    .topbar-left { display: flex; align-items: center; gap: 0.65rem; }
+    .ver-badge { font-size: 0.68rem; font-weight: 700; background: rgba(11,39,64,0.07); border: 1px solid rgba(11,39,64,0.12); color: var(--mid-blue); padding: 0.2rem 0.6rem; border-radius: 5px; }
+    .status-pill { font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 20px; }
+    .status-pill.draft { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .status-pill.review { background: rgba(245,158,11,0.12); color: #b45309; }
+    .status-pill.approved { background: rgba(16,185,129,0.12); color: #059669; }
+    .status-pill.none { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.4); }
+
+    /* ─── DOC COVER ─── */
+    .doc-wrap { max-width: 860px; margin: 0 auto; }
+    .doc-cover { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 14px; padding: 2rem 2.25rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+    .doc-cover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--aqua), #6366f1); }
+    .doc-cover-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+    .doc-cover-meta { display: flex; flex-direction: column; gap: 0.25rem; text-align: right; flex-shrink: 0; }
+    .doc-cover-meta-row { font-size: 0.7rem; color: rgba(11,39,64,0.4); white-space: nowrap; }
+    .doc-cover-meta-row strong { color: var(--primary); font-weight: 600; }
+    .doc-company { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.5rem; }
+    .doc-name { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 0.35rem; }
+    .doc-subtitle { font-size: 0.82rem; color: rgba(11,39,64,0.5); line-height: 1.5; max-width: 480px; }
+    .doc-cover-divider { height: 1px; background: rgba(11,39,64,0.08); margin: 1.5rem 0; }
+    .doc-cover-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    .doc-cover-fields.cols-2 { grid-template-columns: 1fr 1fr; }
+    .doc-cover-fields.cols-1 { grid-template-columns: 1fr; }
+    .doc-field { display: flex; flex-direction: column; gap: 0.2rem; }
+    .doc-field-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.3); }
+    .doc-field-input { font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; font-family: 'Inter', sans-serif; background: var(--light-gray); outline: none; transition: border-color 0.15s; width: 100%; }
+    .doc-field-input:focus { border-color: var(--aqua); background: white; }
+    .doc-field-textarea { font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; font-family: 'Inter', sans-serif; background: var(--light-gray); outline: none; transition: border-color 0.15s; resize: vertical; line-height: 1.55; width: 100%; }
+    .doc-field-textarea:focus { border-color: var(--aqua); background: white; }
+    .doc-field-select { font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; font-family: 'Inter', sans-serif; background: var(--light-gray); outline: none; transition: border-color 0.15s; cursor: pointer; width: 100%; }
+    .doc-field-select:focus { border-color: var(--aqua); background: white; }
+    .req-section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .req-section-left { display: flex; align-items: center; gap: 0.6rem; }
+    .req-section-title { font-size: 0.88rem; font-weight: 700; color: var(--primary); }
+    .req-section-count { font-size: 0.66rem; font-weight: 700; background: rgba(10,192,233,0.1); color: var(--aqua-dark); padding: 0.12rem 0.45rem; border-radius: 100px; }
+    .doc-footer-bar { background: white; border-top: 1px solid rgba(11,39,64,0.08); padding: 0.9rem 2rem; display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+    .btn-save-draft { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.48rem 1rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s; }
+    .btn-save-draft:hover { background: var(--aqua-dark); }
+    .doc-save-flash { font-size: 0.74rem; font-weight: 600; color: var(--green); opacity: 0; transition: opacity 0.3s; }
+    .doc-save-flash.show { opacity: 1; }
+
+    /* ─── LIST VIEW TABLES ─── */
+    .list-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; }
+    .list-table { width: 100%; border-collapse: collapse; }
+    .list-table thead th { padding: 0.7rem 1rem; font-size: 0.67rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.38); background: #FAFBFC; border-bottom: 1px solid rgba(11,39,64,0.08); text-align: left; white-space: nowrap; }
+    .list-table tbody tr { border-bottom: 1px solid rgba(11,39,64,0.06); transition: background 0.1s; cursor: pointer; }
+    .list-table tbody tr:last-child { border-bottom: none; }
+    .list-table tbody tr:hover { background: rgba(10,192,233,0.03); }
+    .list-table td { padding: 0.9rem 1rem; font-size: 0.8rem; color: var(--primary); vertical-align: middle; }
+    .list-table tbody tr.row-approved td:first-child { border-left: 3px solid var(--green); }
+    .list-table tbody tr.row-review td:first-child { border-left: 3px solid var(--amber); }
+    .list-table tbody tr.row-draft td:first-child { border-left: 3px solid rgba(11,39,64,0.18); }
+    .list-table tbody tr.row-tentative td:first-child { border-left: 3px dashed rgba(11,39,64,0.18); }
+    .list-table tbody tr.row-no-un td:first-child { border-left: 3px solid var(--amber); }
+
+    .id-pill { display: inline-flex; align-items: center; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.05em; color: rgba(11,39,64,0.45); background: rgba(11,39,64,0.06); padding: 0.15rem 0.5rem; border-radius: 4px; white-space: nowrap; }
+    .stmt-cell { font-size: 0.78rem; color: var(--primary); line-height: 1.5; max-width: 360px; }
+    .stmt-cell em { font-style: italic; color: rgba(11,39,64,0.55); }
+    .btn-edit { font-size: 0.72rem; font-weight: 600; color: var(--aqua-dark); background: rgba(10,192,233,0.07); border: none; border-radius: 5px; padding: 0.28rem 0.65rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; white-space: nowrap; }
+    .btn-edit:hover { background: rgba(10,192,233,0.14); }
+    .count-badge { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; font-size: 0.65rem; font-weight: 700; background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.5); }
+
+    .status-badge { display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.12rem 0.45rem; border-radius: 4px; }
+    .status-badge.approved { background: rgba(16,185,129,0.1); color: #047857; }
+    .status-badge.review { background: rgba(245,158,11,0.12); color: #b45309; }
+    .status-badge.draft { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); }
+
+    /* ─── DETAIL PANEL ─── */
+    .panel-overlay { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+    .panel-overlay.open { pointer-events: auto; }
+    .panel-backdrop { position: absolute; inset: 0; background: rgba(11,39,64,0.15); opacity: 0; transition: opacity 0.25s; }
+    .panel-overlay.open .panel-backdrop { opacity: 1; }
+    .detail-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    .panel-overlay.open .detail-panel { transform: translateX(0); }
+    .panel-head { padding: 1.2rem 1.25rem 1rem; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .panel-head-row { display: flex; align-items: center; gap: 0.65rem; }
+    .panel-type-badge { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 4px; }
+    .type-un { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .type-di { background: rgba(11,39,64,0.08); color: var(--primary); }
+    .type-do { background: rgba(16,185,129,0.1); color: #047857; }
+    .panel-id { font-size: 0.95rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; }
+    .panel-close { margin-left: auto; width: 28px; height: 28px; border-radius: 6px; border: none; background: rgba(11,39,64,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+    .panel-close:hover { background: rgba(11,39,64,0.12); }
+    .panel-close svg { width: 14px; height: 14px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .panel-status-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.7rem; }
+    .panel-status-label { font-size: 0.7rem; font-weight: 600; color: rgba(11,39,64,0.42); }
+    .panel-body { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-track { background: transparent; }
+    .panel-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+    .panel-field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .panel-field-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.38); }
+    .panel-field-value { font-size: 0.88rem; color: var(--primary); line-height: 1.6; padding: 0.5rem 0.7rem; border-radius: 6px; border: 1.5px solid transparent; background: rgba(11,39,64,0.03); cursor: text; transition: border-color 0.15s, background 0.15s; }
+    .panel-field-value:hover { background: rgba(11,39,64,0.05); }
+    .panel-field textarea.panel-field-value { resize: vertical; min-height: 80px; font-family: 'Inter', sans-serif; font-size: 0.88rem; color: var(--primary); line-height: 1.6; width: 100%; }
+    .panel-field input.panel-field-value { font-family: 'Inter', sans-serif; font-size: 0.88rem; color: var(--primary); width: 100%; }
+    .panel-field select.panel-field-value { font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--primary); width: 100%; cursor: pointer; appearance: auto; }
+    .panel-field textarea.panel-field-value:focus, .panel-field input.panel-field-value:focus, .panel-field select.panel-field-value:focus { border-color: var(--aqua); outline: none; background: white; }
+    .panel-links { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .panel-link-pill { display: inline-flex; align-items: center; font-size: 0.7rem; font-weight: 600; color: rgba(11,39,64,0.5); background: rgba(11,39,64,0.06); padding: 0.2rem 0.55rem; border-radius: 4px; cursor: pointer; transition: background 0.12s, color 0.12s; }
+    .panel-link-pill:hover { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .panel-tentative { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.7rem; background: rgba(11,39,64,0.03); border-radius: 6px; cursor: pointer; }
+    .panel-tentative input { cursor: pointer; accent-color: var(--aqua); width: 14px; height: 14px; }
+    .panel-tentative label { font-size: 0.78rem; color: var(--mid-blue); cursor: pointer; }
+    .panel-footer { padding: 1rem 1.25rem; border-top: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; display: none; gap: 0.75rem; align-items: center; }
+    .panel-footer.dirty { display: flex; }
+    .btn-save { background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.8rem; padding: 0.55rem 1.25rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; }
+    .btn-save:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .btn-discard { font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.4); background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.15s; }
+    .btn-discard:hover { color: var(--red); }
+    .save-flash { font-size: 0.78rem; font-weight: 700; color: var(--green); margin-left: auto; opacity: 0; transition: opacity 0.3s; }
+    .save-flash.show { opacity: 1; }
+    .field-locked { padding: 0.5rem 0.7rem; background: rgba(11,39,64,0.03); border-radius: 6px; font-size: 0.88rem; color: var(--primary); line-height: 1.6; min-height: 2rem; }
+    .field-locked.empty { color: rgba(11,39,64,0.3); font-style: italic; }
+    .panel-change-bar { padding: 0.6rem 1.25rem; border-bottom: 1px solid rgba(11,39,64,0.08); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-shrink: 0; }
+    .locked-notice { display: flex; align-items: center; gap: 0.42rem; font-size: 0.7rem; font-weight: 600; color: rgba(11,39,64,0.4); }
+    .locked-notice svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .btn-propose-change { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.76rem; padding: 0.38rem 0.85rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.22); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; flex-shrink: 0; }
+    .btn-propose-change:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-propose-change svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .change-banner { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.65rem 1.25rem; background: rgba(245,158,11,0.07); border-bottom: 1px solid rgba(245,158,11,0.2); }
+    .change-banner svg { width: 14px; height: 14px; stroke: #b45309; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 1px; }
+    .change-banner-text { font-size: 0.75rem; color: #92400e; line-height: 1.55; }
+    .change-banner-text strong { font-weight: 700; }
+    .reason-error { font-size: 0.7rem; color: var(--red); margin-top: 0.2rem; display: none; }
+    .reason-error.show { display: block; }
+    .btn-submit-change { background: var(--primary); color: white; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.8rem; padding: 0.55rem 1.25rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s; }
+    .btn-submit-change:hover { background: var(--mid-blue); }
+    .btn-cancel-change { font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.4); background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.15s; }
+    .btn-cancel-change:hover { color: var(--red); }
+    .history-section { margin-top: 0.25rem; border-top: 1px solid rgba(11,39,64,0.07); padding-top: 0.85rem; }
+    .history-toggle { display: flex; align-items: center; gap: 0.45rem; cursor: pointer; font-size: 0.64rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.4); user-select: none; background: none; border: none; font-family: 'Inter', sans-serif; padding: 0; width: 100%; text-align: left; }
+    .history-toggle:hover { color: rgba(11,39,64,0.65); }
+    .history-toggle-chevron { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.18s; margin-left: auto; flex-shrink: 0; }
+    .history-toggle.open .history-toggle-chevron { transform: rotate(90deg); }
+    .history-entries { margin-top: 0.65rem; display: flex; flex-direction: column; gap: 0.4rem; }
+    .history-entries.hidden { display: none; }
+    .history-entry { border: 1px solid rgba(11,39,64,0.08); border-radius: 8px; overflow: hidden; background: white; }
+    .history-entry-head { display: flex; align-items: center; gap: 0.55rem; padding: 0.5rem 0.7rem; cursor: pointer; transition: background 0.12s; }
+    .history-entry-head:hover { background: rgba(11,39,64,0.02); }
+    .history-ver-badge { font-size: 0.59rem; font-weight: 700; letter-spacing: 0.04em; color: rgba(11,39,64,0.45); background: rgba(11,39,64,0.07); padding: 0.1rem 0.4rem; border-radius: 3px; flex-shrink: 0; }
+    .history-entry-date { font-size: 0.68rem; color: rgba(11,39,64,0.4); flex-shrink: 0; white-space: nowrap; }
+    .history-reason-preview { font-size: 0.72rem; color: rgba(11,39,64,0.55); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-style: italic; min-width: 0; }
+    .btn-view-prior { font-size: 0.65rem; font-weight: 700; color: var(--aqua-dark); background: rgba(10,192,233,0.07); border: none; border-radius: 4px; cursor: pointer; padding: 0.18rem 0.55rem; transition: background 0.12s; font-family: 'Inter', sans-serif; white-space: nowrap; flex-shrink: 0; }
+    .btn-view-prior:hover { background: rgba(10,192,233,0.14); }
+    .history-snapshot { display: none; padding: 0.7rem 0.75rem; background: rgba(11,39,64,0.02); border-top: 1px solid rgba(11,39,64,0.07); }
+    .history-snapshot.open { display: block; }
+    .history-snap-field { margin-bottom: 0.45rem; }
+    .history-snap-field:last-child { margin-bottom: 0; }
+    .history-snap-label { font-size: 0.59rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.32); margin-bottom: 0.18rem; }
+    .history-snap-value { font-size: 0.77rem; color: var(--mid-blue); line-height: 1.5; }
+
+    /* ─── AI PANEL ─── */
+    .ai-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    .panel-overlay.open .ai-panel { transform: translateX(0); }
+    .ai-panel-head { padding: 1.2rem 1.25rem 1rem; border-bottom: 1px solid rgba(11,39,64,0.08); display: flex; align-items: center; gap: 0.65rem; flex-shrink: 0; }
+    .ai-panel-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, rgba(10,192,233,0.15), rgba(99,102,241,0.15)); display: flex; align-items: center; justify-content: center; }
+    .ai-panel-icon svg { width: 15px; height: 15px; }
+    .ai-panel-title { font-size: 0.92rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; }
+    .ai-panel-sub { font-size: 0.72rem; color: rgba(11,39,64,0.4); margin-top: 0.05rem; }
+    .ai-panel-body { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    .ai-panel-body::-webkit-scrollbar { width: 4px; }
+    .ai-panel-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+    .ai-section-head { font-size: 0.78rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+    .ai-section-sub { font-size: 0.72rem; color: rgba(11,39,64,0.42); margin-bottom: 0.85rem; line-height: 1.5; }
+    .standards-list { display: flex; flex-direction: column; gap: 0.4rem; }
+    .standard-item { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.6rem 0.75rem; border-radius: 7px; background: rgba(11,39,64,0.02); border: 1px solid rgba(11,39,64,0.07); transition: background 0.12s; }
+    .standard-item:hover { background: rgba(11,39,64,0.04); }
+    .standard-check { margin-top: 1px; accent-color: var(--aqua); cursor: pointer; width: 14px; height: 14px; flex-shrink: 0; }
+    .standard-text { flex: 1; }
+    .standard-code { font-size: 0.72rem; font-weight: 700; color: var(--primary); }
+    .standard-name { font-size: 0.72rem; color: rgba(11,39,64,0.5); margin-top: 0.1rem; }
+    .standards-more { font-size: 0.74rem; font-weight: 600; color: var(--aqua-dark); cursor: pointer; margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 0.3rem; transition: opacity 0.15s; }
+    .standards-more:hover { opacity: 0.7; }
+    .suggestion-card { border: 1.5px solid rgba(11,39,64,0.08); border-radius: 9px; padding: 1rem; background: white; transition: border-color 0.15s, box-shadow 0.15s; }
+    .suggestion-card:hover { border-color: rgba(10,192,233,0.3); box-shadow: 0 4px 16px rgba(10,192,233,0.08); }
+    .suggestion-stmt { font-size: 0.8rem; color: var(--primary); line-height: 1.55; margin-bottom: 0.6rem; }
+    .suggestion-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.75rem; }
+    .suggestion-tag { font-size: 0.63rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 4px; }
+    .tag-from { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .tag-based { background: rgba(99,102,241,0.1); color: var(--indigo); }
+    .btn-add-suggestion { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.74rem; font-weight: 700; color: var(--aqua-dark); background: rgba(10,192,233,0.08); border: 1.5px solid rgba(10,192,233,0.2); border-radius: 6px; padding: 0.38rem 0.75rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s, border-color 0.15s; }
+    .btn-add-suggestion:hover { background: rgba(10,192,233,0.14); border-color: rgba(10,192,233,0.35); }
+    .btn-add-suggestion svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .gap-analysis-summary { display: flex; align-items: center; gap: 0.65rem; padding: 0.75rem 0.9rem; background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; margin-bottom: 0.85rem; }
+    .gap-count-badge { font-size: 1.1rem; font-weight: 800; color: var(--amber); }
+    .gap-summary-text { font-size: 0.78rem; color: #92400e; font-weight: 600; }
+    .gap-list { display: flex; flex-direction: column; gap: 0.45rem; }
+    .gap-list-item { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.75rem; border-radius: 7px; background: rgba(11,39,64,0.02); border: 1px solid rgba(11,39,64,0.07); gap: 0.65rem; }
+    .gap-list-text { font-size: 0.76rem; color: var(--mid-blue); line-height: 1.45; flex: 1; }
+    .gap-list-text strong { color: var(--primary); font-weight: 600; }
+    .btn-fix { font-size: 0.68rem; font-weight: 700; color: var(--aqua-dark); background: rgba(10,192,233,0.08); border: none; border-radius: 5px; padding: 0.22rem 0.6rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; white-space: nowrap; flex-shrink: 0; }
+    .btn-fix:hover { background: rgba(10,192,233,0.16); }
+
+    /* ─── LINT ─── */
+    .lint-wrap { display: inline-flex; align-items: center; }
+    .lint-icon { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid #f59e0b; background: rgba(245,158,11,0.1); color: #b45309; display: inline-flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 800; cursor: pointer; flex-shrink: 0; margin-left: 0.3rem; transition: background 0.15s; }
+    .lint-icon:hover { background: rgba(245,158,11,0.22); }
+    .lint-tooltip { display: none; position: fixed; background: #fff; border: 1px solid rgba(11,39,64,0.12); border-radius: 10px; box-shadow: 0 8px 28px rgba(11,39,64,0.16); padding: 0.75rem 0.9rem; width: 270px; z-index: 9999; pointer-events: none; max-width: calc(100vw - 16px); }
+    .lint-tooltip.visible { display: block; }
+    .lint-tooltip-rule { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: #b45309; margin-bottom: 0.35rem; }
+    .lint-tooltip-msg { font-size: 0.75rem; color: rgba(11,39,64,0.7); line-height: 1.55; }
+    .lint-panel-section { margin-top: 1rem; border-top: 1px solid rgba(245,158,11,0.25); padding-top: 0.9rem; }
+    .lint-panel-header { display: flex; align-items: center; gap: 0.45rem; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #b45309; margin-bottom: 0.75rem; }
+    .lint-panel-item { background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; padding: 0.65rem 0.75rem; margin-bottom: 0.5rem; }
+    .lint-panel-item:last-child { margin-bottom: 0; }
+    .lint-panel-rule { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: #b45309; margin-bottom: 0.3rem; }
+    .lint-panel-msg { font-size: 0.76rem; color: rgba(11,39,64,0.65); line-height: 1.55; margin-bottom: 0.55rem; }
+    .lint-ai-fix { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.7rem; font-weight: 700; color: var(--primary); background: rgba(10,192,233,0.1); border: 1px solid rgba(10,192,233,0.25); border-radius: 6px; padding: 0.28rem 0.6rem; cursor: pointer; transition: background 0.12s; white-space: nowrap; }
+    .lint-ai-fix:hover { background: rgba(10,192,233,0.18); }
+    .lint-ai-fix svg { width: 10px; height: 10px; }
+
+    /* ─── EXPORT MODAL ─── */
+    .export-modal-overlay { position: fixed; inset: 0; z-index: 300; display: none; align-items: center; justify-content: center; background: rgba(11,39,64,0.2); backdrop-filter: blur(2px); }
+    .export-modal-overlay.open { display: flex; }
+    .export-modal { background: white; border-radius: 14px; box-shadow: 0 20px 60px rgba(11,39,64,0.2); padding: 1.75rem; width: 430px; max-width: calc(100vw - 2rem); }
+    .export-modal-title { font-size: 1.05rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 0.2rem; }
+    .export-modal-sub { font-size: 0.76rem; color: rgba(11,39,64,0.42); margin-bottom: 1.5rem; }
+    .export-group { margin-bottom: 1.25rem; }
+    .export-group-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 0.55rem; }
+    .export-radio-group { display: flex; gap: 0.5rem; }
+    .export-radio-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.42rem; padding: 0.55rem 0.75rem; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.5); transition: border-color 0.15s, color 0.15s, background 0.15s; user-select: none; font-family: 'Inter', sans-serif; }
+    .export-radio-btn:hover { border-color: rgba(11,39,64,0.25); color: var(--primary); }
+    .export-radio-btn.selected { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.06); }
+    .export-radio-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .export-checkbox-group { display: flex; flex-direction: column; gap: 0.45rem; }
+    .export-checkbox-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.65rem; border: 1.5px solid rgba(11,39,64,0.08); border-radius: 7px; cursor: pointer; transition: background 0.12s, border-color 0.12s; user-select: none; }
+    .export-checkbox-item:hover { background: rgba(11,39,64,0.02); border-color: rgba(11,39,64,0.14); }
+    .export-checkbox-item input[type=checkbox] { accent-color: var(--aqua); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+    .export-checkbox-item label { font-size: 0.8rem; font-weight: 600; color: var(--primary); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; flex: 1; }
+    .export-cb-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .export-cb-dot.approved { background: var(--green); }
+    .export-cb-dot.review { background: var(--amber); }
+    .export-cb-dot.draft { background: rgba(11,39,64,0.22); }
+    .export-modal-footer { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(11,39,64,0.07); }
+    .btn-export-run { display: inline-flex; align-items: center; gap: 0.45rem; background: var(--primary); color: white; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.82rem; padding: 0.6rem 1.4rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; }
+    .btn-export-run:hover { background: var(--mid-blue); transform: translateY(-1px); }
+    .btn-export-run svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-export-cancel { font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.4); background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.15s; }
+    .btn-export-cancel:hover { color: var(--primary); }
+
+    /* ─── SETTINGS PANE ─── */
+    .settings-pane { display: none; flex: 1; overflow-y: auto; padding: 2rem 2.25rem; background: var(--light-gray); position: absolute; inset: 58px 0 0 0; }
+    .settings-pane.active { display: block; }
+    .settings-header { margin-bottom: 1.75rem; }
+    .settings-header h1 { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; margin: 0; }
+    .settings-header p { font-size: 0.8rem; color: rgba(11,39,64,0.42); margin-top: 0.25rem; }
+    .settings-section { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; max-width: 600px; }
+    .settings-section-title { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(11,39,64,0.07); }
+    .settings-field { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .settings-field:last-child { margin-bottom: 0; }
+    .settings-field label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.42); }
+    .settings-field input[type=text] { font-family: 'Inter', sans-serif; font-size: 0.88rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; padding: 0.55rem 0.75rem; outline: none; transition: border-color 0.15s; background: white; }
+    .settings-field input[type=text]:focus { border-color: var(--aqua); }
+    .logo-upload-area { border: 2px dashed rgba(11,39,64,0.14); border-radius: 10px; padding: 1.15rem 1.25rem; display: flex; align-items: center; gap: 1.25rem; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+    .logo-upload-area:hover { border-color: var(--aqua); background: rgba(10,192,233,0.02); }
+    .logo-preview-box { width: 60px; height: 60px; border-radius: 8px; background: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+    .logo-preview-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .logo-upload-title { font-size: 0.84rem; font-weight: 700; color: var(--primary); display: block; margin-bottom: 0.2rem; }
+    .logo-upload-sub { font-size: 0.72rem; color: rgba(11,39,64,0.4); }
+    .logo-upload-hint { font-size: 0.64rem; color: rgba(11,39,64,0.3); margin-top: 0.3rem; }
+    .btn-remove-logo { font-size: 0.68rem; font-weight: 600; color: var(--red); background: rgba(239,68,68,0.07); border: none; border-radius: 5px; padding: 0.22rem 0.6rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.12s; margin-top: 0.4rem; width: fit-content; }
+    .btn-remove-logo:hover { background: rgba(239,68,68,0.14); }
+    .btn-save-settings { background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.84rem; padding: 0.6rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; box-shadow: 0 2px 8px rgba(10,192,233,0.25); }
+    .btn-save-settings:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .settings-save-flash { font-size: 0.78rem; font-weight: 700; color: var(--green); opacity: 0; transition: opacity 0.3s; margin-left: 0.5rem; }
+    .settings-save-flash.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title">
+          <span class="topbar-crumb">Design Controls</span>
+          <span class="topbar-sep">/</span>
+          <span>User Needs</span>
+        </div>
+        <span class="ver-badge" id="docVerBadge">Rev A</span>
+        <span class="status-pill draft" id="docStatusPill">Draft</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-export" onclick="openExportModal()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="btn-export" onclick="finalizeDocument()" id="btn-finalize" style="border-color:rgba(16,185,129,0.3);color:#047857;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Finalize &amp; Approve
+        </button>
+        <button class="btn-add-un" onclick="openAddUserNeed()">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add User Need
+        </button>
+        <button class="btn-ai" id="btnAiAssist" onclick="openAiPanel()">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+          AI Assist
+        </button>
+        <div class="gap-pill" onclick="openAiPanel(); scrollToGaps()">
+          <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          3 gaps
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <div class="content-area" id="mainContentArea">
+      <div class="doc-wrap">
+
+        <!-- DOCUMENT COVER -->
+        <div class="doc-cover">
+          <div class="doc-cover-top">
+            <div>
+              <div class="doc-company" id="docCompanyLabel">Tangram MedTech</div>
+              <div class="doc-name">User Needs</div>
+              <div class="doc-subtitle">Defines the needs, expectations, and requirements of users and other stakeholders that the medical device must fulfill. Forms the basis for all design inputs per ISO 13485 §7.3.3.</div>
+            </div>
+            <div class="doc-cover-meta">
+              <div class="doc-cover-meta-row">Document No. <strong>UN-001</strong></div>
+              <div class="doc-cover-meta-row">Revision <strong id="docRevisionDisplay">A</strong></div>
+              <div class="doc-cover-meta-row">Status <strong id="docStatusDisplay">Draft</strong></div>
+            </div>
+          </div>
+          <div class="doc-cover-divider"></div>
+          <div class="doc-cover-fields" style="margin-bottom:1rem;">
+            <div class="doc-field">
+              <div class="doc-field-label">Revision</div>
+              <input class="doc-field-input" id="fDocRevision" type="text" value="A" placeholder="e.g. A, B, 1.0">
+            </div>
+            <div class="doc-field">
+              <div class="doc-field-label">Status</div>
+              <select class="doc-field-select" id="fDocStatus">
+                <option value="draft" selected>Draft</option>
+                <option value="review">Under Review</option>
+                <option value="approved">Approved</option>
+              </select>
+            </div>
+            <div class="doc-field">
+              <div class="doc-field-label">Effective Date</div>
+              <input class="doc-field-input" id="fEffectiveDate" type="date">
+            </div>
+          </div>
+          <div class="doc-cover-fields cols-2" style="margin-bottom:1rem;">
+            <div class="doc-field">
+              <div class="doc-field-label">Intended Use</div>
+              <textarea class="doc-field-textarea" id="fIntendedUse" rows="3" placeholder="Describe the intended medical purpose of the device — what condition it treats, diagnoses, or monitors…"></textarea>
+            </div>
+            <div class="doc-field">
+              <div class="doc-field-label">Indications for Use</div>
+              <textarea class="doc-field-textarea" id="fIndicationsForUse" rows="3" placeholder="Define the specific clinical conditions, disease states, or patient populations the device is indicated for…"></textarea>
+            </div>
+          </div>
+          <div class="doc-cover-fields">
+            <div class="doc-field">
+              <div class="doc-field-label">Patient / User Population</div>
+              <input class="doc-field-input" id="fPatientPopulation" type="text" placeholder="e.g. Adult patients ≥18 years with confirmed cardiac arrhythmia">
+            </div>
+            <div class="doc-field">
+              <div class="doc-field-label">Intended User</div>
+              <select class="doc-field-select" id="fIntendedUser">
+                <option value="">Select user type…</option>
+                <option value="lay">Lay user / Patient (no medical training)</option>
+                <option value="hcp">Healthcare professional</option>
+                <option value="both">Both lay user and HCP</option>
+                <option value="trained">Trained operator / Technician</option>
+              </select>
+            </div>
+            <div class="doc-field">
+              <div class="doc-field-label">Use Environment</div>
+              <input class="doc-field-input" id="fUseEnvironment" type="text" placeholder="e.g. Hospital, Home, Ambulatory, Operating room">
+            </div>
+          </div>
+        </div><!-- /doc-cover -->
+
+        <!-- Requirements Table -->
+        <div class="req-section-head">
+          <div class="req-section-left">
+            <span class="req-section-title">Requirements</span>
+            <span class="req-section-count" id="reqCount">5</span>
+          </div>
+        </div>
+        <div class="list-table-wrap">
+        <table class="list-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Statement</th>
+              <th>Source</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>DIs</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="un-tbody">
+            <tr class="row-approved" onclick="openDetail('un001')">
+              <td><span class="id-pill">UN-001</span></td>
+              <td class="stmt-cell">The patient shall be continuously monitored for arrhythmia events without active patient intervention.</td>
+              <td style="font-size:0.78rem; color:var(--mid-blue); white-space:nowrap;">Patient</td>
+              <td style="font-size:0.78rem; color:var(--mid-blue);">Performance</td>
+              <td><span class="status-badge approved">Approved</span></td>
+              <td><span class="count-badge">2</span></td>
+              <td><button class="btn-edit" onclick="event.stopPropagation(); openDetail('un001')">Edit</button></td>
+            </tr>
+            <tr class="row-approved" onclick="openDetail('un002')">
+              <td><span class="id-pill">UN-002</span></td>
+              <td class="stmt-cell">The clinician shall be able to retrieve diagnostic data remotely via secure wireless transmission.</td>
+              <td style="font-size:0.78rem; color:var(--mid-blue); white-space:nowrap;">Healthcare Provider</td>
+              <td style="font-size:0.78rem; color:var(--mid-blue);">Data Access</td>
+              <td><span class="status-badge approved">Approved</span></td>
+              <td><span class="count-badge">2</span></td>
+              <td><button class="btn-edit" onclick="event.stopPropagation(); openDetail('un002')">Edit</button></td>
+            </tr>
+            <tr class="row-approved" onclick="openDetail('un003')">
+              <td><span class="id-pill">UN-003</span></td>
+              <td class="stmt-cell">The patient shall not experience adverse tissue reactions at the implant site.</td>
+              <td style="font-size:0.78rem; color:var(--mid-blue); white-space:nowrap;">Patient</td>
+              <td style="font-size:0.78rem; color:var(--mid-blue);">Safety/Biocompatibility</td>
+              <td><span class="status-badge approved">Approved</span></td>
+              <td><span class="count-badge">2</span></td>
+              <td><button class="btn-edit" onclick="event.stopPropagation(); openDetail('un003')">Edit</button></td>
+            </tr>
+            <tr class="row-tentative" onclick="openDetail('un004')">
+              <td><span class="id-pill">UN-004</span></td>
+              <td class="stmt-cell"><em>Tentative — </em>The device should integrate with existing hospital EMR systems to enable automated data transfer.</td>
+              <td style="font-size:0.78rem; color:var(--mid-blue); white-space:nowrap;">Healthcare Provider</td>
+              <td style="font-size:0.78rem; color:var(--mid-blue);">Interoperability</td>
+              <td><span class="status-badge draft">Draft</span></td>
+              <td><span class="count-badge" style="color:var(--amber); background:rgba(245,158,11,0.1);">0</span></td>
+              <td><button class="btn-edit" onclick="event.stopPropagation(); openDetail('un004')">Edit</button></td>
+            </tr>
+            <tr class="row-draft" onclick="openDetail('un005')">
+              <td><span class="id-pill">UN-005</span></td>
+              <td class="stmt-cell">The device shall provide haptic feedback to alert the patient of a detected event.</td>
+              <td style="font-size:0.78rem; color:var(--mid-blue); white-space:nowrap;">Patient</td>
+              <td style="font-size:0.78rem; color:var(--mid-blue);">Alert / Feedback</td>
+              <td><span class="status-badge draft">Draft</span></td>
+              <td><span class="count-badge" style="color:var(--amber); background:rgba(245,158,11,0.1);">0</span></td>
+              <td><button class="btn-edit" onclick="event.stopPropagation(); openDetail('un005')">Edit</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      </div><!-- /doc-wrap -->
+    </div><!-- /content-area -->
+
+    <!-- DOC FOOTER BAR -->
+    <div class="doc-footer-bar" id="docFooterBar">
+      <button class="btn-save-draft" onclick="saveDocMeta()">Save Draft</button>
+      <span class="doc-save-flash" id="docSaveFlash">Saved ✓</span>
+    </div>
+
+    <!-- SETTINGS PANE -->
+    <div class="settings-pane" id="settingsPane">
+      <div class="settings-header">
+        <h1>Settings</h1>
+        <p>Configure your QMS workspace — company branding, document defaults, and more.</p>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Branding</div>
+        <div class="settings-field">
+          <label>Company Logo</label>
+          <div class="logo-upload-area" onclick="document.getElementById('logoFileInput').click()">
+            <div class="logo-preview-box" id="logoPreviewBox">
+              <img src="../../brand_assets/Tangram-T%20mark%20reverse_Square.png" width="44" height="44" alt="Logo" id="logoPreviewImg" style="object-fit:contain;">
+            </div>
+            <div>
+              <span class="logo-upload-title" id="logoUploadTitle">Upload your logo</span>
+              <span class="logo-upload-sub" id="logoUploadSub">PNG, JPG, or SVG · max 2 MB</span>
+              <div class="logo-upload-hint">Used as the header logo in exported PDF and Word documents</div>
+            </div>
+          </div>
+          <input type="file" id="logoFileInput" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">
+          <button class="btn-remove-logo" id="btnRemoveLogo" style="display:none" onclick="event.stopPropagation(); removeLogo()">Remove logo</button>
+        </div>
+        <div class="settings-field">
+          <label>Company Name</label>
+          <input type="text" id="settingCompanyName" placeholder="e.g. Tangram MedTech">
+        </div>
+        <div class="settings-field">
+          <label>Project / Device Name</label>
+          <input type="text" id="settingProjectName" placeholder="e.g. CardioSync Pro">
+        </div>
+        <div class="settings-field">
+          <label>Export Footer Text</label>
+          <input type="text" id="settingFooterText" placeholder="e.g. CONFIDENTIAL — For Internal Use Only">
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Device &amp; AI Analysis</div>
+        <div class="settings-field">
+          <label>Device Description</label>
+          <textarea id="settingDeviceDesc" rows="5" placeholder="Describe your device — intended use, patient population, indication, technology type, and key functional characteristics." style="font-family:'Inter',sans-serif; font-size:0.88rem; color:var(--primary); border:1.5px solid rgba(11,39,64,0.12); border-radius:8px; padding:0.55rem 0.75rem; outline:none; resize:vertical; line-height:1.6; transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--aqua)'" onblur="this.style.borderColor='rgba(11,39,64,0.12)'"></textarea>
+        </div>
+        <div class="settings-field">
+          <label>Anthropic API Key</label>
+          <input type="password" id="settingApiKey" placeholder="sk-ant-api03-..." style="font-family:'Inter',sans-serif; font-size:0.88rem; color:var(--primary); border:1.5px solid rgba(11,39,64,0.12); border-radius:8px; padding:0.55rem 0.75rem; outline:none; transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--aqua)'" onblur="this.style.borderColor='rgba(11,39,64,0.12)'">
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; max-width:600px;">
+        <button class="btn-save-settings" onclick="saveSettings()">Save Settings</button>
+        <span class="settings-save-flash" id="settingsSaveFlash">Settings saved ✓</span>
+      </div>
+    </div>
+
+    <!-- EXPORT MODAL -->
+    <div class="export-modal-overlay" id="exportModalOverlay" onclick="if(event.target===this)closeExportModal()">
+      <div class="export-modal">
+        <div class="export-modal-title">Export User Needs</div>
+        <div class="export-modal-sub">Choose what to include and select a format</div>
+        <div class="export-group">
+          <div class="export-group-label">Include Statuses</div>
+          <div class="export-checkbox-group">
+            <div class="export-checkbox-item" onclick="document.getElementById('expCbApproved').click()">
+              <input type="checkbox" id="expCbApproved" checked onclick="event.stopPropagation()">
+              <label for="expCbApproved"><span class="export-cb-dot approved"></span>Approved</label>
+            </div>
+            <div class="export-checkbox-item" onclick="document.getElementById('expCbReview').click()">
+              <input type="checkbox" id="expCbReview" checked onclick="event.stopPropagation()">
+              <label for="expCbReview"><span class="export-cb-dot review"></span>Under Review</label>
+            </div>
+            <div class="export-checkbox-item" onclick="document.getElementById('expCbDraft').click()">
+              <input type="checkbox" id="expCbDraft" onclick="event.stopPropagation()">
+              <label for="expCbDraft"><span class="export-cb-dot draft"></span>Draft</label>
+            </div>
+          </div>
+        </div>
+        <div class="export-group">
+          <div class="export-group-label">Format</div>
+          <div class="export-radio-group">
+            <div class="export-radio-btn selected" id="expFmtPDF" onclick="selectExportFmt('pdf')">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+              PDF
+            </div>
+            <div class="export-radio-btn" id="expFmtWord" onclick="selectExportFmt('word')">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 13 12 20 15 13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+              Word (.doc)
+            </div>
+          </div>
+        </div>
+        <div class="export-modal-footer">
+          <button class="btn-export-run" onclick="runExport()">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+          <button class="btn-export-cancel" onclick="closeExportModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL OVERLAY -->
+    <div class="panel-overlay" id="panelOverlay">
+      <div class="panel-backdrop" onclick="closeAllPanels()"></div>
+
+      <!-- DETAIL PANEL -->
+      <div class="detail-panel" id="detailPanel">
+        <div class="panel-head">
+          <div class="panel-head-row">
+            <span class="panel-type-badge" id="panelTypeBadge">USER NEED</span>
+            <span class="panel-id" id="panelId">UN-001</span>
+            <button class="panel-close" onclick="closeAllPanels()">
+              <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="panel-status-row">
+            <span class="panel-status-label">Status:</span>
+            <span class="status-badge draft" id="panelStatusDisplay">Draft</span>
+            <span style="font-size:0.62rem; color:rgba(11,39,64,0.35); margin-left:0.25rem;">· updated via design review</span>
+          </div>
+        </div>
+        <div id="panelChangeBar" style="display:none; flex-shrink:0;"></div>
+        <div class="panel-body" id="panelBody"></div>
+        <div class="panel-footer" id="panelFooter">
+          <button class="btn-save" onclick="savePanel()">Save changes</button>
+          <button class="btn-discard" onclick="discardPanel()">Discard</button>
+          <span class="save-flash" id="saveFlash">Saved ✓</span>
+        </div>
+      </div>
+
+      <!-- AI PANEL -->
+      <div class="ai-panel" id="aiPanel">
+        <div class="ai-panel-head">
+          <div class="ai-panel-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="url(#aiGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <defs><linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0AC0E9"/><stop offset="100%" stop-color="#6366f1"/></linearGradient></defs>
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="ai-panel-title">AI Assist</div>
+            <div class="ai-panel-sub">CardioSync Pro · User Needs</div>
+          </div>
+          <button class="panel-close" style="margin-left:auto;" onclick="closeAllPanels()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="ai-panel-body" id="aiPanelBody">
+          <div>
+            <div class="ai-section-head">Applicable Standards</div>
+            <div class="ai-section-sub">Standards likely applicable to this device class</div>
+            <div class="standards-list">
+              <div class="standard-item"><input type="checkbox" class="standard-check" checked><div class="standard-text"><div class="standard-code">ISO 14971:2019</div><div class="standard-name">Application of risk management to medical devices</div></div></div>
+              <div class="standard-item"><input type="checkbox" class="standard-check" checked><div class="standard-text"><div class="standard-code">IEC 60601-1:2005+A2</div><div class="standard-name">General requirements for basic safety and essential performance</div></div></div>
+              <div class="standard-item"><input type="checkbox" class="standard-check" checked><div class="standard-text"><div class="standard-code">ISO 13485:2016</div><div class="standard-name">Medical devices — QMS requirements</div></div></div>
+              <div class="standard-item"><input type="checkbox" class="standard-check" checked><div class="standard-text"><div class="standard-code">ISO 10993-1:2018</div><div class="standard-name">Biocompatibility evaluation of medical devices</div></div></div>
+            </div>
+          </div>
+          <div>
+            <div class="ai-section-head">AI-Suggested Design Inputs</div>
+            <div class="ai-section-sub">Based on your user needs — review carefully before adding</div>
+            <div style="display:flex;flex-direction:column;gap:0.75rem;">
+              <div class="suggestion-card">
+                <div class="suggestion-stmt">"The device shall provide real-time alert notifications to clinicians within 30 seconds of detecting a qualifying arrhythmia event."</div>
+                <div class="suggestion-meta"><span class="suggestion-tag tag-from">From: UN-001, UN-002</span><span class="suggestion-tag tag-based">Based on: ISO 14971 §4.2</span></div>
+                <button class="btn-add-suggestion"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add to Design Inputs</button>
+              </div>
+              <div class="suggestion-card">
+                <div class="suggestion-stmt">"The device shall be hermetically sealed to IP68 or equivalent to prevent ingress of bodily fluids at the implant site."</div>
+                <div class="suggestion-meta"><span class="suggestion-tag tag-from">From: UN-003</span><span class="suggestion-tag tag-based">Based on: IEC 60601-1 §11.6</span></div>
+                <button class="btn-add-suggestion"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add to Design Inputs</button>
+              </div>
+            </div>
+          </div>
+          <div id="gapAnalysisSection">
+            <div class="ai-section-head">Gap Analysis</div>
+            <div class="gap-analysis-summary"><span class="gap-count-badge">3</span><span class="gap-summary-text">traceability gaps detected in CardioSync Pro</span></div>
+            <div class="gap-list">
+              <div class="gap-list-item"><div class="gap-list-text"><strong>UN-004</strong> has no linked design inputs. Tentative user need may need to be formalized or removed.</div></div>
+              <div class="gap-list-item"><div class="gap-list-text"><strong>UN-005</strong> has no linked design inputs.</div></div>
+              <div class="gap-list-item"><div class="gap-list-text"><strong>DI-007</strong> has no linked user need — regulatory-only requirement not traced to stakeholder needs.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /panel-overlay -->
+
+  </div><!-- /main -->
+
+  <!-- Single global lint tooltip -->
+  <div id="lint-global-tip" class="lint-tooltip"></div>
+
+  <script>
+    // ── DATA (shared localStorage keys match clarity-hub.html) ──────────────
+    const ITEMS = {
+      un001: {
+        type: 'un', typeBadge: 'USER NEED', typeCls: 'type-un', id: 'UN-001',
+        status: 'approved',
+        statement: 'The patient shall be continuously monitored for arrhythmia events without active patient intervention.',
+        source: 'Patient', category: 'Performance', tentative: false,
+        tracesTo: [], tracedBy: ['DI-001', 'DI-002'], notes: ''
+      },
+      un002: {
+        type: 'un', typeBadge: 'USER NEED', typeCls: 'type-un', id: 'UN-002',
+        status: 'approved',
+        statement: 'The clinician shall be able to retrieve diagnostic data remotely via secure wireless transmission.',
+        source: 'Healthcare Provider', category: 'Data Access', tentative: false,
+        tracesTo: [], tracedBy: ['DI-003', 'DI-004'], notes: ''
+      },
+      un003: {
+        type: 'un', typeBadge: 'USER NEED', typeCls: 'type-un', id: 'UN-003',
+        status: 'approved',
+        statement: 'The patient shall not experience adverse tissue reactions at the implant site.',
+        source: 'Patient', category: 'Safety/Biocompatibility', tentative: false,
+        tracesTo: [], tracedBy: ['DI-005', 'DI-006'], notes: ''
+      },
+      un004: {
+        type: 'un', typeBadge: 'USER NEED', typeCls: 'type-un', id: 'UN-004',
+        status: 'draft',
+        statement: 'The device should integrate with existing hospital EMR systems to enable automated data transfer.',
+        source: 'Healthcare Provider', category: 'Interoperability', tentative: true,
+        tracesTo: [], tracedBy: [],
+        notes: 'Uses "should" — may/tentative item. Pending stakeholder confirmation.'
+      },
+      un005: {
+        type: 'un', typeBadge: 'USER NEED', typeCls: 'type-un', id: 'UN-005',
+        status: 'draft',
+        statement: 'The device shall provide haptic feedback to alert the patient of a detected event.',
+        source: 'Patient', category: 'Alert / Feedback', tentative: false,
+        tracesTo: [], tracedBy: [], notes: ''
+      }
+    };
+
+    let currentItemKey = null;
+    let isDirty = false;
+    let currentPanelMode = null;
+    let isProposingChange = false;
+
+    // ── SETTINGS ──────────────────────────────────────────────────────────
+    let QMS_SETTINGS = {
+      companyName: 'Tangram MedTech', projectName: 'CardioSync Pro',
+      logoDataUrl: null, footerText: 'CONFIDENTIAL — For Internal Use Only',
+      deviceDescription: '', apiKey: ''
+    };
+    function loadSettings() {
+      try { const s = localStorage.getItem('qms_settings'); if (s) QMS_SETTINGS = { ...QMS_SETTINGS, ...JSON.parse(s) }; } catch(e) {}
+      const cn = document.getElementById('settingCompanyName'); if (cn) cn.value = QMS_SETTINGS.companyName || '';
+      const pn = document.getElementById('settingProjectName'); if (pn) pn.value = QMS_SETTINGS.projectName || '';
+      const ft = document.getElementById('settingFooterText');  if (ft) ft.value = QMS_SETTINGS.footerText  || '';
+      const dd = document.getElementById('settingDeviceDesc');  if (dd) dd.value = QMS_SETTINGS.deviceDescription || '';
+      const ak = document.getElementById('settingApiKey');      if (ak) ak.value = QMS_SETTINGS.apiKey || '';
+      renderLogoPreview();
+    }
+    function renderLogoPreview() {
+      const img = document.getElementById('logoPreviewImg'); const title = document.getElementById('logoUploadTitle');
+      const sub = document.getElementById('logoUploadSub'); const rmBtn = document.getElementById('btnRemoveLogo');
+      if (QMS_SETTINGS.logoDataUrl) { img.src = QMS_SETTINGS.logoDataUrl; title.textContent = 'Logo uploaded'; sub.textContent = 'Click to replace'; rmBtn.style.display = 'block'; }
+      else { img.src = '../../brand_assets/Tangram-T%20mark%20reverse_Square.png'; title.textContent = 'Upload your logo'; sub.textContent = 'PNG, JPG, or SVG · max 2 MB'; rmBtn.style.display = 'none'; }
+    }
+    function handleLogoUpload(input) {
+      const file = input.files[0]; if (!file) return;
+      if (file.size > 2*1024*1024) { alert('Logo file must be under 2 MB.'); return; }
+      const reader = new FileReader();
+      reader.onload = e => { QMS_SETTINGS.logoDataUrl = e.target.result; renderLogoPreview(); };
+      reader.readAsDataURL(file); input.value = '';
+    }
+    function removeLogo() { QMS_SETTINGS.logoDataUrl = null; renderLogoPreview(); }
+    function saveSettings() {
+      QMS_SETTINGS.companyName = document.getElementById('settingCompanyName').value.trim() || 'Tangram MedTech';
+      QMS_SETTINGS.projectName = document.getElementById('settingProjectName').value.trim() || 'CardioSync Pro';
+      QMS_SETTINGS.footerText  = document.getElementById('settingFooterText').value.trim();
+      QMS_SETTINGS.deviceDescription = document.getElementById('settingDeviceDesc').value.trim();
+      QMS_SETTINGS.apiKey = document.getElementById('settingApiKey').value.trim();
+      localStorage.setItem('qms_settings', JSON.stringify(QMS_SETTINGS));
+      const flash = document.getElementById('settingsSaveFlash'); flash.classList.add('show');
+      setTimeout(() => flash.classList.remove('show'), 2200);
+    }
+    function openSettings() {
+      closeAllPanels();
+      document.getElementById('mainContentArea').style.display = 'none';
+      document.getElementById('docFooterBar').style.display = 'none';
+      document.getElementById('settingsPane').classList.add('active');
+    }
+    function closeSettings() {
+      document.getElementById('settingsPane').classList.remove('active');
+      document.getElementById('mainContentArea').style.display = '';
+      document.getElementById('docFooterBar').style.display = '';
+    }
+
+    // ── DETAIL PANEL ──────────────────────────────────────────────────────
+    function openDetail(key) {
+      const item = ITEMS[key]; if (!item) return;
+      currentItemKey = key; isDirty = false; isProposingChange = false; currentPanelMode = 'detail';
+      document.getElementById('aiPanel').style.transform = 'translateX(100%)';
+      document.getElementById('detailPanel').style.transform = '';
+      const typeBadge = document.getElementById('panelTypeBadge');
+      typeBadge.textContent = item.typeBadge; typeBadge.className = 'panel-type-badge ' + item.typeCls;
+      document.getElementById('panelId').textContent = item.id;
+      updatePanelStatusBadge(item);
+      renderPanelUI(item);
+      document.getElementById('panelOverlay').classList.add('open');
+    }
+    function updatePanelStatusBadge(item) {
+      const sd = document.getElementById('panelStatusDisplay');
+      const labels = { approved: 'Approved', review: 'Under Review', draft: 'Draft' };
+      sd.textContent = labels[item.status] || 'Draft'; sd.className = 'status-badge ' + (item.status || 'draft');
+    }
+    function syncItemStatusInDOM(key, status) {
+      const labels = { approved: 'Approved', review: 'Under Review', draft: 'Draft' };
+      const dotClass = { approved: 'approved', review: 'review', draft: 'draft' };
+      const listRow = document.querySelector(`#un-tbody tr[onclick="openDetail('${key}')"]`);
+      if (listRow) {
+        listRow.className = listRow.className.replace(/\brow-\w+\b/, 'row-' + (status === 'review' ? 'review' : status));
+        const badge = listRow.querySelector('.status-badge');
+        if (badge) { badge.textContent = labels[status] || 'Draft'; badge.className = 'status-badge ' + (status || 'draft'); }
+      }
+    }
+    function renderPanelUI(item) {
+      const body = document.getElementById('panelBody');
+      const footer = document.getElementById('panelFooter');
+      const changeBar = document.getElementById('panelChangeBar');
+      const openCRCount = countOpenCRs(currentItemKey);
+      const crBadge = openCRCount > 0 ? `<a href="change-control.html" style="font-size:0.68rem;font-weight:700;color:#b45309;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:5px;padding:0.15rem 0.5rem;text-decoration:none;margin-right:auto;">${openCRCount} open CR${openCRCount>1?'s':''} →</a>` : '';
+      const FOOTER_DEFAULT = `<button class="btn-save" onclick="savePanel()">Save changes</button><button class="btn-discard" onclick="discardPanel()">Discard</button><span class="save-flash" id="saveFlash">Saved ✓</span>`;
+      if (item.status === 'approved' && !isProposingChange) {
+        body.innerHTML = buildPanelBodyLocked(item); footer.innerHTML = crBadge + FOOTER_DEFAULT; footer.classList.remove('dirty'); footer.style.display = crBadge ? '' : 'none';
+        changeBar.style.display = 'block';
+        changeBar.innerHTML = `<div class="panel-change-bar"><span class="locked-notice"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>This requirement is approved and locked</span><button class="btn-propose-change" onclick="proposeChange()"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Propose Change</button></div>`;
+      } else if (item.status === 'approved' && isProposingChange) {
+        body.innerHTML = buildPanelBody(item, true);
+        footer.innerHTML = `<button class="btn-submit-change" onclick="savePanel()">Submit Change Request</button><button class="btn-cancel-change" onclick="cancelProposeChange()">Cancel</button><span class="save-flash" id="saveFlash"></span>`;
+        footer.style.display = ''; footer.classList.add('dirty'); changeBar.style.display = 'block';
+        changeBar.innerHTML = `<div class="change-banner"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div class="change-banner-text"><strong>Proposing a change to an approved requirement.</strong> Enter a reason below and edit the fields.</div></div>`;
+        body.querySelectorAll('textarea, input, select').forEach(el => { el.addEventListener('input', () => markDirty()); el.addEventListener('change', () => markDirty()); });
+      } else {
+        body.innerHTML = buildPanelBody(item, false); footer.style.display = ''; footer.classList.remove('dirty'); changeBar.style.display = 'none';
+        footer.innerHTML = crBadge + FOOTER_DEFAULT;
+        body.querySelectorAll('textarea, input[type=text], input[type=checkbox], select').forEach(el => { el.addEventListener('input', () => markDirty()); el.addEventListener('change', () => markDirty()); });
+      }
+    }
+    function proposeChange() { if (!currentItemKey) return; isProposingChange = true; const item = ITEMS[currentItemKey]; updatePanelStatusBadge(item); renderPanelUI(item); }
+    function cancelProposeChange() { isProposingChange = false; openDetail(currentItemKey); }
+
+    function countOpenCRs(itemKey) {
+      try {
+        const item = ITEMS[itemKey]; if (!item) return 0;
+        const crs = JSON.parse(localStorage.getItem('qms_change_requests') || '{}');
+        return Object.values(crs).filter(function(cr) {
+          return cr.targetId === item.id && (cr.status === 'open' || cr.status === 'under-review');
+        }).length;
+      } catch(e) { return 0; }
+    }
+
+    function createChangeCR(item, reason, snapshot) {
+      try {
+        const crs = JSON.parse(localStorage.getItem('qms_change_requests') || '{}');
+        const nums = Object.keys(crs).map(function(k){ const m=(crs[k].id||'').match(/CR-(\d+)/); return m?parseInt(m[1]):0; });
+        const next = nums.length ? Math.max.apply(null,nums)+1 : 1;
+        const id = 'CR-' + String(next).padStart(3,'0');
+        const user = typeof ESign !== 'undefined' ? ESign.getCurrentUser() : null;
+        const proposedFields = {};
+        const body = document.getElementById('panelBody');
+        if (body) { body.querySelectorAll('[data-field]').forEach(el => { const f = el.dataset.field; if (f === 'changeReason') return; if (el.type === 'checkbox') proposedFields[f] = el.checked; else proposedFields[f] = el.value; }); }
+        crs[id] = {
+          id, status: 'open', createdAt: new Date().toISOString(), createdBy: user ? user.name : 'Unknown',
+          urgency: 'routine', targetType: 'un', targetId: item.id, targetVersion: (item.version||1)-1||1,
+          targetStatement: snapshot.statement || '', changeDescription: 'Statement and/or fields updated.',
+          changeReason: reason, proposedFields, impactedDocs: [], riskImpact: 'tbd', riskNotes: '',
+          approvalSignature: null, implementationNotes: '', implementedAt: null, newVersion: null, closedAt: null,
+        };
+        localStorage.setItem('qms_change_requests', JSON.stringify(crs));
+      } catch(e) { console.warn('Could not create CR:', e); }
+    }
+    function toggleHistory(btn) { btn.classList.toggle('open'); btn.nextElementSibling.classList.toggle('hidden'); }
+    function toggleHistoryEntry(head) { head.nextElementSibling.classList.toggle('open'); }
+
+    function buildPanelBody(item, isChangeRequest = false) {
+      let html = '';
+      if (isChangeRequest) {
+        html += `<div class="panel-field"><div class="panel-field-label" style="color:#b45309;">Reason for Change <span style="font-weight:800;">*</span></div><textarea class="panel-field-value" rows="3" data-field="changeReason" placeholder="Describe why this change is needed (required)…"></textarea><div class="reason-error" id="reasonError">A reason for this change is required.</div></div>`;
+      }
+      html += `<div class="panel-field"><div class="panel-field-label">Statement</div><textarea class="panel-field-value" rows="4" data-field="statement">${escHtml(item.statement)}</textarea></div>`;
+      const catOptions = ['Performance', 'Patient Safety', 'Usability', 'Alert / Feedback', 'Data Access', 'Interoperability', 'Safety / Biocompatibility', 'Power / Longevity', 'Security', 'Connectivity', 'Mechanical', 'Electrical Safety', 'Other'];
+      const catVal = item.category || '';
+      const catOpts = catOptions.map(c => `<option value="${c}" ${c === catVal ? 'selected' : ''}>${c}</option>`).join('');
+      const customCatOpt = catOptions.includes(catVal) ? '' : `<option value="${escHtml(catVal)}" selected>${escHtml(catVal)}</option>`;
+      html += `<div class="panel-field"><div class="panel-field-label">Category</div><select class="panel-field-value" data-field="category">${customCatOpt}${catOpts}</select></div>`;
+      const srcOptions = ['Patient', 'Clinician / Physician', 'Healthcare Provider', 'Caregiver', 'Nurse / Clinical Staff', 'Operator / Technician', 'Regulatory Body', 'Other'];
+      const srcVal = item.source || '';
+      const srcOpts = srcOptions.map(s => `<option value="${s}" ${s === srcVal ? 'selected' : ''}>${s}</option>`).join('');
+      const customSrcOpt = srcOptions.includes(srcVal) ? '' : `<option value="${escHtml(srcVal)}" selected>${escHtml(srcVal)}</option>`;
+      html += `<div class="panel-field"><div class="panel-field-label">Source / Stakeholder</div><select class="panel-field-value" data-field="source">${customSrcOpt}${srcOpts}</select></div>`;
+      const tentChecked = item.tentative ? 'checked' : '';
+      html += `<div class="panel-tentative"><input type="checkbox" id="tentativeCheck" data-field="tentative" ${tentChecked}><label for="tentativeCheck">Mark as tentative (should/may — requires further review)</label></div>`;
+      if (item.tracedBy && item.tracedBy.length) {
+        const pills = item.tracedBy.map(t => `<span class="panel-link-pill">${escHtml(t)}</span>`).join('');
+        html += `<div class="panel-field"><div class="panel-field-label">Traced by</div><div class="panel-links">${pills}</div></div>`;
+      }
+      html += `<div class="panel-field"><div class="panel-field-label">Notes / Open questions</div><textarea class="panel-field-value" rows="3" data-field="notes">${escHtml(item.notes || '')}</textarea></div>`;
+      const warnings = getLintWarnings(item);
+      if (warnings.length) {
+        const itemKey = Object.keys(ITEMS).find(k => ITEMS[k] === item) || '';
+        html += `<div class="lint-panel-section"><div class="lint-panel-header"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Quality Suggestions (${warnings.length})</div>${warnings.map(w => `<div class="lint-panel-item"><div class="lint-panel-rule">${w.label}</div><div class="lint-panel-msg">${w.message}</div><span class="lint-ai-fix" onclick="lintAiFix('${itemKey}','${w.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/></svg>Ask AI to revise</span></div>`).join('')}</div>`;
+      }
+      html += buildChangeHistoryHTML(item);
+      return html;
+    }
+
+    function buildPanelBodyLocked(item) {
+      let html = '';
+      if (item.version > 1) html += `<div style="font-size:0.64rem; color:rgba(11,39,64,0.35); margin-bottom:0; padding:0 0 0.1rem;">Version ${item.version}</div>`;
+      html += `<div class="panel-field"><div class="panel-field-label">Statement</div><div class="field-locked${item.statement ? '' : ' empty'}">${item.statement ? escHtml(item.statement) : 'No statement'}</div></div>`;
+      html += `<div class="panel-field"><div class="panel-field-label">Category</div><div class="field-locked">${escHtml(item.category || '—')}</div></div>`;
+      html += `<div class="panel-field"><div class="panel-field-label">Source / Stakeholder</div><div class="field-locked">${escHtml(item.source || '—')}</div></div>`;
+      if (item.tentative) html += `<div class="panel-field"><div class="panel-field-label">Tentative</div><div class="field-locked">Yes — flagged as tentative</div></div>`;
+      if (item.tracedBy && item.tracedBy.length) {
+        const pills = item.tracedBy.map(t => `<span class="panel-link-pill">${escHtml(t)}</span>`).join('');
+        html += `<div class="panel-field"><div class="panel-field-label">Traced by</div><div class="panel-links">${pills}</div></div>`;
+      }
+      if (item.notes) html += `<div class="panel-field"><div class="panel-field-label">Notes</div><div class="field-locked">${escHtml(item.notes)}</div></div>`;
+      const warnings = getLintWarnings(item);
+      if (warnings.length) {
+        html += `<div class="lint-panel-section"><div class="lint-panel-header"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Quality Suggestions (${warnings.length})</div>${warnings.map(w => `<div class="lint-panel-item"><div class="lint-panel-rule">${w.label}</div><div class="lint-panel-msg">${w.message}</div></div>`).join('')}</div>`;
+      }
+      html += buildChangeHistoryHTML(item);
+      return html;
+    }
+
+    function buildChangeHistoryHTML(item) {
+      const history = item.history || []; if (!history.length) return '';
+      const entries = history.slice().reverse().map(h => `<div class="history-entry"><div class="history-entry-head" onclick="toggleHistoryEntry(this)"><span class="history-ver-badge">v${h.version}</span><span class="history-entry-date">${h.date}</span><span class="history-reason-preview">${escHtml(h.reason)}</span><button class="btn-view-prior" tabindex="-1" onclick="event.stopPropagation();toggleHistoryEntry(this.parentElement)">View ›</button></div><div class="history-snapshot"><div class="history-snap-field"><div class="history-snap-label">Statement at v${h.version}</div><div class="history-snap-value">${escHtml(h.snapshot.statement || '—')}</div></div>${h.snapshot.notes ? `<div class="history-snap-field"><div class="history-snap-label">Notes</div><div class="history-snap-value">${escHtml(h.snapshot.notes)}</div></div>` : ''}<div class="history-snap-field"><div class="history-snap-label">Reason for change</div><div class="history-snap-value" style="color:#b45309;">${escHtml(h.reason)}</div></div></div></div>`).join('');
+      return `<div class="history-section"><button class="history-toggle" onclick="toggleHistory(this)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>Change History (${history.length})<svg class="history-toggle-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button><div class="history-entries hidden">${entries}</div></div>`;
+    }
+
+    function escHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function markDirty() { if (!isDirty) { isDirty = true; document.getElementById('panelFooter').classList.add('dirty'); } }
+
+    function savePanel() {
+      if (!currentItemKey) return;
+      const body = document.getElementById('panelBody');
+      if (isProposingChange && currentItemKey !== '_new_un') {
+        const item = ITEMS[currentItemKey]; if (!item) return;
+        const reasonEl = body.querySelector('[data-field="changeReason"]');
+        const reason = reasonEl ? reasonEl.value.trim() : '';
+        if (!reason) { const errEl = document.getElementById('reasonError'); if (errEl) errEl.classList.add('show'); return; }
+        if (!item.version) item.version = 1; if (!item.history) item.history = [];
+        const snapshot = { statement: item.statement, category: item.category, source: item.source, tracesTo: [...(item.tracesTo||[])], notes: item.notes, tentative: item.tentative };
+        item.history.push({ version: item.version, date: new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}), reason, snapshot });
+        item.version++;
+        body.querySelectorAll('[data-field]').forEach(el => { const field = el.dataset.field; if (field === 'changeReason') return; if (el.type === 'checkbox') item[field] = el.checked; else item[field] = el.value; });
+        item.status = 'review'; updatePanelStatusBadge(item); syncItemStatusInDOM(currentItemKey, 'review');
+        saveUserNeedsToStorage();
+        createChangeCR(item, reason, snapshot);
+        isProposingChange = false; isDirty = false; renderPanelUI(item);
+        const flash = document.getElementById('saveFlash'); if (flash) { flash.textContent = 'Change submitted ✓'; flash.classList.add('show'); setTimeout(()=>flash.classList.remove('show'),2500); }
+        applyLintIcons(); return;
+      }
+      if (currentItemKey === '_new_un') {
+        const unKeys = Object.keys(ITEMS).filter(k => ITEMS[k].type === 'un');
+        const nextNum = unKeys.length + 1;
+        const newKey = 'un' + String(nextNum).padStart(3,'0'); const newId = 'UN-' + String(nextNum).padStart(3,'0');
+        const fields = {};
+        body.querySelectorAll('[data-field]').forEach(el => { if (el.type === 'checkbox') fields[el.dataset.field] = el.checked; else fields[el.dataset.field] = el.value; });
+        ITEMS[newKey] = { type: 'un', typeBadge: 'USER NEED', typeCls: 'type-un', id: newId, status: 'draft', statement: fields.statement||'', source: fields.source||'', category: fields.category||'', tentative: !!fields.tentative, tracesTo: [], tracedBy: [], notes: fields.notes||'', version: 1, history: [] };
+        const tbody = document.querySelector('#un-tbody');
+        if (tbody) {
+          const stmt = ITEMS[newKey].tentative ? `<em>Tentative — </em>${ITEMS[newKey].statement}` : ITEMS[newKey].statement;
+          const tr = document.createElement('tr'); tr.className = 'row-draft'; tr.setAttribute('onclick', `openDetail('${newKey}')`);
+          tr.innerHTML = `<td><span class="id-pill">${newId}</span></td><td class="stmt-cell">${stmt}</td><td style="font-size:0.78rem;color:var(--mid-blue);white-space:nowrap;">${ITEMS[newKey].source}</td><td style="font-size:0.78rem;color:var(--mid-blue);">${ITEMS[newKey].category}</td><td><span class="status-badge draft">Draft</span></td><td><span class="count-badge" style="color:var(--amber);background:rgba(245,158,11,0.1);">0</span></td><td><button class="btn-edit" onclick="event.stopPropagation();openDetail('${newKey}')">Edit</button></td>`;
+          tbody.appendChild(tr);
+        }
+        currentItemKey = newKey; document.getElementById('panelId').textContent = newId;
+        isDirty = false; document.getElementById('panelFooter').classList.remove('dirty');
+        saveUserNeedsToStorage();
+        const flash = document.getElementById('saveFlash'); flash.classList.add('show'); setTimeout(()=>flash.classList.remove('show'),2000);
+        applyLintIcons(); return;
+      }
+      const item = ITEMS[currentItemKey]; if (!item) return;
+      body.querySelectorAll('[data-field]').forEach(el => { const field = el.dataset.field; if (el.type === 'checkbox') item[field] = el.checked; else if (el.tagName === 'SELECT' && el.multiple) item[field] = Array.from(el.selectedOptions).map(o=>o.value); else item[field] = el.value; });
+      isDirty = false; document.getElementById('panelFooter').classList.remove('dirty');
+      saveUserNeedsToStorage();
+      const flash = document.getElementById('saveFlash'); flash.classList.add('show'); setTimeout(()=>flash.classList.remove('show'),2000);
+      applyLintIcons();
+    }
+    function discardPanel() { if (currentItemKey) openDetail(currentItemKey); }
+    function openAiPanel() { currentPanelMode = 'ai'; document.getElementById('detailPanel').style.transform = 'translateX(100%)'; document.getElementById('aiPanel').style.transform = ''; document.getElementById('panelOverlay').classList.add('open'); }
+    function scrollToGaps() { setTimeout(()=>{ const el=document.getElementById('gapAnalysisSection'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },350); }
+    function closeAllPanels() { document.getElementById('panelOverlay').classList.remove('open'); currentPanelMode = null; }
+    function openAddUserNeed() {
+      currentItemKey = '_new_un'; currentPanelMode = 'detail'; isProposingChange = false;
+      document.getElementById('aiPanel').style.transform = 'translateX(100%)'; document.getElementById('detailPanel').style.transform = '';
+      const typeBadge = document.getElementById('panelTypeBadge'); typeBadge.textContent = 'USER NEED'; typeBadge.className = 'panel-type-badge type-un';
+      document.getElementById('panelId').textContent = 'UN-NEW';
+      const sd = document.getElementById('panelStatusDisplay'); sd.textContent = 'Draft'; sd.className = 'status-badge draft';
+      const body = document.getElementById('panelBody');
+      body.innerHTML = buildPanelBody({ type:'un', statement:'', source:'', category:'', tentative:false, tracesTo:[], tracedBy:[], notes:'' });
+      document.getElementById('panelFooter').classList.add('dirty'); document.getElementById('saveFlash').classList.remove('show');
+      body.querySelectorAll('textarea, input[type=text], input[type=checkbox]').forEach(el => { el.addEventListener('input', ()=>markDirty()); el.addEventListener('change', ()=>markDirty()); });
+      document.getElementById('panelOverlay').classList.add('open');
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllPanels(); });
+
+    // ── LINT ──────────────────────────────────────────────────────────────
+    const RULES = [
+      { id:'QW-01', types:['un'], label:'Stakeholder-first language', check: item => { const s=(item.statement||'').trim().toLowerCase(); if(!s) return false; const ok=['the patient','the clinician','the healthcare provider','the health care provider','the user','the caregiver','the operator','the technician']; return !ok.some(p=>s.startsWith(p)); }, message:'User needs must start with a stakeholder ("The patient shall…", "The clinician shall…", etc.), not "The device shall…"', aiPrompt: item => `Rewrite this user need so it starts with an appropriate stakeholder prefix. Original: "${item.statement}"` },
+      { id:'QW-02', types:['un'], label:'Use "shall" or "should"', check: item => { const s=(item.statement||'').toLowerCase(); if(!s) return false; return !s.includes(' shall ') && !s.includes(' should '); }, message:'User needs must use "shall" (mandatory) or "should" (tentative/desirable).', aiPrompt: item => `Rewrite this user need to use "shall" or "should". Original: "${item.statement}"` },
+      { id:'QW-03', types:['un'], label:'Avoid technology specificity', check: item => { const s=(item.statement||'').toLowerCase(); if(!s) return false; return [/\bble\b/,/\bbluetooth\b/,/\baes[-\s]\d+\b/,/\bwi-fi\b/,/\bwifi\b/,/\btitanium\b/,'stainless steel',/\bencryption\b/,/\biso\s+10993\b/,/\biec\s+60601\b/].some(r => typeof r==='string' ? s.includes(r) : r.test(s)); }, message:'User needs should not reference specific technologies or materials. Move technology details to a Design Input.', aiPrompt: item => `Rewrite this user need to remove technology-specific details. Original: "${item.statement}"` },
+      { id:'QW-04', types:['un'], label:'Missing DI traceability', check: item => item.status==='approved' && (!item.tracedBy||item.tracedBy.length===0), message:'This approved User Need has no linked Design Inputs. Every approved UN must trace to at least one DI before design freeze.', aiPrompt: item => `Suggest what Design Input(s) should be written to cover this User Need: "${item.statement}"` },
+      { id:'QW-07', types:['un'], label:'Empty statement', check: item => !(item.statement||'').trim(), message:'This requirement has no statement.', aiPrompt: () => 'Draft an example user need statement for a medical device.' },
+    ];
+    function getLintWarnings(item) { return RULES.filter(r => r.types.includes(item.type) && r.check(item)); }
+    function buildLintIcon(item, key) {
+      const warnings = getLintWarnings(item); if (!warnings.length) return '';
+      const encoded = encodeURIComponent(JSON.stringify(warnings.map(w=>({id:w.id,label:w.label,message:w.message}))));
+      return `<span class="lint-wrap"><span class="lint-icon" tabindex="0" data-lint="${encoded}" onmouseenter="showLintTip(this,event)" onmouseleave="hideLintTip()" onfocus="showLintTip(this,event)" onblur="hideLintTip()">!</span></span>`;
+    }
+    function showLintTip(icon, e) {
+      const tip = document.getElementById('lint-global-tip'); if (!tip) return;
+      let warnings = []; try { warnings = JSON.parse(decodeURIComponent(icon.dataset.lint||'[]')); } catch(err){return;}
+      tip.innerHTML = warnings.map((w,i) => `<div style="${i<warnings.length-1?'margin-bottom:0.55rem;padding-bottom:0.55rem;border-bottom:1px solid rgba(11,39,64,0.07)':''}"><div class="lint-tooltip-rule">${w.label}</div><div class="lint-tooltip-msg">${w.message}</div></div>`).join('');
+      const rect = icon.getBoundingClientRect(); const tipW = 270; const margin = 8;
+      let left = rect.left + rect.width/2 - tipW/2; left = Math.max(margin, Math.min(left, window.innerWidth - tipW - margin));
+      tip.style.visibility='hidden'; tip.style.display='block'; const tipH = tip.offsetHeight||100; tip.style.display=''; tip.style.visibility='';
+      const top = rect.top > tipH+margin+6 ? rect.top-tipH-6 : rect.bottom+6;
+      tip.style.left = left+'px'; tip.style.top = top+'px'; tip.classList.add('visible');
+    }
+    function hideLintTip() { const tip=document.getElementById('lint-global-tip'); if(tip) tip.classList.remove('visible'); }
+    function lintAiFix(itemKey, ruleId) { const item=ITEMS[itemKey]; const rule=RULES.find(r=>r.id===ruleId); if(!item||!rule) return; openDetail(itemKey); setTimeout(()=>openAiPanel(),200); }
+    function applyLintIcons() {
+      document.querySelectorAll('#un-tbody tr').forEach(tr => {
+        const match = (tr.getAttribute('onclick')||'').match(/openDetail\('(\w+)'\)/); if(!match) return;
+        const item = ITEMS[match[1]]; if(!item) return;
+        tr.querySelectorAll('.lint-wrap').forEach(el=>el.remove());
+        const pill = tr.querySelector('.id-pill'); if(pill) pill.insertAdjacentHTML('afterend', buildLintIcon(item, match[1]));
+      });
+    }
+    applyLintIcons();
+
+    // ── EXPORT ────────────────────────────────────────────────────────────
+    let exportFmt = 'pdf';
+    function openExportModal() { document.getElementById('exportModalOverlay').classList.add('open'); }
+    function closeExportModal() { document.getElementById('exportModalOverlay').classList.remove('open'); }
+    function selectExportFmt(fmt) { exportFmt = fmt; document.getElementById('expFmtPDF').classList.toggle('selected', fmt==='pdf'); document.getElementById('expFmtWord').classList.toggle('selected', fmt==='word'); }
+    function runExport() {
+      const statuses = [];
+      if (document.getElementById('expCbApproved').checked) statuses.push('approved');
+      if (document.getElementById('expCbReview').checked)   statuses.push('review');
+      if (document.getElementById('expCbDraft').checked)    statuses.push('draft');
+      if (!statuses.length) { alert('Please select at least one status.'); return; }
+      const items = Object.values(ITEMS).filter(i => i.type === 'un' && statuses.includes(i.status));
+      const s = QMS_SETTINGS; const dateStr = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+      const statusLbl = {approved:'Approved',review:'Under Review',draft:'Draft'}; const statusClr = {approved:'#059669',review:'#d97706',draft:'#64748b'};
+      const logoHtml = s.logoDataUrl ? `<img src="${s.logoDataUrl}" style="height:46px;max-width:160px;object-fit:contain;" alt="Logo">` : `<div style="font-size:20pt;font-weight:900;color:#0B2740;letter-spacing:-0.03em;">${escHtml(s.companyName||'Company')}</div>`;
+      const thead = `<tr><th style="width:72px;">ID</th><th>Statement</th><th style="width:130px;">Source / Stakeholder</th><th style="width:130px;">Category</th><th style="width:100px;">Status</th><th style="width:50px;text-align:center;">DIs</th></tr>`;
+      const tbody2 = items.length ? items.map(item=>`<tr><td class="id-col">${escHtml(item.id)}</td><td>${escHtml(item.statement)}${item.tentative?` <span style="color:#92400e;font-style:italic;">[Tentative]</span>`:''}</td><td>${escHtml(item.source||'—')}</td><td>${escHtml(item.category||'—')}</td><td class="status-col" style="color:${statusClr[item.status]};">${statusLbl[item.status]||'—'}</td><td style="text-align:center;">${(item.tracedBy||[]).length||'—'}</td></tr>`).join('') : `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8;">No items match the selected filters.</td></tr>`;
+      const docHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${escHtml(s.projectName||'Project')} — User Needs</title><style>@page{size:A4 landscape;margin:16mm 20mm 20mm}*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Helvetica Neue',Arial,sans-serif;font-size:9.5pt;color:#1e293b;background:white}.doc-header{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:12px;margin-bottom:16px;border-bottom:3px solid #0B2740}.doc-meta{text-align:right}.doc-meta .doc-title{font-size:17pt;font-weight:900;color:#0B2740;letter-spacing:-0.025em;line-height:1.1}.doc-meta .doc-project{font-size:9pt;color:#64748b;margin-top:4px}.doc-meta .doc-date{font-size:8pt;color:#94a3b8;margin-top:3px}.doc-count{font-size:8pt;color:#94a3b8;margin-bottom:10px}table{width:100%;border-collapse:collapse;font-size:9pt}thead tr{background:#0B2740}thead th{padding:8px 10px;font-size:7.5pt;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:white;text-align:left;white-space:nowrap}tbody tr{border-bottom:1px solid #e2e8f0}tbody tr:nth-child(even){background:#f8fafc}tbody td{padding:8px 10px;vertical-align:top;line-height:1.5}.id-col{font-weight:700;color:#0B2740;white-space:nowrap}.status-col{font-weight:700;white-space:nowrap}.doc-footer{margin-top:16px;padding-top:8px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}.doc-footer span{font-size:7.5pt;color:#94a3b8}</style></head><body><div class="doc-header"><div>${logoHtml}</div><div class="doc-meta"><div class="doc-title">User Needs</div><div class="doc-project">${escHtml(s.projectName||'')}${s.companyName?' · '+escHtml(s.companyName):''}</div><div class="doc-date">Generated ${dateStr}</div></div></div><div class="doc-count">${items.length} item${items.length!==1?'s':''} included</div><table><thead>${thead}</thead><tbody>${tbody2}</tbody></table>${s.footerText?`<div class="doc-footer"><span>${escHtml(s.footerText)}</span><span>${escHtml(s.projectName||'')}</span></div>`:''}</body></html>`;
+      if (exportFmt === 'pdf') { const win=window.open('','_blank'); win.document.write(docHtml); win.document.close(); win.focus(); setTimeout(()=>win.print(),650); }
+      else { const wordDoc=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>${docHtml}</html>`; const blob=new Blob([wordDoc],{type:'application/msword'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`${(s.projectName||'Project').replace(/\s+/g,'-')}-User-Needs-${new Date().toISOString().slice(0,10)}.doc`; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),2000); }
+      closeExportModal();
+    }
+
+    // ── PERSISTENCE ───────────────────────────────────────────────────────
+    const LS_KEY_UN = 'qms_user_needs';
+
+    function saveUserNeedsToStorage() {
+      try {
+        const obj = {};
+        Object.entries(ITEMS).forEach(([k, item]) => { if (item.type === 'un') obj[k] = item; });
+        localStorage.setItem(LS_KEY_UN, JSON.stringify(obj));
+      } catch(e) {}
+    }
+
+    function renderUNRow(key, item) {
+      const tbody = document.querySelector('#un-tbody');
+      if (!tbody || tbody.querySelector(`tr[onclick="openDetail('${key}')"]`)) return;
+      const sc = item.status === 'approved' ? 'approved' : item.status === 'review' ? 'review' : item.tentative ? 'tentative' : 'draft';
+      const sl = { approved: 'Approved', review: 'Under Review', draft: 'Draft', tentative: 'Draft' }[sc] || 'Draft';
+      const stmt = item.tentative ? `<em>Tentative — </em>${escHtml(item.statement)}` : escHtml(item.statement);
+      const diCount = (item.tracedBy||[]).length;
+      const countStyle = diCount ? 'color:var(--green);background:rgba(16,185,129,0.1);' : 'color:var(--amber);background:rgba(245,158,11,0.1);';
+      const tr = document.createElement('tr');
+      tr.className = 'row-' + sc; tr.setAttribute('onclick', `openDetail('${key}')`);
+      tr.innerHTML = `<td><span class="id-pill">${item.id}</span></td><td class="stmt-cell">${stmt}</td><td style="font-size:0.78rem;color:var(--mid-blue);white-space:nowrap;">${escHtml(item.source||'')}</td><td style="font-size:0.78rem;color:var(--mid-blue);">${escHtml(item.category||'')}</td><td><span class="status-badge ${sc === 'tentative' ? 'draft' : sc}">${sl}</span></td><td><span class="count-badge" style="${countStyle}">${diCount}</span></td><td><button class="btn-edit" onclick="event.stopPropagation();openDetail('${key}')">Edit</button></td>`;
+      tbody.appendChild(tr);
+    }
+
+    function loadUserNeedsFromStorage() {
+      try {
+        const raw = localStorage.getItem(LS_KEY_UN);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        const entries = Array.isArray(parsed)
+          ? parsed.map(item => [item.id ? item.id.toLowerCase().replace('-','') : null, item]).filter(([k]) => k)
+          : Object.entries(parsed);
+        entries.forEach(([k, item]) => {
+          if (item && item.type === 'un') {
+            ITEMS[k] = Object.assign({ typeBadge:'USER NEED', typeCls:'type-un', status:'draft', statement:'', source:'', category:'', tentative:false, tracesTo:[], tracedBy:[], notes:'', version:1, history:[] }, item);
+            renderUNRow(k, ITEMS[k]);
+          }
+        });
+      } catch(e) {}
+    }
+
+    // ── FINALIZE DOCUMENT ─────────────────────────────────────────────────
+    function finalizeDocument() {
+      if (!ESign.hasUserProfile()) { ESign.setupUserProfile(); return; }
+      var prereq = Governance.checkProcedurePrereqs('un');
+      if (!prereq.ok) { Governance.showBlocker(prereq); return; }
+      const items = Object.values(ITEMS).filter(function(i){ return i.type === 'un'; });
+      if (!items.length) { alert('No user needs to finalize. Add user needs before approving the document.'); return; }
+      var existingDoc = null;
+      try { var docs = JSON.parse(localStorage.getItem('qms_documents') || '{}'); existingDoc = docs['un'] || null; } catch(e) {}
+      var nextVersion = existingDoc ? existingDoc.version + 1 : 1;
+      var snapshot = {};
+      Object.keys(ITEMS).forEach(function(k){ if (ITEMS[k].type === 'un') snapshot[k] = JSON.parse(JSON.stringify(ITEMS[k])); });
+      Approvals.initiate({
+        recordId:       'un-spec',
+        recordType:     'un',
+        meaning:        'I approve the User Needs Specification v' + nextVersion + ' as complete and accurate. This document is authorized for inclusion in the Design History File.',
+        recordSnapshot: snapshot,
+        onComplete: function(sigs) {
+          try {
+            var sig = sigs[sigs.length - 1];
+            var docs2 = JSON.parse(localStorage.getItem('qms_documents') || '{}');
+            var existing = docs2['un'];
+            var history = existing ? (existing.history || []) : [];
+            if (existing) {
+              history.push({ version: existing.version, frozenAt: new Date().toISOString(), changeRef: existing.changeRef || null, approvalSignature: existing.approvalSignature, itemSnapshot: existing.itemSnapshot });
+            }
+            docs2['un'] = { type: 'un', name: 'User Needs Specification', version: nextVersion, status: 'approved', approvedAt: sig.timestamp, approvalSignature: sig, approvalSignatures: sigs, itemSnapshot: snapshot, changeRef: null, history: history };
+            localStorage.setItem('qms_documents', JSON.stringify(docs2));
+            Approvals.clearInstance('un', 'un-spec');
+            alert('User Needs Specification v' + nextVersion + ' approved and recorded in the DHF Document Library.');
+          } catch(e) { console.warn('Could not write to qms_documents:', e); }
+        },
+        onCancel: function() {},
+      });
+    }
+
+    // ── DOC META ──────────────────────────────────────────────────────────
+    const DOC_META_KEY = 'qms_un_meta';
+    let DOC_META = {
+      revision: 'A', status: 'draft', effectiveDate: '',
+      intendedUse: '', indicationsForUse: '', patientPopulation: '',
+      intendedUser: '', useEnvironment: ''
+    };
+    function loadDocMeta() {
+      try {
+        const raw = localStorage.getItem(DOC_META_KEY);
+        if (raw) DOC_META = { ...DOC_META, ...JSON.parse(raw) };
+        const ctx = JSON.parse(localStorage.getItem('qms_context') || '{}');
+        const company = ctx.companyName || QMS_SETTINGS.companyName || 'Tangram MedTech';
+        const label = document.getElementById('docCompanyLabel');
+        if (label) label.textContent = company;
+      } catch(e) {}
+      const fields = {
+        fDocRevision: DOC_META.revision,
+        fEffectiveDate: DOC_META.effectiveDate,
+        fIntendedUse: DOC_META.intendedUse,
+        fIndicationsForUse: DOC_META.indicationsForUse,
+        fPatientPopulation: DOC_META.patientPopulation,
+        fUseEnvironment: DOC_META.useEnvironment
+      };
+      for (const [id, val] of Object.entries(fields)) {
+        const el = document.getElementById(id); if (el) el.value = val || '';
+      }
+      const statusEl = document.getElementById('fDocStatus');
+      if (statusEl) statusEl.value = DOC_META.status || 'draft';
+      const userEl = document.getElementById('fIntendedUser');
+      if (userEl) userEl.value = DOC_META.intendedUser || '';
+      updateDocTopbar();
+    }
+    function saveDocMeta() {
+      DOC_META.revision = (document.getElementById('fDocRevision') || {}).value || 'A';
+      DOC_META.status = (document.getElementById('fDocStatus') || {}).value || 'draft';
+      DOC_META.effectiveDate = (document.getElementById('fEffectiveDate') || {}).value || '';
+      DOC_META.intendedUse = (document.getElementById('fIntendedUse') || {}).value || '';
+      DOC_META.indicationsForUse = (document.getElementById('fIndicationsForUse') || {}).value || '';
+      DOC_META.patientPopulation = (document.getElementById('fPatientPopulation') || {}).value || '';
+      DOC_META.intendedUser = (document.getElementById('fIntendedUser') || {}).value || '';
+      DOC_META.useEnvironment = (document.getElementById('fUseEnvironment') || {}).value || '';
+      try { localStorage.setItem(DOC_META_KEY, JSON.stringify(DOC_META)); } catch(e) {}
+      updateDocTopbar();
+      const flash = document.getElementById('docSaveFlash');
+      if (flash) { flash.classList.add('show'); setTimeout(() => flash.classList.remove('show'), 2000); }
+    }
+    function updateDocTopbar() {
+      const rev = DOC_META.revision || 'A';
+      const status = DOC_META.status || 'draft';
+      const statusLabels = { draft: 'Draft', review: 'Under Review', approved: 'Approved' };
+      const verBadge = document.getElementById('docVerBadge');
+      if (verBadge) verBadge.textContent = 'Rev ' + rev;
+      const statusPill = document.getElementById('docStatusPill');
+      if (statusPill) { statusPill.textContent = statusLabels[status] || 'Draft'; statusPill.className = 'status-pill ' + status; }
+      const statusDisplay = document.getElementById('docStatusDisplay');
+      if (statusDisplay) statusDisplay.textContent = statusLabels[status] || 'Draft';
+      const revDisplay = document.getElementById('docRevisionDisplay');
+      if (revDisplay) revDisplay.textContent = rev;
+    }
+
+    // ── INIT ──────────────────────────────────────────────────────────────
+    loadSettings();
+    loadUserNeedsFromStorage();
+    loadDocMeta();
+  </script>
+
+  <script src="sidebar.js"></script>
+  <script src="esign.js"></script>
+  <script src="versions.js"></script>
+  <script src="governance.js"></script>
+  <script src="approvals.js"></script>
+  <script>initSidebar({ activePage: 'user-needs' });</script>
+</body>
+</html>

@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import Documents — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- SheetJS for Excel -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <!-- PDF.js for PDF extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- mammoth.js for DOCX extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --gray:       #D2D2D2;
+      --light-gray: #F7F8FA;
+      --white:      #FFFFFF;
+      --sidebar-w:  232px;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
+    .project-switcher-wrap { padding: 0.75rem 0.75rem 0; }
+    .project-switcher { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); border-radius: 8px; padding: 0.55rem 0.75rem; cursor: default; display: flex; align-items: center; gap: 0.55rem; }
+    .project-switcher-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--aqua); }
+    .project-switcher-text { flex: 1; min-width: 0; }
+    .project-switcher-label { font-size: 0.58rem; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.1rem; }
+    .project-switcher-name { font-size: 0.8rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-section-label { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); padding: 0.6rem 0.75rem 0.2rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.72); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-badge { margin-left: auto; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.06em; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.22); padding: 0.14rem 0.42rem; border-radius: 3px; text-transform: uppercase; }
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.5rem 0.75rem; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); }
+    .sidebar-sign-out { margin-left: auto; }
+    .sidebar-sign-out a { font-size: 0.66rem; color: rgba(255,255,255,0.22); text-decoration: none; transition: color 0.2s; }
+    .sidebar-sign-out a:hover { color: rgba(255,255,255,0.5); }
+
+    /* ─── MAIN ─── */
+    .main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+
+    /* ─── TOPBAR ─── */
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 1.5rem; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 10; }
+    .topbar-left { display: flex; align-items: center; gap: 0.5rem; }
+    .topbar-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); }
+    .topbar-crumb { color: rgba(11,39,64,0.35); font-weight: 400; font-size: 0.85rem; }
+    .topbar-sep { color: rgba(11,39,64,0.2); font-size: 0.85rem; }
+    .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+
+    /* ─── STEP INDICATOR ─── */
+    .step-header { background: white; border-bottom: 1px solid rgba(11,39,64,0.06); padding: 1rem 2rem; flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 0; }
+    .step-item { display: flex; align-items: center; gap: 0.5rem; }
+    .step-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; flex-shrink: 0; transition: background 0.25s, color 0.25s, border-color 0.25s; border: 2px solid rgba(11,39,64,0.12); color: rgba(11,39,64,0.3); background: transparent; }
+    .step-dot.active { background: var(--aqua); color: var(--primary); border-color: var(--aqua); }
+    .step-dot.done { background: var(--green); color: white; border-color: var(--green); }
+    .step-dot.done svg { width: 12px; height: 12px; stroke: white; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .step-label { font-size: 0.75rem; font-weight: 600; color: rgba(11,39,64,0.35); transition: color 0.25s; white-space: nowrap; }
+    .step-label.active { color: var(--primary); }
+    .step-label.done { color: var(--green); }
+    .step-connector { width: 48px; height: 2px; background: rgba(11,39,64,0.08); flex-shrink: 0; margin: 0 0.5rem; border-radius: 1px; transition: background 0.25s; }
+    .step-connector.done { background: var(--green); }
+
+    /* ─── CONTENT AREA ─── */
+    .content-scroll { flex: 1; overflow-y: auto; padding: 2rem 2rem 3rem; min-height: 0; }
+    .content-scroll::-webkit-scrollbar { width: 5px; }
+    .content-scroll::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    .step-view { display: none; }
+    .step-view.active { display: block; }
+
+    /* ─── STEP 1: UPLOAD ─── */
+    .upload-container { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+    .upload-heading { text-align: center; margin-bottom: 0.25rem; }
+    .upload-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--aqua-dark); margin-bottom: 0.4rem; }
+    .upload-title { font-size: 1.55rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; line-height: 1.2; }
+    .upload-subtitle { font-size: 0.85rem; color: rgba(11,39,64,0.5); margin-top: 0.4rem; line-height: 1.6; }
+
+    .drop-zone { border: 2px dashed rgba(11,39,64,0.15); border-radius: 16px; background: white; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
+    .drop-zone:hover, .drop-zone.dragover { border-color: var(--aqua); background: rgba(10,192,233,0.03); }
+    .drop-zone.has-file { border-color: var(--green); border-style: solid; background: rgba(16,185,129,0.03); }
+    .drop-icon { width: 48px; height: 48px; margin: 0 auto 1rem; background: rgba(11,39,64,0.04); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .drop-icon svg { width: 22px; height: 22px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .drop-zone.has-file .drop-icon { background: rgba(16,185,129,0.08); }
+    .drop-zone.has-file .drop-icon svg { stroke: var(--green); }
+    .drop-title { font-size: 0.92rem; font-weight: 700; color: var(--primary); margin-bottom: 0.3rem; }
+    .drop-sub { font-size: 0.78rem; color: rgba(11,39,64,0.4); line-height: 1.5; }
+    .drop-formats { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem; margin-top: 1rem; }
+    .format-chip { font-size: 0.64rem; font-weight: 600; letter-spacing: 0.04em; background: rgba(11,39,64,0.05); color: rgba(11,39,64,0.4); padding: 0.2rem 0.5rem; border-radius: 4px; text-transform: uppercase; }
+    .file-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .file-selected-info { display: none; align-items: center; gap: 0.75rem; margin-top: 1rem; padding: 0.7rem 1rem; background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.2); border-radius: 9px; }
+    .file-selected-info.visible { display: flex; }
+    .file-selected-icon { width: 32px; height: 32px; border-radius: 7px; background: rgba(16,185,129,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .file-selected-icon svg { width: 16px; height: 16px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .file-selected-name { font-size: 0.83rem; font-weight: 600; color: var(--primary); }
+    .file-selected-size { font-size: 0.72rem; color: rgba(11,39,64,0.45); margin-top: 0.1rem; }
+    .file-remove { margin-left: auto; background: none; border: none; cursor: pointer; color: rgba(11,39,64,0.3); font-size: 1.1rem; line-height: 1; padding: 0.2rem; transition: color 0.15s; }
+    .file-remove:hover { color: var(--red); }
+
+    /* Project target cards */
+    .project-target-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.4); margin-bottom: 0.65rem; }
+    .project-target-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .target-card { border: 2px solid rgba(11,39,64,0.1); border-radius: 12px; padding: 1rem 1.15rem; cursor: pointer; transition: border-color 0.15s, background 0.15s; background: white; position: relative; }
+    .target-card:hover { border-color: rgba(10,192,233,0.4); }
+    .target-card.selected { border-color: var(--aqua); background: rgba(10,192,233,0.04); }
+    .target-card-radio { position: absolute; top: 1rem; right: 1rem; width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(11,39,64,0.15); background: white; transition: border-color 0.15s, background 0.15s; }
+    .target-card.selected .target-card-radio { border-color: var(--aqua); background: var(--aqua); box-shadow: inset 0 0 0 3px white; }
+    .target-card-title { font-size: 0.85rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem; }
+    .target-card-sub { font-size: 0.74rem; color: rgba(11,39,64,0.45); line-height: 1.5; }
+    .target-input-wrap { margin-top: 0.75rem; display: none; }
+    .target-input-wrap.visible { display: block; }
+    .target-input { width: 100%; padding: 0.55rem 0.75rem; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--primary); background: white; transition: border-color 0.15s; outline: none; }
+    .target-input:focus { border-color: var(--aqua); }
+    .target-input::placeholder { color: rgba(11,39,64,0.3); }
+    .existing-select { width: 100%; padding: 0.55rem 0.75rem; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--primary); background: white; cursor: pointer; outline: none; }
+    .existing-select:focus { border-color: var(--aqua); }
+
+    /* Parse button */
+    .parse-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.85rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: background 0.15s, opacity 0.15s, transform 0.1s; }
+    .parse-btn:not(:disabled):hover { background: var(--mid-blue); transform: translateY(-1px); }
+    .parse-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .parse-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .demo-hint { text-align: center; font-size: 0.73rem; color: rgba(11,39,64,0.35); margin-top: -0.5rem; }
+    .demo-hint a { color: var(--aqua-dark); cursor: pointer; text-decoration: underline; }
+
+    /* ─── STEP 2: PROCESSING ─── */
+    .processing-container { max-width: 440px; margin: 3rem auto 0; text-align: center; }
+    .processing-spinner { width: 56px; height: 56px; margin: 0 auto 1.5rem; }
+    .processing-spinner svg { animation: spin 1.2s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .processing-title { font-size: 1.15rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 0.35rem; }
+    .processing-sub { font-size: 0.82rem; color: rgba(11,39,64,0.45); margin-bottom: 2rem; line-height: 1.6; }
+    .processing-steps { display: flex; flex-direction: column; gap: 0; background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; }
+    .proc-step { display: flex; align-items: center; gap: 0.85rem; padding: 0.8rem 1.15rem; border-bottom: 1px solid rgba(11,39,64,0.05); }
+    .proc-step:last-child { border-bottom: none; }
+    .proc-step-icon { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: rgba(11,39,64,0.05); transition: background 0.3s; }
+    .proc-step-icon svg { width: 13px; height: 13px; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; stroke: rgba(11,39,64,0.3); transition: stroke 0.3s; }
+    .proc-step.active .proc-step-icon { background: rgba(10,192,233,0.12); }
+    .proc-step.active .proc-step-icon svg { stroke: var(--aqua); }
+    .proc-step.done .proc-step-icon { background: rgba(16,185,129,0.1); }
+    .proc-step.done .proc-step-icon svg { stroke: var(--green); }
+    .proc-step-text { font-size: 0.8rem; font-weight: 600; color: rgba(11,39,64,0.4); transition: color 0.3s; }
+    .proc-step.active .proc-step-text { color: var(--primary); }
+    .proc-step.done .proc-step-text { color: var(--green); }
+    .proc-step-badge { margin-left: auto; font-size: 0.65rem; font-weight: 700; }
+    .proc-step.active .proc-step-badge { color: var(--aqua); animation: pulse-text 1.2s ease-in-out infinite; }
+    @keyframes pulse-text { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .proc-error { margin-top: 1.5rem; padding: 1rem 1.15rem; background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); border-radius: 10px; text-align: left; display: none; }
+    .proc-error.visible { display: block; }
+    .proc-error-title { font-size: 0.82rem; font-weight: 700; color: var(--red); margin-bottom: 0.25rem; }
+    .proc-error-msg { font-size: 0.76rem; color: rgba(11,39,64,0.55); line-height: 1.5; }
+    .proc-error-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+    .btn-retry { background: var(--primary); color: white; border: none; border-radius: 7px; padding: 0.5rem 1rem; font-family: 'Inter', sans-serif; font-size: 0.76rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .btn-retry:hover { background: var(--mid-blue); }
+    .btn-demo { background: transparent; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.15); border-radius: 7px; padding: 0.5rem 1rem; font-family: 'Inter', sans-serif; font-size: 0.76rem; font-weight: 600; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+    .btn-demo:hover { border-color: var(--aqua); color: var(--aqua-dark); }
+
+    /* ─── STEP 3: REVIEW ─── */
+    .review-layout { display: flex; gap: 0; height: 100%; min-height: 0; }
+    .review-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0; }
+
+    .review-summary-bar { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .review-stat { display: flex; align-items: center; gap: 0.45rem; }
+    .review-stat-num { font-size: 1.2rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; }
+    .review-stat-label { font-size: 0.74rem; color: rgba(11,39,64,0.45); font-weight: 500; }
+    .review-stat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .review-stat-divider { width: 1px; height: 24px; background: rgba(11,39,64,0.07); }
+    .review-actions { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; }
+    .btn-accept-all { background: rgba(16,185,129,0.09); color: var(--green); border: 1.5px solid rgba(16,185,129,0.25); border-radius: 7px; padding: 0.48rem 0.9rem; font-family: 'Inter', sans-serif; font-size: 0.77rem; font-weight: 700; cursor: pointer; transition: background 0.15s, border-color 0.15s; white-space: nowrap; }
+    .btn-accept-all:hover { background: rgba(16,185,129,0.14); border-color: rgba(16,185,129,0.4); }
+    .btn-finish { background: var(--aqua); color: var(--primary); border: none; border-radius: 7px; padding: 0.48rem 0.95rem; font-family: 'Inter', sans-serif; font-size: 0.77rem; font-weight: 700; cursor: pointer; transition: background 0.15s, opacity 0.15s; white-space: nowrap; display: flex; align-items: center; gap: 0.35rem; }
+    .btn-finish:not(:disabled):hover { background: var(--aqua-dark); }
+    .btn-finish:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-finish svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .filter-tabs { display: flex; gap: 0.3rem; margin-bottom: 0.75rem; }
+    .filter-tab { padding: 0.38rem 0.75rem; border-radius: 6px; font-size: 0.74rem; font-weight: 600; color: rgba(11,39,64,0.45); cursor: pointer; transition: background 0.12s, color 0.12s; border: none; background: none; font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 0.35rem; }
+    .filter-tab:hover { background: rgba(11,39,64,0.05); color: var(--primary); }
+    .filter-tab.active { background: white; color: var(--primary); box-shadow: 0 1px 4px rgba(11,39,64,0.08); }
+    .filter-tab-count { font-size: 0.65rem; font-weight: 800; background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.5); border-radius: 4px; padding: 0.1rem 0.32rem; }
+    .filter-tab.active .filter-tab-count { background: rgba(11,39,64,0.08); }
+
+    /* Review table */
+    .review-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; }
+    .review-table { width: 100%; border-collapse: collapse; }
+    .review-table thead { background: rgba(11,39,64,0.02); }
+    .review-table th { padding: 0.65rem 1rem; text-align: left; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.4); border-bottom: 1px solid rgba(11,39,64,0.07); white-space: nowrap; }
+    .review-table th:first-child { padding-left: 1.25rem; }
+    .review-table td { padding: 0.75rem 1rem; border-bottom: 1px solid rgba(11,39,64,0.05); vertical-align: middle; }
+    .review-table td:first-child { padding-left: 1.25rem; }
+    .review-table tbody tr { cursor: pointer; transition: background 0.1s; }
+    .review-table tbody tr:hover { background: rgba(11,39,64,0.02); }
+    .review-table tbody tr.selected-row { background: rgba(10,192,233,0.05); }
+    .review-table tbody tr:last-child td { border-bottom: none; }
+    .review-table tbody tr.skipped { opacity: 0.4; }
+
+    .row-status-bar { width: 3px; height: 100%; position: absolute; left: 0; top: 0; bottom: 0; }
+    td.col-status { position: relative; width: 36px; padding-left: 0 !important; }
+    .status-stripe { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 0 2px 2px 0; }
+    .status-chip { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; white-space: nowrap; }
+    .status-chip.ready { background: rgba(16,185,129,0.1); color: #0d9f6e; }
+    .status-chip.flagged { background: rgba(245,158,11,0.1); color: #c47d0a; }
+    .status-chip.ambiguous { background: rgba(239,68,68,0.09); color: #c73535; }
+    .status-chip.accepted { background: rgba(16,185,129,0.1); color: #0d9f6e; }
+    .status-chip.skipped { background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.4); }
+    .status-chip svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .source-text-cell { font-size: 0.78rem; color: rgba(11,39,64,0.65); max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .type-chip { display: inline-flex; align-items: center; font-size: 0.66rem; font-weight: 700; padding: 0.18rem 0.5rem; border-radius: 4px; white-space: nowrap; }
+    .type-chip.un { background: rgba(10,192,233,0.1); color: #0891b2; }
+    .type-chip.di { background: rgba(48,79,107,0.1); color: var(--mid-blue); }
+    .type-chip.do { background: rgba(249,115,22,0.1); color: #c2560c; }
+    .type-chip.std { background: rgba(99,102,241,0.1); color: var(--indigo); }
+    .type-chip.unknown { background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.45); }
+    .id-cell { font-size: 0.74rem; font-weight: 700; font-family: 'SF Mono', 'Fira Code', monospace; color: rgba(11,39,64,0.55); }
+    .violation-count { font-size: 0.65rem; font-weight: 700; color: #c47d0a; background: rgba(245,158,11,0.1); padding: 0.15rem 0.4rem; border-radius: 4px; }
+    .col-actions { display: flex; gap: 0.4rem; align-items: center; }
+    .btn-row-accept { background: rgba(16,185,129,0.09); color: var(--green); border: 1px solid rgba(16,185,129,0.2); border-radius: 5px; padding: 0.3rem 0.6rem; font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 700; cursor: pointer; transition: background 0.12s; white-space: nowrap; }
+    .btn-row-accept:hover { background: rgba(16,185,129,0.16); }
+    .btn-row-skip { background: transparent; color: rgba(11,39,64,0.4); border: 1px solid rgba(11,39,64,0.12); border-radius: 5px; padding: 0.3rem 0.6rem; font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 600; cursor: pointer; transition: border-color 0.12s, color 0.12s; white-space: nowrap; }
+    .btn-row-skip:hover { border-color: rgba(239,68,68,0.3); color: var(--red); }
+    .empty-filter-state { padding: 3rem; text-align: center; color: rgba(11,39,64,0.35); font-size: 0.82rem; }
+
+    /* ─── DETAIL PANEL ─── */
+    .detail-panel { position: fixed; top: 0; right: 0; width: 440px; height: 100vh; background: white; border-left: 1px solid rgba(11,39,64,0.1); box-shadow: -8px 0 32px rgba(11,39,64,0.08); z-index: 200; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+    .detail-panel.open { transform: translateX(0); }
+    .detail-panel-header { padding: 1rem 1.25rem; border-bottom: 1px solid rgba(11,39,64,0.07); display: flex; align-items: center; gap: 0.65rem; flex-shrink: 0; }
+    .detail-panel-title { font-size: 0.85rem; font-weight: 700; color: var(--primary); flex: 1; }
+    .detail-panel-close { background: none; border: none; cursor: pointer; color: rgba(11,39,64,0.35); padding: 0.25rem; border-radius: 5px; transition: background 0.12s, color 0.12s; line-height: 0; }
+    .detail-panel-close:hover { background: rgba(11,39,64,0.06); color: var(--primary); }
+    .detail-panel-close svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .detail-panel-body { flex: 1; overflow-y: auto; padding: 1.15rem 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    .detail-panel-body::-webkit-scrollbar { width: 4px; }
+    .detail-panel-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+
+    .dp-section-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.45rem; }
+    .dp-source-box { background: rgba(11,39,64,0.03); border: 1px solid rgba(11,39,64,0.08); border-radius: 8px; padding: 0.75rem 0.9rem; font-size: 0.78rem; color: rgba(11,39,64,0.7); line-height: 1.6; font-style: italic; }
+    .dp-field { margin-bottom: 0.75rem; }
+    .dp-field-label { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(11,39,64,0.4); margin-bottom: 0.3rem; }
+    .dp-field-input { width: 100%; padding: 0.5rem 0.7rem; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); background: white; transition: border-color 0.15s; outline: none; resize: vertical; }
+    .dp-field-input:focus { border-color: var(--aqua); }
+    .dp-field-select { width: 100%; padding: 0.5rem 0.7rem; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); background: white; cursor: pointer; outline: none; }
+    .dp-field-select:focus { border-color: var(--aqua); }
+
+    .dp-violations { display: flex; flex-direction: column; gap: 0.5rem; }
+    .dp-violation { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; padding: 0.65rem 0.85rem; }
+    .dp-violation-id { font-size: 0.64rem; font-weight: 800; letter-spacing: 0.06em; color: #c47d0a; margin-bottom: 0.2rem; font-family: 'SF Mono', 'Fira Code', monospace; }
+    .dp-violation-desc { font-size: 0.76rem; color: rgba(11,39,64,0.7); line-height: 1.5; margin-bottom: 0.35rem; }
+    .dp-violation-suggest { font-size: 0.73rem; color: var(--mid-blue); font-style: italic; line-height: 1.4; padding-left: 0.6rem; border-left: 2px solid rgba(10,192,233,0.3); }
+    .dp-no-violations { font-size: 0.78rem; color: var(--green); display: flex; align-items: center; gap: 0.4rem; }
+    .dp-no-violations svg { width: 14px; height: 14px; stroke: var(--green); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .detail-panel-footer { padding: 1rem 1.25rem; border-top: 1px solid rgba(11,39,64,0.07); display: flex; gap: 0.5rem; flex-shrink: 0; }
+    .btn-dp-accept { flex: 1; background: var(--aqua); color: var(--primary); border: none; border-radius: 8px; padding: 0.6rem; font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .btn-dp-accept:hover { background: var(--aqua-dark); }
+    .btn-dp-skip { background: transparent; color: rgba(11,39,64,0.5); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; padding: 0.6rem 1rem; font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+    .btn-dp-skip:hover { border-color: rgba(239,68,68,0.3); color: var(--red); }
+
+    /* ─── STEP 4: CONFIRM ─── */
+    .confirm-container { max-width: 540px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.25rem; }
+    .confirm-header { text-align: center; }
+    .confirm-check { width: 56px; height: 56px; background: rgba(16,185,129,0.1); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; }
+    .confirm-check svg { width: 26px; height: 26px; stroke: var(--green); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .confirm-title { font-size: 1.35rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; }
+    .confirm-sub { font-size: 0.84rem; color: rgba(11,39,64,0.45); margin-top: 0.35rem; line-height: 1.6; }
+    .confirm-breakdown { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; }
+    .confirm-breakdown-header { padding: 0.75rem 1.15rem; background: rgba(11,39,64,0.02); border-bottom: 1px solid rgba(11,39,64,0.06); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.4); }
+    .confirm-row { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.15rem; border-bottom: 1px solid rgba(11,39,64,0.05); }
+    .confirm-row:last-child { border-bottom: none; }
+    .confirm-row-label { font-size: 0.82rem; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+    .confirm-row-count { font-size: 0.82rem; font-weight: 700; color: rgba(11,39,64,0.55); }
+    .confirm-row-count.highlight { color: var(--green); }
+    .confirm-warning { background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2); border-radius: 10px; padding: 0.85rem 1.05rem; display: flex; gap: 0.65rem; }
+    .confirm-warning svg { width: 16px; height: 16px; stroke: #c47d0a; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 1px; }
+    .confirm-warning-text { font-size: 0.77rem; color: rgba(11,39,64,0.65); line-height: 1.5; }
+    .confirm-warning-text strong { color: #c47d0a; }
+    .btn-confirm-import { width: 100%; padding: 0.9rem; background: var(--primary); color: white; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: background 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .btn-confirm-import:hover { background: var(--mid-blue); transform: translateY(-1px); }
+    .btn-confirm-import svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-back-review { width: 100%; padding: 0.7rem; background: transparent; color: rgba(11,39,64,0.5); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+    .btn-back-review:hover { border-color: rgba(11,39,64,0.25); color: var(--primary); }
+
+    /* ─── API KEY NOTICE ─── */
+    .api-key-notice { background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.2); border-radius: 10px; padding: 0.85rem 1.05rem; display: flex; gap: 0.65rem; align-items: flex-start; }
+    .api-key-notice svg { width: 15px; height: 15px; stroke: var(--indigo); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 2px; }
+    .api-key-notice-text { font-size: 0.76rem; color: rgba(11,39,64,0.6); line-height: 1.55; }
+    .api-key-notice-text strong { color: var(--indigo); }
+    .api-key-inline-wrap { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+    .api-key-inline-input { flex: 1; padding: 0.45rem 0.65rem; border: 1.5px solid rgba(99,102,241,0.25); border-radius: 7px; font-family: 'Inter', sans-serif; font-size: 0.76rem; color: var(--primary); background: white; outline: none; }
+    .api-key-inline-input:focus { border-color: var(--indigo); }
+    .api-key-inline-input::placeholder { color: rgba(11,39,64,0.3); }
+    .btn-save-key { background: var(--indigo); color: white; border: none; border-radius: 7px; padding: 0.45rem 0.8rem; font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div id="sidebar-root"></div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-crumb">Tangram eQMS</span>
+      <span class="topbar-sep">/</span>
+      <span class="topbar-title">Import Documents</span>
+    </div>
+    <div class="topbar-right">
+      <span id="stepLabelTopbar" style="font-size:0.75rem;font-weight:600;color:rgba(11,39,64,0.4);">Step 1 of 4</span>
+    </div>
+  </div>
+
+  <!-- Step indicator -->
+  <div class="step-header" id="stepHeader">
+    <div class="step-item">
+      <div class="step-dot active" id="sdot-1">1</div>
+      <span class="step-label active" id="slabel-1">Upload</span>
+    </div>
+    <div class="step-connector" id="sconn-1"></div>
+    <div class="step-item">
+      <div class="step-dot" id="sdot-2">2</div>
+      <span class="step-label" id="slabel-2">Processing</span>
+    </div>
+    <div class="step-connector" id="sconn-2"></div>
+    <div class="step-item">
+      <div class="step-dot" id="sdot-3">3</div>
+      <span class="step-label" id="slabel-3">Review</span>
+    </div>
+    <div class="step-connector" id="sconn-3"></div>
+    <div class="step-item">
+      <div class="step-dot" id="sdot-4">4</div>
+      <span class="step-label" id="slabel-4">Confirm</span>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content-scroll" id="contentScroll">
+
+    <!-- ── STEP 1: UPLOAD ── -->
+    <div class="step-view active" id="step-1">
+      <div class="upload-container">
+        <div class="upload-heading">
+          <div class="upload-eyebrow">Document Migration</div>
+          <div class="upload-title">Import existing documentation</div>
+          <div class="upload-subtitle">Upload a file from your previous QMS or working documents. AI will classify each requirement, map it to the correct document type, and flag any quality writing issues.</div>
+        </div>
+
+        <!-- API key notice -->
+        <div class="api-key-notice" id="apiKeyNotice" style="display:none;">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          <div class="api-key-notice-text">
+            <strong>Claude API key required</strong> for AI-powered document parsing. Paste your key below — it's stored locally and never leaves your browser. Or <a style="color:var(--indigo);cursor:pointer;text-decoration:underline;" onclick="loadDemoData()">load a demo import</a> to preview the experience.
+            <div class="api-key-inline-wrap">
+              <input class="api-key-inline-input" id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." />
+              <button class="btn-save-key" onclick="saveApiKey()">Save</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Drop zone -->
+        <div class="drop-zone" id="dropZone">
+          <input type="file" class="file-input" id="fileInput" accept=".csv,.xlsx,.xls,.pdf,.docx,.doc,.txt" />
+          <div class="drop-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <div class="drop-title" id="dropTitle">Drop your file here</div>
+          <div class="drop-sub">or click to browse your computer</div>
+          <div class="drop-formats">
+            <span class="format-chip">Excel</span>
+            <span class="format-chip">CSV</span>
+            <span class="format-chip">PDF</span>
+            <span class="format-chip">Word</span>
+            <span class="format-chip">TXT</span>
+          </div>
+        </div>
+
+        <div class="file-selected-info" id="fileSelectedInfo">
+          <div class="file-selected-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <div>
+            <div class="file-selected-name" id="fileSelectedName"></div>
+            <div class="file-selected-size" id="fileSelectedSize"></div>
+          </div>
+          <button class="file-remove" onclick="removeFile()" title="Remove file">×</button>
+        </div>
+
+        <!-- Project target -->
+        <div>
+          <div class="project-target-label">Import destination</div>
+          <div class="project-target-cards">
+            <div class="target-card selected" id="card-new" onclick="selectTarget('new')">
+              <div class="target-card-radio"></div>
+              <div class="target-card-title">New project</div>
+              <div class="target-card-sub">Create a fresh project from this file</div>
+              <div class="target-input-wrap visible" id="new-project-input-wrap">
+                <input class="target-input" id="newProjectName" placeholder="Project name…" />
+              </div>
+            </div>
+            <div class="target-card" id="card-existing" onclick="selectTarget('existing')">
+              <div class="target-card-radio"></div>
+              <div class="target-card-title">Existing project</div>
+              <div class="target-card-sub">Add documents to an open project</div>
+              <div class="target-input-wrap" id="existing-project-input-wrap">
+                <select class="existing-select" id="existingProjectSelect"></select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="parse-btn" id="parseBtn" onclick="startParsing()" disabled>
+          <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0110 10"/><path d="M12 6v6l4 2"/><path d="M2 12a10 10 0 0010 10"/></svg>
+          Parse Document with AI
+        </button>
+        <div class="demo-hint">No file? <a onclick="loadDemoData()">Load a sample import</a> to explore the review flow.</div>
+      </div>
+    </div>
+
+    <!-- ── STEP 2: PROCESSING ── -->
+    <div class="step-view" id="step-2">
+      <div class="processing-container">
+        <div class="processing-spinner">
+          <svg viewBox="0 0 56 56" width="56" height="56">
+            <circle cx="28" cy="28" r="22" fill="none" stroke="rgba(11,39,64,0.06)" stroke-width="5"/>
+            <circle cx="28" cy="28" r="22" fill="none" stroke="var(--aqua)" stroke-width="5" stroke-dasharray="138" stroke-dashoffset="100" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="processing-title">Analyzing your document</div>
+        <div class="processing-sub" id="processingSubText">This usually takes 10–30 seconds depending on document size.</div>
+        <div class="processing-steps">
+          <div class="proc-step" id="proc-read">
+            <div class="proc-step-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+            <div class="proc-step-text">Reading file</div>
+            <div class="proc-step-badge" id="proc-read-badge"></div>
+          </div>
+          <div class="proc-step" id="proc-extract">
+            <div class="proc-step-icon"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+            <div class="proc-step-text">Extracting content</div>
+            <div class="proc-step-badge" id="proc-extract-badge"></div>
+          </div>
+          <div class="proc-step" id="proc-classify">
+            <div class="proc-step-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div class="proc-step-text">Classifying records</div>
+            <div class="proc-step-badge" id="proc-classify-badge"></div>
+          </div>
+          <div class="proc-step" id="proc-guidelines">
+            <div class="proc-step-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="proc-step-text">Checking quality guidelines</div>
+            <div class="proc-step-badge" id="proc-guidelines-badge"></div>
+          </div>
+        </div>
+        <div class="proc-error" id="procError">
+          <div class="proc-error-title">Analysis failed</div>
+          <div class="proc-error-msg" id="procErrorMsg"></div>
+          <div class="proc-error-actions">
+            <button class="btn-retry" onclick="retryParsing()">Try again</button>
+            <button class="btn-demo" onclick="loadDemoData()">Load demo data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: REVIEW ── -->
+    <div class="step-view" id="step-3">
+      <div class="review-main">
+        <!-- Summary bar -->
+        <div class="review-summary-bar">
+          <div class="review-stat">
+            <div class="review-stat-num" id="statTotal">0</div>
+            <div class="review-stat-label">records found</div>
+          </div>
+          <div class="review-stat-divider"></div>
+          <div class="review-stat">
+            <div class="review-stat-dot" style="background:var(--green)"></div>
+            <div class="review-stat-num" id="statReady">0</div>
+            <div class="review-stat-label">Ready</div>
+          </div>
+          <div class="review-stat">
+            <div class="review-stat-dot" style="background:var(--amber)"></div>
+            <div class="review-stat-num" id="statFlagged">0</div>
+            <div class="review-stat-label">Flagged</div>
+          </div>
+          <div class="review-stat">
+            <div class="review-stat-dot" style="background:var(--red)"></div>
+            <div class="review-stat-num" id="statAmbiguous">0</div>
+            <div class="review-stat-label">Ambiguous</div>
+          </div>
+          <div class="review-actions">
+            <button class="btn-accept-all" onclick="acceptAllReady()">
+              ✓ Accept all ready
+            </button>
+            <button class="btn-finish" id="btnFinish" onclick="goToConfirm()" disabled>
+              Finish Import
+              <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="filter-tabs">
+          <button class="filter-tab active" id="ftab-all" onclick="setFilter('all')">All <span class="filter-tab-count" id="ftab-count-all">0</span></button>
+          <button class="filter-tab" id="ftab-ready" onclick="setFilter('ready')">✓ Ready <span class="filter-tab-count" id="ftab-count-ready">0</span></button>
+          <button class="filter-tab" id="ftab-flagged" onclick="setFilter('flagged')">⚠ Flagged <span class="filter-tab-count" id="ftab-count-flagged">0</span></button>
+          <button class="filter-tab" id="ftab-ambiguous" onclick="setFilter('ambiguous')">✕ Ambiguous <span class="filter-tab-count" id="ftab-count-ambiguous">0</span></button>
+          <button class="filter-tab" id="ftab-accepted" onclick="setFilter('accepted')">Accepted <span class="filter-tab-count" id="ftab-count-accepted">0</span></button>
+        </div>
+
+        <!-- Table -->
+        <div class="review-table-wrap">
+          <table class="review-table">
+            <thead>
+              <tr>
+                <th style="width:36px"></th>
+                <th>Original text</th>
+                <th>Type</th>
+                <th>ID</th>
+                <th>Issues</th>
+                <th>Decision</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="reviewTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STEP 4: CONFIRM ── -->
+    <div class="step-view" id="step-4">
+      <div class="confirm-container">
+        <div class="confirm-header">
+          <div class="confirm-check">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="confirm-title">Ready to import</div>
+          <div class="confirm-sub" id="confirmSubText"></div>
+        </div>
+
+        <div class="confirm-breakdown">
+          <div class="confirm-breakdown-header">Import breakdown</div>
+          <div id="confirmBreakdown"></div>
+        </div>
+
+        <div class="confirm-warning" id="confirmWarning" style="display:none;">
+          <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div class="confirm-warning-text" id="confirmWarningText"></div>
+        </div>
+
+        <button class="btn-confirm-import" onclick="finalizeImport()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Confirm &amp; Import
+        </button>
+        <button class="btn-back-review" onclick="goToStep(3)">← Back to review</button>
+      </div>
+    </div>
+
+  </div><!-- /content-scroll -->
+</div><!-- /main -->
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-panel-header">
+    <span class="detail-panel-title" id="dpTitle">Record detail</span>
+    <button class="detail-panel-close" onclick="closeDetailPanel()">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="detail-panel-body" id="dpBody"></div>
+  <div class="detail-panel-footer">
+    <button class="btn-dp-accept" id="btnDpAccept" onclick="acceptFromPanel()">Accept this record</button>
+    <button class="btn-dp-skip" onclick="skipFromPanel()">Skip</button>
+  </div>
+</div>
+
+<script>
+// ─── GUIDELINES CONTENT (inline for system prompt) ─────────────────────────
+
+const GUIDELINES_TEXT = `
+## USER NEEDS RULES
+QW-01: Stakeholder-first language. User needs must begin with "The patient shall", "The clinician shall", "The user shall", etc. "The device shall" is a Design Input.
+QW-02: Use "shall" for mandatory needs, "should" for optional/desirable. Avoid "will", "must", "can".
+QW-03: Avoid technology specificity (no "BLE 5.2", "AES-256", "titanium housing") — those belong in Design Inputs.
+QW-04: Every approved User Need must trace to at least one Design Input.
+User Needs are intentionally qualitative. They describe the stakeholder outcome, not the technical implementation. Quantitative acceptance criteria belong in Design Inputs.
+
+## DESIGN INPUTS RULES
+QW-05: Device-first language. Design Inputs must start with "The device shall" or "The system shall".
+QW-06a: Every DI must have an identified origin: User Need ID (UN-001), regulatory citation (21 CFR 820.30(f)), or Risk Control / FMEA ID (FMEA-003).
+QW-06b: Every DI must include a quantitative or objectively testable pass/fail criterion. "Adequate", "sufficient", "appropriate", "good" are NOT acceptable.
+
+## DESIGN OUTPUTS RULES
+QW-09: Every Design Output must trace to at least one Design Input.
+QW-10: Design Outputs must be expressed specifically enough to allow verification (test, inspection, or analysis).
+QW-11: Design Outputs must reference their governing specification or standard.
+
+## TRACEABILITY RULES
+QW-12: Every User Need must trace to at least one Design Input.
+QW-13: Every Design Input must trace to at least one Design Output (or documented exception for risk controls).
+QW-14: Every Design Output must have at least one Verification link.
+
+## STANDARDS LIBRARY RULES
+QW-15: Every cited standard must have an applicability determination (Applicable / Not Applicable / Under Review).
+QW-16: Standard citations must include edition and year (e.g., "ISO 14971:2019", not "ISO 14971").
+
+## GENERAL RULES
+QW-07: No empty or placeholder statements. All items must have substantive content.
+QW-08: Approved items must have complete traceability links.
+`;
+
+// ─── STATE ─────────────────────────────────────────────────────────────────
+
+const state = {
+  currentStep: 1,
+  file: null,
+  fileType: null,
+  extractedText: '',
+  records: [],
+  decisions: {},     // id → 'accepted' | 'skipped' | 'pending'
+  editedFields: {},  // id → { statement, ... }
+  projectMode: 'new',
+  projectName: '',
+  activeFilter: 'all',
+  selectedRecordId: null,
+  apiKey: '',
+};
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadSettings();
+  setupDropZone();
+  populateExistingProjects();
+  checkApiKeyAndShowNotice();
+});
+
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('qms_settings') || '{}');
+    state.apiKey = saved.apiKey || '';
+  } catch(e) {}
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) return;
+  state.apiKey = key;
+  try {
+    const saved = JSON.parse(localStorage.getItem('qms_settings') || '{}');
+    saved.apiKey = key;
+    localStorage.setItem('qms_settings', JSON.stringify(saved));
+  } catch(e) {}
+  document.getElementById('apiKeyNotice').style.display = 'none';
+}
+
+function checkApiKeyAndShowNotice() {
+  if (!state.apiKey) {
+    document.getElementById('apiKeyNotice').style.display = 'flex';
+  }
+}
+
+function populateExistingProjects() {
+  const sel = document.getElementById('existingProjectSelect');
+  // Try to get projects from localStorage
+  let projects = [];
+  try {
+    const saved = JSON.parse(localStorage.getItem('qms_projects') || '[]');
+    projects = saved;
+  } catch(e) {}
+  if (projects.length === 0) {
+    projects = [{ name: 'CardioSync Pro' }, { name: 'DermaSense One' }];
+  }
+  sel.innerHTML = projects.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+}
+
+// ─── FILE HANDLING ──────────────────────────────────────────────────────────
+
+function setupDropZone() {
+  const zone = document.getElementById('dropZone');
+  const input = document.getElementById('fileInput');
+
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  });
+  input.addEventListener('change', () => {
+    if (input.files[0]) handleFile(input.files[0]);
+  });
+}
+
+function handleFile(file) {
+  state.file = file;
+  const ext = file.name.split('.').pop().toLowerCase();
+  state.fileType = ext;
+
+  // Update UI
+  const zone = document.getElementById('dropZone');
+  zone.classList.add('has-file');
+  document.getElementById('dropTitle').textContent = 'File selected';
+
+  const info = document.getElementById('fileSelectedInfo');
+  info.classList.add('visible');
+  document.getElementById('fileSelectedName').textContent = file.name;
+  document.getElementById('fileSelectedSize').textContent = formatBytes(file.size);
+
+  // Pre-fill project name from filename
+  if (state.projectMode === 'new') {
+    const nameEl = document.getElementById('newProjectName');
+    if (!nameEl.value) {
+      nameEl.value = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+  }
+
+  updateParseBtn();
+}
+
+function removeFile() {
+  state.file = null;
+  state.fileType = null;
+  const zone = document.getElementById('dropZone');
+  zone.classList.remove('has-file');
+  document.getElementById('dropTitle').textContent = 'Drop your file here';
+  document.getElementById('fileSelectedInfo').classList.remove('visible');
+  document.getElementById('fileInput').value = '';
+  updateParseBtn();
+}
+
+function updateParseBtn() {
+  document.getElementById('parseBtn').disabled = !state.file;
+}
+
+function selectTarget(mode) {
+  state.projectMode = mode;
+  document.getElementById('card-new').classList.toggle('selected', mode === 'new');
+  document.getElementById('card-existing').classList.toggle('selected', mode === 'existing');
+  document.getElementById('new-project-input-wrap').classList.toggle('visible', mode === 'new');
+  document.getElementById('existing-project-input-wrap').classList.toggle('visible', mode === 'existing');
+}
+
+function formatBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+  return (b / 1048576).toFixed(1) + ' MB';
+}
+
+// ─── PARSING FLOW ────────────────────────────────────────────────────────────
+
+async function startParsing() {
+  if (!state.file) return;
+
+  state.projectName = state.projectMode === 'new'
+    ? document.getElementById('newProjectName').value.trim() || state.file.name
+    : document.getElementById('existingProjectSelect').value;
+
+  goToStep(2);
+  resetProcSteps();
+
+  try {
+    // Step 1: Read file
+    setProc('read', 'active');
+    const text = await readFile(state.file, state.fileType);
+    state.extractedText = text;
+    setProc('read', 'done', `${text.length.toLocaleString()} chars`);
+
+    // Step 2: Extract (already done in readFile, just UI timing)
+    setProc('extract', 'active');
+    await delay(400);
+    setProc('extract', 'done');
+
+    // Step 3: Call Claude API
+    setProc('classify', 'active');
+    const records = await callClaudeAPI(text);
+    state.records = records;
+
+    // Step 4: Apply guidelines check (already done by Claude, just UI timing)
+    setProc('classify', 'done', `${records.length} records`);
+    setProc('guidelines', 'active');
+    await delay(500);
+    setProc('guidelines', 'done');
+
+    // Initialize decisions
+    state.decisions = {};
+    state.editedFields = {};
+    records.forEach(r => { state.decisions[r.id] = 'pending'; });
+
+    await delay(300);
+    goToStep(3);
+    renderReviewTable();
+    updateReviewStats();
+
+  } catch(err) {
+    document.getElementById('procError').classList.add('visible');
+    document.getElementById('procErrorMsg').textContent = err.message || 'An unexpected error occurred. Check your API key and try again.';
+    setProc('classify', 'pending');
+    setProc('guidelines', 'pending');
+  }
+}
+
+function retryParsing() {
+  document.getElementById('procError').classList.remove('visible');
+  goToStep(1);
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function resetProcSteps() {
+  ['read','extract','classify','guidelines'].forEach(id => setProc(id, 'pending'));
+  document.getElementById('procError').classList.remove('visible');
+}
+
+function setProc(id, state, badge = '') {
+  const el = document.getElementById('proc-' + id);
+  el.className = 'proc-step' + (state === 'active' ? ' active' : state === 'done' ? ' done' : '');
+  const badgeEl = document.getElementById('proc-' + id + '-badge');
+  if (state === 'active') {
+    badgeEl.textContent = '●';
+  } else if (state === 'done') {
+    badgeEl.textContent = badge;
+    badgeEl.style.color = 'var(--green)';
+    badgeEl.style.fontSize = '0.68rem';
+  } else {
+    badgeEl.textContent = '';
+  }
+}
+
+// ─── FILE READING ────────────────────────────────────────────────────────────
+
+async function readFile(file, ext) {
+  if (ext === 'csv' || ext === 'txt') {
+    return await readAsText(file);
+  }
+  if (ext === 'xlsx' || ext === 'xls') {
+    return await readExcel(file);
+  }
+  if (ext === 'pdf') {
+    return await readPDF(file);
+  }
+  if (ext === 'docx' || ext === 'doc') {
+    return await readDOCX(file);
+  }
+  return await readAsText(file);
+}
+
+function readAsText(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result);
+    reader.onerror = () => reject(new Error('Failed to read file.'));
+    reader.readAsText(file);
+  });
+}
+
+async function readExcel(file) {
+  if (typeof XLSX === 'undefined') throw new Error('Excel library not loaded. Please refresh and try again.');
+  const buf = await file.arrayBuffer();
+  const wb = XLSX.read(buf, { type: 'array' });
+  let text = '';
+  wb.SheetNames.forEach(name => {
+    const ws = wb.Sheets[name];
+    const csv = XLSX.utils.sheet_to_csv(ws);
+    text += `Sheet: ${name}\n${csv}\n\n`;
+  });
+  return text;
+}
+
+async function readPDF(file) {
+  if (typeof pdfjsLib === 'undefined') throw new Error('PDF library not loaded. Please refresh and try again.');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  let text = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(item => item.str).join(' ') + '\n';
+  }
+  return text;
+}
+
+async function readDOCX(file) {
+  if (typeof mammoth === 'undefined') throw new Error('Word document library not loaded. Please refresh and try again.');
+  const buf = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer: buf });
+  return result.value;
+}
+
+// ─── CLAUDE API ──────────────────────────────────────────────────────────────
+
+async function callClaudeAPI(documentText) {
+  const apiKey = state.apiKey;
+  if (!apiKey) throw new Error('No Claude API key found. Please add your API key at the top of the page or in Settings.');
+
+  // Get device profile context
+  let deviceContext = '';
+  try {
+    const settings = JSON.parse(localStorage.getItem('qms_settings') || '{}');
+    if (settings.deviceProfile) {
+      deviceContext = `Device Profile: ${JSON.stringify(settings.deviceProfile)}`;
+    }
+  } catch(e) {}
+
+  const systemPrompt = `You are a medical device quality management expert specializing in 21 CFR 820.30 design controls, ISO 13485, and EU MDR requirements.
+
+Your task: extract and classify all requirements, statements, and documentation items from the provided document into structured JSON.
+
+For each item found, output a JSON object. Return ONLY a JSON array — no markdown fences, no prose.
+
+Schema for each item:
+{
+  "id": "r-001",  // sequential, r-001, r-002, etc.
+  "sourceText": "the original text verbatim",
+  "documentType": "user_need" | "design_input" | "design_output" | "standard" | "unknown",
+  "proposedId": "UN-001" | "DI-001" | "DO-001" | "STD-001",  // auto-assign sequential per type
+  "confidence": "high" | "medium" | "low",
+  "fields": {
+    // For user_need: { "statement": "...", "source": "Patient|Clinician|Caregiver|User|Facility", "category": "Safety|Usability|Performance|Connectivity|Labeling|Maintenance", "status": "Draft" }
+    // For design_input: { "statement": "...", "origin": { "type": "un|regulatory|risk-control", "ref": "UN-001|21 CFR 820.30(f)|FMEA-003" }, "category": "Performance|Safety|Biocompatibility|Electrical|Software|Cybersecurity|Labeling", "status": "Draft" }
+    // For design_output: { "description": "...", "category": "Hardware Drawing|Software Artifact|Manufacturing Doc|Labeling|Packaging|DMR Index", "diLink": "DI-001", "status": "Draft" }
+    // For standard: { "name": "...", "edition": "...", "applicability": "Applicable|Not Applicable|Under Review", "description": "..." }
+    // For unknown: { "statement": "..." }
+  },
+  "violations": [
+    { "ruleId": "QW-05", "description": "...", "suggestion": "..." }
+  ],
+  "ambiguityReason": null | "string explaining why confidence is low"
+}
+
+Classification guidance:
+- "The patient/clinician/user shall..." → user_need
+- "The device shall..." / "The system shall..." → design_input
+- Document names, drawings, specifications, test protocols → design_output
+- ISO/IEC/FDA/ASTM/AAMI standards → standard
+- Anything that doesn't fit → unknown (low confidence)
+
+${GUIDELINES_TEXT}
+
+${deviceContext}
+
+Extract EVERY distinct requirement, statement, or documentable item. Do not skip rows. If a row is clearly a header or section title, still include it as "unknown" with low confidence.`;
+
+  const userPrompt = `Document content to analyze:\n\n${documentText.slice(0, 32000)}`;
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 8192,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
+    }),
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API error ${resp.status}`);
+  }
+
+  const data = await resp.json();
+  const raw = data.content?.[0]?.text || '[]';
+  const cleaned = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
+  return JSON.parse(cleaned);
+}
+
+// ─── DEMO DATA ───────────────────────────────────────────────────────────────
+
+function loadDemoData() {
+  state.records = DEMO_RECORDS;
+  state.decisions = {};
+  state.editedFields = {};
+  DEMO_RECORDS.forEach(r => { state.decisions[r.id] = 'pending'; });
+  state.projectName = 'GlucoTrack One (Demo)';
+  state.projectMode = 'new';
+  goToStep(3);
+  renderReviewTable();
+  updateReviewStats();
+}
+
+const DEMO_RECORDS = [
+  { id:'r-001', sourceText:'The patient shall be able to initiate a glucose reading within 5 seconds of pressing the measurement button.', documentType:'user_need', proposedId:'UN-001', confidence:'high', fields:{ statement:'The patient shall be able to initiate a glucose reading within 5 seconds of pressing the measurement button.', source:'Patient', category:'Usability', status:'Draft' }, violations:[], ambiguityReason:null },
+  { id:'r-002', sourceText:'Clinician should receive alert when patient glucose exceeds threshold', documentType:'user_need', proposedId:'UN-002', confidence:'high', fields:{ statement:'The clinician should receive an alert when the patient\'s glucose level exceeds a clinician-configured threshold.', source:'Clinician', category:'Safety', status:'Draft' }, violations:[], ambiguityReason:null },
+  { id:'r-003', sourceText:'The patient shall carry the device comfortably during normal daily activities including sleep and light exercise.', documentType:'user_need', proposedId:'UN-003', confidence:'high', fields:{ statement:'The patient shall carry the device comfortably during normal daily activities including sleep and light exercise.', source:'Patient', category:'Usability', status:'Draft' }, violations:[], ambiguityReason:null },
+  { id:'r-004', sourceText:'Device shall measure blood glucose with adequate accuracy for clinical use', documentType:'design_input', proposedId:'DI-001', confidence:'medium', fields:{ statement:'The device shall measure blood glucose with adequate accuracy for clinical use.', origin:{ type:'un', ref:'UN-001' }, category:'Performance', status:'Draft' }, violations:[{ ruleId:'QW-06b', description:'"Adequate" is not a verifiable acceptance criterion.', suggestion:'Specify a numeric target, e.g., ±0.83 mmol/L (±15 mg/dL) for readings ≥5.6 mmol/L and ±15% for readings <5.6 mmol/L per ISO 15197:2013.' }], ambiguityReason:null },
+  { id:'r-005', sourceText:'The device shall operate continuously for a minimum of 72 hours on a single battery charge under nominal use conditions.', documentType:'design_input', proposedId:'DI-002', confidence:'high', fields:{ statement:'The device shall operate continuously for a minimum of 72 hours on a single battery charge under nominal use conditions (one reading per 15 minutes, BLE active).', origin:{ type:'un', ref:'UN-003' }, category:'Performance', status:'Draft' }, violations:[], ambiguityReason:null },
+  { id:'r-006', sourceText:'The device shall comply with IEC 60601-1 for electrical safety', documentType:'design_input', proposedId:'DI-003', confidence:'medium', fields:{ statement:'The device shall comply with IEC 60601-1 for electrical safety.', origin:{ type:'regulatory', ref:'IEC 60601-1' }, category:'Electrical', status:'Draft' }, violations:[{ ruleId:'QW-06b', description:'Standard reference without specifying which tests or pass criteria apply.', suggestion:'Specify the relevant clauses and test types, e.g., "The device shall pass dielectric strength, earth leakage current, and enclosure leakage current testing per IEC 60601-1 §8.1, §8.7.3, and §8.7.4 for a Class II, Type BF applied part device."' }], ambiguityReason:null },
+  { id:'r-007', sourceText:'Software Architecture Document SAD-CS-001, Rev A — IEC 62304 §5.3', documentType:'design_output', proposedId:'DO-001', confidence:'high', fields:{ description:'Software Architecture Document SAD-CS-001, Rev A — describes decomposition of the system into software items, interfaces, and data flows per IEC 62304 §5.3.', category:'Software Artifact', diLink:'DI-003', status:'Draft' }, violations:[], ambiguityReason:null },
+  { id:'r-008', sourceText:'ISO 14971:2019 — Risk Management for Medical Devices', documentType:'standard', proposedId:'STD-001', confidence:'high', fields:{ name:'ISO 14971:2019', edition:'2019', applicability:'Applicable', description:'Risk management process requirements for medical devices.' }, violations:[], ambiguityReason:null },
+  { id:'r-009', sourceText:'IEC 62304:2006+AMD1:2015 Software lifecycle processes', documentType:'standard', proposedId:'STD-002', confidence:'high', fields:{ name:'IEC 62304:2006+AMD1:2015', edition:'2006+AMD1:2015', applicability:'Applicable', description:'Software lifecycle processes for medical device software.' }, violations:[], ambiguityReason:null },
+  { id:'r-010', sourceText:'adequate response to alarm condition', documentType:'unknown', proposedId:null, confidence:'low', fields:{ statement:'adequate response to alarm condition' }, violations:[{ ruleId:'QW-06b', description:'"Adequate" is vague and not testable.', suggestion:'Clarify whether this is a User Need or Design Input, and specify what "adequate response" means (e.g., alarm within 5 seconds, audible at 65 dB at 1m).' }], ambiguityReason:'Incomplete statement — unclear if this is a User Need, Design Input, or title/heading. Missing stakeholder or device context.' },
+  { id:'r-011', sourceText:'The device shall transmit glucose readings via BLE 5.2 to a companion mobile app', documentType:'design_input', proposedId:'DI-004', confidence:'medium', fields:{ statement:'The device shall transmit glucose readings via BLE 5.2 to a companion mobile app.', origin:{ type:'un', ref:null }, category:'Connectivity', status:'Draft' }, violations:[{ ruleId:'QW-03', description:'Specifying "BLE 5.2" is a technology choice — the User Need should not embed this. The UN should state what the patient/clinician needs; the DI may specify BLE, but the origin UN should be technology-agnostic.', suggestion:'Ensure the source User Need says something like "The patient shall view their glucose data on their personal smartphone" without specifying BLE. Update the DI origin ref to the correct UN-ID.' }, { ruleId:'QW-06a', description:'Origin UN reference is missing.', suggestion:'Add the UN ID this DI is derived from.' }], ambiguityReason:null },
+];
+
+// ─── REVIEW TABLE ────────────────────────────────────────────────────────────
+
+function getRecordStatus(r) {
+  const dec = state.decisions[r.id];
+  if (dec === 'accepted') return 'accepted';
+  if (dec === 'skipped') return 'skipped';
+  if (r.confidence === 'low' || r.documentType === 'unknown') return 'ambiguous';
+  if (r.violations && r.violations.length > 0) return 'flagged';
+  return 'ready';
+}
+
+function setFilter(f) {
+  state.activeFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('ftab-' + f).classList.add('active');
+  renderReviewTable();
+}
+
+function renderReviewTable() {
+  const tbody = document.getElementById('reviewTableBody');
+  let rows = state.records;
+
+  if (state.activeFilter !== 'all') {
+    rows = rows.filter(r => {
+      const s = getRecordStatus(r);
+      if (state.activeFilter === 'ready') return s === 'ready';
+      if (state.activeFilter === 'flagged') return s === 'flagged';
+      if (state.activeFilter === 'ambiguous') return s === 'ambiguous';
+      if (state.activeFilter === 'accepted') return s === 'accepted';
+      return true;
+    });
+  }
+
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-filter-state">No records match this filter.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r => {
+    const status = getRecordStatus(r);
+    const dec = state.decisions[r.id];
+    const typeLabel = { user_need:'User Need', design_input:'Design Input', design_output:'Design Output', standard:'Standard', unknown:'Unknown' }[r.documentType] || 'Unknown';
+    const typeClass = { user_need:'un', design_input:'di', design_output:'do', standard:'std', unknown:'unknown' }[r.documentType] || 'unknown';
+    const statusLabel = { ready:'✓ Ready', flagged:'⚠ Flagged', ambiguous:'✕ Ambiguous', accepted:'✓ Accepted', skipped:'— Skipped' }[status];
+    const statusChipClass = status;
+    const stripeColor = { ready:'var(--green)', flagged:'var(--amber)', ambiguous:'var(--red)', accepted:'var(--green)', skipped:'rgba(11,39,64,0.15)' }[status];
+    const violations = r.violations || [];
+    const truncText = (r.sourceText || '').length > 70 ? r.sourceText.slice(0, 70) + '…' : r.sourceText;
+    const isSelected = state.selectedRecordId === r.id;
+
+    let actionButtons = '';
+    if (dec === 'pending') {
+      actionButtons = `<button class="btn-row-accept" onclick="event.stopPropagation();acceptRecord('${r.id}')">Accept</button><button class="btn-row-skip" onclick="event.stopPropagation();skipRecord('${r.id}')">Skip</button>`;
+    } else if (dec === 'accepted') {
+      actionButtons = `<button class="btn-row-skip" style="font-size:0.65rem;" onclick="event.stopPropagation();resetDecision('${r.id}')">Undo</button>`;
+    } else if (dec === 'skipped') {
+      actionButtons = `<button class="btn-row-accept" style="font-size:0.65rem;" onclick="event.stopPropagation();acceptRecord('${r.id}')">Restore</button>`;
+    }
+
+    return `<tr onclick="openDetailPanel('${r.id}')" class="${isSelected ? 'selected-row' : ''} ${dec === 'skipped' ? 'skipped' : ''}">
+      <td class="col-status" style="position:relative;width:36px;">
+        <div class="status-stripe" style="background:${stripeColor}"></div>
+      </td>
+      <td><div class="source-text-cell" title="${(r.sourceText||'').replace(/"/g,'&quot;')}">${truncText}</div></td>
+      <td><span class="type-chip ${typeClass}">${typeLabel}</span></td>
+      <td><span class="id-cell">${r.proposedId || '—'}</span></td>
+      <td>${violations.length > 0 ? `<span class="violation-count">${violations.length} issue${violations.length>1?'s':''}</span>` : '<span style="font-size:0.7rem;color:rgba(11,39,64,0.3);">—</span>'}</td>
+      <td><span class="status-chip ${statusChipClass}">${statusLabel}</span></td>
+      <td><div class="col-actions">${actionButtons}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateReviewStats() {
+  const records = state.records;
+  let ready = 0, flagged = 0, ambiguous = 0, accepted = 0;
+  records.forEach(r => {
+    const s = getRecordStatus(r);
+    if (s === 'ready') ready++;
+    else if (s === 'flagged') flagged++;
+    else if (s === 'ambiguous') ambiguous++;
+    else if (s === 'accepted') accepted++;
+  });
+  const total = records.length;
+  const pending_ambiguous = records.filter(r => getRecordStatus(r) === 'ambiguous' && state.decisions[r.id] === 'pending').length;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statReady').textContent = ready;
+  document.getElementById('statFlagged').textContent = flagged;
+  document.getElementById('statAmbiguous').textContent = ambiguous;
+
+  // Update filter tab counts
+  document.getElementById('ftab-count-all').textContent = total;
+  document.getElementById('ftab-count-ready').textContent = ready;
+  document.getElementById('ftab-count-flagged').textContent = flagged;
+  document.getElementById('ftab-count-ambiguous').textContent = ambiguous;
+  document.getElementById('ftab-count-accepted').textContent = accepted;
+
+  // Finish button enabled if no unresolved ambiguous records remain
+  document.getElementById('btnFinish').disabled = pending_ambiguous > 0;
+}
+
+function acceptRecord(id) {
+  state.decisions[id] = 'accepted';
+  renderReviewTable();
+  updateReviewStats();
+  if (state.selectedRecordId === id) {
+    document.getElementById('btnDpAccept').textContent = 'Accepted ✓';
+    document.getElementById('btnDpAccept').disabled = true;
+  }
+}
+
+function skipRecord(id) {
+  state.decisions[id] = 'skipped';
+  renderReviewTable();
+  updateReviewStats();
+  if (state.selectedRecordId === id) closeDetailPanel();
+}
+
+function resetDecision(id) {
+  state.decisions[id] = 'pending';
+  renderReviewTable();
+  updateReviewStats();
+}
+
+function acceptAllReady() {
+  state.records.forEach(r => {
+    if (getRecordStatus(r) === 'ready' && state.decisions[r.id] === 'pending') {
+      state.decisions[r.id] = 'accepted';
+    }
+  });
+  renderReviewTable();
+  updateReviewStats();
+}
+
+// ─── DETAIL PANEL ────────────────────────────────────────────────────────────
+
+function openDetailPanel(id) {
+  const r = state.records.find(rec => rec.id === id);
+  if (!r) return;
+  state.selectedRecordId = id;
+
+  const panel = document.getElementById('detailPanel');
+  const dec = state.decisions[id];
+
+  const typeLabel = { user_need:'User Need', design_input:'Design Input', design_output:'Design Output', standard:'Standard', unknown:'Unknown' }[r.documentType] || 'Unknown';
+  document.getElementById('dpTitle').textContent = `${typeLabel} · ${r.proposedId || 'Unclassified'}`;
+
+  // Build editable fields based on document type
+  const fields = { ...r.fields, ...(state.editedFields[id] || {}) };
+  let fieldsHTML = '';
+
+  if (r.documentType === 'user_need') {
+    fieldsHTML = `
+      <div class="dp-field">
+        <div class="dp-field-label">Statement</div>
+        <textarea class="dp-field-input" rows="3" onchange="updateField('${id}','statement',this.value)">${fields.statement||''}</textarea>
+      </div>
+      <div class="dp-field">
+        <div class="dp-field-label">Source</div>
+        <select class="dp-field-select" onchange="updateField('${id}','source',this.value)">
+          ${['Patient','Clinician','Caregiver','User','Facility'].map(s=>`<option ${fields.source===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="dp-field">
+        <div class="dp-field-label">Category</div>
+        <select class="dp-field-select" onchange="updateField('${id}','category',this.value)">
+          ${['Safety','Usability','Performance','Connectivity','Labeling','Maintenance'].map(s=>`<option ${fields.category===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>`;
+  } else if (r.documentType === 'design_input') {
+    const originRef = fields.origin?.ref || '';
+    const originType = fields.origin?.type || 'un';
+    fieldsHTML = `
+      <div class="dp-field">
+        <div class="dp-field-label">Statement</div>
+        <textarea class="dp-field-input" rows="3" onchange="updateField('${id}','statement',this.value)">${fields.statement||''}</textarea>
+      </div>
+      <div class="dp-field">
+        <div class="dp-field-label">Origin type</div>
+        <select class="dp-field-select" onchange="updateField('${id}','originType',this.value)">
+          <option value="un" ${originType==='un'?'selected':''}>User Need</option>
+          <option value="regulatory" ${originType==='regulatory'?'selected':''}>Regulatory requirement</option>
+          <option value="risk-control" ${originType==='risk-control'?'selected':''}>Risk Control</option>
+        </select>
+      </div>
+      <div class="dp-field">
+        <div class="dp-field-label">Origin reference</div>
+        <input class="dp-field-input" value="${originRef}" placeholder="UN-001, 21 CFR 820.30(f), or FMEA-003" onchange="updateField('${id}','originRef',this.value)" />
+      </div>
+      <div class="dp-field">
+        <div class="dp-field-label">Category</div>
+        <select class="dp-field-select" onchange="updateField('${id}','category',this.value)">
+          ${['Performance','Safety','Biocompatibility','Electrical','Software','Cybersecurity','Labeling','Connectivity'].map(s=>`<option ${fields.category===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>`;
+  } else if (r.documentType === 'design_output') {
+    fieldsHTML = `
+      <div class="dp-field">
+        <div class="dp-field-label">Description</div>
+        <textarea class="dp-field-input" rows="3" onchange="updateField('${id}','description',this.value)">${fields.description||''}</textarea>
+      </div>
+      <div class="dp-field">
+        <div class="dp-field-label">Category</div>
+        <select class="dp-field-select" onchange="updateField('${id}','category',this.value)">
+          ${['Hardware Drawing','Software Artifact','Manufacturing Doc','Labeling','Packaging','DMR Index'].map(s=>`<option ${fields.category===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="dp-field">
+        <div class="dp-field-label">Links to DI</div>
+        <input class="dp-field-input" value="${fields.diLink||''}" placeholder="DI-001" onchange="updateField('${id}','diLink',this.value)" />
+      </div>`;
+  } else if (r.documentType === 'standard') {
+    fieldsHTML = `
+      <div class="dp-field">
+        <div class="dp-field-label">Standard name</div>
+        <input class="dp-field-input" value="${fields.name||''}" onchange="updateField('${id}','name',this.value)" />
+      </div>
+      <div class="dp-field">
+        <div class="dp-field-label">Edition / Year</div>
+        <input class="dp-field-input" value="${fields.edition||''}" placeholder="2019" onchange="updateField('${id}','edition',this.value)" />
+      </div>
+      <div class="dp-field">
+        <div class="dp-field-label">Applicability</div>
+        <select class="dp-field-select" onchange="updateField('${id}','applicability',this.value)">
+          ${['Applicable','Not Applicable','Under Review'].map(s=>`<option ${fields.applicability===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="dp-field">
+        <div class="dp-field-label">Description</div>
+        <textarea class="dp-field-input" rows="2" onchange="updateField('${id}','description',this.value)">${fields.description||''}</textarea>
+      </div>`;
+  } else {
+    fieldsHTML = `
+      <div class="dp-field">
+        <div class="dp-field-label">Statement</div>
+        <textarea class="dp-field-input" rows="3" onchange="updateField('${id}','statement',this.value)">${fields.statement||r.sourceText||''}</textarea>
+      </div>
+      <div class="dp-field">
+        <div class="dp-field-label">Classify as</div>
+        <select class="dp-field-select" onchange="reclassifyRecord('${id}',this.value)">
+          <option value="unknown" selected>Unknown — skip this record</option>
+          <option value="user_need">User Need</option>
+          <option value="design_input">Design Input</option>
+          <option value="design_output">Design Output</option>
+          <option value="standard">Standard</option>
+        </select>
+      </div>`;
+  }
+
+  // Violations
+  const violations = r.violations || [];
+  let violationsHTML = '';
+  if (violations.length === 0) {
+    violationsHTML = `<div class="dp-no-violations"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>No quality writing issues found</div>`;
+  } else {
+    violationsHTML = violations.map(v => `
+      <div class="dp-violation">
+        <div class="dp-violation-id">${v.ruleId}</div>
+        <div class="dp-violation-desc">${v.description}</div>
+        ${v.suggestion ? `<div class="dp-violation-suggest">${v.suggestion}</div>` : ''}
+      </div>`).join('');
+  }
+
+  document.getElementById('dpBody').innerHTML = `
+    <div>
+      <div class="dp-section-label">Original source text</div>
+      <div class="dp-source-box">${r.sourceText || '(no source text)'}</div>
+    </div>
+    <div>
+      <div class="dp-section-label">Import as — ${typeLabel}</div>
+      ${fieldsHTML}
+    </div>
+    ${violations.length > 0 ? `<div><div class="dp-section-label">Quality writing issues (${violations.length})</div><div class="dp-violations">${violationsHTML}</div></div>` : `<div>${violationsHTML}</div>`}
+  `;
+
+  // Footer button state
+  const acceptBtn = document.getElementById('btnDpAccept');
+  if (dec === 'accepted') {
+    acceptBtn.textContent = 'Accepted ✓';
+    acceptBtn.disabled = true;
+  } else {
+    acceptBtn.textContent = 'Accept this record';
+    acceptBtn.disabled = false;
+  }
+
+  panel.classList.add('open');
+
+  // Highlight the row
+  renderReviewTable();
+}
+
+function closeDetailPanel() {
+  state.selectedRecordId = null;
+  document.getElementById('detailPanel').classList.remove('open');
+  renderReviewTable();
+}
+
+function updateField(id, field, value) {
+  if (!state.editedFields[id]) state.editedFields[id] = {};
+  state.editedFields[id][field] = value;
+}
+
+function reclassifyRecord(id, newType) {
+  const r = state.records.find(rec => rec.id === id);
+  if (r) {
+    r.documentType = newType;
+    r.confidence = 'medium';
+    r.ambiguityReason = null;
+    if (!r.fields) r.fields = {};
+    renderReviewTable();
+    updateReviewStats();
+    openDetailPanel(id);
+  }
+}
+
+function acceptFromPanel() {
+  if (state.selectedRecordId) {
+    acceptRecord(state.selectedRecordId);
+    document.getElementById('btnDpAccept').textContent = 'Accepted ✓';
+    document.getElementById('btnDpAccept').disabled = true;
+  }
+}
+
+function skipFromPanel() {
+  if (state.selectedRecordId) {
+    skipRecord(state.selectedRecordId);
+    closeDetailPanel();
+  }
+}
+
+// ─── STEP NAVIGATION ─────────────────────────────────────────────────────────
+
+function goToStep(n) {
+  state.currentStep = n;
+  document.querySelectorAll('.step-view').forEach((el, i) => {
+    el.classList.toggle('active', i + 1 === n);
+  });
+  updateStepIndicator(n);
+  document.getElementById('stepLabelTopbar').textContent = `Step ${n} of 4`;
+  document.getElementById('contentScroll').scrollTop = 0;
+}
+
+function updateStepIndicator(current) {
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById('sdot-' + i);
+    const label = document.getElementById('slabel-' + i);
+    if (i < current) {
+      dot.className = 'step-dot done';
+      dot.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+      label.className = 'step-label done';
+    } else if (i === current) {
+      dot.className = 'step-dot active';
+      dot.textContent = i;
+      label.className = 'step-label active';
+    } else {
+      dot.className = 'step-dot';
+      dot.textContent = i;
+      label.className = 'step-label';
+    }
+    if (i < 4) {
+      document.getElementById('sconn-' + i).className = 'step-connector' + (i < current ? ' done' : '');
+    }
+  }
+}
+
+// ─── CONFIRM STEP ────────────────────────────────────────────────────────────
+
+function goToConfirm() {
+  closeDetailPanel();
+  const accepted = state.records.filter(r => state.decisions[r.id] === 'accepted');
+  const skipped = state.records.filter(r => state.decisions[r.id] === 'skipped');
+  const withWarnings = accepted.filter(r => (r.violations||[]).length > 0);
+
+  // Type breakdown
+  const typeCounts = {};
+  const typeLabels = { user_need:'User Needs', design_input:'Design Inputs', design_output:'Design Outputs', standard:'Standards', unknown:'Unclassified' };
+  accepted.forEach(r => {
+    const t = r.documentType || 'unknown';
+    typeCounts[t] = (typeCounts[t] || 0) + 1;
+  });
+
+  document.getElementById('confirmSubText').textContent =
+    `${accepted.length} record${accepted.length !== 1 ? 's' : ''} will be imported into "${state.projectName}". ${skipped.length} will be skipped.`;
+
+  let breakdownHTML = '';
+  Object.entries(typeCounts).forEach(([type, count]) => {
+    const label = typeLabels[type] || type;
+    const typeClass = { user_need:'un', design_input:'di', design_output:'do', standard:'std', unknown:'unknown' }[type] || 'unknown';
+    breakdownHTML += `<div class="confirm-row">
+      <div class="confirm-row-label"><span class="type-chip ${typeClass}" style="margin-right:2px;">${label}</span></div>
+      <div class="confirm-row-count highlight">${count}</div>
+    </div>`;
+  });
+  if (skipped.length > 0) {
+    breakdownHTML += `<div class="confirm-row">
+      <div class="confirm-row-label" style="color:rgba(11,39,64,0.45);">Skipped</div>
+      <div class="confirm-row-count">${skipped.length}</div>
+    </div>`;
+  }
+  document.getElementById('confirmBreakdown').innerHTML = breakdownHTML || '<div class="confirm-row"><div class="confirm-row-label" style="color:rgba(11,39,64,0.45);">No records accepted</div></div>';
+
+  if (withWarnings.length > 0) {
+    document.getElementById('confirmWarning').style.display = 'flex';
+    document.getElementById('confirmWarningText').innerHTML =
+      `<strong>${withWarnings.length} record${withWarnings.length !== 1 ? 's have' : ' has'} active quality writing warnings.</strong> These will be imported as Draft items with lint flags attached. You can resolve them from the respective document editor.`;
+  } else {
+    document.getElementById('confirmWarning').style.display = 'none';
+  }
+
+  goToStep(4);
+}
+
+function finalizeImport() {
+  const accepted = state.records.filter(r => state.decisions[r.id] === 'accepted');
+
+  // Merge edited fields back into records
+  const finalRecords = accepted.map(r => {
+    const edited = state.editedFields[r.id] || {};
+    return { ...r, fields: { ...r.fields, ...edited } };
+  });
+
+  // Save to localStorage by document type
+  try {
+    const typeMap = {
+      user_need: 'qms_user_needs',
+      design_input: 'qms_design_inputs',
+      design_output: 'qms_design_outputs',
+      standard: 'qms_standards',
+    };
+    finalRecords.forEach(r => {
+      const key = typeMap[r.documentType];
+      if (!key) return;
+      const existing = JSON.parse(localStorage.getItem(key) || '[]');
+      existing.push({ id: r.proposedId, ...r.fields, importedAt: new Date().toISOString(), importViolations: r.violations });
+      localStorage.setItem(key, JSON.stringify(existing));
+    });
+
+    // Save project
+    const projects = JSON.parse(localStorage.getItem('qms_projects') || '[]');
+    if (state.projectMode === 'new' && !projects.find(p => p.name === state.projectName)) {
+      projects.push({ name: state.projectName, createdAt: new Date().toISOString(), importedRecordCount: finalRecords.length });
+      localStorage.setItem('qms_projects', JSON.stringify(projects));
+    }
+  } catch(e) {
+    console.error('Import save error', e);
+  }
+
+  // Navigate to dashboard
+  window.location.href = 'dashboard.html';
+}
+</script>
+
+<script src="sidebar.js"></script>
+<script>initSidebar({ activePage: 'import-docs' });</script>
+</body>
+</html>

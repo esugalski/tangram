@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traceability Matrix — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --gray:       #D2D2D2;
+      --light-gray: #F7F8FA;
+      --white:      #FFFFFF;
+      --sidebar-w:  232px;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
+    .project-switcher-wrap { padding: 0.75rem 0.75rem 0; }
+    .project-switcher { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); border-radius: 8px; padding: 0.55rem 0.75rem; cursor: default; display: flex; align-items: center; gap: 0.55rem; }
+    .project-switcher-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--aqua); }
+    .project-switcher-text { flex: 1; min-width: 0; }
+    .project-switcher-label { font-size: 0.58rem; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.1rem; }
+    .project-switcher-name { font-size: 0.8rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-section-label { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); padding: 0.6rem 0.75rem 0.2rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.72); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-badge { margin-left: auto; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.06em; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.22); padding: 0.14rem 0.42rem; border-radius: 3px; text-transform: uppercase; }
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.5rem 0.75rem; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); }
+    .sidebar-sign-out { margin-left: auto; }
+    .sidebar-sign-out a { font-size: 0.66rem; color: rgba(255,255,255,0.22); text-decoration: none; transition: color 0.2s; }
+    .sidebar-sign-out a:hover { color: rgba(255,255,255,0.5); }
+
+    /* ─── MAIN ─── */
+    .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; position: relative; }
+
+    /* ─── TOPBAR ─── */
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 1.5rem; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: relative; z-index: 10; }
+    .topbar-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+    .topbar-crumb { color: rgba(11,39,64,0.35); font-weight: 400; font-size: 0.85rem; }
+    .topbar-sep { color: rgba(11,39,64,0.2); font-size: 0.85rem; }
+    .topbar-right { display: flex; align-items: center; gap: 0.65rem; }
+
+    /* ─── CONTENT AREA ─── */
+    .content-area { flex: 1; overflow-y: auto; padding: 1.5rem; }
+    .content-area::-webkit-scrollbar { width: 5px; }
+    .content-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    /* ─── MATRIX ─── */
+    .matrix-wrapper { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: auto; max-height: calc(100vh - 140px); }
+    .matrix-wrapper::-webkit-scrollbar { width: 5px; height: 5px; }
+    .matrix-wrapper::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+    .matrix-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .matrix-table thead th { position: sticky; top: 0; z-index: 2; box-shadow: 0 1px 0 rgba(11,39,64,0.08); }
+    .matrix-table thead th { padding: 0.75rem 1rem; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: #FAFBFC; border-bottom: none; text-align: left; }
+    .col-un  { width: 22%; }
+    .col-di  { width: 22%; }
+    .col-do  { width: 16%; }
+    .col-ver { width: 20%; }
+    .col-val { width: 20%; }
+    .col-un  { border-left: 3px solid var(--aqua); }
+    .col-di  { border-left: 3px solid var(--primary); }
+    .col-do  { border-left: 3px solid #f97316; }
+    .col-ver { border-left: 3px solid var(--indigo); }
+    .col-val { border-left: 3px solid #9333ea; }
+    .col-un  .col-label { color: var(--aqua-dark); }
+    .col-di  .col-label { color: var(--primary); }
+    .col-do  .col-label { color: #ea580c; }
+    .col-ver .col-label { color: var(--indigo); }
+    .col-val .col-label { color: #7e22ce; }
+    td.td-un  { background: rgba(10,192,233,0.035); border-left: 3px solid var(--aqua) !important; }
+    td.td-di  { background: rgba(11,39,64,0.025); border-left: 3px solid var(--primary) !important; }
+    td.td-do  { background: rgba(249,115,22,0.03); border-left: 3px solid #f97316 !important; }
+    td.td-ver { background: rgba(99,102,241,0.03); border-left: 3px solid var(--indigo) !important; }
+    td.td-val { background: rgba(147,51,234,0.03); border-left: 3px solid #9333ea !important; }
+    .col-sub { display: block; font-size: 0.6rem; font-weight: 500; letter-spacing: 0.04em; color: rgba(11,39,64,0.35); margin-top: 0.1rem; text-transform: none; }
+    .matrix-table td { padding: 0; vertical-align: top; border-bottom: 1px solid rgba(11,39,64,0.13); border-right: 1px solid rgba(11,39,64,0.13); }
+    .matrix-table td:last-child { border-right: none; }
+    .matrix-table tr:last-child td { border-bottom: none; }
+    .matrix-table tbody { border-top: 6px solid var(--light-gray); }
+    .matrix-cell { padding: 0.85rem 1rem; height: 100%; cursor: pointer; transition: background 0.12s; position: relative; }
+    .matrix-cell:hover { background: rgba(10,192,233,0.06); }
+    .cell-header { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.45rem; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.approved  { background: var(--green); }
+    .status-dot.review    { background: var(--amber); }
+    .status-dot.draft     { background: rgba(11,39,64,0.22); }
+    .status-dot.tentative { background: transparent; border: 1.5px dashed rgba(11,39,64,0.3); }
+    .cell-id { display: inline-flex; align-items: center; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.05em; color: rgba(11,39,64,0.4); background: rgba(11,39,64,0.06); padding: 0.12rem 0.45rem; border-radius: 4px; }
+    .cell-text { font-size: 0.78rem; color: var(--primary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .cell-tentative { font-size: 0.63rem; font-style: italic; color: rgba(11,39,64,0.38); margin-right: auto; }
+    .status-badge { display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.12rem 0.45rem; border-radius: 4px; }
+    .status-badge.approved { background: rgba(16,185,129,0.1); color: #047857; }
+    .status-badge.review { background: rgba(245,158,11,0.12); color: #b45309; }
+    .status-badge.draft { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); }
+    .gap-cell { padding: 0.85rem 1rem; background: rgba(245,158,11,0.05); border: 1px dashed rgba(245,158,11,0.35); border-radius: 6px; margin: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .gap-cell-reg { padding: 0.85rem 1rem; background: rgba(245,158,11,0.04); border: 1px dashed rgba(245,158,11,0.2); border-radius: 6px; margin: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .gap-cell-no-vv { padding: 0.65rem 1rem; background: rgba(11,39,64,0.03); border: 1px dashed rgba(11,39,64,0.12); border-radius: 6px; margin: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .add-do-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem; width: calc(100% - 1rem); margin: 0.5rem; padding: 0.7rem 0.9rem; background: rgba(249,115,22,0.03); border: 1.5px dashed rgba(249,115,22,0.35); border-radius: 6px; cursor: pointer; text-decoration: none; transition: border-color 0.15s, background 0.15s; font-family: 'Inter', sans-serif; text-align: left; }
+    .add-do-btn:hover { border-color: rgba(249,115,22,0.65); background: rgba(249,115,22,0.07); }
+    .add-do-btn:hover .add-do-label { color: #c2410c; }
+    .add-do-btn:hover .add-do-sub { color: rgba(11,39,64,0.5); }
+    .add-do-label { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; color: rgba(234,88,12,0.75); transition: color 0.15s; }
+    .add-do-label svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .add-do-sub { font-size: 0.62rem; font-weight: 500; color: rgba(11,39,64,0.35); transition: color 0.15s; }
+    .gap-icon { width: 14px; height: 14px; flex-shrink: 0; stroke: var(--amber); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .gap-text { font-size: 0.72rem; font-weight: 500; color: #b45309; }
+    .gap-text-muted { font-size: 0.72rem; font-weight: 500; color: rgba(11,39,64,0.38); }
+    .vv-ref { padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.35rem; }
+    .vv-ref-id { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.62rem; font-weight: 700; color: var(--indigo); letter-spacing: 0.04em; }
+    .vv-ref-name { font-size: 0.74rem; color: var(--mid-blue); line-height: 1.45; }
+    .vv-ref-link { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.66rem; font-weight: 600; color: var(--indigo); cursor: pointer; transition: opacity 0.15s; margin-top: 0.15rem; }
+    .vv-ref-link:hover { opacity: 0.7; }
+    .vv-ref-link svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .val-ref { padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.35rem; }
+    .val-ref-id { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.62rem; font-weight: 700; color: #9333ea; letter-spacing: 0.04em; }
+    .val-ref-name { font-size: 0.74rem; color: var(--mid-blue); line-height: 1.45; }
+    .val-ref-link { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.66rem; font-weight: 600; color: #9333ea; cursor: pointer; transition: opacity 0.15s; margin-top: 0.15rem; }
+    .val-ref-link:hover { opacity: 0.7; }
+    .val-ref-link svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── ADD VER / VAL BUTTONS ─── */
+    .add-ver-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem; width: calc(100% - 1rem); margin: 0.5rem; padding: 0.7rem 0.9rem; background: rgba(99,102,241,0.03); border: 1.5px dashed rgba(99,102,241,0.35); border-radius: 6px; cursor: pointer; text-decoration: none; transition: border-color 0.15s, background 0.15s; font-family: 'Inter', sans-serif; text-align: left; }
+    .add-ver-btn:hover { border-color: rgba(99,102,241,0.65); background: rgba(99,102,241,0.07); }
+    .add-ver-btn:hover .add-ver-label { color: #4338ca; }
+    .add-ver-btn:hover .add-ver-sub { color: rgba(11,39,64,0.5); }
+    .add-ver-label { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; color: rgba(99,102,241,0.75); transition: color 0.15s; }
+    .add-ver-label svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .add-ver-sub { font-size: 0.62rem; font-weight: 500; color: rgba(11,39,64,0.35); transition: color 0.15s; }
+
+    .add-val-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem; width: calc(100% - 1rem); margin: 0.5rem; padding: 0.7rem 0.9rem; background: rgba(147,51,234,0.03); border: 1.5px dashed rgba(147,51,234,0.35); border-radius: 6px; cursor: pointer; text-decoration: none; transition: border-color 0.15s, background 0.15s; font-family: 'Inter', sans-serif; text-align: left; }
+    .add-val-btn:hover { border-color: rgba(147,51,234,0.65); background: rgba(147,51,234,0.07); }
+    .add-val-btn:hover .add-val-label { color: #7e22ce; }
+    .add-val-btn:hover .add-val-sub { color: rgba(11,39,64,0.5); }
+    .add-val-label { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; color: rgba(147,51,234,0.75); transition: color 0.15s; }
+    .add-val-label svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .add-val-sub { font-size: 0.62rem; font-weight: 500; color: rgba(11,39,64,0.35); transition: color 0.15s; }
+
+    /* ─── ADD DI BUTTON ─── */
+    .add-di-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem; width: calc(100% - 1rem); margin: 0.5rem; padding: 0.7rem 0.9rem; background: rgba(11,39,64,0.03); border: 1.5px dashed rgba(11,39,64,0.25); border-radius: 6px; cursor: pointer; text-decoration: none; transition: border-color 0.15s, background 0.15s; font-family: 'Inter', sans-serif; text-align: left; }
+    .add-di-btn:hover { border-color: rgba(11,39,64,0.45); background: rgba(11,39,64,0.06); }
+    .add-di-btn:hover .add-di-label { color: var(--primary); }
+    .add-di-btn:hover .add-di-sub { color: rgba(11,39,64,0.5); }
+    .add-di-label { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; color: rgba(11,39,64,0.55); transition: color 0.15s; }
+    .add-di-label svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .add-di-sub { font-size: 0.62rem; font-weight: 500; color: rgba(11,39,64,0.35); transition: color 0.15s; }
+
+    /* ─── ADD ORIGIN BUTTON ─── */
+    .add-origin-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem; width: calc(100% - 1rem); margin: 0.5rem; padding: 0.7rem 0.9rem; background: rgba(10,192,233,0.03); border: 1.5px dashed rgba(10,192,233,0.4); border-radius: 6px; cursor: pointer; text-decoration: none; transition: border-color 0.15s, background 0.15s; font-family: 'Inter', sans-serif; text-align: left; }
+    .add-origin-btn:hover { border-color: rgba(10,192,233,0.7); background: rgba(10,192,233,0.07); }
+    .add-origin-btn:hover .add-origin-label { color: var(--aqua-dark); }
+    .add-origin-btn:hover .add-origin-sub { color: rgba(11,39,64,0.5); }
+    .add-origin-label { display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; color: rgba(10,192,233,0.8); transition: color 0.15s; }
+    .add-origin-label svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .add-origin-sub { font-size: 0.62rem; font-weight: 500; color: rgba(11,39,64,0.35); transition: color 0.15s; }
+
+    /* ─── FILTER BAR ─── */
+    .filter-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0 0 1rem; flex-wrap: wrap; }
+    .filter-btn { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 0.38rem 0.85rem; border-radius: 6px; border: 1.5px solid rgba(11,39,64,0.14); background: white; color: rgba(11,39,64,0.55); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
+    .filter-btn:hover { border-color: rgba(11,39,64,0.3); color: var(--primary); }
+    .filter-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+    .filter-btn.active-un { background: rgba(10,192,233,0.1); border-color: var(--aqua); color: var(--aqua-dark); }
+    .filter-btn.active-reg { background: rgba(2,132,199,0.1); border-color: #0284C7; color: #0369A1; }
+    .filter-btn.active-rc { background: rgba(13,148,136,0.1); border-color: #0D9488; color: #0F766E; }
+    .filter-btn.active-gaps { background: rgba(245,158,11,0.1); border-color: var(--amber); color: #b45309; }
+
+    /* ─── ORIGIN CELLS in matrix ─── */
+    td.td-origin-un  { background: rgba(10,192,233,0.035); border-left: 3px solid var(--aqua) !important; }
+    td.td-origin-reg { background: rgba(2,132,199,0.04); border-left: 3px solid #0284C7 !important; }
+    td.td-origin-rc  { background: rgba(13,148,136,0.04); border-left: 3px solid #0D9488 !important; }
+    td.td-origin-none { background: rgba(10,192,233,0.02); border-left: 3px dashed rgba(10,192,233,0.3) !important; }
+    .origin-icon { font-size: 0.8rem; flex-shrink: 0; }
+    .origin-card-id { display: inline-flex; align-items: center; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.05em; background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.4); padding: 0.12rem 0.45rem; border-radius: 4px; }
+    .origin-card-id.un-id { background: rgba(10,192,233,0.12); color: var(--aqua-dark); }
+    .origin-card-id.reg-id { background: rgba(2,132,199,0.12); color: #0369A1; }
+    .origin-card-id.rc-id { background: rgba(13,148,136,0.12); color: #0F766E; }
+
+    /* Gap highlight for Gaps filter */
+    tr.gap-row td { background: rgba(245,158,11,0.045) !important; }
+
+    /* Legend bar */
+    .matrix-legend { display: flex; align-items: center; gap: 1.25rem; padding: 0 0 1rem; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: rgba(11,39,64,0.5); }
+    .legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .legend-gap { width: 10px; height: 10px; border: 1.5px dashed rgba(245,158,11,0.6); border-radius: 2px; flex-shrink: 0; }
+
+    /* DETAIL PANEL (read-only view) */
+    .panel-overlay { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+    .panel-overlay.open { pointer-events: auto; }
+    .panel-backdrop { position: absolute; inset: 0; background: rgba(11,39,64,0.15); opacity: 0; transition: opacity 0.25s; }
+    .panel-overlay.open .panel-backdrop { opacity: 1; }
+    .detail-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    .panel-overlay.open .detail-panel { transform: translateX(0); }
+    .panel-head { padding: 1.2rem 1.25rem 1rem; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .panel-head-row { display: flex; align-items: center; gap: 0.65rem; }
+    .panel-type-badge { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 4px; }
+    .type-un { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .type-di { background: rgba(11,39,64,0.08); color: var(--primary); }
+    .type-do { background: rgba(16,185,129,0.1); color: #047857; }
+    .panel-id { font-size: 0.95rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; }
+    .panel-close { margin-left: auto; width: 28px; height: 28px; border-radius: 6px; border: none; background: rgba(11,39,64,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+    .panel-close:hover { background: rgba(11,39,64,0.12); }
+    .panel-close svg { width: 14px; height: 14px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .panel-status-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.7rem; }
+    .panel-status-label { font-size: 0.7rem; font-weight: 600; color: rgba(11,39,64,0.42); }
+    .panel-body { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+    .panel-field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .panel-field-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.38); }
+    .field-locked { padding: 0.5rem 0.7rem; background: rgba(11,39,64,0.03); border-radius: 6px; font-size: 0.88rem; color: var(--primary); line-height: 1.6; min-height: 2rem; }
+    .field-locked.empty { color: rgba(11,39,64,0.3); font-style: italic; }
+    .panel-links { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .panel-link-pill { display: inline-flex; align-items: center; font-size: 0.7rem; font-weight: 600; color: rgba(11,39,64,0.5); background: rgba(11,39,64,0.06); padding: 0.2rem 0.55rem; border-radius: 4px; }
+    .panel-footer-bar { padding: 0.85rem 1.25rem; border-top: 1px solid rgba(11,39,64,0.08); display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+    .btn-open-page { display: inline-flex; align-items: center; gap: 0.45rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.8rem; padding: 0.55rem 1.25rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s; text-decoration: none; }
+    .btn-open-page:hover { background: var(--aqua-dark); }
+
+    /* ─── EDITABLE PANEL FIELDS (draft DIs) ─── */
+    .edit-mode-banner { display: flex; align-items: center; gap: 0.5rem; background: rgba(10,192,233,0.08); border: 1px solid rgba(10,192,233,0.2); border-radius: 7px; padding: 0.5rem 0.75rem; font-size: 0.72rem; font-weight: 600; color: var(--aqua-dark); margin-bottom: 0.25rem; }
+    .edit-mode-banner svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .field-edit { width: 100%; padding: 0.5rem 0.7rem; background: white; border: 1.5px solid rgba(11,39,64,0.15); border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.84rem; color: var(--primary); line-height: 1.6; resize: vertical; min-height: 2.6rem; transition: border-color 0.15s; outline: none; }
+    .field-edit:focus { border-color: var(--aqua); box-shadow: 0 0 0 3px rgba(10,192,233,0.1); }
+    .field-edit-select { width: 100%; padding: 0.48rem 0.7rem; background: white; border: 1.5px solid rgba(11,39,64,0.15); border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.84rem; color: var(--primary); cursor: pointer; transition: border-color 0.15s; outline: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230B2740' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.7rem center; padding-right: 2rem; }
+    .field-edit-select:focus { border-color: var(--aqua); box-shadow: 0 0 0 3px rgba(10,192,233,0.1); }
+    .origin-ref-wrap { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.5rem; }
+    .origin-ref-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.38); }
+    .btn-save-draft { display: inline-flex; align-items: center; gap: 0.45rem; background: var(--primary); color: white; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.8rem; padding: 0.55rem 1.25rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s; }
+    .btn-save-draft:hover { background: var(--mid-blue); }
+    .btn-save-draft.saved { background: var(--green); }
+    .btn-open-page-secondary { display: inline-flex; align-items: center; gap: 0.45rem; background: transparent; color: rgba(11,39,64,0.5); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.55rem 0.85rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.14); cursor: pointer; transition: border-color 0.15s, color 0.15s; text-decoration: none; }
+    .btn-open-page-secondary:hover { border-color: rgba(11,39,64,0.3); color: var(--primary); }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Tangram eQMS</span>
+        <span class="topbar-sep">/</span>
+        <span>Traceability Matrix</span>
+      </div>
+      <div class="topbar-right">
+        <span style="font-size:0.75rem; color:rgba(11,39,64,0.4); font-weight:500;">CardioSync Pro</span>
+      </div>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <div class="content-area" id="mainContentArea">
+
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-btn active" id="fAll" onclick="setFilter('all')">All Origins</button>
+        <button class="filter-btn" id="fUN" onclick="setFilter('un')">● User Needs</button>
+        <button class="filter-btn" id="fReg" onclick="setFilter('regulatory')">⚖ Regulatory</button>
+        <button class="filter-btn" id="fRC" onclick="setFilter('risk-control')">⚠ Risk Controls</button>
+        <button class="filter-btn" id="fGaps" onclick="setFilter('gaps')">Gaps ▲</button>
+      </div>
+
+      <div class="matrix-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Approved</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Under Review</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(11,39,64,0.22)"></div>Draft</div>
+        <div class="legend-item"><div class="legend-dot" style="background:transparent;border:1.5px dashed rgba(11,39,64,0.3);border-radius:50%;"></div>Tentative</div>
+        <div class="legend-item"><div class="legend-gap"></div>Traceability gap</div>
+        <div style="margin-left:auto; font-size:0.72rem; color:rgba(11,39,64,0.4);">Click any cell to view details</div>
+      </div>
+
+      <div class="matrix-wrapper">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th class="col-un"><span class="col-label">Origin</span><span class="col-sub">User Need · Regulatory · Risk Control</span></th>
+              <th class="col-di"><span class="col-label">Design Input</span><span class="col-sub">Engineering requirements</span></th>
+              <th class="col-do"><span class="col-label">Design Output</span><span class="col-sub">Design deliverables</span></th>
+              <th class="col-ver"><span class="col-label">Verification</span><span class="col-sub">Outputs meet design inputs</span></th>
+              <th class="col-val"><span class="col-label">Validation</span><span class="col-sub">Device meets user needs</span></th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- Row 1: UN-001(rs2) | DI-001 | gap-DO | VER-001 | VLD-001(rs2) -->
+            <tr data-origin="un" data-has-do="false" data-has-ver="false">
+              <td rowspan="2" class="td-un td-origin-un" data-origin-type="un">
+                <div class="matrix-cell" onclick="openDetail('un001')">
+                  <div class="cell-header"><span class="status-dot approved"></span><span class="origin-card-id un-id">UN-001</span></div>
+                  <div class="cell-text">The patient shall be continuously monitored for arrhythmia events without active patient intervention.</div>
+                </div>
+              </td>
+              <td class="td-di">
+                <div class="matrix-cell" onclick="openDetail('di001')">
+                  <div class="cell-header"><span class="status-dot approved"></span><span class="cell-id">DI-001</span></div>
+                  <div class="cell-text">Detect and log ventricular arrhythmia events with ≥98% sensitivity and ≤2% false positive rate.</div>
+                </div>
+              </td>
+              <td class="td-do">
+                <a class="add-do-btn" href="design-outputs.html?newDO=1&amp;linkDI=DI-001">
+                  <span class="add-do-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Design Output</span>
+                  <span class="add-do-sub">linked to DI-001</span>
+                </a>
+              </td>
+              <td class="td-ver">
+                <div class="vv-ref">
+                  <span class="vv-ref-id"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>VV-001</span>
+                  <div class="vv-ref-name">ITP-001: Arrhythmia Detection Performance Protocol</div>
+                  <span class="vv-ref-link">View in V&amp;V<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+                </div>
+              </td>
+              <td rowspan="2" class="td-val">
+                <div class="val-ref">
+                  <span class="val-ref-id"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>VLD-001</span>
+                  <div class="val-ref-name">CS-CLN-001: Clinical Performance Study — Arrhythmia Detection</div>
+                  <span class="val-ref-link">View in V&amp;V<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 2: (UN-001 cont) | DI-002 | DO-001 | VER-002 | (VLD-001 cont) -->
+            <tr data-origin="un" data-has-do="true" data-has-ver="true">
+              <td class="td-di">
+                <div class="matrix-cell" onclick="openDetail('di002')">
+                  <div class="cell-header"><span class="status-dot review"></span><span class="cell-id">DI-002</span></div>
+                  <div class="cell-text">Operate continuously for a minimum of 3 years on a single implanted power source without replacement.</div>
+                </div>
+              </td>
+              <td class="td-do">
+                <div class="matrix-cell" onclick="openDetail('do001')">
+                  <div class="cell-header"><span class="status-dot draft"></span><span class="cell-id">DO-001</span></div>
+                  <div class="cell-text">Drawing A-CS-001: Device Housing &amp; Sensing Assembly</div>
+                </div>
+              </td>
+              <td class="td-ver">
+                <div class="vv-ref">
+                  <span class="vv-ref-id"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>VV-002</span>
+                  <div class="vv-ref-name">ITP-002: Battery Life &amp; Power Test Protocol</div>
+                  <span class="vv-ref-link">View in V&amp;V<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 3: UN-002(rs2) | DI-003(regulatory origin) | DO-002 | VER-003 | gap-val(rs2) -->
+            <tr data-origin="regulatory" data-has-do="true" data-has-ver="true">
+              <td rowspan="2" class="td-un td-origin-reg" data-origin-type="regulatory">
+                <div class="matrix-cell" onclick="openDetail('di003')">
+                  <div class="cell-header"><span class="origin-icon">⚖</span><span class="origin-card-id reg-id">Regulatory</span></div>
+                  <div class="cell-text" style="font-weight:600; color:#0369A1;">FDA Cybersecurity Guidance 2023</div>
+                  <div class="cell-text" style="margin-top:0.3rem; font-size:0.72rem; color:rgba(11,39,64,0.5);">Security transmission requirements</div>
+                </div>
+              </td>
+              <td class="td-di">
+                <div class="matrix-cell" onclick="openDetail('di003')">
+                  <div class="cell-header"><span class="status-dot approved"></span><span class="cell-id">DI-003</span></div>
+                  <div class="cell-text">Transmit all diagnostic data using AES-256 encryption over Bluetooth Low Energy (BLE 5.2).</div>
+                </div>
+              </td>
+              <td class="td-do">
+                <div class="matrix-cell" onclick="openDetail('do002')">
+                  <div class="cell-header"><span class="status-dot draft"></span><span class="cell-id">DO-002</span></div>
+                  <div class="cell-text">Software Architecture Document SAD-CS-001</div>
+                </div>
+              </td>
+              <td class="td-ver">
+                <div class="vv-ref">
+                  <span class="vv-ref-id"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>VV-003</span>
+                  <div class="vv-ref-name">ITP-003: Wireless Security &amp; Encryption Protocol</div>
+                  <span class="vv-ref-link">View in V&amp;V<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+                </div>
+              </td>
+              <td rowspan="2" class="td-val">
+                <a class="add-val-btn" href="validation.html?newVLD=1&amp;linkDI=DI-003">
+                  <span class="add-val-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Validation Ref</span>
+                  <span class="add-val-sub">linked to DI-003 / DI-004</span>
+                </a>
+              </td>
+            </tr>
+
+            <!-- Row 4 -->
+            <tr data-origin="un" data-has-do="true" data-has-ver="false">
+              <td class="td-di">
+                <div class="matrix-cell" onclick="openDetail('di004')">
+                  <div class="cell-header"><span class="status-dot draft"></span><span class="cell-id">DI-004</span></div>
+                  <div class="cell-text">Maintain reliable wireless communication range of ≥5 meters in a standard clinical environment.</div>
+                </div>
+              </td>
+              <td class="td-do">
+                <div class="matrix-cell" onclick="openDetail('do002')">
+                  <div class="cell-header"><span class="status-dot draft"></span><span class="cell-id">DO-002</span></div>
+                  <div class="cell-text">Software Architecture Document SAD-CS-001</div>
+                </div>
+              </td>
+              <td class="td-ver">
+                <a class="add-ver-btn" href="verification.html?newVV=1&amp;linkDI=DI-004">
+                  <span class="add-ver-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Verification Ref</span>
+                  <span class="add-ver-sub">linked to DI-004</span>
+                </a>
+              </td>
+            </tr>
+
+            <!-- Row 5 -->
+            <tr data-origin="un" data-has-do="true" data-has-ver="true">
+              <td rowspan="2" class="td-un td-origin-un" data-origin-type="un">
+                <div class="matrix-cell" onclick="openDetail('un003')">
+                  <div class="cell-header"><span class="status-dot approved"></span><span class="origin-card-id un-id">UN-003</span></div>
+                  <div class="cell-text">The patient shall not experience adverse tissue reactions at the implant site.</div>
+                </div>
+              </td>
+              <td class="td-di">
+                <div class="matrix-cell" onclick="openDetail('di005')">
+                  <div class="cell-header"><span class="status-dot approved"></span><span class="cell-id">DI-005</span></div>
+                  <div class="cell-text">All materials in direct or indirect tissue contact shall be biocompatible per ISO 10993-1.</div>
+                </div>
+              </td>
+              <td class="td-do">
+                <div class="matrix-cell" onclick="openDetail('do003')">
+                  <div class="cell-header"><span class="status-dot draft"></span><span class="cell-id">DO-003</span></div>
+                  <div class="cell-text">Materials Specification MS-CS-001</div>
+                </div>
+              </td>
+              <td class="td-ver">
+                <div class="vv-ref">
+                  <span class="vv-ref-id"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>VV-004</span>
+                  <div class="vv-ref-name">ITP-004: Biocompatibility Testing per ISO 10993</div>
+                  <span class="vv-ref-link">View in V&amp;V<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+                </div>
+              </td>
+              <td rowspan="2" class="td-val">
+                <div class="val-ref">
+                  <span class="val-ref-id"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>VLD-002</span>
+                  <div class="val-ref-name">CS-USE-001: Human Factors &amp; Usability Validation Study</div>
+                  <span class="val-ref-link">View in V&amp;V<svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 6 -->
+            <tr data-origin="risk-control" data-has-do="true" data-has-ver="false">
+              <td class="td-di">
+                <div class="matrix-cell" onclick="openDetail('di006')">
+                  <div class="cell-header"><span class="status-dot review"></span><span class="cell-id">DI-006</span></div>
+                  <div class="cell-text">Device housing shall withstand mechanical stress equivalent to 10 years of physiological motion without structural failure.</div>
+                </div>
+              </td>
+              <td class="td-do">
+                <div class="matrix-cell" onclick="openDetail('do003')">
+                  <div class="cell-header"><span class="status-dot draft"></span><span class="cell-id">DO-003</span></div>
+                  <div class="cell-text">Materials Specification MS-CS-001</div>
+                </div>
+              </td>
+              <td class="td-ver">
+                <a class="add-ver-btn" href="verification.html?newVV=1&amp;linkDI=DI-006">
+                  <span class="add-ver-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Verification Ref</span>
+                  <span class="add-ver-sub">linked to DI-006</span>
+                </a>
+              </td>
+            </tr>
+
+            <!-- Row 7: Regulatory-only DI-007 -->
+            <tr data-origin="regulatory" data-has-do="false" data-has-ver="false">
+              <td class="td-un td-origin-reg" data-origin-type="regulatory">
+                <div class="matrix-cell" onclick="openDetail('di007')">
+                  <div class="cell-header"><span class="origin-icon">⚖</span><span class="origin-card-id reg-id">Regulatory</span></div>
+                  <div class="cell-text" style="font-weight:600; color:#0369A1;">IEC 60601-1</div>
+                  <div class="cell-text" style="margin-top:0.3rem; font-size:0.72rem; color:rgba(11,39,64,0.5);">General electrical safety requirements</div>
+                </div>
+              </td>
+              <td class="td-di">
+                <div class="matrix-cell" onclick="openDetail('di007')">
+                  <div class="cell-header"><span class="status-dot draft"></span><span class="cell-id">DI-007</span></div>
+                  <div class="cell-text">Comply with IEC 60601-1 general safety and essential performance requirements for electrical medical devices.</div>
+                </div>
+              </td>
+              <td class="td-do">
+                <a class="add-do-btn" href="design-outputs.html?newDO=1&amp;linkDI=DI-007">
+                  <span class="add-do-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Design Output</span>
+                  <span class="add-do-sub">linked to DI-007</span>
+                </a>
+              </td>
+              <td class="td-ver">
+                <a class="add-ver-btn" href="verification.html?newVV=1&amp;linkDI=DI-007">
+                  <span class="add-ver-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Verification Ref</span>
+                  <span class="add-ver-sub">linked to DI-007</span>
+                </a>
+              </td>
+              <td class="td-val">
+                <div class="gap-cell-no-vv" style="opacity:0.5;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(11,39,64,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span class="gap-text-muted">N/A — regulatory</span>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Row 8: Tentative UN-004 — no DI linked (gap) -->
+            <tr data-origin="un" data-has-do="false" data-has-ver="false" data-gap="no-di">
+              <td class="td-un td-origin-un" data-origin-type="un">
+                <div class="matrix-cell" onclick="openDetail('un004')">
+                  <div class="cell-header"><span class="status-dot tentative"></span><span class="origin-card-id un-id">UN-004</span><span class="cell-tentative">Tentative</span></div>
+                  <div class="cell-text">The device should integrate with existing hospital EMR systems to enable automated data transfer.</div>
+                </div>
+              </td>
+              <td class="td-di">
+                <a class="add-di-btn" href="design-inputs.html?newDI=1&amp;linkUN=UN-004">
+                  <span class="add-di-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Design Input</span>
+                  <span class="add-di-sub">linked to UN-004</span>
+                </a>
+              </td>
+              <td class="td-do" style="opacity:0.45;"><div style="padding:0.85rem 1rem;font-size:0.72rem;color:rgba(11,39,64,0.3);">—</div></td>
+              <td class="td-ver" style="opacity:0.45;"><div style="padding:0.85rem 1rem;font-size:0.72rem;color:rgba(11,39,64,0.3);">—</div></td>
+              <td class="td-val" style="opacity:0.45;"><div style="padding:0.85rem 1rem;font-size:0.72rem;color:rgba(11,39,64,0.3);">—</div></td>
+            </tr>
+
+            <!-- Row 9: UN-005 — no DI linked (gap) -->
+            <tr data-origin="un" data-has-do="false" data-has-ver="false" data-gap="no-di">
+              <td class="td-un td-origin-un" data-origin-type="un">
+                <div class="matrix-cell" onclick="openDetail('un005')">
+                  <div class="cell-header"><span class="status-dot draft"></span><span class="origin-card-id un-id">UN-005</span></div>
+                  <div class="cell-text">The device shall provide haptic feedback to alert the patient of a detected event.</div>
+                </div>
+              </td>
+              <td class="td-di">
+                <a class="add-di-btn" href="design-inputs.html?newDI=1&amp;linkUN=UN-005">
+                  <span class="add-di-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Design Input</span>
+                  <span class="add-di-sub">linked to UN-005</span>
+                </a>
+              </td>
+              <td class="td-do" style="opacity:0.45;"><div style="padding:0.85rem 1rem;font-size:0.72rem;color:rgba(11,39,64,0.3);">—</div></td>
+              <td class="td-ver" style="opacity:0.45;"><div style="padding:0.85rem 1rem;font-size:0.72rem;color:rgba(11,39,64,0.3);">—</div></td>
+              <td class="td-val" style="opacity:0.45;"><div style="padding:0.85rem 1rem;font-size:0.72rem;color:rgba(11,39,64,0.3);">—</div></td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div><!-- /content-area -->
+
+    <!-- PANEL OVERLAY -->
+    <div class="panel-overlay" id="panelOverlay">
+      <div class="panel-backdrop" onclick="closePanel()"></div>
+      <div class="detail-panel" id="detailPanel">
+        <div class="panel-head">
+          <div class="panel-head-row">
+            <span class="panel-type-badge type-un" id="panelTypeBadge">USER NEED</span>
+            <span class="panel-id" id="panelId">UN-001</span>
+            <button class="panel-close" onclick="closePanel()">
+              <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="panel-status-row">
+            <span class="panel-status-label">Status:</span>
+            <span class="status-badge draft" id="panelStatusDisplay">Draft</span>
+          </div>
+        </div>
+        <div class="panel-body" id="panelBody"></div>
+        <div class="panel-footer-bar" id="panelFooterBar"></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <script>
+    // ── ITEMS (read-only, for panel display) ──────────────────────────────
+    const ITEMS = {
+      un001: {
+        type: 'un', typeBadge: 'USER NEED', typeCls: 'type-un', id: 'UN-001', status: 'approved',
+        statement: 'The patient shall be continuously monitored for arrhythmia events without active patient intervention.',
+        source: 'Patient', category: 'Performance', tracedBy: ['DI-001', 'DI-002'], pageHref: 'user-needs.html'
+      },
+      un002: {
+        type: 'un', typeBadge: 'USER NEED', typeCls: 'type-un', id: 'UN-002', status: 'approved',
+        statement: 'The clinician shall be able to retrieve diagnostic data remotely via secure wireless transmission.',
+        source: 'Healthcare Provider', category: 'Data Access', tracedBy: ['DI-003', 'DI-004'], pageHref: 'user-needs.html'
+      },
+      un003: {
+        type: 'un', typeBadge: 'USER NEED', typeCls: 'type-un', id: 'UN-003', status: 'approved',
+        statement: 'The patient shall not experience adverse tissue reactions at the implant site.',
+        source: 'Patient', category: 'Safety/Biocompatibility', tracedBy: ['DI-005', 'DI-006'], pageHref: 'user-needs.html'
+      },
+      un004: {
+        type: 'un', typeBadge: 'USER NEED', typeCls: 'type-un', id: 'UN-004', status: 'draft',
+        statement: 'The device should integrate with existing hospital EMR systems to enable automated data transfer.',
+        source: 'Healthcare Provider', category: 'Interoperability', tracedBy: [], pageHref: 'user-needs.html'
+      },
+      un005: {
+        type: 'un', typeBadge: 'USER NEED', typeCls: 'type-un', id: 'UN-005', status: 'draft',
+        statement: 'The device shall provide haptic feedback to alert the patient of a detected event.',
+        source: 'Patient', category: 'Alert / Feedback', tracedBy: [], pageHref: 'user-needs.html'
+      },
+      di001: {
+        type: 'di', typeBadge: 'DESIGN INPUT', typeCls: 'type-di', id: 'DI-001', status: 'approved',
+        statement: 'The device shall detect and log ventricular arrhythmia events with ≥98% sensitivity and ≤2% false positive rate.',
+        category: 'Performance', regulatory: 'ISO 13485 §7.3', tracesTo: ['UN-001'], tracedBy: ['DO-001'], pageHref: 'design-inputs.html',
+        originType: 'un', originRef: 'UN-001'
+      },
+      di002: {
+        type: 'di', typeBadge: 'DESIGN INPUT', typeCls: 'type-di', id: 'DI-002', status: 'review',
+        statement: 'The device shall operate continuously for a minimum of 3 years on a single implanted power source without replacement.',
+        category: 'Power/Longevity', regulatory: '', tracesTo: ['UN-001'], tracedBy: ['DO-001'], pageHref: 'design-inputs.html',
+        originType: 'un', originRef: 'UN-001'
+      },
+      di003: {
+        type: 'di', typeBadge: 'DESIGN INPUT', typeCls: 'type-di', id: 'DI-003', status: 'approved',
+        statement: 'The device shall transmit all diagnostic data using AES-256 encryption over Bluetooth Low Energy (BLE 5.2).',
+        category: 'Security', regulatory: 'FDA Cybersecurity Guidance 2023', tracesTo: ['UN-002'], tracedBy: ['DO-002'], pageHref: 'design-inputs.html',
+        originType: 'regulatory', originRef: 'FDA Cybersecurity Guidance 2023'
+      },
+      di004: {
+        type: 'di', typeBadge: 'DESIGN INPUT', typeCls: 'type-di', id: 'DI-004', status: 'draft',
+        statement: 'The device shall maintain a reliable wireless communication range of ≥5 meters in a standard clinical environment.',
+        category: 'Wireless Performance', regulatory: '', tracesTo: ['UN-002'], tracedBy: ['DO-002'], pageHref: 'design-inputs.html',
+        originType: 'un', originRef: 'UN-002'
+      },
+      di005: {
+        type: 'di', typeBadge: 'DESIGN INPUT', typeCls: 'type-di', id: 'DI-005', status: 'approved',
+        statement: 'All materials in direct or indirect tissue contact shall be biocompatible as demonstrated by testing per ISO 10993-1.',
+        category: 'Biocompatibility', regulatory: 'ISO 10993-1', tracesTo: ['UN-003'], tracedBy: ['DO-003'], pageHref: 'design-inputs.html',
+        originType: 'un', originRef: 'UN-003'
+      },
+      di006: {
+        type: 'di', typeBadge: 'DESIGN INPUT', typeCls: 'type-di', id: 'DI-006', status: 'review',
+        statement: 'The device housing shall withstand mechanical stress equivalent to 10 years of normal physiological motion without structural failure.',
+        category: 'Mechanical Durability', regulatory: 'ASTM F2477', tracesTo: ['UN-003', 'RC-001 (Risk Control)'], tracedBy: ['DO-003'], pageHref: 'design-inputs.html',
+        originType: 'risk-control', originRef: 'FMEA-003'
+      },
+      di007: {
+        type: 'di', typeBadge: 'DESIGN INPUT', typeCls: 'type-di', id: 'DI-007', status: 'draft',
+        statement: 'The device shall comply with IEC 60601-1 general safety and essential performance requirements for electrical medical devices.',
+        category: 'Electrical Safety', regulatory: 'IEC 60601-1', tracesTo: ['IEC 60601-1 (Regulatory)'], tracedBy: [], pageHref: 'design-inputs.html',
+        originType: 'regulatory', originRef: 'IEC 60601-1'
+      },
+      do001: {
+        type: 'do', typeBadge: 'DESIGN OUTPUT', typeCls: 'type-do', id: 'DO-001', status: 'draft',
+        statement: 'Drawing A-CS-001: Device Housing & Sensing Assembly',
+        description: 'Engineering drawing package for the implantable housing, electrode array, and battery compartment.',
+        category: 'Engineering Drawing', tracesTo: ['DI-001', 'DI-002'], pageHref: 'design-outputs.html'
+      },
+      do002: {
+        type: 'do', typeBadge: 'DESIGN OUTPUT', typeCls: 'type-do', id: 'DO-002', status: 'draft',
+        statement: 'Software Architecture Document SAD-CS-001',
+        description: 'Software architecture specification covering BLE stack, encryption implementation, and data transmission protocol.',
+        category: 'Software Document', tracesTo: ['DI-003', 'DI-004'], pageHref: 'design-outputs.html'
+      },
+      do003: {
+        type: 'do', typeBadge: 'DESIGN OUTPUT', typeCls: 'type-do', id: 'DO-003', status: 'draft',
+        statement: 'Materials Specification MS-CS-001',
+        description: 'Approved materials list with biocompatibility certificates and mechanical properties for all tissue-contacting components.',
+        category: 'Design Specification', tracesTo: ['DI-005', 'DI-006'], pageHref: 'design-outputs.html'
+      }
+    };
+
+    function escHtml(str) {
+      return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // Load UNs from localStorage into ITEMS (for panel display of stored UNs)
+    (function loadStoredUNs() {
+      try {
+        const raw = localStorage.getItem('qms_user_needs');
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        const entries = Array.isArray(parsed)
+          ? parsed.map(function(item) { var k = item.id ? item.id.toLowerCase().replace('-','') : null; return [k, item]; }).filter(function(e){ return e[0]; })
+          : Object.entries(parsed);
+        entries.forEach(function(entry) {
+          var k = entry[0], s = entry[1];
+          if (!s || s.type !== 'un') return;
+          if (!ITEMS[k]) ITEMS[k] = Object.assign({ type:'un', typeBadge:'USER NEED', typeCls:'type-un',
+            status:'draft', statement:'', source:'', category:'', tentative:false, tracesTo:[], tracedBy:[], pageHref:'user-needs.html' }, s);
+        });
+      } catch(e) {}
+    })();
+
+    // Load DI data from localStorage — merge edits into ITEMS, render new rows
+    (function loadStoredDIs() {
+      try {
+        const raw = localStorage.getItem('qms_design_inputs');
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        // Support both object {di001:{...}} and array [{...}] formats
+        const entries = Array.isArray(parsed)
+          ? parsed.map(function(item) { var k = item.id ? item.id.toLowerCase().replace('-','') : null; return [k, item]; }).filter(function(e){ return e[0]; })
+          : Object.entries(parsed);
+
+        entries.forEach(function(entry) {
+          var k = entry[0], s = entry[1];
+          if (!s || s.type !== 'di') return;
+          if (ITEMS[k]) {
+            // Update existing item with saved edits
+            if (s.statement)  ITEMS[k].statement  = s.statement;
+            if (s.category)   ITEMS[k].category   = s.category;
+            if (s.originType) ITEMS[k].originType = s.originType;
+            if (s.originRef)  ITEMS[k].originRef  = s.originRef;
+            if (s.regulatory) ITEMS[k].regulatory = s.regulatory;
+            if (s.status)     ITEMS[k].status     = s.status;
+          } else {
+            // Brand-new DI — add to ITEMS and render a new matrix row
+            ITEMS[k] = Object.assign({ type: 'di', typeBadge: 'DESIGN INPUT', typeCls: 'type-di',
+              status: 'draft', statement: '', category: '', regulatory: '', originType: '', originRef: '',
+              tracesTo: [], tracedBy: [], pageHref: 'design-inputs.html' }, s);
+            renderNewDIRow(k, ITEMS[k]);
+          }
+        });
+      } catch(e) {}
+    })();
+
+    // Load DOs from localStorage — update ITEMS and replace add-do-btn cells
+    (function loadStoredDOs() {
+      try {
+        const raw = localStorage.getItem('qms_design_outputs');
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        const entries = Array.isArray(parsed)
+          ? parsed.map(function(item) { var k = item.id ? item.id.toLowerCase().replace('-','') : null; return [k, item]; }).filter(function(e){ return e[0]; })
+          : Object.entries(parsed);
+
+        entries.forEach(function(entry) {
+          var k = entry[0], s = entry[1];
+          if (!s || s.type !== 'do') return;
+          ITEMS[k] = Object.assign({ type:'do', typeBadge:'DESIGN OUTPUT', typeCls:'type-do',
+            status:'draft', statement:'', description:'', category:'', tracesTo:[], tracedBy:[], pageHref:'design-outputs.html' }, s);
+
+          // For each DI this DO traces to, replace the add-do-btn with a proper DO cell
+          (s.tracesTo || []).forEach(function(diId) {
+            var btn = document.querySelector('.add-do-btn[href*="linkDI=' + diId + '"]');
+            if (!btn) return;
+            var td = btn.closest('td');
+            if (!td) return;
+            var dot = s.status === 'approved' ? 'approved' : s.status === 'review' ? 'review' : 'draft';
+            td.innerHTML = '<div class="matrix-cell" onclick="openDetail(\'' + k + '\')">' +
+              '<div class="cell-header"><span class="status-dot ' + dot + '"></span><span class="cell-id">' + escHtml(s.id) + '</span></div>' +
+              '<div class="cell-text">' + escHtml(s.statement || '(no title)') + '</div>' +
+            '</div>';
+          });
+        });
+      } catch(e) {}
+    })();
+
+    function renderNewDIRow(key, item) {
+      var tbody = document.querySelector('.matrix-table tbody');
+      if (!tbody) return;
+      var originType = item.originType || 'none';
+      var originRef  = item.originRef  || '';
+
+      var originCellHtml;
+      if (originType === 'un') {
+        originCellHtml = '<td class="td-un td-origin-un" data-origin-type="un">' +
+          '<div class="matrix-cell" onclick="openDetail(\'' + key + '\')">' +
+            '<div class="cell-header"><span class="status-dot draft"></span><span class="origin-card-id un-id">' + escHtml(originRef || 'UN-?') + '</span></div>' +
+            '<div class="cell-text" style="font-size:0.72rem;color:rgba(11,39,64,0.5);">Origin: User Need</div>' +
+          '</div></td>';
+      } else if (originType === 'regulatory') {
+        originCellHtml = '<td class="td-un td-origin-reg" data-origin-type="regulatory">' +
+          '<div class="matrix-cell" onclick="openDetail(\'' + key + '\')">' +
+            '<div class="cell-header"><span class="origin-icon">⚖</span><span class="origin-card-id reg-id">Regulatory</span></div>' +
+            '<div class="cell-text" style="font-weight:600;color:#0369A1;">' + escHtml(originRef) + '</div>' +
+          '</div></td>';
+      } else if (originType === 'risk-control') {
+        originCellHtml = '<td class="td-un td-origin-rc" data-origin-type="risk-control">' +
+          '<div class="matrix-cell" onclick="openDetail(\'' + key + '\')">' +
+            '<div class="cell-header"><span class="origin-icon">⚠</span><span class="origin-card-id rc-id">Risk Control</span></div>' +
+            '<div class="cell-text" style="font-weight:600;color:#0F766E;">' + escHtml(originRef) + '</div>' +
+          '</div></td>';
+      } else {
+        originCellHtml = '<td class="td-un td-origin-none" data-origin-type="none">' +
+          '<button class="add-origin-btn" onclick="openDetail(\'' + key + '\')">' +
+            '<span class="add-origin-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Origin Source</span>' +
+            '<span class="add-origin-sub">for ' + escHtml(item.id) + '</span>' +
+          '</button></td>';
+      }
+
+      var statusDot = item.status === 'approved' ? 'approved' : item.status === 'review' ? 'review' : 'draft';
+      var diCellHtml = '<td class="td-di">' +
+        '<div class="matrix-cell" onclick="openDetail(\'' + key + '\')">' +
+          '<div class="cell-header"><span class="status-dot ' + statusDot + '"></span><span class="cell-id">' + escHtml(item.id) + '</span></div>' +
+          '<div class="cell-text">' + escHtml(item.statement || '(no statement)') + '</div>' +
+        '</div></td>';
+
+      var doCellHtml = '<td class="td-do">' +
+        '<a class="add-do-btn" href="design-outputs.html?newDO=1&linkDI=' + encodeURIComponent(item.id) + '">' +
+          '<span class="add-do-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Design Output</span>' +
+          '<span class="add-do-sub">linked to ' + escHtml(item.id) + '</span>' +
+        '</a></td>';
+
+      var verCellHtml = '<td class="td-ver">' +
+        '<a class="add-ver-btn" href="verification.html?newVV=1&linkDI=' + encodeURIComponent(item.id) + '">' +
+          '<span class="add-ver-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Verification Ref</span>' +
+          '<span class="add-ver-sub">linked to ' + escHtml(item.id) + '</span>' +
+        '</a></td>';
+
+      var valCellHtml = '<td class="td-val">' +
+        '<a class="add-val-btn" href="validation.html?newVLD=1&linkDI=' + encodeURIComponent(item.id) + '">' +
+          '<span class="add-val-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Validation Ref</span>' +
+          '<span class="add-val-sub">linked to ' + escHtml(item.id) + '</span>' +
+        '</a></td>';
+
+      var tr = document.createElement('tr');
+      tr.setAttribute('data-origin', originType);
+      tr.setAttribute('data-has-do', 'false');
+      tr.setAttribute('data-has-ver', 'false');
+      tr.setAttribute('data-gap', 'new');
+      tr.innerHTML = originCellHtml + diCellHtml + doCellHtml + verCellHtml + valCellHtml;
+      tbody.appendChild(tr);
+    }
+
+    let currentPanelKey = null;
+
+    function openDetail(key) {
+      const item = ITEMS[key]; if (!item) return;
+      currentPanelKey = key;
+      const typeBadge = document.getElementById('panelTypeBadge');
+      typeBadge.textContent = item.typeBadge; typeBadge.className = 'panel-type-badge ' + item.typeCls;
+      document.getElementById('panelId').textContent = item.id;
+      const labels = { approved: 'Approved', review: 'Under Review', draft: 'Draft' };
+      const sd = document.getElementById('panelStatusDisplay');
+      sd.textContent = labels[item.status] || 'Draft'; sd.className = 'status-badge ' + (item.status || 'draft');
+
+      const isDraft = item.status === 'draft';
+      const bannerLabels = { di: 'Design Inputs', do: 'Design Outputs', un: 'User Needs' };
+      let html = '';
+
+      if (isDraft) {
+        html += `<div class="edit-mode-banner"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Draft — editable. Changes save to ${bannerLabels[item.type] || 'record'}.</div>`;
+      }
+
+      const stmtLabel = item.type === 'do' ? 'Title / Output Name' : 'Statement';
+      if (isDraft) {
+        html += `<div class="panel-field"><div class="panel-field-label">${stmtLabel}</div><textarea class="field-edit" data-field="statement" rows="3">${escHtml(item.statement)}</textarea></div>`;
+      } else {
+        html += `<div class="panel-field"><div class="panel-field-label">${stmtLabel}</div><div class="field-locked">${escHtml(item.statement)}</div></div>`;
+      }
+
+      if (isDraft && item.type === 'do') {
+        html += `<div class="panel-field"><div class="panel-field-label">Description</div><textarea class="field-edit" data-field="description" rows="3">${escHtml(item.description || '')}</textarea></div>`;
+      } else if (item.description) {
+        html += `<div class="panel-field"><div class="panel-field-label">Description</div><div class="field-locked">${escHtml(item.description)}</div></div>`;
+      }
+
+      if (isDraft) {
+        html += `<div class="panel-field"><div class="panel-field-label">Category</div><input class="field-edit" data-field="category" type="text" value="${escHtml(item.category || '')}"></div>`;
+      } else {
+        html += `<div class="panel-field"><div class="panel-field-label">Category</div><div class="field-locked">${escHtml(item.category || '—')}</div></div>`;
+      }
+
+      if (isDraft && item.type === 'un') {
+        html += `<div class="panel-field"><div class="panel-field-label">Source / Stakeholder</div><input class="field-edit" data-field="source" type="text" value="${escHtml(item.source || '')}"></div>`;
+      } else if (item.source) {
+        html += `<div class="panel-field"><div class="panel-field-label">Source / Stakeholder</div><div class="field-locked">${escHtml(item.source)}</div></div>`;
+      }
+
+      if (isDraft && item.type === 'di') {
+        const originLabels = { un: 'User Need', regulatory: 'Regulatory', 'risk-control': 'Risk Control' };
+        const refLabels    = { un: 'UN ID', regulatory: 'Citation', 'risk-control': 'FMEA / Hazard ID' };
+        const refPlaceholders = { un: 'e.g. UN-001', regulatory: 'e.g. 21 CFR 820.30(f)', 'risk-control': 'e.g. FMEA-003' };
+        const curType = item.originType || '';
+        const curRef  = item.originRef  || '';
+        html += `<div class="panel-field">
+          <div class="panel-field-label">Origin</div>
+          <select class="field-edit-select" data-field="originType" onchange="updateOriginRefLabel(this)">
+            <option value="">— Select origin —</option>
+            <option value="un"${curType==='un'?' selected':''}>User Need</option>
+            <option value="regulatory"${curType==='regulatory'?' selected':''}>Regulatory</option>
+            <option value="risk-control"${curType==='risk-control'?' selected':''}>Risk Control</option>
+          </select>
+          <div class="origin-ref-wrap" id="originRefWrap" style="${curType ? '' : 'display:none'}">
+            <div class="origin-ref-label" id="originRefLabel">${escHtml(refLabels[curType] || 'Reference')}</div>
+            <input class="field-edit" data-field="originRef" id="originRefInput" type="text"
+              value="${escHtml(curRef)}"
+              placeholder="${escHtml(refPlaceholders[curType] || '')}">
+          </div>
+        </div>`;
+      } else if (item.originType) {
+        const originLabels = { un: 'User Need', regulatory: 'Regulatory', 'risk-control': 'Risk Control' };
+        html += `<div class="panel-field"><div class="panel-field-label">Origin</div><div class="field-locked">${escHtml(originLabels[item.originType] || item.originType)}${item.originRef ? ` — ${escHtml(item.originRef)}` : ''}</div></div>`;
+      }
+
+      if (item.regulatory && !isDraft) html += `<div class="panel-field"><div class="panel-field-label">Regulatory Basis</div><div class="field-locked">${escHtml(item.regulatory)}</div></div>`;
+
+      if (item.tracesTo && item.tracesTo.length) {
+        const pills = item.tracesTo.map(t => `<span class="panel-link-pill">${escHtml(t)}</span>`).join('');
+        html += `<div class="panel-field"><div class="panel-field-label">Traces To</div><div class="panel-links">${pills}</div></div>`;
+      }
+      if (item.tracedBy && item.tracedBy.length) {
+        const pills = item.tracedBy.map(t => `<span class="panel-link-pill">${escHtml(t)}</span>`).join('');
+        html += `<div class="panel-field"><div class="panel-field-label">Traced By</div><div class="panel-links">${pills}</div></div>`;
+      }
+      document.getElementById('panelBody').innerHTML = html;
+
+      const pageLabel = { un: 'Open in User Needs', di: 'Open in Design Inputs', do: 'Open in Design Outputs' };
+      if (isDraft) {
+        document.getElementById('panelFooterBar').innerHTML =
+          `<button class="btn-save-draft" id="btnSaveDraft" onclick="saveDraft()">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save Changes
+          </button>
+          <a class="btn-open-page-secondary" href="${item.pageHref || '#'}">
+            ${pageLabel[item.type] || 'Open'}
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>`;
+      } else {
+        document.getElementById('panelFooterBar').innerHTML = item.pageHref
+          ? `<a class="btn-open-page" href="${item.pageHref}">${pageLabel[item.type] || 'Open'}<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>`
+          : '';
+      }
+
+      document.getElementById('panelOverlay').classList.add('open');
+    }
+
+    function updateOriginRefLabel(sel) {
+      const val = sel.value;
+      const refLabels      = { un: 'UN ID', regulatory: 'Citation', 'risk-control': 'FMEA / Hazard ID' };
+      const refPlaceholders = { un: 'e.g. UN-001', regulatory: 'e.g. 21 CFR 820.30(f)', 'risk-control': 'e.g. FMEA-003' };
+      const wrap  = document.getElementById('originRefWrap');
+      const label = document.getElementById('originRefLabel');
+      const input = document.getElementById('originRefInput');
+      if (val) {
+        wrap.style.display = '';
+        label.textContent  = refLabels[val] || 'Reference';
+        input.placeholder  = refPlaceholders[val] || '';
+      } else {
+        wrap.style.display = 'none';
+      }
+    }
+
+    function saveDraft() {
+      const key  = currentPanelKey;
+      const item = ITEMS[key]; if (!item) return;
+
+      // Collect edited values from panel fields
+      const fields = document.querySelectorAll('#panelBody [data-field]');
+      fields.forEach(function(f) { item[f.dataset.field] = f.value; });
+
+      // Persist to the appropriate localStorage store
+      const storageKeys = { di: 'qms_design_inputs', do: 'qms_design_outputs', un: 'qms_user_needs' };
+      const lsKey = storageKeys[item.type];
+      try {
+        if (lsKey) {
+          const raw = localStorage.getItem(lsKey);
+          const parsed = raw ? JSON.parse(raw) : {};
+          const obj = Array.isArray(parsed)
+            ? parsed.reduce(function(acc, s) { if (s && s.id) { var k = s.id.toLowerCase().replace('-',''); acc[k] = s; } return acc; }, {})
+            : (parsed && typeof parsed === 'object' ? parsed : {});
+          const storageKey = item.id.toLowerCase().replace('-', '');
+          obj[storageKey] = Object.assign({}, obj[storageKey] || {}, item);
+          localStorage.setItem(lsKey, JSON.stringify(obj));
+        }
+      } catch(e) {}
+
+      // Update DOM cell text immediately
+      if (item.type === 'di') {
+        var allRows = document.querySelectorAll('.matrix-table tbody tr');
+        var targetRow = null;
+        allRows.forEach(function(tr) {
+          if (tr.querySelector('.td-di [onclick="openDetail(\'' + key + '\')"]')) targetRow = tr;
+        });
+        if (targetRow) {
+          var diCellText = targetRow.querySelector('.td-di .cell-text');
+          if (diCellText) diCellText.textContent = item.statement || '(no statement)';
+          var originTd = targetRow.querySelector('[data-origin-type]');
+          if (originTd && item.originType) {
+            var originRef = item.originRef || '';
+            var originColor = item.originType === 'un' ? '#0AC0E9' : item.originType === 'regulatory' ? '#0369A1' : '#0F766E';
+            var originBorderClass = item.originType === 'un' ? 'td-origin-un' : item.originType === 'regulatory' ? 'td-origin-reg' : 'td-origin-rc';
+            originTd.className = 'td-un ' + originBorderClass;
+            originTd.setAttribute('data-origin-type', item.originType);
+            if (item.originType === 'un') {
+              originTd.querySelector('.cell-text') && (originTd.querySelector('.cell-text').textContent = originRef);
+            } else {
+              var originLabel = item.originType === 'regulatory' ? 'Regulatory' : 'Risk Control';
+              var originCellText = originTd.querySelector('.cell-text');
+              if (originCellText) { originCellText.textContent = originRef; originCellText.style.color = originColor; }
+              var originCardId = originTd.querySelector('.origin-card-id');
+              if (originCardId) { originCardId.textContent = originLabel; originCardId.className = 'origin-card-id ' + (item.originType === 'regulatory' ? 'reg-id' : 'rc-id'); }
+            }
+            targetRow.setAttribute('data-origin', item.originType);
+          }
+        }
+      } else if (item.type === 'do') {
+        // Update all DO cells with this key (same DO can appear in multiple rows)
+        document.querySelectorAll('.td-do [onclick="openDetail(\'' + key + '\')"]').forEach(function(cell) {
+          var cellText = cell.querySelector('.cell-text');
+          if (cellText) cellText.textContent = item.statement || '(no statement)';
+        });
+      } else if (item.type === 'un') {
+        document.querySelectorAll('.td-un [onclick="openDetail(\'' + key + '\')"]').forEach(function(cell) {
+          var cellText = cell.querySelector('.cell-text');
+          if (cellText) cellText.textContent = item.statement || '(no statement)';
+        });
+      }
+
+      // Brief save confirmation on button
+      const btn = document.getElementById('btnSaveDraft');
+      if (btn) {
+        btn.classList.add('saved');
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Saved';
+        setTimeout(function() { btn.classList.remove('saved'); btn.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Changes'; }, 1800);
+      }
+    }
+
+    function openVV(id) {
+      alert('V&V Hub coming soon. ' + id + ' will be viewable there.');
+    }
+
+    function closePanel() {
+      document.getElementById('panelOverlay').classList.remove('open');
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+    // ── ORIGIN FILTER ─────────────────────────────────────────────────────
+    let activeFilter = 'all';
+
+    function setFilter(filter) {
+      activeFilter = filter;
+      // Update button states
+      const buttons = { all: 'fAll', un: 'fUN', regulatory: 'fReg', 'risk-control': 'fRC', gaps: 'fGaps' };
+      const activeClasses = { all: 'active', un: 'active-un', regulatory: 'active-reg', 'risk-control': 'active-rc', gaps: 'active-gaps' };
+      Object.keys(buttons).forEach(f => {
+        const btn = document.getElementById(buttons[f]);
+        if (!btn) return;
+        btn.className = 'filter-btn';
+        if (f === filter) btn.classList.add(activeClasses[f]);
+      });
+      // Apply filter to rows
+      const rows = document.querySelectorAll('.matrix-table tbody tr');
+      rows.forEach(row => {
+        const origin = row.getAttribute('data-origin') || 'none';
+        const hasGap = row.getAttribute('data-gap') ||
+                       row.getAttribute('data-has-do') === 'false' ||
+                       row.getAttribute('data-has-ver') === 'false';
+        row.classList.remove('gap-row');
+        if (filter === 'all') {
+          row.style.display = '';
+        } else if (filter === 'gaps') {
+          if (hasGap) { row.style.display = ''; row.classList.add('gap-row'); }
+          else { row.style.display = 'none'; }
+        } else {
+          row.style.display = (origin === filter) ? '' : 'none';
+        }
+      });
+      // After filtering, fix rowspan visibility issues by checking if any visible row
+      // uses the same group origin cell. For simplicity, show all hidden gap cells.
+    }
+  </script>
+
+  <script src="sidebar.js"></script>
+  <script>initSidebar({ activePage: 'trace-matrix' });</script>
+</body>
+</html>

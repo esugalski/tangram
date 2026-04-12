@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tangram eQMS — Quality is Your Competitive Advantage</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <meta name="description" content="Tangram eQMS is the first quality management system built for medical device founders — education-first, built for hardware and software devices, and designed to make quality your competitive advantage.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --primary:   #0B2740;
+      --mid-blue:  #304F6B;
+      --dark-blue: #02192F;
+      --aqua:      #0AC0E9;
+      --aqua-dark: #089bbf;
+      --aqua-glow: rgba(10,192,233,0.10);
+      --gray:      #D2D2D2;
+      --light-gray:#F7F8FA;
+      --white:     #FFFFFF;
+      --text:      #0B2740;
+      --text-muted:#304F6B;
+      --text-light: rgba(255,255,255,0.62);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--white); color: var(--text); overflow-x: hidden; }
+
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.02; pointer-events: none; z-index: 9999;
+    }
+
+    /* ─── NAV ─── */
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 500; padding: 0 2rem; transition: background 0.3s, box-shadow 0.3s; }
+    .nav.scrolled { background: rgba(255,255,255,0.97); backdrop-filter: blur(12px); box-shadow: 0 1px 0 rgba(0,0,0,0.07); }
+    .nav-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 72px; }
+    .nav-logo { height: 28px; width: auto; display: block; }
+    .nav-logo-light { display: block; }
+    .nav-logo-dark  { display: none; }
+    .nav.scrolled .nav-logo-light { display: none; }
+    .nav.scrolled .nav-logo-dark  { display: block; }
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .nav-links { display: flex; align-items: center; gap: 2rem; margin-right: 1rem; }
+    .nav-link { font-size: 0.855rem; font-weight: 500; color: rgba(255,255,255,0.7); text-decoration: none; transition: color 0.2s; letter-spacing: 0.01em; }
+    .nav.scrolled .nav-link { color: var(--text-muted); }
+    .nav-link:hover, .nav.scrolled .nav-link:hover { color: var(--aqua); }
+    .nav-badge { display: inline-block; background: rgba(10,192,233,0.18); color: #5DDAF5; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 0.4rem; vertical-align: middle; }
+    .nav.scrolled .nav-badge { background: rgba(10,192,233,0.12); color: var(--aqua-dark); }
+
+    .btn-ghost { font-size: 0.855rem; font-weight: 600; color: rgba(255,255,255,0.75); background: none; border: 1.5px solid rgba(255,255,255,0.2); padding: 0.55rem 1.1rem; border-radius: 6px; text-decoration: none; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.5); color: white; }
+    .nav.scrolled .btn-ghost { color: var(--text-muted); border-color: rgba(11,39,64,0.2); }
+    .nav.scrolled .btn-ghost:hover { border-color: var(--aqua-dark); color: var(--aqua-dark); }
+
+    .btn-nav-cta { font-size: 0.855rem; font-weight: 700; background: var(--aqua); color: var(--primary); padding: 0.55rem 1.2rem; border-radius: 6px; text-decoration: none; cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 3px 12px rgba(10,192,233,0.3); letter-spacing: 0.01em; }
+    .btn-nav-cta:hover { background: var(--aqua-dark); transform: translateY(-1px); box-shadow: 0 5px 18px rgba(10,192,233,0.4); }
+    .btn-nav-cta:active { transform: translateY(0); }
+
+    /* ─── HERO ─── */
+    .hero { min-height: 100vh; background: var(--primary); position: relative; overflow: hidden; display: flex; align-items: center; padding: 7rem 2rem 4rem; }
+    .hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(10,192,233,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(10,192,233,0.04) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+    .hero-orb-1 { position: absolute; top: -240px; right: -140px; width: 700px; height: 700px; background: radial-gradient(circle, rgba(10,192,233,0.09) 0%, transparent 70%); pointer-events: none; }
+    .hero-orb-2 { position: absolute; bottom: -200px; left: -100px; width: 560px; height: 560px; background: radial-gradient(circle, rgba(48,79,107,0.22) 0%, transparent 70%); pointer-events: none; }
+    .hero-inner { max-width: 1280px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 480px; gap: 4rem; align-items: center; position: relative; z-index: 1; }
+
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(10,192,233,0.1); border: 1px solid rgba(10,192,233,0.25); color: #5DDAF5; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.35rem 0.9rem; border-radius: 100px; margin-bottom: 1.75rem; opacity: 0; animation: fadeUp 0.6s ease forwards 0.1s; }
+    .hero-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--aqua); display: inline-block; animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    .hero-headline { font-family: 'Inter', sans-serif;font-weight: 800; font-size: clamp(2.4rem, 4.5vw, 4rem); line-height: 1.05; letter-spacing: -0.02em; color: white; margin-bottom: 1.5rem; opacity: 0; animation: fadeUp 0.6s ease forwards 0.25s; }
+    .hero-headline em { font-style: normal; color: var(--aqua); }
+    .hero-sub { font-size: 1.05rem; line-height: 1.78; color: rgba(255,255,255,0.58); max-width: 520px; margin-bottom: 2.5rem; opacity: 0; animation: fadeUp 0.6s ease forwards 0.4s; }
+    .hero-ctas { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.6s ease forwards 0.55s; }
+
+    .btn-aqua { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.95rem; letter-spacing: 0.01em; padding: 0.85rem 1.75rem; border-radius: 7px; text-decoration: none; border: none; cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 18px rgba(10,192,233,0.32); }
+    .btn-aqua:hover { background: var(--aqua-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(10,192,233,0.4); }
+    .btn-aqua:active { transform: translateY(0); }
+    .btn-aqua svg { width: 16px; height: 16px; transition: transform 0.2s; }
+    .btn-aqua:hover svg { transform: translateX(3px); }
+
+    .btn-outline-light { display: inline-flex; align-items: center; gap: 0.5rem; background: transparent; color: rgba(255,255,255,0.75); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.95rem; padding: 0.85rem 1.75rem; border-radius: 7px; border: 1.5px solid rgba(255,255,255,0.22); text-decoration: none; cursor: pointer; transition: border-color 0.2s, color 0.2s, transform 0.15s; }
+    .btn-outline-light:hover { border-color: rgba(255,255,255,0.55); color: white; transform: translateY(-1px); }
+    .btn-outline-light:active { transform: translateY(0); }
+
+    .hero-trust { display: flex; align-items: center; gap: 1.5rem; margin-top: 3rem; padding-top: 2.5rem; border-top: 1px solid rgba(255,255,255,0.07); opacity: 0; animation: fadeUp 0.6s ease forwards 0.7s; flex-wrap: wrap; }
+    .hero-trust-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.35); }
+    .trust-item { display: flex; align-items: center; gap: 0.5rem; }
+    .trust-item-icon { width: 14px; height: 14px; fill: none; stroke: rgba(10,192,233,0.6); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .trust-item-text { font-size: 0.78rem; font-weight: 500; color: rgba(255,255,255,0.45); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ─── APP MOCKUP ─── */
+    .app-mockup-wrap { opacity: 1; }
+    .app-mockup { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(10,192,233,0.12), inset 0 1px 0 rgba(255,255,255,0.1); backdrop-filter: blur(4px); }
+    .app-chrome { background: rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.12); padding: 0.65rem 1rem; display: flex; align-items: center; gap: 0.75rem; }
+    .chrome-dots { display: flex; gap: 5px; }
+    .chrome-dots span { width: 10px; height: 10px; border-radius: 50%; display: block; }
+    .chrome-dots span:nth-child(1) { background: #FF5F57; }
+    .chrome-dots span:nth-child(2) { background: #FFBD2E; }
+    .chrome-dots span:nth-child(3) { background: #28C840; }
+    .chrome-url { flex: 1; background: rgba(255,255,255,0.06); border-radius: 4px; padding: 0.2rem 0.65rem; font-size: 0.68rem; color: rgba(255,255,255,0.35); font-family: 'Inter', monospace; text-align: center; }
+
+    .app-body { display: grid; grid-template-columns: 140px 1fr; min-height: 360px; }
+    .app-sidebar { background: rgba(2,25,47,0.85); border-right: 1px solid rgba(255,255,255,0.1); padding: 1rem 0; display: flex; flex-direction: column; gap: 0.15rem; }
+    .app-sidebar-logo { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.75rem 0.75rem; margin-bottom: 0.25rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .app-t-mark { width: 22px; height: 22px; background: var(--aqua); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; color: var(--primary); flex-shrink: 0; font-family: 'Inter', sans-serif;}
+    .app-sidebar-brand { font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.6); letter-spacing: 0.04em; }
+    .app-nav-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.38rem 0.75rem; font-size: 0.67rem; font-weight: 500; color: rgba(255,255,255,0.4); cursor: pointer; transition: background 0.15s, color 0.15s; border-radius: 0; }
+    .app-nav-item.active { background: rgba(10,192,233,0.1); color: #5DDAF5; }
+    .app-nav-item:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
+    .app-nav-icon { width: 12px; height: 12px; flex-shrink: 0; opacity: 0.7; }
+
+    .app-content-area { padding: 1rem; display: flex; flex-direction: column; gap: 0.65rem; overflow: hidden; }
+    .app-content-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.2rem; }
+    .app-content-title { font-size: 0.78rem; font-weight: 700; color: rgba(255,255,255,0.85); }
+    .app-phase-badge { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(10,192,233,0.15); color: #5DDAF5; border: 1px solid rgba(10,192,233,0.2); padding: 0.18rem 0.55rem; border-radius: 100px; }
+
+    .app-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+    .app-metric { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); border-radius: 7px; padding: 0.6rem 0.65rem; }
+    .app-metric-num { font-size: 1.05rem; font-weight: 800; margin-bottom: 0.1rem; }
+    .app-metric-label { font-size: 0.58rem; font-weight: 500; color: rgba(255,255,255,0.38); line-height: 1.3; }
+    .app-metric.warn .app-metric-num { color: #F59E0B; }
+    .app-metric.danger .app-metric-num { color: #EF4444; }
+    .app-metric.ok .app-metric-num { color: #10B981; }
+
+    .app-feed { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 7px; padding: 0.6rem 0.75rem; display: flex; flex-direction: column; gap: 0.45rem; }
+    .app-feed-title { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 0.1rem; }
+    .app-feed-item { display: flex; align-items: center; gap: 0.5rem; }
+    .feed-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .feed-dot.red { background: #EF4444; }
+    .feed-dot.orange { background: #F59E0B; }
+    .feed-dot.green { background: #10B981; }
+    .app-feed-text { font-size: 0.63rem; color: rgba(255,255,255,0.45); line-height: 1.3; }
+
+    .app-progress { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 7px; padding: 0.6rem 0.75rem; }
+    .app-progress-label { font-size: 0.6rem; font-weight: 600; color: rgba(255,255,255,0.4); margin-bottom: 0.4rem; display: flex; justify-content: space-between; }
+    .app-progress-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+    .app-progress-fill { height: 100%; width: 38%; background: linear-gradient(90deg, var(--aqua), var(--aqua-dark)); border-radius: 4px; }
+
+    /* ─── SECTION COMMONS ─── */
+    .section { padding: 6rem 2rem; }
+    .section-inner { max-width: 1280px; margin: 0 auto; }
+    .section-eyebrow { display: inline-block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--aqua-dark); margin-bottom: 0.85rem; }
+    .section-eyebrow-light { color: rgba(10,192,233,0.8); }
+    .section-title { font-family: 'Inter', sans-serif;font-weight: 800; font-size: clamp(1.9rem, 3.5vw, 2.75rem); letter-spacing: -0.02em; color: var(--primary); line-height: 1.1; margin-bottom: 1rem; }
+    .section-title-light { color: white; }
+    .section-sub { font-size: 1rem; line-height: 1.78; color: var(--text-muted); max-width: 560px; }
+    .section-sub-light { color: rgba(255,255,255,0.55); }
+
+    /* ─── PAIN POINTS ─── */
+    .pain-points { padding: 5rem 2rem; background: var(--light-gray); }
+    .pain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+    .pain-card { background: white; border: 1px solid var(--gray); border-radius: 16px; padding: 2rem; position: relative; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s; }
+    .pain-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--aqua); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
+    .pain-card:hover::before { transform: scaleX(1); }
+    .pain-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(11,39,64,0.09); border-color: transparent; }
+    .pain-q-tag { display: inline-block; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; background: rgba(11,39,64,0.06); color: var(--mid-blue); padding: 0.25rem 0.65rem; border-radius: 4px; margin-bottom: 1rem; }
+    .pain-question { font-family: 'Inter', sans-serif;font-size: 1.2rem; font-weight: 700; color: var(--primary); line-height: 1.25; margin-bottom: 1rem; letter-spacing: -0.01em; }
+    .pain-answer { font-size: 0.9rem; line-height: 1.72; color: var(--text-muted); }
+    .pain-answer strong { color: var(--primary); font-weight: 600; }
+
+    /* ─── PHILOSOPHY ─── */
+    .philosophy { background: var(--dark-blue); padding: 7rem 2rem; position: relative; overflow: hidden; }
+    .philosophy-orb { position: absolute; top: -200px; right: -150px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(10,192,233,0.07) 0%, transparent 70%); pointer-events: none; }
+    .philosophy-orb-2 { position: absolute; bottom: -200px; left: -100px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(48,79,107,0.2) 0%, transparent 70%); pointer-events: none; }
+    .philosophy-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
+    .philosophy-header { max-width: none; margin-bottom: 4rem; display: flex; gap: 4rem; align-items: flex-end; }
+    .philosophy-headline { font-family: 'Inter', sans-serif;font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 800; line-height: 1.08; letter-spacing: -0.02em; color: white; margin-bottom: 1.25rem; }
+    .philosophy-headline em { font-style: normal; color: var(--aqua); }
+    .philosophy-sub { font-size: 1.05rem; line-height: 1.78; color: rgba(255,255,255,0.52); max-width: 480px; flex-shrink: 0; align-self: flex-end; }
+
+    .philosophy-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .phi-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 2rem; position: relative; transition: border-color 0.25s; }
+    .phi-card:hover { border-color: rgba(10,192,233,0.25); }
+    .phi-card-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.28); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .phi-card-label-then { color: rgba(255,255,255,0.28); }
+    .phi-card-label-now { color: var(--aqua); }
+    .phi-divider { width: 100%; height: 1px; background: rgba(255,255,255,0.07); margin: 1.25rem 0; }
+    .phi-then { font-size: 0.9rem; color: rgba(255,255,255,0.35); line-height: 1.6; text-decoration: line-through; text-decoration-color: rgba(255,100,100,0.4); }
+    .phi-now { font-size: 0.9rem; color: rgba(255,255,255,0.82); line-height: 1.6; font-weight: 500; }
+    .phi-icon { width: 40px; height: 40px; background: rgba(10,192,233,0.1); border: 1px solid rgba(10,192,233,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; }
+    .phi-icon svg { width: 18px; height: 18px; stroke: var(--aqua); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── MODULES ─── */
+    .modules-section { padding: 6rem 2rem; background: white; }
+    .modules-header { margin-bottom: 3.5rem; }
+    .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+    .module-card { background: var(--light-gray); border: 1px solid transparent; border-radius: 14px; padding: 1.75rem; transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s; cursor: default; }
+    .module-card:hover { background: white; border-color: var(--gray); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(11,39,64,0.08); }
+    .module-num { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(11,39,64,0.25); margin-bottom: 0.85rem; }
+    .module-icon { width: 44px; height: 44px; background: var(--aqua-glow); border-radius: 11px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; transition: background 0.2s; }
+    .module-card:hover .module-icon { background: rgba(10,192,233,0.14); }
+    .module-icon svg { width: 20px; height: 20px; stroke: var(--aqua-dark); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .module-name { font-weight: 700; font-size: 0.95rem; color: var(--primary); margin-bottom: 0.45rem; letter-spacing: -0.01em; }
+    .module-desc { font-size: 0.82rem; line-height: 1.65; color: var(--text-muted); }
+    .module-tag { display: inline-block; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(10,192,233,0.1); color: var(--aqua-dark); padding: 0.18rem 0.55rem; border-radius: 4px; margin-top: 0.85rem; }
+
+    /* ─── HOW IT WORKS ─── */
+    .how-section { padding: 6rem 2rem; background: var(--primary); position: relative; overflow: hidden; }
+    .how-orb { position: absolute; top: -150px; right: -100px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(10,192,233,0.07) 0%, transparent 70%); pointer-events: none; }
+    .how-inner { max-width: 1280px; margin: 0 auto; position: relative; z-index: 1; }
+    .how-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 3.5rem; position: relative; }
+    .how-steps::before { content: ''; position: absolute; top: 28px; left: calc(16.67% + 1rem); right: calc(16.67% + 1rem); height: 1px; background: linear-gradient(90deg, rgba(10,192,233,0.3), rgba(10,192,233,0.3)); pointer-events: none; }
+    .how-step { padding: 0 2rem; }
+    .how-step-num { width: 56px; height: 56px; border-radius: 50%; background: rgba(10,192,233,0.1); border: 1.5px solid rgba(10,192,233,0.3); display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; position: relative; z-index: 1; }
+    .how-step-num-text { font-family: 'Inter', sans-serif;font-size: 1.2rem; font-weight: 800; color: var(--aqua); }
+    .how-step-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(10,192,233,0.65); margin-bottom: 0.75rem; }
+    .how-step-title { font-family: 'Inter', sans-serif;font-size: 1.4rem; font-weight: 800; color: white; margin-bottom: 0.75rem; line-height: 1.15; letter-spacing: -0.02em; }
+    .how-step-desc { font-size: 0.9rem; line-height: 1.72; color: rgba(255,255,255,0.52); }
+
+    /* ─── WHY DIFFERENT ─── */
+    .why-section { padding: 6rem 2rem; background: var(--light-gray); }
+    .why-table-wrap { margin-top: 3rem; border-radius: 16px; overflow: hidden; border: 1px solid var(--gray); background: white; }
+    .why-table { width: 100%; border-collapse: collapse; }
+    .why-table th { background: var(--primary); color: white; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 1rem 1.5rem; text-align: left; }
+    .why-table th:first-child { width: 22%; }
+    .why-table th.tangram-col { color: var(--aqua); }
+    .why-table td { padding: 1rem 1.5rem; font-size: 0.88rem; border-bottom: 1px solid rgba(11,39,64,0.06); vertical-align: top; line-height: 1.55; }
+    .why-table tr:last-child td { border-bottom: none; }
+    .why-table tr:nth-child(even) td { background: rgba(11,39,64,0.02); }
+    .why-table td:first-child { font-weight: 600; color: var(--primary); font-size: 0.82rem; }
+    .why-table td.old-way { color: rgba(11,39,64,0.4); }
+    .why-table td.new-way { color: var(--primary); font-weight: 500; }
+    .why-table td.new-way::before { content: '✓ '; color: #10B981; font-weight: 700; }
+
+    /* ─── PRICING ─── */
+    .pricing-section { padding: 6rem 2rem; background: white; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3.5rem; }
+    .pricing-card { border-radius: 18px; padding: 2.25rem; border: 1px solid var(--gray); position: relative; transition: transform 0.25s, box-shadow 0.25s; }
+    .pricing-card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(11,39,64,0.1); }
+    .pricing-card.featured { background: var(--primary); border-color: transparent; }
+    .pricing-card.coming { opacity: 0.6; pointer-events: none; }
+    .pricing-tier { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .pricing-card.featured .pricing-tier { color: rgba(255,255,255,0.5); }
+    .pricing-featured-badge { display: inline-block; background: var(--aqua); color: var(--primary); font-size: 0.6rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 100px; margin-bottom: 0.75rem; }
+    .pricing-name { font-family: 'Inter', sans-serif;font-size: 1.55rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+    .pricing-card.featured .pricing-name { color: white; }
+    .pricing-price { font-size: 2.25rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; line-height: 1; margin-bottom: 0.3rem; }
+    .pricing-card.featured .pricing-price { color: var(--aqua); }
+    .pricing-card.coming .pricing-price { font-size: 1rem; font-weight: 600; color: var(--text-muted); }
+    .pricing-price-note { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+    .pricing-card.featured .pricing-price-note { color: rgba(255,255,255,0.45); }
+    .pricing-divider { height: 1px; background: rgba(11,39,64,0.08); margin: 1.25rem 0; }
+    .pricing-card.featured .pricing-divider { background: rgba(255,255,255,0.1); }
+    .pricing-features { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.75rem; }
+    .pricing-feature { display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.86rem; color: var(--text-muted); line-height: 1.45; }
+    .pricing-card.featured .pricing-feature { color: rgba(255,255,255,0.7); }
+    .pricing-check { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; }
+    .pricing-check circle { fill: rgba(16,185,129,0.15); }
+    .pricing-check path { stroke: #10B981; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .btn-cta-solid { display: block; text-align: center; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.9rem; padding: 0.85rem; border-radius: 8px; text-decoration: none; transition: background 0.2s, transform 0.15s; box-shadow: 0 4px 14px rgba(10,192,233,0.3); }
+    .btn-cta-solid:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .btn-cta-solid:active { transform: translateY(0); }
+    .btn-cta-outline { display: block; text-align: center; background: transparent; color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.9rem; padding: 0.85rem; border-radius: 8px; text-decoration: none; border: 1.5px solid rgba(11,39,64,0.2); transition: border-color 0.2s, transform 0.15s; }
+    .btn-cta-outline:hover { border-color: var(--aqua-dark); color: var(--aqua-dark); transform: translateY(-1px); }
+    .pricing-coming-note { font-size: 0.78rem; color: var(--text-muted); text-align: center; font-style: italic; }
+
+    /* ─── FINAL CTA ─── */
+    .final-cta { background: var(--dark-blue); padding: 7rem 2rem; position: relative; overflow: hidden; }
+    .final-cta-orb { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(10,192,233,0.06) 0%, transparent 65%); pointer-events: none; }
+    .final-cta-inner { max-width: 680px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
+    .final-cta-title { font-family: 'Inter', sans-serif;font-size: clamp(2rem, 4vw, 3.25rem); font-weight: 800; color: white; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1.25rem; }
+    .final-cta-title em { font-style: normal; color: var(--aqua); }
+    .final-cta-sub { font-size: 1rem; line-height: 1.75; color: rgba(255,255,255,0.5); margin-bottom: 2.5rem; max-width: 520px; margin-left: auto; margin-right: auto; }
+    .final-cta-btns { display: flex; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .final-cta-signin { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-top: 1.5rem; }
+    .final-cta-signin a { color: rgba(255,255,255,0.6); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.2); transition: color 0.2s; }
+    .final-cta-signin a:hover { color: var(--aqua); border-bottom-color: var(--aqua); }
+
+    /* ─── FOOTER ─── */
+    footer { background: var(--primary); padding: 2.5rem 2rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .footer-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .footer-logo { height: 22px; width: auto; opacity: 0.6; }
+    .footer-links { display: flex; align-items: center; gap: 1.75rem; }
+    .footer-link { font-size: 0.78rem; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
+    .footer-link:hover { color: rgba(255,255,255,0.65); }
+    .footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.22); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .app-mockup-wrap { display: none; }
+      .pain-grid { grid-template-columns: repeat(2, 1fr); }
+      .modules-grid { grid-template-columns: repeat(2, 1fr); }
+      .philosophy-grid { grid-template-columns: repeat(2, 1fr); }
+      .how-steps { grid-template-columns: 1fr; gap: 2rem; }
+      .how-steps::before { display: none; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
+      .why-table th:nth-child(2), .why-table td:nth-child(2) { display: none; }
+    }
+    @media (max-width: 768px) {
+      .pain-grid { grid-template-columns: 1fr; }
+      .modules-grid { grid-template-columns: 1fr; }
+      .philosophy-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .modules-header { flex-direction: column; align-items: flex-start; }
+      .philosophy-header { flex-direction: column; gap: 1.5rem; }
+      .why-table { font-size: 0.82rem; }
+      .why-table th, .why-table td { padding: 0.75rem 1rem; }
+    }
+
+    /* ─── AUTH MODAL ─── */
+    .auth-modal-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(2,25,47,0.85); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .auth-modal-overlay.open { opacity: 1; pointer-events: all; }
+    .auth-modal {
+      background: #0d2237;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      width: 100%; max-width: 440px;
+      padding: 2.5rem;
+      position: relative;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(10,192,233,0.08);
+      transform: translateY(16px);
+      transition: transform 0.25s ease;
+    }
+    .auth-modal-overlay.open .auth-modal { transform: translateY(0); }
+    .auth-modal-close {
+      position: absolute; top: 1.2rem; right: 1.2rem;
+      width: 32px; height: 32px; border-radius: 8px;
+      background: rgba(255,255,255,0.06); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.4); transition: background 0.2s, color 0.2s;
+    }
+    .auth-modal-close:hover { background: rgba(255,255,255,0.1); color: white; }
+    .auth-modal-close svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .auth-modal-tabs {
+      display: flex; background: rgba(255,255,255,0.06); border-radius: 9px;
+      padding: 4px; margin-bottom: 2rem;
+    }
+    .auth-modal-tab {
+      flex: 1; text-align: center; padding: 0.55rem;
+      font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.45);
+      cursor: pointer; border-radius: 6px; border: none; background: none;
+      transition: background 0.2s, color 0.2s; font-family: 'Inter', sans-serif;
+    }
+    .auth-modal-tab.active { background: white; color: var(--primary); }
+    .auth-modal-tab:not(.active):hover { color: rgba(255,255,255,0.7); }
+    .auth-modal-title { font-family: 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; color: white; letter-spacing: -0.03em; margin-bottom: 0.35rem; }
+    .auth-modal-sub { font-size: 0.84rem; color: rgba(255,255,255,0.38); margin-bottom: 1.75rem; line-height: 1.5; }
+    .auth-modal-group { margin-bottom: 1rem; }
+    .auth-modal-label { display: block; font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.55); margin-bottom: 0.4rem; letter-spacing: 0.01em; }
+    .auth-modal-input {
+      width: 100%; background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.11);
+      border-radius: 8px; padding: 0.72rem 0.95rem; font-size: 0.92rem; color: white;
+      font-family: 'Inter', sans-serif; outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .auth-modal-input::placeholder { color: rgba(255,255,255,0.2); }
+    .auth-modal-input:focus { border-color: rgba(10,192,233,0.5); background: rgba(255,255,255,0.09); }
+    .auth-modal-forgot { display: flex; justify-content: flex-end; margin-top: -0.5rem; margin-bottom: 1rem; }
+    .auth-modal-forgot a { font-size: 0.74rem; color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.2s; }
+    .auth-modal-forgot a:hover { color: rgba(10,192,233,0.8); }
+    .auth-modal-submit {
+      width: 100%; background: var(--aqua); color: var(--primary);
+      font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.94rem;
+      padding: 0.85rem; border-radius: 8px; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(10,192,233,0.28);
+    }
+    .auth-modal-submit:hover { background: var(--aqua-dark); transform: translateY(-1px); box-shadow: 0 6px 22px rgba(10,192,233,0.38); }
+    .auth-modal-submit:active { transform: translateY(0); }
+    .auth-modal-divider { display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0; }
+    .auth-modal-divider-line { flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+    .auth-modal-divider-text { font-size: 0.72rem; color: rgba(255,255,255,0.22); white-space: nowrap; }
+    .auth-modal-google {
+      width: 100%; background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.11);
+      color: rgba(255,255,255,0.72); font-family: 'Inter', sans-serif; font-weight: 600;
+      font-size: 0.87rem; padding: 0.78rem; border-radius: 8px; cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    }
+    .auth-modal-google:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+    .auth-signup-only { display: none; }
+    .auth-signup-only.visible { display: block; }
+    .auth-modal .google-icon { width: 18px; height: 18px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="../../index.html">
+        <img src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" class="nav-logo nav-logo-light">
+        <img src="../../brand_assets/Tangram_color logo.png" alt="Tangram MedTech" class="nav-logo nav-logo-dark">
+      </a>
+      <div class="nav-right">
+        <div class="nav-links">
+          <a href="../../index.html" class="nav-link">Home</a>
+          <a href="#modules" class="nav-link">Modules</a>
+          <a href="#how-it-works" class="nav-link">How It Works</a>
+          <a href="#pricing" class="nav-link">Pricing</a>
+        </div>
+        <a href="auth.html" class="btn-ghost">Sign In</a>
+        <a href="auth.html" class="btn-nav-cta">Get Early Access</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-orb-1"></div>
+    <div class="hero-orb-2"></div>
+    <div class="hero-inner">
+      <!-- Left -->
+      <div>
+        <div class="hero-eyebrow">
+          <span class="hero-dot"></span>
+          Tangram eQMS &nbsp;·&nbsp; Early Access
+        </div>
+        <h1 class="hero-headline">
+          Quality could be your<br><em>competitive advantage.</em>
+        </h1>
+        <p class="hero-sub">
+          Most medical device founders treat quality as a compliance tax. The ones who win treat it as their first strategic tool. Tangram eQMS is the only platform that teaches you quality before asking you to document it.
+        </p>
+        <div class="hero-ctas">
+          <a href="auth.html" class="btn-aqua">
+            Get Early Access — It's Free
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="auth.html" class="btn-outline-light">Sign In</a>
+        </div>
+        <div class="hero-trust">
+          <span class="hero-trust-label">Built for</span>
+          <div class="trust-item">
+            <svg class="trust-item-icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            <span class="trust-item-text">Founders &amp; co-founders</span>
+          </div>
+          <div class="trust-item">
+            <svg class="trust-item-icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+            <span class="trust-item-text">Hardware &amp; software devices</span>
+          </div>
+          <div class="trust-item">
+            <svg class="trust-item-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span class="trust-item-text">FDA 21 CFR &amp; ISO 13485</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right — App Mockup -->
+      <div class="app-mockup-wrap">
+        <div class="app-mockup">
+          <div class="app-chrome">
+            <div class="chrome-dots"><span></span><span></span><span></span></div>
+            <div class="chrome-url">app.tangrammedtech.com/dashboard</div>
+          </div>
+          <div class="app-body">
+            <div class="app-sidebar">
+              <div class="app-sidebar-logo">
+                <div class="app-t-mark">T</div>
+                <span class="app-sidebar-brand">eQMS</span>
+              </div>
+              <div class="app-nav-item active">
+                <svg class="app-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Dashboard
+              </div>
+              <div class="app-nav-item">
+                <svg class="app-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+                Clarity Hub
+              </div>
+              <div class="app-nav-item">
+                <svg class="app-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Risk Radar
+              </div>
+              <div class="app-nav-item">
+                <svg class="app-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M6 15V9l6-3 6-3"/></svg>
+                Change Stream
+              </div>
+              <div class="app-nav-item">
+                <svg class="app-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                V&amp;V
+              </div>
+              <div class="app-nav-item">
+                <svg class="app-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                Processes
+              </div>
+              <div class="app-nav-item">
+                <svg class="app-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                Learning
+              </div>
+              <div class="app-nav-item">
+                <svg class="app-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Team
+              </div>
+              <div class="app-nav-item">
+                <svg class="app-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Audit Ready
+              </div>
+            </div>
+            <div class="app-content-area">
+              <div class="app-content-header">
+                <span class="app-content-title">Alignment Dashboard</span>
+                <span class="app-phase-badge">Concept Phase</span>
+              </div>
+              <div class="app-metrics">
+                <div class="app-metric warn">
+                  <div class="app-metric-num">3</div>
+                  <div class="app-metric-label">Open Questions</div>
+                </div>
+                <div class="app-metric danger">
+                  <div class="app-metric-num">2</div>
+                  <div class="app-metric-label">Uncontrolled Risks</div>
+                </div>
+                <div class="app-metric ok">
+                  <div class="app-metric-num">✓</div>
+                  <div class="app-metric-label">Training Current</div>
+                </div>
+              </div>
+              <div class="app-feed">
+                <div class="app-feed-title">AI Next Actions</div>
+                <div class="app-feed-item">
+                  <div class="feed-dot red"></div>
+                  <span class="app-feed-text">Design input #DI-04 missing acceptance criteria</span>
+                </div>
+                <div class="app-feed-item">
+                  <div class="feed-dot orange"></div>
+                  <span class="app-feed-text">Hazard H-02 has no linked risk control</span>
+                </div>
+                <div class="app-feed-item">
+                  <div class="feed-dot green"></div>
+                  <span class="app-feed-text">All user needs linked to design inputs ✓</span>
+                </div>
+              </div>
+              <div class="app-progress">
+                <div class="app-progress-label">
+                  <span>DHF Completeness</span>
+                  <span style="color:rgba(255,255,255,0.55)">38%</span>
+                </div>
+                <div class="app-progress-bar">
+                  <div class="app-progress-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAIN POINTS -->
+  <section class="pain-points">
+    <div class="section-inner">
+      <span class="section-eyebrow">Three questions every founder asks</span>
+      <h2 class="section-title">We've heard every reason to delay.<br>Here's why you shouldn't.</h2>
+      <div class="pain-grid">
+        <div class="pain-card">
+          <div class="pain-q-tag">The timing question</div>
+          <p class="pain-question">"When should I get started with quality?"</p>
+          <p class="pain-answer">Before your first prototype. Quality isn't a Phase 3 checkbox — it's a design compass. <strong>Build it in from day one</strong> and it accelerates development; bolt it on at the end and it derails it. The companies that win build quality into their design process from the first sketch.</p>
+        </div>
+        <div class="pain-card">
+          <div class="pain-q-tag">The learning curve</div>
+          <p class="pain-question">"Is this going to overwhelm my team?"</p>
+          <p class="pain-answer">Not here. Every form in Tangram eQMS comes with the explanation behind it. <strong>We teach you why each requirement exists</strong> before asking you to fulfill it. This isn't a document factory — it's a quality education platform. The paperwork is the byproduct, not the goal.</p>
+        </div>
+        <div class="pain-card">
+          <div class="pain-q-tag">The cost question</div>
+          <p class="pain-question">"What's this going to cost us?"</p>
+          <p class="pain-answer">Nothing — during our founding period. <strong>Tangram eQMS is completely free for early-access members.</strong> We believe cost should never be the reason an early-stage company skips quality. No credit card. No hidden tiers. No catches. We're building this with you, not for you.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHILOSOPHY -->
+  <section class="philosophy">
+    <div class="philosophy-orb"></div>
+    <div class="philosophy-orb-2"></div>
+    <div class="philosophy-inner">
+      <div class="philosophy-header">
+        <div>
+          <span class="section-eyebrow section-eyebrow-light">The mindset shift</span>
+          <h2 class="philosophy-headline">
+            Traditional eQMS platforms<br>solve the <em>wrong</em> problem.
+          </h2>
+        </div>
+        <p class="philosophy-sub">
+          They generate documents. We generate clarity. When a founder walks into their first audit, the question isn't "did you fill out the FMEA?" It's "did you understand the risks you were taking and make deliberate decisions about them?" Document-first platforms miss this entirely.
+        </p>
+      </div>
+      <div class="philosophy-grid">
+        <div class="phi-card">
+          <div class="phi-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <div class="phi-card-label"><span class="phi-card-label-then">Then</span> <span style="color:rgba(255,255,255,0.15)">→</span> <span class="phi-card-label-now">Now</span></div>
+          <p class="phi-then">Document first, understand never. Fill the form and hope an auditor doesn't ask why.</p>
+          <div class="phi-divider"></div>
+          <p class="phi-now">Understand first, document as you go. Every form is a learning opportunity, not a compliance burden.</p>
+        </div>
+        <div class="phi-card">
+          <div class="phi-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="phi-card-label"><span class="phi-card-label-then">Then</span> <span style="color:rgba(255,255,255,0.15)">→</span> <span class="phi-card-label-now">Now</span></div>
+          <p class="phi-then">FMEA table at the end of design — a retroactive exercise that rarely changes anything.</p>
+          <div class="phi-divider"></div>
+          <p class="phi-now">Risk management starts at concept stage. Risk tells you where to focus, not just what to file.</p>
+        </div>
+        <div class="phi-card">
+          <div class="phi-icon">
+            <svg viewBox="0 0 24 24"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M6 15V9l6-3 6-3"/></svg>
+          </div>
+          <div class="phi-card-label"><span class="phi-card-label-then">Then</span> <span style="color:rgba(255,255,255,0.15)">→</span> <span class="phi-card-label-now">Now</span></div>
+          <p class="phi-then">Change control means a DCO form, a committee meeting, and two weeks of delay.</p>
+          <div class="phi-divider"></div>
+          <p class="phi-now">Changes are captured in seconds — like a commit. AI assesses the impact; you confirm and move on.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULES -->
+  <section class="modules-section" id="modules">
+    <div class="section-inner">
+      <div class="modules-header">
+        <span class="section-eyebrow">Platform modules</span>
+        <h2 class="section-title">Nine modules.<br>One coherent system.</h2>
+        <p class="section-sub">Every module connects to every other. Your traceability matrix builds itself. Your DHF assembles automatically.</p>
+      </div>
+      <div class="modules-grid">
+
+        <div class="module-card">
+          <div class="module-num">01</div>
+          <div class="module-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </div>
+          <div class="module-name">Alignment Dashboard</div>
+          <div class="module-desc">Your daily quality health view. Open questions, uncontrolled risks, phase gate status, and AI-prioritized next actions — all in one place from day one.</div>
+          <span class="module-tag">Home base</span>
+        </div>
+
+        <div class="module-card">
+          <div class="module-num">02</div>
+          <div class="module-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <div class="module-name">Clarity Hub</div>
+          <div class="module-desc">User needs → design inputs → design outputs with enforced traceability. The heart of 21 CFR 820.30 design controls. AI flags vague requirements before they become audit findings.</div>
+          <span class="module-tag">Design controls</span>
+        </div>
+
+        <div class="module-card">
+          <div class="module-num">03</div>
+          <div class="module-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="module-name">Risk Radar</div>
+          <div class="module-desc">Living ISO 14971 risk management that starts at concept stage and guides design decisions in real time. Visual heat map, hazard library, and benefit-risk analysis for EU MDR.</div>
+          <span class="module-tag">ISO 14971</span>
+        </div>
+
+        <div class="module-card">
+          <div class="module-num">04</div>
+          <div class="module-icon">
+            <svg viewBox="0 0 24 24"><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9V6M6 15v-3M6 15l5.5-5.5"/></svg>
+          </div>
+          <div class="module-name">Change Stream</div>
+          <div class="module-desc">Lightweight, AI-assessed change management. Log a change in seconds — AI traces the impact to design inputs, risk controls, and V&V tests. Graduated response, not a DCO form.</div>
+          <span class="module-tag">Change management</span>
+        </div>
+
+        <div class="module-card">
+          <div class="module-num">05</div>
+          <div class="module-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <div class="module-name">V&amp;V Module</div>
+          <div class="module-desc">Hardware and software V&amp;V, built in. Test protocols, test reports, manufacturing process validation (IQ/OQ/PQ), biocompatibility, and SaMD verification — the gap every other eQMS leaves.</div>
+          <span class="module-tag">Hardware &amp; software</span>
+        </div>
+
+        <div class="module-card">
+          <div class="module-num">06</div>
+          <div class="module-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          </div>
+          <div class="module-name">Process Library</div>
+          <div class="module-desc">SOPs with the "why" embedded. Every procedure includes a plain-language explanation of the regulatory requirement behind it — not just the form to fill, but the reason it exists.</div>
+          <span class="module-tag">SOPs + education</span>
+        </div>
+
+        <div class="module-card">
+          <div class="module-num">07</div>
+          <div class="module-icon">
+            <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          </div>
+          <div class="module-name">Learning Center</div>
+          <div class="module-desc">Role-based quality education. Foundational tracks before you touch a form, embedded micro-lessons at every step, and knowledge checks tied to real tasks in the platform.</div>
+          <span class="module-tag">Education-first</span>
+        </div>
+
+        <div class="module-card">
+          <div class="module-num">08</div>
+          <div class="module-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <div class="module-name">Team &amp; Training</div>
+          <div class="module-desc">Competency tracking, training matrix, and FDA 21 CFR Part 11-compliant training records. Know exactly who is qualified for what — and which records will satisfy your next audit.</div>
+          <span class="module-tag">21 CFR Part 11</span>
+        </div>
+
+        <div class="module-card">
+          <div class="module-num">09</div>
+          <div class="module-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div class="module-name">Audit Ready</div>
+          <div class="module-desc">DHF completeness index, regulatory view, e-signature workflows, and one-click export organized per 21 CFR 820.30. Always prepared — not two weeks of scramble before every audit.</div>
+          <span class="module-tag">DHF export</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section" id="how-it-works">
+    <div class="how-orb"></div>
+    <div class="how-inner">
+      <div style="margin-bottom:3.5rem">
+        <span class="section-eyebrow section-eyebrow-light">The process</span>
+        <h2 class="section-title section-title-light">Quality the way<br>it should work.</h2>
+        <p class="section-sub section-sub-light">Three phases. One continuous loop. Quality becomes how you build — not something you do to your build.</p>
+      </div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-step-num"><span class="how-step-num-text">01</span></div>
+          <div class="how-step-label">Phase one</div>
+          <h3 class="how-step-title">Learn</h3>
+          <p class="how-step-desc">Complete the foundational quality track for your role before touching a form. Understand why quality exists — not just what it requires. Every role gets a tailored path: founder, engineer, quality lead, consultant.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num"><span class="how-step-num-text">02</span></div>
+          <div class="how-step-label">Phase two</div>
+          <h3 class="how-step-title">Build</h3>
+          <p class="how-step-desc">Document your design decisions as you make them, with AI guidance at every step. Capture user needs, link design inputs, assess risks in real time. Quality becomes a natural part of how your team works — not an after-the-fact task.</p>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num"><span class="how-step-num-text">03</span></div>
+          <div class="how-step-label">Phase three</div>
+          <h3 class="how-step-title">Comply</h3>
+          <p class="how-step-desc">When your audit comes — FDA, ISO 13485, EU MDR — everything is already organized. Export a complete, auditor-formatted DHF in minutes. Not two weeks of scramble. Not a folder full of undated drafts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY DIFFERENT -->
+  <section class="why-section">
+    <div class="section-inner">
+      <span class="section-eyebrow">How we compare</span>
+      <h2 class="section-title">Built differently,<br>for a different outcome.</h2>
+      <p class="section-sub" style="margin-bottom:3rem">Most eQMS tools are built by compliance consultants building compliance tools. Tangram eQMS is built by a founder and engineer who believes quality is a product design skill.</p>
+      <div class="why-table-wrap">
+        <table class="why-table">
+          <thead>
+            <tr>
+              <th>Dimension</th>
+              <th>Traditional eQMS</th>
+              <th class="tangram-col">Tangram eQMS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Device focus</td>
+              <td class="old-way">Usually optimized for one device type. Hardware, SaMD, combination products, and IVDs are rarely all covered well.</td>
+              <td class="new-way">Built for hardware, software, and combination devices. Full template library for design verification, manufacturing validation, and DHF.</td>
+            </tr>
+            <tr>
+              <td>Education</td>
+              <td class="old-way">External courses sold separately. Fill the form and figure out the why on your own.</td>
+              <td class="new-way">Embedded at every step. Every module includes the regulatory reasoning in plain language.</td>
+            </tr>
+            <tr>
+              <td>Risk management</td>
+              <td class="old-way">FMEA table at end of design — a retroactive checkbox, rarely integrated with design decisions.</td>
+              <td class="new-way">Living tool from concept stage. Risk drives design inputs, not just documents.</td>
+            </tr>
+            <tr>
+              <td>Design controls</td>
+              <td class="old-way">Folder structure. Documents managed individually, no enforced traceability.</td>
+              <td class="new-way">Enforced user need → design input → output → V&V traceability. Gaps highlighted automatically.</td>
+            </tr>
+            <tr>
+              <td>Change management</td>
+              <td class="old-way">DCO forms, approval committees, days of delay for minor changes.</td>
+              <td class="new-way">Log in seconds. AI assesses impact and assigns level. Proportional — not everything needs a meeting.</td>
+            </tr>
+            <tr>
+              <td>AI role</td>
+              <td class="old-way">Fill in templates. Chatbot that knows your documents.</td>
+              <td class="new-way">Proactive thinking partner. Flags gaps, suggests hazards, traces change impact before you ask.</td>
+            </tr>
+            <tr>
+              <td>Pricing</td>
+              <td class="old-way">€499–$20,000+/month. Per-seat or document limits on free tiers that make them unusable.</td>
+              <td class="new-way">Free during our founding period. No credit card. We grow when you grow.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing-section" id="pricing">
+    <div class="section-inner">
+      <div style="text-align:center; max-width:560px; margin:0 auto 3.5rem;">
+        <span class="section-eyebrow">Pricing</span>
+        <h2 class="section-title">Start free.<br>Grow when you're ready.</h2>
+        <p class="section-sub" style="margin:0 auto">Cost should never be the reason a company skips quality. That's why we're free during our founding period — no credit card, no document limits, no gotchas.</p>
+      </div>
+      <div class="pricing-grid">
+
+        <!-- Founding Member (featured) -->
+        <div class="pricing-card featured">
+          <div class="pricing-tier">Founding Member</div>
+          <div class="pricing-featured-badge">Early Access · Free</div>
+          <div class="pricing-name">Full Access</div>
+          <div class="pricing-price">$0</div>
+          <div class="pricing-price-note">Free during our founding period.<br>No credit card required.</div>
+          <div class="pricing-divider"></div>
+          <ul class="pricing-features">
+            <li class="pricing-feature">
+              <svg class="pricing-check" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M5 8l2 2 4-4"/></svg>
+              All 9 platform modules
+            </li>
+            <li class="pricing-feature">
+              <svg class="pricing-check" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M5 8l2 2 4-4"/></svg>
+              AI guidance and suggestions throughout
+            </li>
+            <li class="pricing-feature">
+              <svg class="pricing-check" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M5 8l2 2 4-4"/></svg>
+              Full Learning Center access
+            </li>
+            <li class="pricing-feature">
+              <svg class="pricing-check" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M5 8l2 2 4-4"/></svg>
+              DHF export (PDF + Excel)
+            </li>
+            <li class="pricing-feature">
+              <svg class="pricing-check" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M5 8l2 2 4-4"/></svg>
+              Hardware, software &amp; combination device templates
+            </li>
+            <li class="pricing-feature">
+              <svg class="pricing-check" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M5 8l2 2 4-4"/></svg>
+              Direct access to the founding team
+            </li>
+          </ul>
+          <a href="auth.html" class="btn-cta-solid">Get Early Access</a>
+        </div>
+
+        <!-- Growth (coming soon) -->
+        <div class="pricing-card coming">
+          <div class="pricing-tier">Growth</div>
+          <div class="pricing-name">Team</div>
+          <div class="pricing-price coming">Coming soon</div>
+          <div class="pricing-price-note">Unlimited projects, advanced analytics, and collaboration tools for growing teams.</div>
+          <div class="pricing-divider"></div>
+          <ul class="pricing-features">
+            <li class="pricing-feature">Everything in Founding Member</li>
+            <li class="pricing-feature">Unlimited active projects</li>
+            <li class="pricing-feature">Multi-user collaboration</li>
+            <li class="pricing-feature">Compliance KPI dashboards</li>
+            <li class="pricing-feature">Advanced audit trail</li>
+            <li class="pricing-feature">Priority support</li>
+          </ul>
+          <p class="pricing-coming-note">Pricing announced at launch</p>
+        </div>
+
+        <!-- Enterprise (coming soon) -->
+        <div class="pricing-card coming">
+          <div class="pricing-tier">Enterprise</div>
+          <div class="pricing-name">Scale</div>
+          <div class="pricing-price coming">Coming soon</div>
+          <div class="pricing-price-note">For consultants managing multiple clients and larger organizations with complex permission needs.</div>
+          <div class="pricing-divider"></div>
+          <ul class="pricing-features">
+            <li class="pricing-feature">Everything in Growth</li>
+            <li class="pricing-feature">Multi-client management</li>
+            <li class="pricing-feature">Custom RBAC permissions</li>
+            <li class="pricing-feature">ERP/PLM integrations</li>
+            <li class="pricing-feature">On-premise deployment option</li>
+            <li class="pricing-feature">Dedicated success manager</li>
+          </ul>
+          <p class="pricing-coming-note">Contact us to discuss</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <div class="final-cta-orb"></div>
+    <div class="final-cta-inner">
+      <span class="section-eyebrow section-eyebrow-light" style="display:block;margin-bottom:1rem;">Ready when you are</span>
+      <h2 class="final-cta-title">
+        Make quality your<br><em>competitive advantage.</em>
+      </h2>
+      <p class="final-cta-sub">
+        Join founders, engineers, and regulatory consultants who are building quality into their medical devices from day one — not bolting it on at the end.
+      </p>
+      <div class="final-cta-btns">
+        <a href="auth.html" class="btn-aqua" style="font-size:1rem; padding:0.95rem 2rem;">
+          Get Early Access — It's Free
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <p class="final-cta-signin">Already have an account? <a href="auth.html">Sign in →</a></p>
+    </div>
+  </section>
+
+  <!-- AUTH MODAL -->
+  <div class="auth-modal-overlay" id="authModal" role="dialog" aria-modal="true" aria-label="Sign in">
+    <div class="auth-modal">
+      <button class="auth-modal-close" id="authModalClose" aria-label="Close">
+        <svg viewBox="0 0 14 14"><path d="M1 1l12 12M13 1L1 13"/></svg>
+      </button>
+
+      <div class="auth-modal-tabs">
+        <button class="auth-modal-tab active" id="tabSignin" onclick="switchTab('signin')">Sign In</button>
+        <button class="auth-modal-tab" id="tabSignup" onclick="switchTab('signup')">Create Account</button>
+      </div>
+
+      <div id="formSignin">
+        <h2 class="auth-modal-title">Welcome back</h2>
+        <p class="auth-modal-sub">Sign in to your Tangram eQMS account.</p>
+        <div class="auth-modal-group">
+          <label class="auth-modal-label">Email</label>
+          <input type="email" class="auth-modal-input" placeholder="you@company.com" autocomplete="email">
+        </div>
+        <div class="auth-modal-group">
+          <label class="auth-modal-label">Password</label>
+          <input type="password" class="auth-modal-input" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <div class="auth-modal-forgot"><a href="#">Forgot password?</a></div>
+        <button class="auth-modal-submit">Sign In</button>
+        <div class="auth-modal-divider">
+          <div class="auth-modal-divider-line"></div>
+          <span class="auth-modal-divider-text">or continue with</span>
+          <div class="auth-modal-divider-line"></div>
+        </div>
+        <button class="auth-modal-google" id="googleSigninBtn">
+          <svg class="google-icon" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58Z"/></svg>
+          Continue with Google
+        </button>
+      </div>
+
+      <div id="formSignup" style="display:none;">
+        <h2 class="auth-modal-title">Get early access</h2>
+        <p class="auth-modal-sub">Join founders building quality into their devices from day one.</p>
+        <div class="auth-signup-only visible" style="display:flex;gap:0.75rem;margin-bottom:1rem;">
+          <div style="flex:1;">
+            <label class="auth-modal-label">First name</label>
+            <input type="text" class="auth-modal-input" placeholder="Alex" autocomplete="given-name">
+          </div>
+          <div style="flex:1;">
+            <label class="auth-modal-label">Last name</label>
+            <input type="text" class="auth-modal-input" placeholder="Kim" autocomplete="family-name">
+          </div>
+        </div>
+        <div class="auth-modal-group">
+          <label class="auth-modal-label">Work email</label>
+          <input type="email" class="auth-modal-input" placeholder="you@company.com" autocomplete="email">
+        </div>
+        <div class="auth-modal-group">
+          <label class="auth-modal-label">Password</label>
+          <input type="password" class="auth-modal-input" placeholder="Create a password" autocomplete="new-password">
+        </div>
+        <button class="auth-modal-submit" style="margin-top:0.5rem;">Create Account — It's Free</button>
+        <div class="auth-modal-divider">
+          <div class="auth-modal-divider-line"></div>
+          <span class="auth-modal-divider-text">or sign up with</span>
+          <div class="auth-modal-divider-line"></div>
+        </div>
+        <button class="auth-modal-google">
+          <svg class="google-icon" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58Z"/></svg>
+          Continue with Google
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <img src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" class="footer-logo">
+      <div class="footer-links">
+        <a href="../../index.html" class="footer-link">Tangram MedTech</a>
+        <a href="#modules" class="footer-link">Modules</a>
+        <a href="#pricing" class="footer-link">Pricing</a>
+        <a href="auth.html" class="footer-link">Sign In</a>
+      </div>
+      <span class="footer-copy">© 2026 Tangram MedTech. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script>
+    // Nav scroll behavior
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 40) nav.classList.add('scrolled');
+      else nav.classList.remove('scrolled');
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    // Auth modal
+    const modal = document.getElementById('authModal');
+
+    function openAuthModal(tab) {
+      switchTab(tab || 'signin');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeAuthModal() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function switchTab(tab) {
+      const signin = document.getElementById('formSignin');
+      const signup = document.getElementById('formSignup');
+      const tabSI = document.getElementById('tabSignin');
+      const tabSU = document.getElementById('tabSignup');
+      if (tab === 'signin') {
+        signin.style.display = ''; signup.style.display = 'none';
+        tabSI.classList.add('active'); tabSU.classList.remove('active');
+      } else {
+        signin.style.display = 'none'; signup.style.display = '';
+        tabSU.classList.add('active'); tabSI.classList.remove('active');
+      }
+    }
+
+    document.getElementById('authModalClose').addEventListener('click', closeAuthModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeAuthModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAuthModal(); });
+
+    // Intercept all auth.html links
+    document.querySelectorAll('a[href="auth.html"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const isSignin = a.textContent.toLowerCase().includes('sign in') || a.textContent.includes('→');
+        openAuthModal(isSignin ? 'signin' : 'signup');
+      });
+    });
+  </script>
+</body>
+</html>

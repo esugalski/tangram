@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QMS Setup — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:   #0B2740;
+      --mid-blue:  #304F6B;
+      --dark-blue: #02192F;
+      --aqua:      #0AC0E9;
+      --aqua-dark: #089bbf;
+      --green:     #10B981;
+      --amber:     #F59E0B;
+      --red:       #EF4444;
+      --indigo:    #6366f1;
+      --light:     #F7F8FA;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark-blue);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2rem 1rem 4rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Background texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 0%, rgba(10,192,233,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 100%, rgba(99,102,241,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* ── HEADER ── */
+    .setup-header {
+      display: flex; align-items: center; gap: 0.65rem;
+      margin-bottom: 2.5rem; margin-top: 0.5rem;
+    }
+    .setup-t-mark { width: 32px; height: 32px; border-radius: 8px; object-fit: contain; }
+    .setup-brand-name { font-size: 0.9rem; font-weight: 800; color: white; letter-spacing: -0.01em; }
+    .setup-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* ── PROGRESS ── */
+    .progress-wrap {
+      display: flex; align-items: center; gap: 0; margin-bottom: 2.5rem; width: 100%; max-width: 560px;
+    }
+    .progress-step {
+      display: flex; flex-direction: column; align-items: center; gap: 0.35rem; flex: 1;
+    }
+    .progress-dot {
+      width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 800; transition: background 0.3s, border-color 0.3s, color 0.3s;
+      position: relative; z-index: 1;
+    }
+    .progress-dot.done    { background: var(--aqua); color: var(--primary); border: 2px solid var(--aqua); }
+    .progress-dot.current { background: var(--primary); color: var(--aqua); border: 2px solid var(--aqua); }
+    .progress-dot.pending { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.1); }
+    .progress-dot.done svg { width: 13px; height: 13px; stroke: var(--primary); fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .progress-label { font-size: 0.62rem; font-weight: 600; color: rgba(255,255,255,0.3); text-align: center; white-space: nowrap; transition: color 0.3s; }
+    .progress-label.current { color: rgba(255,255,255,0.7); }
+    .progress-label.done    { color: rgba(255,255,255,0.45); }
+    .progress-line {
+      flex: 1; height: 1px; background: rgba(255,255,255,0.1); margin-top: -1.35rem; transition: background 0.3s;
+    }
+    .progress-line.done { background: rgba(10,192,233,0.4); }
+
+    /* ── CARD ── */
+    .setup-card {
+      background: white; border-radius: 16px; width: 100%; max-width: 560px;
+      box-shadow: 0 32px 80px rgba(2,25,47,0.4), 0 4px 16px rgba(2,25,47,0.2);
+      overflow: hidden;
+    }
+    .card-head {
+      padding: 1.75rem 2rem 1.25rem;
+      border-bottom: 1px solid rgba(11,39,64,0.08);
+    }
+    .card-step-label {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--aqua-dark); margin-bottom: 0.35rem;
+    }
+    .card-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 0.3rem; }
+    .card-desc { font-size: 0.8rem; color: rgba(11,39,64,0.5); line-height: 1.6; }
+    .card-body { padding: 1.5rem 2rem; }
+    .card-footer {
+      padding: 1.1rem 2rem; border-top: 1px solid rgba(11,39,64,0.07);
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+
+    /* ── FORM ELEMENTS ── */
+    .field-row { margin-bottom: 1.25rem; }
+    .field-row:last-child { margin-bottom: 0; }
+    .field-label {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(11,39,64,0.4); margin-bottom: 0.4rem; display: block;
+    }
+    .field-input {
+      width: 100%; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--primary);
+      border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; padding: 0.6rem 0.85rem;
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s; background: var(--light);
+    }
+    .field-input:focus { border-color: var(--aqua); background: white; box-shadow: 0 0 0 3px rgba(10,192,233,0.1); }
+    .field-input::placeholder { color: rgba(11,39,64,0.28); }
+    .field-textarea {
+      width: 100%; font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--primary);
+      border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; padding: 0.6rem 0.85rem;
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s; background: var(--light);
+      resize: vertical; min-height: 90px; line-height: 1.6;
+    }
+    .field-textarea:focus { border-color: var(--aqua); background: white; box-shadow: 0 0 0 3px rgba(10,192,233,0.1); }
+    .field-textarea::placeholder { color: rgba(11,39,64,0.28); }
+    .field-hint { font-size: 0.68rem; color: rgba(11,39,64,0.35); margin-top: 0.3rem; font-style: italic; }
+    .field-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
+
+    /* ── CARD SELECT (for classification, size, etc.) ── */
+    .card-select { display: grid; gap: 0.5rem; margin-bottom: 0; }
+    .card-select.cols-2 { grid-template-columns: 1fr 1fr; }
+    .card-select.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .card-select.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .cs-option {
+      border: 1.5px solid rgba(11,39,64,0.1); border-radius: 9px; padding: 0.65rem 0.75rem;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s;
+      display: flex; flex-direction: column; gap: 0.2rem; user-select: none;
+    }
+    .cs-option:hover { border-color: rgba(10,192,233,0.35); background: rgba(10,192,233,0.03); }
+    .cs-option.selected { border-color: var(--aqua); background: rgba(10,192,233,0.07); }
+    .cs-option-label { font-size: 0.78rem; font-weight: 700; color: var(--primary); }
+    .cs-option-sub { font-size: 0.65rem; color: rgba(11,39,64,0.45); line-height: 1.4; }
+
+    /* ── CHECKBOX GRID ── */
+    .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem; }
+    .check-item {
+      display: flex; align-items: center; gap: 0.55rem; padding: 0.55rem 0.75rem;
+      border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; cursor: pointer;
+      transition: border-color 0.15s, background 0.15s; user-select: none;
+    }
+    .check-item:hover { border-color: rgba(10,192,233,0.35); background: rgba(10,192,233,0.03); }
+    .check-item.checked { border-color: var(--aqua); background: rgba(10,192,233,0.07); }
+    .check-item input[type=checkbox] { accent-color: var(--aqua); width: 14px; height: 14px; flex-shrink: 0; }
+    .check-item-label { font-size: 0.78rem; font-weight: 600; color: var(--primary); }
+    .check-item-sub { font-size: 0.63rem; color: rgba(11,39,64,0.4); margin-top: 0.08rem; }
+
+    /* ── BUTTONS ── */
+    .btn-next {
+      display: inline-flex; align-items: center; gap: 0.4rem; background: var(--primary); color: white;
+      font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.82rem;
+      padding: 0.6rem 1.35rem; border-radius: 8px; border: none; cursor: pointer;
+      transition: background 0.15s, transform 0.1s; box-shadow: 0 2px 8px rgba(11,39,64,0.2);
+    }
+    .btn-next:hover { background: var(--mid-blue); transform: translateY(-1px); }
+    .btn-next svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-next.finish { background: var(--green); }
+    .btn-next.finish:hover { background: #059669; }
+    .btn-back {
+      display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: rgba(11,39,64,0.45);
+      font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.8rem;
+      padding: 0.55rem 1rem; border-radius: 8px; border: 1.5px solid rgba(11,39,64,0.12); cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-back:hover { border-color: rgba(11,39,64,0.25); color: var(--primary); }
+    .btn-back svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .step-counter { font-size: 0.72rem; color: rgba(11,39,64,0.35); font-weight: 500; }
+
+    /* ── API KEY STEP ── */
+    .api-key-wrap { position: relative; }
+    .api-key-toggle {
+      position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: rgba(11,39,64,0.35);
+      padding: 0.2rem; display: flex; align-items: center; transition: color 0.15s;
+    }
+    .api-key-toggle:hover { color: var(--primary); }
+    .api-key-toggle svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .api-key-note {
+      background: rgba(10,192,233,0.06); border: 1px solid rgba(10,192,233,0.18);
+      border-radius: 8px; padding: 0.75rem 0.9rem; margin-top: 0.75rem;
+      font-size: 0.72rem; color: #0369a1; line-height: 1.6;
+    }
+    .skip-link {
+      font-size: 0.72rem; color: rgba(11,39,64,0.35); text-decoration: none;
+      transition: color 0.15s; cursor: pointer;
+    }
+    .skip-link:hover { color: var(--primary); }
+
+    /* ── COMPLETE SCREEN ── */
+    .complete-screen { text-align: center; padding: 2rem 2rem 1.5rem; }
+    .complete-icon {
+      width: 56px; height: 56px; border-radius: 16px; background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.25); display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+    .complete-icon svg { width: 26px; height: 26px; stroke: var(--green); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .complete-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+    .complete-desc { font-size: 0.8rem; color: rgba(11,39,64,0.5); line-height: 1.65; max-width: 360px; margin: 0 auto 1.5rem; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem; text-align: left; }
+    .summary-item { background: var(--light); border: 1px solid rgba(11,39,64,0.08); border-radius: 8px; padding: 0.6rem 0.85rem; }
+    .summary-item-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.15rem; }
+    .summary-item-value { font-size: 0.78rem; font-weight: 600; color: var(--primary); }
+    .btn-launch {
+      display: inline-flex; align-items: center; gap: 0.5rem; background: var(--primary); color: white;
+      font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.88rem;
+      padding: 0.75rem 1.75rem; border-radius: 9px; border: none; cursor: pointer;
+      transition: background 0.15s, transform 0.1s; box-shadow: 0 4px 14px rgba(11,39,64,0.25);
+    }
+    .btn-launch:hover { background: var(--mid-blue); transform: translateY(-1px); }
+    .btn-launch svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="setup-header">
+    <img src="../../brand_assets/Tangram-T%20mark%20reverse_Square.png" class="setup-t-mark" alt="Tangram">
+    <div>
+      <div class="setup-brand-name">Tangram eQMS</div>
+      <div class="setup-brand-sub">QMS Setup</div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="progressWrap"></div>
+
+  <!-- Card -->
+  <div class="setup-card" id="setupCard"></div>
+
+  <script>
+    const STEPS = [
+      { label: 'Company' },
+      { label: 'Device' },
+      { label: 'Scope' },
+      { label: 'API Key' },
+    ];
+
+    let current = 0;
+
+    // Pre-fill from existing context if editing
+    let ctx = {};
+    try {
+      const raw = localStorage.getItem('qms_context');
+      if (raw) ctx = JSON.parse(raw);
+    } catch(e) {}
+
+    // ── PROGRESS ──────────────────────────────────────────────────────────
+    function renderProgress() {
+      const wrap = document.getElementById('progressWrap');
+      let html = '';
+      STEPS.forEach(function(s, i) {
+        if (i > 0) {
+          html += '<div class="progress-line' + (i <= current ? ' done' : '') + '"></div>';
+        }
+        const state = i < current ? 'done' : i === current ? 'current' : 'pending';
+        html += '<div class="progress-step">' +
+          '<div class="progress-dot ' + state + '">' +
+            (state === 'done'
+              ? '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'
+              : (i + 1)) +
+          '</div>' +
+          '<div class="progress-label ' + state + '">' + s.label + '</div>' +
+        '</div>';
+      });
+      wrap.innerHTML = html;
+    }
+
+    // ── RENDER STEPS ──────────────────────────────────────────────────────
+    function renderStep() {
+      renderProgress();
+      const card = document.getElementById('setupCard');
+      if (current === 0) card.innerHTML = buildStep1();
+      else if (current === 1) card.innerHTML = buildStep2();
+      else if (current === 2) card.innerHTML = buildStep3();
+      else if (current === 3) card.innerHTML = buildStep4();
+      else card.innerHTML = buildComplete();
+      wireCardSelects();
+      wireCheckItems();
+    }
+
+    // ── STEP 1: COMPANY ───────────────────────────────────────────────────
+    function buildStep1() {
+      const markets = ctx.regulatoryMarkets || ['us'];
+      return head(1, 'Tell us about your company', 'This helps the AI generate content that\'s appropriate for your organization\'s size and regulatory context.') +
+      '<div class="card-body">' +
+        '<div class="field-row">' +
+          '<label class="field-label">Company / Organization Name</label>' +
+          '<input class="field-input" id="f_company" type="text" value="' + esc(ctx.companyName||'') + '" placeholder="e.g. Tangram Medical Devices, Inc.">' +
+        '</div>' +
+        '<div class="field-row">' +
+          '<label class="field-label">Organization Size</label>' +
+          '<div class="card-select cols-4" id="cs_size">' +
+            csOption('size', 'startup',  'Startup',    '1 – 20',    ctx.companySize) +
+            csOption('size', 'small',    'Small',      '20 – 100',  ctx.companySize) +
+            csOption('size', 'medium',   'Mid-size',   '100 – 500', ctx.companySize) +
+            csOption('size', 'large',    'Large',      '500+',      ctx.companySize) +
+          '</div>' +
+        '</div>' +
+        '<div class="field-row">' +
+          '<label class="field-label">Primary Regulatory Markets</label>' +
+          '<div class="check-grid">' +
+            checkItem('mkt_us',     'US FDA',        '21 CFR Part 820',       markets.indexOf('us')     !== -1) +
+            checkItem('mkt_eu',     'EU MDR',        'Regulation 2017/745',   markets.indexOf('eu')     !== -1) +
+            checkItem('mkt_canada', 'Health Canada', 'SOR/98-282',            markets.indexOf('canada') !== -1) +
+            checkItem('mkt_apac',   'APAC / Other',  'TGA, PMDA, NMPA, etc.', markets.indexOf('apac')   !== -1) +
+          '</div>' +
+        '</div>' +
+        '<div class="field-row">' +
+          '<label class="field-label">QMS Stage</label>' +
+          '<div class="card-select cols-2" id="cs_stage">' +
+            csOption('stage', 'building',    'Building QMS',    'Setting up the QMS for the first time', ctx.companyStage) +
+            csOption('stage', 'pre-sub',     'Pre-submission',  'QMS in place, preparing for regulatory submission', ctx.companyStage) +
+            csOption('stage', 'cleared',     'Cleared / CE',    'Device on market, maintaining QMS', ctx.companyStage) +
+            csOption('stage', 'post-market', 'Post-market',     'Active post-market surveillance', ctx.companyStage) +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      footer(false, 'Company Details', 1);
+    }
+
+    // ── STEP 2: DEVICE ────────────────────────────────────────────────────
+    function buildStep2() {
+      return head(2, 'Describe your device', 'Device classification and type directly shape QMS requirements, scope, and which procedures are mandatory.') +
+      '<div class="card-body">' +
+        '<div class="field-row">' +
+          '<label class="field-label">Device / Product Name</label>' +
+          '<input class="field-input" id="f_device" type="text" value="' + esc(ctx.deviceName||'') + '" placeholder="e.g. CardioSync Pro">' +
+        '</div>' +
+        '<div class="field-row">' +
+          '<label class="field-label">FDA Device Classification</label>' +
+          '<div class="card-select cols-4" id="cs_class">' +
+            csOption('class', 'i',   'Class I',   'Low risk / exempt',        ctx.deviceClass) +
+            csOption('class', 'ii',  'Class II',  '510(k) / De Novo',         ctx.deviceClass) +
+            csOption('class', 'iii', 'Class III', 'PMA required',             ctx.deviceClass) +
+            csOption('class', 'ivd', 'IVD',       'In vitro diagnostic',      ctx.deviceClass) +
+          '</div>' +
+        '</div>' +
+        '<div class="field-row">' +
+          '<label class="field-label">Device Type</label>' +
+          '<div class="card-select cols-2" id="cs_type">' +
+            csOption('type', 'hardware',    'Hardware',          'Physical device, electromechanical',  ctx.deviceType) +
+            csOption('type', 'samd',        'Software (SaMD)',   'Software as a Medical Device',        ctx.deviceType) +
+            csOption('type', 'combination', 'Combination',       'Hardware + embedded software',        ctx.deviceType) +
+            csOption('type', 'ivd',         'IVD',               'Reagents, instruments, test systems', ctx.deviceType) +
+          '</div>' +
+        '</div>' +
+        '<div class="field-row">' +
+          '<label class="field-label">Intended Use</label>' +
+          '<textarea class="field-textarea" id="f_intended_use" placeholder="Describe what the device does and what it is intended to treat, diagnose, or monitor…">' + esc(ctx.intendedUse||'') + '</textarea>' +
+          '<div class="field-hint">Used to generate the QMS scope statement and Quality Policy.</div>' +
+        '</div>' +
+        '<div class="field-row">' +
+          '<label class="field-label">Patient / User Population</label>' +
+          '<input class="field-input" id="f_population" type="text" value="' + esc(ctx.patientPopulation||'') + '" placeholder="e.g. Adult patients with chronic heart failure">' +
+        '</div>' +
+      '</div>' +
+      footer(true, 'Device Details', 2);
+    }
+
+    // ── STEP 3: SCOPE ─────────────────────────────────────────────────────
+    function buildStep3() {
+      const activities = ctx.scopeActivities || ['design', 'manufacturing'];
+      return head(3, 'Define your QMS scope', 'The scope tells auditors exactly what your QMS covers. Be precise — vague scope statements are a common nonconformity finding.') +
+      '<div class="card-body">' +
+        '<div class="field-row">' +
+          '<label class="field-label">Activities in Scope</label>' +
+          '<div class="check-grid">' +
+            checkItem('act_design',   'Design & Development', 'ISO 13485 §7.3 / 21 CFR 820.30', activities.indexOf('design')         !== -1) +
+            checkItem('act_mfg',      'Manufacturing',        'Production and process controls', activities.indexOf('manufacturing')   !== -1) +
+            checkItem('act_dist',     'Distribution',         'Labeling, handling, storage',     activities.indexOf('distribution')    !== -1) +
+            checkItem('act_pm',       'Post-Market',          'Surveillance, complaints, CAPA',  activities.indexOf('post-market')     !== -1) +
+            checkItem('act_service',  'Servicing',            'Installation, maintenance',       activities.indexOf('servicing')       !== -1) +
+            checkItem('act_import',   'Import / Export',      'Cross-border regulatory',         activities.indexOf('import')          !== -1) +
+          '</div>' +
+        '</div>' +
+        '<div class="field-row">' +
+          '<label class="field-label">Known Exclusions <span style="font-weight:400;text-transform:none;letter-spacing:0;color:rgba(11,39,64,0.35);">(optional)</span></label>' +
+          '<textarea class="field-textarea" id="f_exclusions" placeholder="e.g. §7.5.6 excluded — no sterile manufacturing. §7.5.9 excluded — no implantable devices." style="min-height:70px;">' + esc(ctx.knownExclusions||'') + '</textarea>' +
+          '<div class="field-hint">ISO 13485 clause exclusions require justification. Leave blank if none.</div>' +
+        '</div>' +
+        '<div class="field-row">' +
+          '<label class="field-label">Regulatory Basis</label>' +
+          '<input class="field-input" id="f_reg_basis" type="text" value="' + esc(ctx.regulatoryBasis||'ISO 13485:2016; 21 CFR Part 820') + '" placeholder="e.g. ISO 13485:2016; 21 CFR Part 820; EU MDR 2017/745">' +
+          '<div class="field-hint">List all standards and regulations your QMS is designed to satisfy.</div>' +
+        '</div>' +
+      '</div>' +
+      footer(true, 'Scope', 3);
+    }
+
+    // ── STEP 4: API KEY ───────────────────────────────────────────────────
+    function buildStep4() {
+      return head(4, 'Enable AI content generation', 'Connect your Anthropic API key to unlock AI-generated drafts for Quality Manual sections and procedure content.') +
+      '<div class="card-body">' +
+        '<div class="field-row">' +
+          '<label class="field-label">Anthropic API Key</label>' +
+          '<div class="api-key-wrap">' +
+            '<input class="field-input" id="f_api_key" type="password" value="' + esc(ctx.anthropicApiKey||'') + '" placeholder="sk-ant-…" style="padding-right:2.5rem;">' +
+            '<button class="api-key-toggle" onclick="toggleApiKeyVis()" type="button">' +
+              '<svg id="eyeIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
+            '</button>' +
+          '</div>' +
+          '<div class="api-key-note">' +
+            '<strong>Where to find it:</strong> Log in to <strong>console.anthropic.com</strong> → API Keys → Create Key. ' +
+            'The key is stored only in your browser\'s localStorage and is never sent anywhere except directly to Anthropic\'s API.' +
+          '</div>' +
+        '</div>' +
+        '<div style="margin-top:0.5rem;padding-top:0.75rem;border-top:1px solid rgba(11,39,64,0.08);">' +
+          '<p style="font-size:0.75rem;color:rgba(11,39,64,0.45);line-height:1.6;">You can skip this step and add your API key later from the Quality Manual. AI generation will be unavailable until a key is provided.</p>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card-footer">' +
+        '<button class="btn-back" onclick="goBack()">' +
+          '<svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>' +
+          'Back' +
+        '</button>' +
+        '<div style="display:flex;align-items:center;gap:0.75rem;">' +
+          '<span class="skip-link" onclick="skipApiKey()">Skip for now</span>' +
+          '<button class="btn-next finish" onclick="finishSetup()">' +
+            'Complete Setup' +
+            '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    // ── COMPLETE ──────────────────────────────────────────────────────────
+    function buildComplete() {
+      const markets = (ctx.regulatoryMarkets||[]).join(', ').toUpperCase() || '—';
+      const classLabels = { i:'Class I', ii:'Class II', iii:'Class III', ivd:'IVD' };
+      const typeLabels  = { hardware:'Hardware', samd:'SaMD', combination:'Combination', ivd:'IVD' };
+      return '<div class="complete-screen">' +
+        '<div class="complete-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>' +
+        '<div class="complete-title">QMS Context Saved</div>' +
+        '<div class="complete-desc">Your Quality Manual is ready to open. AI generation is now enabled for all sections.</div>' +
+        '<div class="summary-grid">' +
+          summaryItem('Company', ctx.companyName || '—') +
+          summaryItem('Device', ctx.deviceName || '—') +
+          summaryItem('Classification', classLabels[ctx.deviceClass] || '—') +
+          summaryItem('Type', typeLabels[ctx.deviceType] || '—') +
+          summaryItem('Markets', markets) +
+          summaryItem('AI', ctx.anthropicApiKey ? 'Key configured ✓' : 'Not configured') +
+        '</div>' +
+        '<button class="btn-launch" onclick="launchQM()">' +
+          'Open Quality Manual' +
+          '<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>' +
+        '</button>' +
+      '</div>';
+    }
+
+    // ── HELPERS ───────────────────────────────────────────────────────────
+    function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function head(step, title, desc) {
+      return '<div class="card-head">' +
+        '<div class="card-step-label">Step ' + step + ' of 4</div>' +
+        '<div class="card-title">' + title + '</div>' +
+        '<div class="card-desc">' + desc + '</div>' +
+      '</div>';
+    }
+
+    function footer(showBack, label, step) {
+      return '<div class="card-footer">' +
+        (showBack ? '<button class="btn-back" onclick="goBack()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back</button>' : '<div></div>') +
+        '<div style="display:flex;align-items:center;gap:0.75rem;">' +
+          '<span class="step-counter">Step ' + step + ' of 4</span>' +
+          '<button class="btn-next" onclick="goNext()">' + label + ' <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function csOption(group, value, label, sub, current) {
+      const sel = (current === value) ? ' selected' : '';
+      return '<div class="cs-option' + sel + '" data-group="' + group + '" data-value="' + value + '">' +
+        '<div class="cs-option-label">' + label + '</div>' +
+        '<div class="cs-option-sub">' + sub + '</div>' +
+      '</div>';
+    }
+
+    function checkItem(id, label, sub, checked) {
+      return '<label class="check-item' + (checked ? ' checked' : '') + '" for="' + id + '">' +
+        '<input type="checkbox" id="' + id + '"' + (checked ? ' checked' : '') + '>' +
+        '<div><div class="check-item-label">' + label + '</div><div class="check-item-sub">' + sub + '</div></div>' +
+      '</label>';
+    }
+
+    function summaryItem(label, value) {
+      return '<div class="summary-item"><div class="summary-item-label">' + label + '</div><div class="summary-item-value">' + esc(value) + '</div></div>';
+    }
+
+    function wireCardSelects() {
+      document.querySelectorAll('.cs-option').forEach(function(opt) {
+        opt.addEventListener('click', function() {
+          var group = opt.dataset.group;
+          document.querySelectorAll('[data-group="' + group + '"]').forEach(function(o) { o.classList.remove('selected'); });
+          opt.classList.add('selected');
+        });
+      });
+    }
+
+    function wireCheckItems() {
+      document.querySelectorAll('.check-item').forEach(function(item) {
+        var cb = item.querySelector('input[type=checkbox]');
+        if (!cb) return;
+        cb.addEventListener('change', function() {
+          item.classList.toggle('checked', cb.checked);
+        });
+      });
+    }
+
+    // ── COLLECT ───────────────────────────────────────────────────────────
+    function collectStep1() {
+      ctx.companyName = (document.getElementById('f_company')||{value:''}).value.trim();
+      ctx.companySize = getSelected('size') || ctx.companySize || 'startup';
+      ctx.companyStage = getSelected('stage') || ctx.companyStage || 'building';
+      ctx.regulatoryMarkets = [];
+      ['us','eu','canada','apac'].forEach(function(m) {
+        var el = document.getElementById('mkt_' + m);
+        if (el && el.checked) ctx.regulatoryMarkets.push(m);
+      });
+      if (!ctx.regulatoryMarkets.length) ctx.regulatoryMarkets = ['us'];
+    }
+
+    function collectStep2() {
+      ctx.deviceName       = (document.getElementById('f_device')||{value:''}).value.trim();
+      ctx.deviceClass      = getSelected('class') || ctx.deviceClass || 'ii';
+      ctx.deviceType       = getSelected('type')  || ctx.deviceType  || 'hardware';
+      ctx.intendedUse      = (document.getElementById('f_intended_use')||{value:''}).value.trim();
+      ctx.patientPopulation = (document.getElementById('f_population')||{value:''}).value.trim();
+    }
+
+    function collectStep3() {
+      ctx.scopeActivities = [];
+      ['design','mfg','dist','pm','service','import'].forEach(function(a) {
+        var el = document.getElementById('act_' + a);
+        var key = { mfg:'manufacturing', dist:'distribution', pm:'post-market', service:'servicing', import:'import', design:'design' }[a] || a;
+        if (el && el.checked) ctx.scopeActivities.push(key);
+      });
+      ctx.knownExclusions = (document.getElementById('f_exclusions')||{value:''}).value.trim();
+      ctx.regulatoryBasis  = (document.getElementById('f_reg_basis')||{value:''}).value.trim() || 'ISO 13485:2016; 21 CFR Part 820';
+    }
+
+    function collectStep4() {
+      ctx.anthropicApiKey = (document.getElementById('f_api_key')||{value:''}).value.trim();
+    }
+
+    function getSelected(group) {
+      var el = document.querySelector('.cs-option.selected[data-group="' + group + '"]');
+      return el ? el.dataset.value : null;
+    }
+
+    // ── NAVIGATION ────────────────────────────────────────────────────────
+    function goNext() {
+      if (current === 0) { collectStep1(); if (!ctx.companyName) { alert('Please enter your company name.'); return; } }
+      if (current === 1) { collectStep2(); if (!ctx.deviceName)  { alert('Please enter your device name.');  return; } }
+      if (current === 2) { collectStep3(); }
+      current++;
+      renderStep();
+      document.getElementById('setupCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function goBack() {
+      if (current > 0) { current--; renderStep(); }
+    }
+
+    function toggleApiKeyVis() {
+      var inp = document.getElementById('f_api_key');
+      if (!inp) return;
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    function skipApiKey() {
+      ctx.anthropicApiKey = '';
+      saveAndComplete();
+    }
+
+    function finishSetup() {
+      collectStep4();
+      saveAndComplete();
+    }
+
+    function saveAndComplete() {
+      ctx.setupComplete = true;
+      ctx.setupDate = new Date().toISOString();
+      try { localStorage.setItem('qms_context', JSON.stringify(ctx)); } catch(e) {}
+      current = 4; // complete screen
+      renderProgress();
+      document.getElementById('setupCard').innerHTML = buildComplete();
+    }
+
+    function launchQM() {
+      window.location.href = 'quality-manual.html';
+    }
+
+    // ── INIT ──────────────────────────────────────────────────────────────
+    renderStep();
+  </script>
+</body>
+</html>

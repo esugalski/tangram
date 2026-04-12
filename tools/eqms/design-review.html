@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Reviews — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --gray:       #D2D2D2;
+      --light-gray: #F7F8FA;
+      --white:      #FFFFFF;
+      --sidebar-w:  232px;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
+    .project-switcher-wrap { padding: 0.75rem 0.75rem 0; }
+    .project-switcher { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); border-radius: 8px; padding: 0.55rem 0.75rem; cursor: default; display: flex; align-items: center; gap: 0.55rem; }
+    .project-switcher-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--aqua); }
+    .project-switcher-text { flex: 1; min-width: 0; }
+    .project-switcher-label { font-size: 0.58rem; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.1rem; }
+    .project-switcher-name { font-size: 0.8rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-section-label { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); padding: 0.6rem 0.75rem 0.2rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.88); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-badge { margin-left: auto; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.06em; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.22); padding: 0.14rem 0.42rem; border-radius: 3px; text-transform: uppercase; }
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.5rem 0.75rem; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); }
+    .sidebar-sign-out { margin-left: auto; }
+    .sidebar-sign-out a { font-size: 0.66rem; color: rgba(255,255,255,0.22); text-decoration: none; transition: color 0.2s; }
+    .sidebar-sign-out a:hover { color: rgba(255,255,255,0.5); }
+
+    /* ─── MAIN LAYOUT ─── */
+    .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+
+    /* ─── TOPBAR ─── */
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 1.5rem; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: relative; z-index: 10; }
+    .topbar-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+    .topbar-crumb { color: rgba(11,39,64,0.35); font-weight: 400; font-size: 0.85rem; }
+    .topbar-sep { color: rgba(11,39,64,0.2); }
+    .topbar-right { display: flex; align-items: center; gap: 0.65rem; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s, transform 0.12s; box-shadow: 0 2px 8px rgba(10,192,233,0.28); white-space: nowrap; }
+    .btn-primary:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .btn-primary svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── TWO-COLUMN LAYOUT ─── */
+    .content-cols { flex: 1; display: flex; overflow: hidden; min-height: 0; }
+
+    /* ─── LEFT LIST COLUMN ─── */
+    .list-col { width: 340px; flex-shrink: 0; border-right: 1px solid rgba(11,39,64,0.08); background: white; display: flex; flex-direction: column; overflow: hidden; }
+    .list-col-head { padding: 1rem; border-bottom: 1px solid rgba(11,39,64,0.06); flex-shrink: 0; }
+    .list-col-search { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.45rem 0.75rem; outline: none; transition: border-color 0.15s; }
+    .list-col-search:focus { border-color: var(--aqua); }
+    .list-col-body { flex: 1; overflow-y: auto; padding: 0.5rem; }
+    .list-col-body::-webkit-scrollbar { width: 4px; }
+    .list-col-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+
+    /* Phase group in list */
+    .list-phase-group { margin-bottom: 0.5rem; }
+    .list-phase-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); padding: 0.5rem 0.5rem 0.3rem; }
+    .list-empty { font-size: 0.75rem; color: rgba(11,39,64,0.32); padding: 0.4rem 0.5rem 0.8rem; font-style: italic; }
+
+    /* Review card in list */
+    .review-card { padding: 0.75rem 0.85rem; border-radius: 8px; cursor: pointer; transition: background 0.1s; border: 1.5px solid transparent; margin-bottom: 0.25rem; }
+    .review-card:hover { background: rgba(11,39,64,0.03); }
+    .review-card.selected { background: rgba(10,192,233,0.06); border-color: rgba(10,192,233,0.25); }
+    .review-card-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+    .review-card-id { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.05em; color: rgba(11,39,64,0.38); background: rgba(11,39,64,0.06); padding: 0.1rem 0.4rem; border-radius: 3px; }
+    .review-card-status { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 3px; margin-left: auto; }
+    .review-card-status.open { background: rgba(245,158,11,0.12); color: #b45309; }
+    .review-card-status.closed { background: rgba(16,185,129,0.1); color: #047857; }
+    .review-card-title { font-size: 0.8rem; font-weight: 600; color: var(--primary); line-height: 1.35; margin-bottom: 0.25rem; }
+    .review-card-meta { font-size: 0.68rem; color: rgba(11,39,64,0.42); display: flex; align-items: center; gap: 0.5rem; }
+    .review-card-ai-badge { font-size: 0.6rem; font-weight: 700; color: #EF4444; background: rgba(239,68,68,0.1); padding: 0.1rem 0.35rem; border-radius: 3px; }
+
+    /* Empty state */
+    .list-col-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; gap: 0.75rem; }
+    .list-col-empty svg { width: 40px; height: 40px; stroke: rgba(11,39,64,0.18); fill: none; stroke-width: 1.5; }
+    .list-col-empty h3 { font-size: 0.85rem; font-weight: 600; color: rgba(11,39,64,0.40); }
+    .list-col-empty p { font-size: 0.75rem; color: rgba(11,39,64,0.30); line-height: 1.6; }
+
+    /* ─── RIGHT DETAIL PANEL ─── */
+    .detail-col { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
+    .detail-col::-webkit-scrollbar { width: 5px; }
+    .detail-col::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    .detail-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center; padding: 3rem; color: rgba(11,39,64,0.28); }
+    .detail-placeholder svg { width: 52px; height: 52px; stroke: rgba(11,39,64,0.15); fill: none; stroke-width: 1.5; }
+    .detail-placeholder h2 { font-size: 1rem; font-weight: 600; color: rgba(11,39,64,0.32); }
+    .detail-placeholder p { font-size: 0.8rem; line-height: 1.6; max-width: 320px; }
+
+    .detail-pane { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+    .detail-pane-head { display: flex; align-items: flex-start; gap: 1rem; }
+    .detail-pane-id-badge { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.40); background: rgba(11,39,64,0.06); padding: 0.2rem 0.55rem; border-radius: 4px; white-space: nowrap; }
+    .detail-pane-title { font-size: 1.1rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; flex: 1; line-height: 1.3; }
+    .detail-pane-status-row { display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap; margin-top: 0.5rem; }
+
+    /* Outcome badges */
+    .outcome-badge { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 5px; }
+    .outcome-badge.approved  { background: rgba(16,185,129,0.12); color: #047857; }
+    .outcome-badge.conditional { background: rgba(245,158,11,0.12); color: #b45309; }
+    .outcome-badge.hold      { background: rgba(239,68,68,0.12); color: #dc2626; }
+
+    /* Locked banner */
+    .locked-banner { display: flex; align-items: center; gap: 0.65rem; background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.18); border-radius: 9px; padding: 0.75rem 1rem; }
+    .locked-banner svg { width: 16px; height: 16px; stroke: #047857; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .locked-banner-text { font-size: 0.76rem; color: #047857; font-weight: 500; }
+    .locked-banner-sig { font-size: 0.7rem; color: rgba(11,39,64,0.55); margin-top: 0.2rem; }
+
+    /* Warning banner */
+    .warning-banner { display: flex; align-items: center; gap: 0.65rem; background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.2); border-radius: 9px; padding: 0.75rem 1rem; }
+    .warning-banner svg { width: 16px; height: 16px; stroke: #b45309; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .warning-banner-text { font-size: 0.76rem; color: #b45309; font-weight: 500; }
+
+    /* Section cards */
+    .section-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; }
+    .section-card-head { padding: 0.85rem 1.1rem; border-bottom: 1px solid rgba(11,39,64,0.07); display: flex; align-items: center; justify-content: space-between; }
+    .section-card-title { font-size: 0.78rem; font-weight: 700; color: var(--primary); letter-spacing: -0.01em; }
+    .section-card-body { padding: 1rem 1.1rem; }
+
+    /* Form fields */
+    .form-row { display: flex; gap: 0.85rem; }
+    .form-field { display: flex; flex-direction: column; gap: 0.3rem; flex: 1; }
+    .form-label { font-size: 0.7rem; font-weight: 600; color: var(--primary); }
+    .form-input { font-family: 'Inter', sans-serif; font-size: 0.83rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.14); border-radius: 7px; padding: 0.48rem 0.7rem; outline: none; transition: border-color 0.15s, box-shadow 0.15s; background: white; }
+    .form-input:focus { border-color: var(--aqua); box-shadow: 0 0 0 3px rgba(10,192,233,0.1); }
+    .form-input:disabled { background: var(--light-gray); color: rgba(11,39,64,0.45); cursor: not-allowed; }
+    .form-input.locked { background: var(--light-gray); color: rgba(11,39,64,0.55); cursor: default; border-color: rgba(11,39,64,0.08); }
+    textarea.form-input { resize: vertical; min-height: 72px; line-height: 1.55; }
+    select.form-input { cursor: pointer; }
+
+    /* Locked field display */
+    .field-locked { font-size: 0.83rem; color: var(--primary); line-height: 1.55; padding: 0.45rem 0; }
+    .field-locked.empty { color: rgba(11,39,64,0.35); font-style: italic; }
+
+    /* Participants table */
+    .participants-table { width: 100%; border-collapse: collapse; }
+    .participants-table th { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.38); padding: 0 0.5rem 0.4rem; text-align: left; }
+    .participants-table td { padding: 0.35rem 0.5rem; vertical-align: middle; }
+    .participants-table tr:not(:last-child) td { border-bottom: 1px solid rgba(11,39,64,0.05); }
+    .participant-input { font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.12); border-radius: 6px; padding: 0.35rem 0.55rem; outline: none; width: 100%; transition: border-color 0.15s; background: white; }
+    .participant-input:focus { border-color: var(--aqua); }
+    .participant-input:disabled { background: var(--light-gray); color: rgba(11,39,64,0.45); cursor: not-allowed; border-color: rgba(11,39,64,0.06); }
+    .btn-icon { width: 26px; height: 26px; border-radius: 5px; border: none; background: rgba(11,39,64,0.06); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
+    .btn-icon:hover { background: rgba(11,39,64,0.12); }
+    .btn-icon svg { width: 12px; height: 12px; stroke: rgba(11,39,64,0.55); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-icon.danger:hover { background: rgba(239,68,68,0.1); }
+    .btn-icon.danger:hover svg { stroke: #EF4444; }
+    .btn-add-row { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; color: var(--aqua-dark); background: rgba(10,192,233,0.07); border: none; border-radius: 6px; padding: 0.32rem 0.7rem; cursor: pointer; margin-top: 0.6rem; transition: background 0.15s; }
+    .btn-add-row:hover { background: rgba(10,192,233,0.13); }
+    .btn-add-row svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .checkbox-cell { display: flex; align-items: center; justify-content: center; }
+    .participant-checkbox { width: 15px; height: 15px; cursor: pointer; accent-color: var(--aqua); }
+
+    /* Documents reviewed table */
+    .docs-table { width: 100%; border-collapse: collapse; }
+    .docs-table th { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.38); padding: 0 0.5rem 0.5rem; text-align: left; }
+    .docs-table td { padding: 0.4rem 0.5rem; vertical-align: middle; font-size: 0.78rem; color: var(--primary); border-bottom: 1px solid rgba(11,39,64,0.05); }
+    .docs-table tr:last-child td { border-bottom: none; }
+    .doc-type-pill { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.1rem 0.38rem; border-radius: 3px; }
+    .doc-type-pill.un { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .doc-type-pill.di { background: rgba(11,39,64,0.08); color: var(--mid-blue); }
+    .doc-type-pill.do { background: rgba(16,185,129,0.1); color: #047857; }
+    .doc-status-pill { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.1rem 0.38rem; border-radius: 3px; }
+    .doc-status-pill.approved { background: rgba(16,185,129,0.1); color: #047857; }
+    .doc-status-pill.review { background: rgba(245,158,11,0.12); color: #b45309; }
+    .doc-status-pill.draft { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); }
+    .docs-empty { font-size: 0.75rem; color: rgba(11,39,64,0.35); font-style: italic; padding: 0.5rem 0; }
+    .doc-stmt-preview { font-size: 0.72rem; color: rgba(11,39,64,0.55); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .doc-ver-badge { font-size: 0.62rem; font-weight: 700; color: rgba(11,39,64,0.38); background: rgba(11,39,64,0.05); padding: 0.08rem 0.35rem; border-radius: 3px; }
+
+    /* Action items */
+    .action-item-row { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 0.5rem; align-items: start; padding: 0.5rem 0; border-bottom: 1px solid rgba(11,39,64,0.05); }
+    .action-item-row:last-of-type { border-bottom: none; }
+    .action-item-desc { grid-column: 1 / -1; }
+    .action-item-status-toggle { cursor: pointer; display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; }
+    .action-item-status-toggle.open { color: #b45309; }
+    .action-item-status-toggle.closed { color: #047857; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.open { background: #F59E0B; }
+    .status-dot.closed { background: #10B981; }
+
+    /* Outcome selector */
+    .outcome-row { display: flex; gap: 0.65rem; align-items: center; flex-wrap: wrap; }
+    .outcome-btn { display: flex; align-items: center; gap: 0.4rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 0.5rem 1rem; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; }
+    .outcome-btn.approved  { color: #047857; background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.2); }
+    .outcome-btn.approved:hover, .outcome-btn.approved.selected  { background: rgba(16,185,129,0.14); border-color: #10B981; }
+    .outcome-btn.conditional { color: #b45309; background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); }
+    .outcome-btn.conditional:hover, .outcome-btn.conditional.selected { background: rgba(245,158,11,0.14); border-color: #F59E0B; }
+    .outcome-btn.hold { color: #dc2626; background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); }
+    .outcome-btn.hold:hover, .outcome-btn.hold.selected { background: rgba(239,68,68,0.14); border-color: #EF4444; }
+
+    /* Footer */
+    .detail-footer { background: white; border-top: 1px solid rgba(11,39,64,0.08); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; flex-shrink: 0; }
+    .btn-close-sign { display: inline-flex; align-items: center; gap: 0.45rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.8rem; padding: 0.55rem 1.3rem; border-radius: 7px; border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(10,192,233,0.30); transition: background 0.15s, transform 0.12s; }
+    .btn-close-sign:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .btn-close-sign svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-save-draft { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.52rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: all 0.15s; }
+    .btn-save-draft:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .save-flash { font-size: 0.73rem; font-weight: 600; color: var(--green); opacity: 0; transition: opacity 0.3s; }
+    .save-flash.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Governance</span>
+        <span class="topbar-sep">/</span>
+        Design Reviews
+      </div>
+      <div class="topbar-right">
+        <button class="btn-primary" onclick="newReview()">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Review
+        </button>
+      </div>
+    </div>
+
+    <div class="content-cols">
+      <!-- LEFT LIST -->
+      <div class="list-col">
+        <div class="list-col-head">
+          <input class="list-col-search" type="text" placeholder="Search reviews…" oninput="filterReviews(this.value)" id="reviewSearch">
+        </div>
+        <div class="list-col-body" id="reviewList"></div>
+      </div>
+
+      <!-- RIGHT DETAIL -->
+      <div class="detail-col" id="detailCol">
+        <div class="detail-placeholder" id="detailPlaceholder">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <h2>Select or create a design review</h2>
+          <p>Design reviews are formal records of retrospective checkpoints. Select a review from the list or create a new one.</p>
+        </div>
+        <div id="detailPane" style="display:none; flex:1; display:none; flex-direction:column;">
+          <div class="detail-pane" id="detailPaneInner"></div>
+          <div style="flex:1;"></div>
+          <div class="detail-footer" id="detailFooter"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script src="esign.js"></script>
+  <script src="versions.js"></script>
+  <script src="approvals.js"></script>
+  <script>
+    initSidebar({ activePage: 'design-review' });
+
+    // ── DATA ──────────────────────────────────────────────────────────────
+    const LS_KEY = 'qms_design_reviews';
+    let REVIEWS = {};
+    let currentId = null;
+    let isDirty = false;
+
+    const PHASE_LABELS = {
+      planning:        'Planning',
+      'design-inputs': 'Design Inputs',
+      'design-outputs':'Design Outputs',
+      verification:    'Verification',
+      validation:      'Validation',
+      'quality-system':'Quality System',
+    };
+    const PHASE_ORDER = ['planning','design-inputs','design-outputs','verification','validation','quality-system'];
+    const DOC_TYPE_MAP = {
+      planning:        ['un'],
+      'design-inputs': ['un','di'],
+      'design-outputs':['di','do'],
+      verification:    ['di','do'],
+      validation:      ['do'],
+      'quality-system':[],
+    };
+
+    // ── STORAGE ───────────────────────────────────────────────────────────
+    function save() {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(REVIEWS)); } catch(e) {}
+    }
+    function load() {
+      try {
+        const s = localStorage.getItem(LS_KEY);
+        if (!s) return;
+        const p = JSON.parse(s);
+        REVIEWS = Array.isArray(p) ? {} : (p || {});
+      } catch(e) {}
+    }
+
+    // ── ID GENERATION ─────────────────────────────────────────────────────
+    function nextDRId() {
+      const nums = Object.keys(REVIEWS).map(function(k) {
+        const m = REVIEWS[k].id && REVIEWS[k].id.match(/DR-(\d+)/);
+        return m ? parseInt(m[1]) : 0;
+      });
+      const next = nums.length ? Math.max.apply(null, nums) + 1 : 1;
+      return 'DR-' + String(next).padStart(3, '0');
+    }
+
+    // ── RENDER LIST ───────────────────────────────────────────────────────
+    function renderList(filter) {
+      filter = (filter || '').toLowerCase();
+      const el = document.getElementById('reviewList');
+      const grouped = {};
+      PHASE_ORDER.forEach(function(p) { grouped[p] = []; });
+
+      Object.values(REVIEWS).forEach(function(r) {
+        const phase = r.phase || 'planning';
+        if (!grouped[phase]) grouped[phase] = [];
+        if (!filter || r.id.toLowerCase().includes(filter) || (r.title||'').toLowerCase().includes(filter)) {
+          grouped[phase].push(r);
+        }
+      });
+
+      let html = '';
+      let anyVisible = false;
+      PHASE_ORDER.forEach(function(phase) {
+        const items = grouped[phase];
+        if (!items || !items.length) return;
+        anyVisible = true;
+        html += '<div class="list-phase-group">';
+        html += '<div class="list-phase-label">' + esc(PHASE_LABELS[phase] || phase) + '</div>';
+        items.sort(function(a,b) { return (b.createdAt||'').localeCompare(a.createdAt||''); }).forEach(function(r) {
+          const openAIs = (r.actionItems||[]).filter(function(ai){ return ai.status === 'open'; }).length;
+          const selected = r.id === currentId ? ' selected' : '';
+          const statusCls = r.status === 'closed' ? 'closed' : 'open';
+          const statusLabel = r.status === 'closed' ? 'Closed' : 'Open';
+          const aiWarning = openAIs > 0 ? '<span class="review-card-ai-badge">' + openAIs + ' open AI</span>' : '';
+          html += '<div class="review-card' + selected + '" onclick="openReview(\'' + r.id + '\')">';
+          html += '<div class="review-card-top"><span class="review-card-id">' + esc(r.id) + '</span>';
+          if (r.outcome) html += '<span class="outcome-badge ' + r.outcome + '">' + esc(r.outcome) + '</span>';
+          html += '<span class="review-card-status ' + statusCls + '">' + statusLabel + '</span></div>';
+          html += '<div class="review-card-title">' + esc(r.title || 'Untitled Review') + '</div>';
+          html += '<div class="review-card-meta">' + esc(r.date || '—') + (aiWarning ? '<span style="margin-left:auto;">' + aiWarning + '</span>' : '') + '</div>';
+          html += '</div>';
+        });
+        html += '</div>';
+      });
+
+      if (!anyVisible) {
+        html = '<div class="list-col-empty"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><h3>No reviews yet</h3><p>Create your first design review using the button above.</p></div>';
+      }
+      el.innerHTML = html;
+    }
+
+    function filterReviews(val) { renderList(val); }
+
+    // ── NEW REVIEW ────────────────────────────────────────────────────────
+    function newReview() {
+      const id = nextDRId();
+      const key = id.toLowerCase().replace('-','');
+      const review = {
+        id: id,
+        title: '',
+        phase: 'planning',
+        date: new Date().toISOString().slice(0,10),
+        status: 'open',
+        outcome: null,
+        participants: [],
+        documentsReviewed: [],
+        actionItems: [],
+        notes: '',
+        signature: null,
+        createdAt: new Date().toISOString(),
+        closedAt: null,
+      };
+      REVIEWS[id] = review;
+      save();
+      renderList();
+      openReview(id);
+    }
+
+    // ── OPEN REVIEW ───────────────────────────────────────────────────────
+    function openReview(id) {
+      const r = REVIEWS[id]; if (!r) return;
+      currentId = id; isDirty = false;
+      document.getElementById('detailPlaceholder').style.display = 'none';
+      const pane = document.getElementById('detailPane');
+      pane.style.display = 'flex';
+      renderDetail(r);
+      renderList();
+    }
+
+    function renderDetail(r) {
+      const inner = document.getElementById('detailPaneInner');
+      const footer = document.getElementById('detailFooter');
+      const locked = r.status === 'closed';
+
+      let html = '';
+
+      // Header
+      html += '<div class="detail-pane-head">';
+      html += '<span class="detail-pane-id-badge">' + esc(r.id) + '</span>';
+      if (locked) {
+        html += '<div style="flex:1"><div class="detail-pane-title">' + esc(r.title || 'Untitled Review') + '</div>';
+        html += '<div class="detail-pane-status-row">';
+        if (r.outcome) html += '<span class="outcome-badge ' + r.outcome + '">' + esc(r.outcome) + '</span>';
+        html += '<span class="review-card-status closed" style="font-size:0.65rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;background:rgba(16,185,129,0.1);color:#047857;padding:0.15rem 0.5rem;border-radius:4px;">Closed</span>';
+        html += '</div></div>';
+      } else {
+        html += '<div style="flex:1">';
+        html += '<div class="detail-pane-status-row"><span class="review-card-status open" style="font-size:0.65rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;background:rgba(245,158,11,0.12);color:#b45309;padding:0.15rem 0.5rem;border-radius:4px;">Open</span></div>';
+        html += '</div>';
+      }
+      html += '</div>';
+
+      // Locked banner
+      if (locked && r.signature) {
+        const ts = r.signature.timestamp ? new Date(r.signature.timestamp).toLocaleString('en-US', {dateStyle:'medium',timeStyle:'short'}) : '—';
+        html += '<div class="locked-banner"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
+        html += '<div><div class="locked-banner-text">This review is closed and signed.</div>';
+        html += '<div class="locked-banner-sig">Signed by ' + esc(r.signature.signerName) + ' · ' + esc(r.signature.signerRole) + ' · ' + ts + '</div></div></div>';
+      }
+
+      // ── REVIEW INFO ──
+      html += '<div class="section-card">';
+      html += '<div class="section-card-head"><div class="section-card-title">Review Info</div></div>';
+      html += '<div class="section-card-body" style="display:flex;flex-direction:column;gap:0.9rem;">';
+
+      if (locked) {
+        html += '<div class="form-field"><div class="form-label">Title</div><div class="field-locked' + (r.title ? '' : ' empty') + '">' + esc(r.title || 'No title') + '</div></div>';
+        html += '<div class="form-row">';
+        html += '<div class="form-field"><div class="form-label">Phase</div><div class="field-locked">' + esc(PHASE_LABELS[r.phase] || r.phase) + '</div></div>';
+        html += '<div class="form-field"><div class="form-label">Date</div><div class="field-locked">' + esc(r.date || '—') + '</div></div>';
+        html += '</div>';
+        if (r.notes) html += '<div class="form-field"><div class="form-label">Notes</div><div class="field-locked" style="white-space:pre-wrap;">' + esc(r.notes) + '</div></div>';
+      } else {
+        html += '<div class="form-field"><div class="form-label">Title</div><input class="form-input" type="text" id="field-title" value="' + esc(r.title||'') + '" placeholder="e.g. Planning Phase Design Review" oninput="markDirty()"></div>';
+        html += '<div class="form-row">';
+        html += '<div class="form-field"><div class="form-label">Phase</div><select class="form-input" id="field-phase" onchange="onPhaseChange();markDirty()">';
+        PHASE_ORDER.forEach(function(p) { html += '<option value="' + p + '"' + (r.phase === p ? ' selected' : '') + '>' + esc(PHASE_LABELS[p]) + '</option>'; });
+        html += '</select></div>';
+        html += '<div class="form-field"><div class="form-label">Date</div><input class="form-input" type="date" id="field-date" value="' + esc(r.date||'') + '" oninput="markDirty()"></div>';
+        html += '</div>';
+        html += '<div class="form-field"><div class="form-label">Notes</div><textarea class="form-input" id="field-notes" rows="3" placeholder="Observations, discussion points, references…" oninput="markDirty()">' + esc(r.notes||'') + '</textarea></div>';
+      }
+      html += '</div></div>';
+
+      // ── PARTICIPANTS ──
+      html += '<div class="section-card">';
+      html += '<div class="section-card-head"><div class="section-card-title">Participants</div>';
+      if (!locked) html += '<button class="btn-add-row" onclick="addParticipant()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add</button>';
+      html += '</div>';
+      html += '<div class="section-card-body">';
+      const hasIndep = (r.participants||[]).some(function(p) { return p.independent; });
+      if (!hasIndep && !locked && (r.participants||[]).length > 0) {
+        html += '<div class="warning-banner" style="margin-bottom:0.75rem;"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="warning-banner-text">No independent reviewer designated. FDA 21 CFR 820.30(e) requires at least one reviewer independent of the design.</span></div>';
+      }
+      if (!(r.participants||[]).length) {
+        html += '<div class="docs-empty">No participants added yet.</div>';
+      } else {
+        html += '<table class="participants-table"><thead><tr><th>Name</th><th>Role</th><th style="text-align:center;">Independent</th>' + (!locked ? '<th></th>' : '') + '</tr></thead><tbody id="participants-tbody">';
+        (r.participants||[]).forEach(function(p, i) {
+          html += '<tr>';
+          if (locked) {
+            html += '<td>' + esc(p.name||'') + '</td><td>' + esc(p.role||'') + '</td>';
+            html += '<td style="text-align:center;">' + (p.independent ? '✓' : '—') + '</td>';
+          } else {
+            html += '<td><input class="participant-input" type="text" value="' + esc(p.name||'') + '" placeholder="Full name" oninput="updateParticipant(' + i + ',\'name\',this.value);markDirty()"></td>';
+            html += '<td><input class="participant-input" type="text" value="' + esc(p.role||'') + '" placeholder="Role / Title" oninput="updateParticipant(' + i + ',\'role\',this.value);markDirty()"></td>';
+            html += '<td><div class="checkbox-cell"><input type="checkbox" class="participant-checkbox" ' + (p.independent ? 'checked' : '') + ' onchange="updateParticipant(' + i + ',\'independent\',this.checked);markDirty()"></div></td>';
+            html += '<td><button class="btn-icon danger" onclick="removeParticipant(' + i + ')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button></td>';
+          }
+          html += '</tr>';
+        });
+        html += '</tbody></table>';
+      }
+      html += '</div></div>';
+
+      // ── DOCUMENTS REVIEWED ──
+      html += '<div class="section-card">';
+      html += '<div class="section-card-head"><div class="section-card-title">Documents Reviewed</div>';
+      if (!locked) html += '<button class="btn-add-row" onclick="refreshDocsSection()"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Refresh</button>';
+      html += '</div>';
+      html += '<div class="section-card-body" id="docs-body">';
+      html += buildDocsHTML(r, locked);
+      html += '</div></div>';
+
+      // ── ACTION ITEMS ──
+      html += '<div class="section-card">';
+      html += '<div class="section-card-head"><div class="section-card-title">Action Items</div>';
+      if (!locked) html += '<button class="btn-add-row" onclick="addActionItem()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add</button>';
+      html += '</div>';
+      html += '<div class="section-card-body" id="ai-body">';
+      html += buildActionItemsHTML(r, locked);
+      html += '</div></div>';
+
+      // ── OUTCOME ──
+      if (!locked) {
+        html += '<div class="section-card">';
+        html += '<div class="section-card-head"><div class="section-card-title">Outcome</div></div>';
+        html += '<div class="section-card-body"><div class="outcome-row">';
+        ['approved','conditional','hold'].forEach(function(o) {
+          const labels = { approved: '✓ Approved', conditional: '~ Conditional', hold: '✗ Hold' };
+          const sel = r.outcome === o ? ' selected' : '';
+          html += '<button class="outcome-btn ' + o + sel + '" onclick="setOutcome(\'' + o + '\')">' + labels[o] + '</button>';
+        });
+        html += '</div></div></div>';
+      }
+
+      inner.innerHTML = html;
+
+      // Footer
+      if (locked) {
+        footer.innerHTML = '<span class="save-flash show" style="opacity:1;margin-right:auto;">Review closed and signed.</span>';
+      } else {
+        footer.innerHTML = '<span class="save-flash" id="saveFlash"></span><button class="btn-save-draft" onclick="saveReview()">Save</button><button class="btn-close-sign" onclick="closeAndSign()"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Close &amp; Sign</button>';
+      }
+    }
+
+    function buildDocsHTML(r, locked) {
+      const phase = r.phase || 'planning';
+      const relevantTypes = DOC_TYPE_MAP[phase] || [];
+      if (!relevantTypes.length) return '<div class="docs-empty">No document types associated with this phase.</div>';
+
+      // Load approved documents from qms_documents (document-level, not individual items)
+      const approvedDocs = [];
+      try {
+        const qd = JSON.parse(localStorage.getItem('qms_documents') || '{}');
+        Object.keys(qd).forEach(function(key) {
+          const doc = qd[key];
+          if (doc && relevantTypes.indexOf(doc.type) !== -1 && doc.status === 'approved') {
+            approvedDocs.push({ key: key, doc: doc });
+          }
+        });
+      } catch(e) {}
+
+      if (!approvedDocs.length) {
+        const typeNames = { un: 'User Needs Specification', di: 'Design Inputs Specification', do: 'Design Outputs Specification' };
+        const names = relevantTypes.map(function(t){ return typeNames[t] || t.toUpperCase(); }).join(', ');
+        return '<div class="docs-empty">No approved documents found for this phase. Finalize and approve the ' + names + ' first.</div>';
+      }
+
+      const reviewed = r.documentsReviewed || [];
+      const reviewedKeys = reviewed.map(function(d){ return d.key; });
+
+      const typeLabels = { un: 'User Needs', di: 'Design Inputs', do: 'Design Outputs' };
+      let html = '<table class="docs-table"><thead><tr><th></th><th>Document</th><th>Type</th><th>Ver</th><th>Approved By</th><th>Approved</th></tr></thead><tbody>';
+      approvedDocs.forEach(function(entry) {
+        const doc = entry.doc; const key = entry.key;
+        const isIncluded = reviewedKeys.indexOf(key) !== -1;
+        const ver = doc.version || 1;
+        const signerName = doc.approvalSignature ? (doc.approvalSignature.signerName || '—') : '—';
+        const approvedDate = doc.approvedAt ? doc.approvedAt.slice(0,10) : '—';
+        const disabledAttr = locked ? ' disabled' : '';
+        html += '<tr>';
+        html += '<td><input type="checkbox" style="accent-color:var(--aqua);" ' + (isIncluded ? 'checked' : '') + disabledAttr + ' onchange="toggleDocIncluded(\'' + esc(key) + '\',\'' + esc(doc.type) + '\',' + ver + ',\'' + esc(doc.name) + '\',this.checked)">';
+        html += '</td>';
+        html += '<td style="font-weight:600;font-size:0.8rem;">' + esc(doc.name) + '</td>';
+        html += '<td><span class="doc-type-pill ' + doc.type + '">' + (typeLabels[doc.type] || doc.type.toUpperCase()) + '</span></td>';
+        html += '<td><span class="doc-ver-badge">v' + ver + '</span></td>';
+        html += '<td style="font-size:0.75rem;color:var(--mid-blue);">' + esc(signerName) + '</td>';
+        html += '<td style="font-size:0.75rem;color:var(--mid-blue);">' + esc(approvedDate) + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      return html;
+    }
+
+    function buildActionItemsHTML(r, locked) {
+      const items = r.actionItems || [];
+      if (!items.length) return '<div class="docs-empty">No action items.</div>';
+      let html = '';
+      items.forEach(function(ai, i) {
+        html += '<div class="action-item-row">';
+        html += '<div class="action-item-desc form-field" style="grid-column:1/-2;">';
+        if (locked) {
+          html += '<div style="font-size:0.8rem;color:var(--primary);font-weight:500;">' + esc(ai.description||'') + '</div>';
+          html += '<div style="font-size:0.7rem;color:rgba(11,39,64,0.45);margin-top:0.15rem;">Owner: ' + esc(ai.owner||'—') + (ai.dueDate ? ' · Due: ' + esc(ai.dueDate) : '') + '</div>';
+        } else {
+          html += '<input class="participant-input" type="text" value="' + esc(ai.description||'') + '" placeholder="Action item description" style="font-weight:500;" oninput="updateAI(' + i + ',\'description\',this.value);markDirty()">';
+          html += '<div style="display:flex;gap:0.4rem;margin-top:0.3rem;">';
+          html += '<input class="participant-input" type="text" value="' + esc(ai.owner||'') + '" placeholder="Owner" style="flex:1;" oninput="updateAI(' + i + ',\'owner\',this.value);markDirty()">';
+          html += '<input class="participant-input" type="date" value="' + esc(ai.dueDate||'') + '" style="flex:1;" oninput="updateAI(' + i + ',\'dueDate\',this.value);markDirty()">';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (!locked) {
+          html += '<div style="display:flex;flex-direction:column;align-items:center;gap:0.3rem;padding-top:0.2rem;">';
+          html += '<button class="action-item-status-toggle ' + (ai.status||'open') + '" onclick="toggleAIStatus(' + i + ')" title="Toggle status"><span class="status-dot ' + (ai.status||'open') + '"></span>' + (ai.status === 'closed' ? 'Closed' : 'Open') + '</button>';
+          html += '<button class="btn-icon danger" onclick="removeAI(' + i + ')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>';
+          html += '</div>';
+        } else {
+          html += '<div><span class="action-item-status-toggle ' + (ai.status||'open') + '" style="cursor:default;"><span class="status-dot ' + (ai.status||'open') + '"></span>' + (ai.status === 'closed' ? 'Closed' : 'Open') + '</span></div>';
+        }
+        html += '</div>';
+      });
+      return html;
+    }
+
+    // ── INTERACTIVE HELPERS ───────────────────────────────────────────────
+    function markDirty() { isDirty = true; }
+
+    function onPhaseChange() {
+      const r = REVIEWS[currentId]; if (!r) return;
+      r.phase = document.getElementById('field-phase').value;
+      save();
+      const docsBody = document.getElementById('docs-body');
+      if (docsBody) docsBody.innerHTML = buildDocsHTML(r, false);
+    }
+
+    function refreshDocsSection() {
+      const r = REVIEWS[currentId]; if (!r) return;
+      r.phase = (document.getElementById('field-phase') || {value: r.phase}).value || r.phase;
+      const docsBody = document.getElementById('docs-body');
+      if (docsBody) docsBody.innerHTML = buildDocsHTML(r, false);
+    }
+
+    function setOutcome(outcome) {
+      const r = REVIEWS[currentId]; if (!r) return;
+      r.outcome = (r.outcome === outcome) ? null : outcome;
+      // Re-render outcome buttons only
+      document.querySelectorAll('.outcome-btn').forEach(function(btn) {
+        btn.classList.toggle('selected', btn.classList.contains(outcome) && r.outcome === outcome);
+      });
+      markDirty();
+    }
+
+    function toggleDocIncluded(docKey, type, version, docName, checked) {
+      const r = REVIEWS[currentId]; if (!r) return;
+      if (!r.documentsReviewed) r.documentsReviewed = [];
+      if (checked) {
+        if (!r.documentsReviewed.find(function(d){ return d.key === docKey; })) {
+          r.documentsReviewed.push({ type: type, key: docKey, name: docName, version: version });
+        }
+      } else {
+        r.documentsReviewed = r.documentsReviewed.filter(function(d){ return d.key !== docKey; });
+      }
+      save();
+    }
+
+    function addParticipant() {
+      const r = REVIEWS[currentId]; if (!r) return;
+      if (!r.participants) r.participants = [];
+      r.participants.push({ name: '', role: '', independent: false });
+      save();
+      renderDetail(r);
+    }
+    function removeParticipant(i) {
+      const r = REVIEWS[currentId]; if (!r) return;
+      r.participants.splice(i, 1);
+      save();
+      renderDetail(r);
+    }
+    function updateParticipant(i, field, val) {
+      const r = REVIEWS[currentId]; if (!r || !r.participants[i]) return;
+      r.participants[i][field] = val;
+    }
+
+    function addActionItem() {
+      const r = REVIEWS[currentId]; if (!r) return;
+      if (!r.actionItems) r.actionItems = [];
+      const nextNum = r.actionItems.length + 1;
+      r.actionItems.push({ id: r.id + '-AI-' + String(nextNum).padStart(3,'0'), description: '', owner: '', dueDate: '', status: 'open' });
+      save();
+      const aiBody = document.getElementById('ai-body');
+      if (aiBody) aiBody.innerHTML = buildActionItemsHTML(r, false);
+    }
+    function removeAI(i) {
+      const r = REVIEWS[currentId]; if (!r) return;
+      r.actionItems.splice(i, 1);
+      save();
+      const aiBody = document.getElementById('ai-body');
+      if (aiBody) aiBody.innerHTML = buildActionItemsHTML(r, false);
+    }
+    function updateAI(i, field, val) {
+      const r = REVIEWS[currentId]; if (!r || !r.actionItems[i]) return;
+      r.actionItems[i][field] = val;
+    }
+    function toggleAIStatus(i) {
+      const r = REVIEWS[currentId]; if (!r || !r.actionItems[i]) return;
+      r.actionItems[i].status = r.actionItems[i].status === 'closed' ? 'open' : 'closed';
+      save();
+      const aiBody = document.getElementById('ai-body');
+      if (aiBody) aiBody.innerHTML = buildActionItemsHTML(r, false);
+      markDirty();
+    }
+
+    // ── SAVE ──────────────────────────────────────────────────────────────
+    function saveReview() {
+      const r = REVIEWS[currentId]; if (!r || r.status === 'closed') return;
+      collectFields(r);
+      save();
+      isDirty = false;
+      renderList();
+      const flash = document.getElementById('saveFlash');
+      if (flash) { flash.textContent = 'Saved ✓'; flash.classList.add('show'); setTimeout(function(){ flash.classList.remove('show'); }, 2000); }
+    }
+
+    function collectFields(r) {
+      const titleEl = document.getElementById('field-title');
+      const phaseEl = document.getElementById('field-phase');
+      const dateEl  = document.getElementById('field-date');
+      const notesEl = document.getElementById('field-notes');
+      if (titleEl) r.title = titleEl.value.trim();
+      if (phaseEl) r.phase = phaseEl.value;
+      if (dateEl)  r.date  = dateEl.value;
+      if (notesEl) r.notes = notesEl.value;
+    }
+
+    // ── CLOSE & SIGN ──────────────────────────────────────────────────────
+    function closeAndSign() {
+      const r = REVIEWS[currentId]; if (!r || r.status === 'closed') return;
+      collectFields(r);
+      save();
+
+      if (!r.outcome) {
+        alert('Please select an outcome (Approved, Conditional, or Hold) before closing this review.');
+        return;
+      }
+
+      // Warn if no independent reviewer
+      const hasIndep = (r.participants||[]).some(function(p){ return p.independent; });
+      if (!hasIndep && (r.participants||[]).length > 0) {
+        const proceed = confirm('Warning: No independent reviewer is designated. 21 CFR 820.30(e) requires at least one independent reviewer. Proceed anyway?');
+        if (!proceed) return;
+      }
+
+      const snapshot = JSON.parse(JSON.stringify(r));
+      Approvals.initiate({
+        recordId:       r.id,
+        recordType:     'dr',
+        meaning:        'I certify that this design review was conducted in accordance with the approved procedure and that all required participants, documents, and action items have been recorded accurately.',
+        recordSnapshot: snapshot,
+        onComplete: function(sigs) {
+          const sig = sigs[sigs.length - 1];
+          r.signature = sig;
+          r.signatures = sigs;
+          r.status = 'closed';
+          r.closedAt = new Date().toISOString();
+          save();
+          Approvals.clearInstance('dr', r.id);
+          // Write design review record to qms_documents for DHF Library
+          try {
+            const docs = JSON.parse(localStorage.getItem('qms_documents') || '{}');
+            const docKey = 'dr-' + r.id.toLowerCase();
+            docs[docKey] = {
+              type: 'design-review',
+              name: r.title || r.id,
+              id: r.id,
+              version: 1,
+              status: 'approved',
+              approvedAt: sig.timestamp,
+              approvalSignature: sig,
+              approvalSignatures: sigs,
+              itemSnapshot: JSON.parse(JSON.stringify(r)),
+              changeRef: null,
+              history: [],
+            };
+            localStorage.setItem('qms_documents', JSON.stringify(docs));
+          } catch(e) {}
+          renderDetail(r);
+          renderList();
+        },
+        onCancel: function() {},
+      });
+    }
+
+    // ── UTILS ─────────────────────────────────────────────────────────────
+    function esc(s) {
+      return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── INIT ──────────────────────────────────────────────────────────────
+    load();
+    renderList();
+  </script>
+</body>
+</html>

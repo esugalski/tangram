@@ -8,3 +8,11 @@ temporary screenshots/
 
 # Node
 node_modules/
+
+# Dev tools
+.env
+
+# eQMS — exclude markdown research docs and reference screenshots
+tools/eqms/*.md
+tools/eqms/guidelines/
+tools/eqms/screenshots/

@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --gray:       #D2D2D2;
+      --light-gray: #F7F8FA;
+      --white:      #FFFFFF;
+      --sidebar-w:  232px;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
+    .project-switcher-wrap { padding: 0.75rem 0.75rem 0; }
+    .project-switcher { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); border-radius: 8px; padding: 0.55rem 0.75rem; cursor: default; display: flex; align-items: center; gap: 0.55rem; }
+    .project-switcher-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--aqua); }
+    .project-switcher-text { flex: 1; min-width: 0; }
+    .project-switcher-label { font-size: 0.58rem; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.1rem; }
+    .project-switcher-name { font-size: 0.8rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-section-label { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); padding: 0.6rem 0.75rem 0.2rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.72); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-badge { margin-left: auto; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.06em; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.22); padding: 0.14rem 0.42rem; border-radius: 3px; text-transform: uppercase; }
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.5rem 0.75rem; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); }
+    .sidebar-sign-out { margin-left: auto; }
+    .sidebar-sign-out a { font-size: 0.66rem; color: rgba(255,255,255,0.22); text-decoration: none; transition: color 0.2s; }
+    .sidebar-sign-out a:hover { color: rgba(255,255,255,0.5); }
+
+    /* ─── MAIN ─── */
+    .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+
+    /* ─── TOPBAR ─── */
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 1.5rem; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 10; }
+    .topbar-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+    .topbar-icon { width: 18px; height: 18px; stroke: var(--aqua); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── SETTINGS LAYOUT ─── */
+    .settings-area { flex: 1; overflow: hidden; display: flex; }
+    .settings-sidebar { width: 220px; border-right: 1px solid rgba(11,39,64,0.08); background: white; padding: 1.5rem 0; flex-shrink: 0; overflow-y: auto; }
+    .settings-content { flex: 1; overflow-y: auto; padding: 2rem 2.5rem; }
+    .settings-content::-webkit-scrollbar { width: 5px; }
+    .settings-content::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    /* ─── SETTINGS NAV ─── */
+    .settings-nav-section { padding: 0 0.75rem; margin-bottom: 1.5rem; }
+    .settings-nav-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.3); padding: 0 0.5rem; margin-bottom: 0.35rem; display: block; }
+    .settings-nav-item { display: flex; align-items: center; gap: 0.55rem; padding: 0.45rem 0.65rem; border-radius: 7px; font-size: 0.8rem; font-weight: 500; color: rgba(11,39,64,0.55); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; }
+    .settings-nav-item:hover { background: rgba(11,39,64,0.04); color: var(--primary); }
+    .settings-nav-item.active { background: rgba(10,192,233,0.08); color: var(--primary); font-weight: 600; }
+    .settings-nav-item svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+    /* ─── SECTION PANELS ─── */
+    .settings-panel { display: none; }
+    .settings-panel.active { display: block; }
+
+    .settings-section-head { margin-bottom: 1.75rem; }
+    .settings-section-head h2 { font-size: 1.05rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem; }
+    .settings-section-head p { font-size: 0.78rem; color: rgba(11,39,64,0.45); line-height: 1.6; }
+
+    .settings-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; }
+    .settings-card-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 1.1rem; }
+
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.25rem; }
+    .field-grid.single { grid-template-columns: 1fr; }
+    .field-grid.triple { grid-template-columns: 1fr 1fr 1fr; }
+    .field-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .field-group.span-2 { grid-column: span 2; }
+    .field-label { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(11,39,64,0.4); }
+    .field-input { font-size: 0.88rem; color: var(--primary); line-height: 1.5; padding: 0.52rem 0.75rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.12); background: white; font-family: 'Inter', sans-serif; transition: border-color 0.15s; width: 100%; }
+    .field-input:focus { border-color: var(--aqua); outline: none; }
+    .field-input:disabled { background: rgba(11,39,64,0.03); color: rgba(11,39,64,0.4); cursor: not-allowed; }
+    textarea.field-input { resize: vertical; min-height: 80px; }
+    select.field-input { cursor: pointer; appearance: auto; }
+    .field-hint { font-size: 0.65rem; color: rgba(11,39,64,0.35); line-height: 1.5; margin-top: 0.15rem; }
+
+    .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .checkbox-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.45rem 0.65rem; border: 1.5px solid rgba(11,39,64,0.1); border-radius: 7px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+    .checkbox-item:has(input:checked) { border-color: var(--aqua); background: rgba(10,192,233,0.04); }
+    .checkbox-item input { accent-color: var(--aqua); }
+    .checkbox-item span { font-size: 0.8rem; font-weight: 500; color: var(--primary); }
+
+    .card-select-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+    .card-select-item { padding: 0.6rem 0.75rem; border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; cursor: pointer; text-align: center; font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.5); transition: all 0.15s; user-select: none; }
+    .card-select-item:hover { border-color: rgba(10,192,233,0.4); color: var(--primary); background: rgba(10,192,233,0.03); }
+    .card-select-item.selected { border-color: var(--aqua); background: rgba(10,192,233,0.08); color: var(--primary); }
+    .card-select-item .cs-icon { font-size: 1.1rem; margin-bottom: 0.2rem; display: block; }
+
+    /* ─── API KEY ─── */
+    .api-key-wrap { position: relative; }
+    .api-key-wrap .field-input { padding-right: 2.8rem; font-family: 'Courier New', monospace; font-size: 0.82rem; letter-spacing: 0.04em; }
+    .btn-toggle-key { position: absolute; right: 0.6rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0.2rem; color: rgba(11,39,64,0.4); transition: color 0.15s; }
+    .btn-toggle-key:hover { color: var(--primary); }
+    .btn-toggle-key svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── STATUS / SAVE BAR ─── */
+    .settings-footer { padding: 1rem 0; display: flex; align-items: center; gap: 0.85rem; }
+    .btn-save-settings { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.82rem; padding: 0.55rem 1.4rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; }
+    .btn-save-settings:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .save-flash { font-size: 0.78rem; font-weight: 700; color: var(--green); opacity: 0; transition: opacity 0.3s; }
+    .save-flash.show { opacity: 1; }
+    .btn-secondary { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: rgba(11,39,64,0.55); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.82rem; padding: 0.55rem 1.2rem; border-radius: 8px; border: 1.5px solid rgba(11,39,64,0.15); cursor: pointer; transition: all 0.15s; }
+    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); background: rgba(11,39,64,0.03); }
+    .btn-secondary svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-danger { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--red); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.82rem; padding: 0.55rem 1.2rem; border-radius: 8px; border: 1.5px solid rgba(239,68,68,0.25); cursor: pointer; transition: all 0.15s; }
+    .btn-danger:hover { background: rgba(239,68,68,0.06); border-color: var(--red); }
+
+    /* ─── APPROVAL ROUTING ─── */
+    .route-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; margin-bottom: 0.85rem; overflow: hidden; }
+    .route-card-head { padding: 0.85rem 1.1rem; display: flex; align-items: center; gap: 0.85rem; cursor: pointer; }
+    .route-card-head:hover { background: rgba(11,39,64,0.02); }
+    .route-type-badge { font-size: 0.58rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 4px; flex-shrink: 0; }
+    .route-card-name { font-size: 0.82rem; font-weight: 600; color: var(--primary); flex: 1; }
+    .route-card-summary { font-size: 0.72rem; color: rgba(11,39,64,0.4); }
+    .route-chevron { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; flex-shrink: 0; }
+    .route-card.open .route-chevron { transform: rotate(90deg); }
+    .route-card-body { display: none; padding: 0 1.1rem 1rem; border-top: 1px solid rgba(11,39,64,0.06); }
+    .route-card.open .route-card-body { display: block; }
+    .route-steps { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.85rem; }
+    .route-step { display: flex; align-items: center; gap: 0.65rem; padding: 0.55rem 0.75rem; background: rgba(11,39,64,0.02); border: 1px solid rgba(11,39,64,0.06); border-radius: 8px; }
+    .route-step-num { width: 20px; height: 20px; border-radius: 50%; background: rgba(11,39,64,0.08); display: flex; align-items: center; justify-content: center; font-size: 0.62rem; font-weight: 800; color: rgba(11,39,64,0.4); flex-shrink: 0; }
+    .route-step-role { flex: 1; font-size: 0.8rem; font-weight: 500; color: var(--primary); }
+    .route-step-required { font-size: 0.64rem; font-weight: 600; color: rgba(11,39,64,0.35); }
+    .btn-remove-step { background: none; border: none; cursor: pointer; padding: 0.2rem; color: rgba(11,39,64,0.25); transition: color 0.15s; }
+    .btn-remove-step:hover { color: var(--red); }
+    .btn-remove-step svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .route-add-step { display: flex; align-items: center; gap: 0.65rem; margin-top: 0.65rem; }
+    .route-add-step select { flex: 1; font-size: 0.8rem; font-family: 'Inter', sans-serif; color: var(--primary); padding: 0.45rem 0.65rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.12); background: white; cursor: pointer; appearance: auto; }
+    .route-add-step select:focus { border-color: var(--aqua); outline: none; }
+    .btn-add-step { display: inline-flex; align-items: center; gap: 0.35rem; background: var(--primary); color: white; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.76rem; padding: 0.45rem 0.9rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+    .btn-add-step:hover { background: var(--mid-blue); }
+    .route-empty { font-size: 0.78rem; color: rgba(11,39,64,0.35); padding: 0.65rem 0; font-style: italic; }
+
+    /* ─── PASSWORD FIELD ─── */
+    .pw-row { display: flex; gap: 0.75rem; }
+    .pw-row .field-group { flex: 1; }
+
+    /* ─── CONTEXT BADGE ─── */
+    .context-summary { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .ctx-badge { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 600; background: rgba(10,192,233,0.08); color: var(--primary); padding: 0.25rem 0.65rem; border-radius: 20px; border: 1px solid rgba(10,192,233,0.2); }
+    .ctx-badge svg { width: 10px; height: 10px; stroke: var(--aqua); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── RESET WARNING ─── */
+    .danger-zone { border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 1.25rem 1.5rem; background: rgba(239,68,68,0.02); }
+    .danger-zone-title { font-size: 0.75rem; font-weight: 700; color: rgba(11,39,64,0.55); margin-bottom: 0.35rem; letter-spacing: 0.05em; text-transform: uppercase; }
+    .danger-zone-desc { font-size: 0.78rem; color: rgba(11,39,64,0.45); margin-bottom: 1rem; line-height: 1.55; }
+
+    /* ─── INFO TAG ─── */
+    .info-tag { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.7rem; font-weight: 600; background: rgba(10,192,233,0.08); color: #0891b2; padding: 0.22rem 0.65rem; border-radius: 4px; margin-bottom: 0.85rem; }
+    .info-tag svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">
+        <svg class="topbar-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings
+      </div>
+    </div>
+
+    <div class="settings-area">
+
+      <!-- LEFT NAV -->
+      <div class="settings-sidebar">
+        <div class="settings-nav-section">
+          <span class="settings-nav-label">Configuration</span>
+          <a class="settings-nav-item active" onclick="showPanel('general')" id="snav-general">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            General
+          </a>
+          <a class="settings-nav-item" onclick="showPanel('ai')" id="snav-ai">
+            <svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z"/></svg>
+            AI & Integrations
+          </a>
+          <a class="settings-nav-item" onclick="showPanel('profile')" id="snav-profile">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            User Profile
+          </a>
+        </div>
+        <div class="settings-nav-section">
+          <span class="settings-nav-label">Governance</span>
+          <a class="settings-nav-item" onclick="showPanel('approvals')" id="snav-approvals">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            Approval Workflows
+          </a>
+        </div>
+        <div class="settings-nav-section">
+          <span class="settings-nav-label">Data</span>
+          <a class="settings-nav-item" onclick="showPanel('data')" id="snav-data">
+            <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            Data & Reset
+          </a>
+        </div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="settings-content">
+
+        <!-- ── GENERAL ── -->
+        <div class="settings-panel active" id="panel-general">
+          <div class="settings-section-head">
+            <h2>General</h2>
+            <p>Company and device context used across the platform and for AI content generation.</p>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">Company</div>
+            <div class="field-grid">
+              <div class="field-group">
+                <label class="field-label">Company name</label>
+                <input class="field-input" id="g-company" type="text" placeholder="e.g. Acme Medical">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Company size</label>
+                <select class="field-input" id="g-size">
+                  <option value="">Select…</option>
+                  <option value="startup">Startup (1–10)</option>
+                  <option value="small">Small (11–50)</option>
+                  <option value="mid">Mid-size (51–250)</option>
+                  <option value="large">Large (250+)</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label class="field-label">QMS stage</label>
+                <select class="field-input" id="g-stage">
+                  <option value="">Select…</option>
+                  <option value="building">Building QMS from scratch</option>
+                  <option value="pre-sub">Pre-submission</option>
+                  <option value="cleared">Post-clearance / Post-approval</option>
+                  <option value="post-market">Post-market</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Regulatory markets</label>
+                <div class="checkbox-grid">
+                  <label class="checkbox-item"><input type="checkbox" id="g-mkt-fda" value="FDA"><span>US FDA</span></label>
+                  <label class="checkbox-item"><input type="checkbox" id="g-mkt-mdr" value="MDR"><span>EU MDR</span></label>
+                  <label class="checkbox-item"><input type="checkbox" id="g-mkt-ca" value="Health Canada"><span>Health Canada</span></label>
+                  <label class="checkbox-item"><input type="checkbox" id="g-mkt-apac" value="APAC"><span>APAC</span></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">Device</div>
+            <div class="field-grid">
+              <div class="field-group">
+                <label class="field-label">Device name</label>
+                <input class="field-input" id="g-device" type="text" placeholder="e.g. CardioSync Pro">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Device classification</label>
+                <select class="field-input" id="g-class">
+                  <option value="">Select…</option>
+                  <option value="class-i">Class I</option>
+                  <option value="class-ii">Class II</option>
+                  <option value="class-iii">Class III</option>
+                  <option value="ivd">IVD</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Device type</label>
+                <select class="field-input" id="g-type">
+                  <option value="">Select…</option>
+                  <option value="hardware">Hardware / electromechanical</option>
+                  <option value="software">SaMD (software-only)</option>
+                  <option value="combination">Combination device</option>
+                  <option value="ivd-device">IVD instrument</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Patient population</label>
+                <input class="field-input" id="g-population" type="text" placeholder="e.g. Adult cardiac patients">
+              </div>
+              <div class="field-group span-2">
+                <label class="field-label">Intended use</label>
+                <textarea class="field-input" id="g-intended-use" rows="3" placeholder="Describe the intended use of the device…"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">QMS Scope</div>
+            <div class="field-grid single">
+              <div class="field-group">
+                <label class="field-label">Scope activities</label>
+                <div class="checkbox-grid">
+                  <label class="checkbox-item"><input type="checkbox" id="g-sc-design" value="Design"><span>Design &amp; Development</span></label>
+                  <label class="checkbox-item"><input type="checkbox" id="g-sc-mfg" value="Manufacturing"><span>Manufacturing</span></label>
+                  <label class="checkbox-item"><input type="checkbox" id="g-sc-dist" value="Distribution"><span>Distribution</span></label>
+                  <label class="checkbox-item"><input type="checkbox" id="g-sc-pm" value="Post-Market"><span>Post-Market</span></label>
+                  <label class="checkbox-item"><input type="checkbox" id="g-sc-svc" value="Servicing"><span>Servicing</span></label>
+                  <label class="checkbox-item"><input type="checkbox" id="g-sc-imp" value="Import"><span>Import</span></label>
+                </div>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Exclusions</label>
+                <textarea class="field-input" id="g-exclusions" rows="2" placeholder="Describe any activities excluded from scope…"></textarea>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Regulatory basis</label>
+                <input class="field-input" id="g-reg-basis" type="text" placeholder="e.g. 21 CFR Part 820, ISO 13485:2016, MDR 2017/745">
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-footer">
+            <button class="btn-save-settings" onclick="saveGeneral()">Save changes</button>
+            <span class="save-flash" id="flash-general">Saved ✓</span>
+          </div>
+        </div>
+
+        <!-- ── AI & INTEGRATIONS ── -->
+        <div class="settings-panel" id="panel-ai">
+          <div class="settings-section-head">
+            <h2>AI & Integrations</h2>
+            <p>Configure the Anthropic API key used for AI content generation across the platform.</p>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">Anthropic API Key</div>
+            <div class="info-tag">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Stored locally in your browser. Not transmitted to Tangram servers.
+            </div>
+            <div class="field-grid single">
+              <div class="field-group">
+                <label class="field-label">API Key</label>
+                <div class="api-key-wrap">
+                  <input class="field-input" id="ai-key" type="password" placeholder="sk-ant-…" autocomplete="off">
+                  <button class="btn-toggle-key" onclick="toggleApiKeyVisibility()" title="Show/hide key">
+                    <svg id="eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+                <div class="field-hint">Used for AI generation in Quality Manual and future AI-assisted tools. Leave blank to disable AI features.</div>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Model</label>
+                <select class="field-input" id="ai-model">
+                  <option value="claude-sonnet-4-6">Claude Sonnet 4.6 (recommended)</option>
+                  <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (faster, lower cost)</option>
+                  <option value="claude-opus-4-6">Claude Opus 4.6 (highest quality)</option>
+                </select>
+              </div>
+            </div>
+            <div class="settings-footer" style="padding-top:0.5rem;">
+              <button class="btn-save-settings" onclick="saveAI()">Save changes</button>
+              <button class="btn-secondary" onclick="testApiKey()" id="btn-test-key">
+                <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Test connection
+              </button>
+              <span class="save-flash" id="flash-ai">Saved ✓</span>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">Production Note</div>
+            <p style="font-size:0.8rem;color:rgba(11,39,64,0.55);line-height:1.65;">
+              For a multi-tenant deployment, the API key should be stored server-side and AI requests proxied through a backend. The current setup stores the key in <code style="font-size:0.78rem;background:rgba(11,39,64,0.06);padding:0.1rem 0.35rem;border-radius:4px;">qms_context</code> in localStorage — appropriate for single-user prototyping only.
+            </p>
+          </div>
+        </div>
+
+        <!-- ── USER PROFILE ── -->
+        <div class="settings-panel" id="panel-profile">
+          <div class="settings-section-head">
+            <h2>User Profile</h2>
+            <p>Your e-signature identity. Name and role appear on all signed records.</p>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">E-Signature Identity</div>
+            <div id="profile-no-user" style="display:none;">
+              <p style="font-size:0.8rem;color:rgba(11,39,64,0.45);margin-bottom:1rem;">No profile set up yet. Create one to enable electronic signatures.</p>
+              <button class="btn-save-settings" onclick="createUserProfile()">Create profile</button>
+            </div>
+            <div id="profile-exists">
+              <div class="field-grid">
+                <div class="field-group">
+                  <label class="field-label">Full name</label>
+                  <input class="field-input" id="profile-name" type="text" placeholder="Jane Smith">
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Role / Title</label>
+                  <input class="field-input" id="profile-role" type="text" placeholder="Systems Engineer">
+                </div>
+              </div>
+              <div class="settings-footer" style="padding-top:1rem;">
+                <button class="btn-save-settings" onclick="saveProfile()">Save changes</button>
+                <span class="save-flash" id="flash-profile">Saved ✓</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">Change Password</div>
+            <div class="field-grid">
+              <div class="field-group">
+                <label class="field-label">Current password</label>
+                <input class="field-input" id="pw-current" type="password" autocomplete="current-password">
+              </div>
+              <div class="field-group">
+                <label class="field-label">New password</label>
+                <input class="field-input" id="pw-new" type="password" autocomplete="new-password">
+              </div>
+            </div>
+            <div class="settings-footer" style="padding-top:0.75rem;">
+              <button class="btn-save-settings" onclick="changePassword()">Update password</button>
+              <span class="save-flash" id="flash-pw">Password updated ✓</span>
+              <span id="pw-error" style="font-size:0.78rem;color:var(--red);display:none;"></span>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">Audit Log</div>
+            <p style="font-size:0.78rem;color:rgba(11,39,64,0.45);margin-bottom:0.85rem;">All electronic signature events are appended to a local audit log.</p>
+            <div id="audit-log-preview" style="font-size:0.76rem;color:rgba(11,39,64,0.55);line-height:1.65;"></div>
+            <div style="margin-top:0.75rem;">
+              <button class="btn-secondary" onclick="exportAuditLog()">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export audit log
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── APPROVAL WORKFLOWS ── -->
+        <div class="settings-panel" id="panel-approvals">
+          <div class="settings-section-head">
+            <h2>Approval Workflows</h2>
+            <p>Define the sequence of roles that must sign off on each record type. Signatures are collected in order.</p>
+          </div>
+
+          <div id="routes-container"></div>
+
+          <div class="settings-footer">
+            <button class="btn-save-settings" onclick="saveApprovalRoutes()">Save workflows</button>
+            <span class="save-flash" id="flash-approvals">Saved ✓</span>
+          </div>
+        </div>
+
+        <!-- ── DATA & RESET ── -->
+        <div class="settings-panel" id="panel-data">
+          <div class="settings-section-head">
+            <h2>Data & Reset</h2>
+            <p>Manage locally stored QMS data. All data is stored in your browser's localStorage.</p>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">Storage Summary</div>
+            <div id="storage-summary" style="font-size:0.8rem;color:rgba(11,39,64,0.55);line-height:1.9;"></div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">QMS Setup</div>
+            <p style="font-size:0.8rem;color:rgba(11,39,64,0.45);margin-bottom:1rem;line-height:1.6;">Re-run the QMS onboarding wizard to update your company and device context.</p>
+            <button class="btn-secondary" onclick="rerunSetup()">
+              <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+              Re-run QMS Setup
+            </button>
+          </div>
+
+          <div class="danger-zone">
+            <div class="danger-zone-title">Danger Zone</div>
+            <div class="danger-zone-desc">These actions permanently delete data from your browser and cannot be undone. Export your data first if needed.</div>
+            <div style="display:flex;flex-wrap:wrap;gap:0.65rem;">
+              <button class="btn-danger" onclick="confirmClear('qms_change_requests', 'all change requests')">Clear Change Requests</button>
+              <button class="btn-danger" onclick="confirmClear('qms_signature_log', 'the signature audit log')">Clear Audit Log</button>
+              <button class="btn-danger" onclick="confirmClearAll()">Reset All QMS Data</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /settings-content -->
+    </div><!-- /settings-area -->
+  </div><!-- /main -->
+
+  <script src="sidebar.js"></script>
+  <script>
+    initSidebar({ activePage: 'settings' });
+
+    // ── STORE KEYS ────────────────────────────────────────────────────────
+    const STORES = {
+      'qms_context':          'QMS Context (company, device, AI key)',
+      'qms_current_user':     'Current User Profile',
+      'qms_signature_log':    'Signature Audit Log',
+      'qms_change_requests':  'Change Requests',
+      'qms_documents':        'Document Library',
+      'qms_quality_manual':   'Quality Manual',
+      'qms_procedures':       'Process Library (SOPs)',
+      'qms_design_reviews':   'Design Reviews',
+      'qms_user_needs':       'User Needs',
+      'qms_design_inputs':    'Design Inputs',
+      'qms_design_outputs':   'Design Outputs',
+      'qms_approval_routes':  'Approval Workflows',
+    };
+
+    // ── RECORD TYPES FOR APPROVAL ROUTING ────────────────────────────────
+    const RECORD_TYPES = [
+      { key: 'un',  label: 'User Need',       color: '#6366f1', bg: 'rgba(99,102,241,0.1)' },
+      { key: 'di',  label: 'Design Input',    color: '#304F6B', bg: 'rgba(48,79,107,0.1)' },
+      { key: 'do',  label: 'Design Output',   color: '#f97316', bg: 'rgba(249,115,22,0.1)' },
+      { key: 'sop', label: 'Procedure (SOP)', color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
+      { key: 'dr',  label: 'Design Review',   color: '#0AC0E9', bg: 'rgba(10,192,233,0.1)' },
+      { key: 'cr',  label: 'Change Request',  color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
+    ];
+
+    // Default roles for add-step dropdowns
+    const DEFAULT_ROLES = [
+      'Systems Engineer',
+      'Quality Engineer',
+      'Regulatory Affairs',
+      'Principal Engineer',
+      'Project Manager',
+      'Clinical Affairs',
+      'Manufacturing Engineer',
+      'Software Engineer',
+      'R&D Director',
+      'VP Engineering',
+      'Quality Director',
+      'VP Quality',
+    ];
+
+    // ── APPROVAL ROUTES STATE ─────────────────────────────────────────────
+    let ROUTES = {}; // key → [{ role, required }]
+
+    function loadRoutes() {
+      try {
+        const raw = localStorage.getItem('qms_approval_routes');
+        ROUTES = raw ? JSON.parse(raw) : {};
+      } catch(e) { ROUTES = {}; }
+      // Ensure all record types present
+      RECORD_TYPES.forEach(rt => { if (!ROUTES[rt.key]) ROUTES[rt.key] = []; });
+    }
+
+    function saveApprovalRoutes() {
+      localStorage.setItem('qms_approval_routes', JSON.stringify(ROUTES));
+      flashSaved('flash-approvals');
+    }
+
+    function renderRoutesUI() {
+      const container = document.getElementById('routes-container');
+      container.innerHTML = '';
+      RECORD_TYPES.forEach(rt => {
+        const steps = ROUTES[rt.key] || [];
+        const summaryText = steps.length === 0 ? 'Single signer (anyone)' : steps.map(s => s.role).join(' → ');
+        const stepsHTML = steps.length === 0
+          ? `<div class="route-empty">No required approvers configured — any user with a profile can sign.</div>`
+          : steps.map((s, i) => `
+            <div class="route-step" id="step-${rt.key}-${i}">
+              <div class="route-step-num">${i + 1}</div>
+              <div class="route-step-role">${escHtml(s.role)}</div>
+              <div class="route-step-required">${s.required ? 'Required' : 'Optional'}</div>
+              <button class="btn-remove-step" onclick="removeStep('${rt.key}', ${i})" title="Remove">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>`).join('');
+
+        const roleOptions = DEFAULT_ROLES.map(r => `<option value="${escHtml(r)}">${escHtml(r)}</option>`).join('');
+
+        const div = document.createElement('div');
+        div.className = 'route-card';
+        div.id = 'route-card-' + rt.key;
+        div.innerHTML = `
+          <div class="route-card-head" onclick="toggleRouteCard('${rt.key}')">
+            <span class="route-type-badge" style="color:${rt.color};background:${rt.bg};">${rt.key.toUpperCase()}</span>
+            <span class="route-card-name">${rt.label}</span>
+            <span class="route-card-summary">${escHtml(summaryText)}</span>
+            <svg class="route-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+          <div class="route-card-body">
+            <div class="route-steps" id="steps-${rt.key}">${stepsHTML}</div>
+            <div class="route-add-step">
+              <select id="add-role-${rt.key}">
+                <option value="">Select role to add…</option>
+                ${roleOptions}
+                <option value="__custom__">+ Custom role…</option>
+              </select>
+              <button class="btn-add-step" onclick="addStep('${rt.key}')">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add approver
+              </button>
+            </div>
+          </div>`;
+        container.appendChild(div);
+      });
+    }
+
+    function toggleRouteCard(key) {
+      const card = document.getElementById('route-card-' + key);
+      if (card) card.classList.toggle('open');
+    }
+
+    function addStep(key) {
+      const select = document.getElementById('add-role-' + key);
+      let role = select.value;
+      if (!role) return;
+      if (role === '__custom__') {
+        role = prompt('Enter custom role name:');
+        if (!role || !role.trim()) return;
+        role = role.trim();
+      }
+      if (!ROUTES[key]) ROUTES[key] = [];
+      ROUTES[key].push({ role, required: true });
+      renderRoutesUI();
+      // Re-open the card
+      const card = document.getElementById('route-card-' + key);
+      if (card) card.classList.add('open');
+    }
+
+    function removeStep(key, index) {
+      if (ROUTES[key]) ROUTES[key].splice(index, 1);
+      renderRoutesUI();
+      const card = document.getElementById('route-card-' + key);
+      if (card) card.classList.add('open');
+    }
+
+    // ── GENERAL ──────────────────────────────────────────────────────────
+    function loadGeneral() {
+      let ctx = {};
+      try { ctx = JSON.parse(localStorage.getItem('qms_context') || '{}'); } catch(e) {}
+      const set = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; };
+      set('g-company', ctx.companyName);
+      set('g-size', ctx.companySize);
+      set('g-stage', ctx.qmsStage);
+      set('g-device', ctx.deviceName);
+      set('g-class', ctx.deviceClass);
+      set('g-type', ctx.deviceType);
+      set('g-population', ctx.patientPopulation);
+      set('g-intended-use', ctx.intendedUse);
+      set('g-exclusions', ctx.exclusions);
+      set('g-reg-basis', ctx.regulatoryBasis);
+      // Markets checkboxes
+      const mkts = ctx.regulatoryMarkets || [];
+      ['g-mkt-fda', 'g-mkt-mdr', 'g-mkt-ca', 'g-mkt-apac'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.checked = mkts.includes(el.value);
+      });
+      // Scope activities
+      const acts = ctx.scopeActivities || [];
+      ['g-sc-design', 'g-sc-mfg', 'g-sc-dist', 'g-sc-pm', 'g-sc-svc', 'g-sc-imp'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.checked = acts.includes(el.value);
+      });
+    }
+
+    function saveGeneral() {
+      let ctx = {};
+      try { ctx = JSON.parse(localStorage.getItem('qms_context') || '{}'); } catch(e) {}
+      const get = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+      ctx.companyName = get('g-company');
+      ctx.companySize = get('g-size');
+      ctx.qmsStage = get('g-stage');
+      ctx.deviceName = get('g-device');
+      ctx.deviceClass = get('g-class');
+      ctx.deviceType = get('g-type');
+      ctx.patientPopulation = get('g-population');
+      ctx.intendedUse = get('g-intended-use');
+      ctx.exclusions = get('g-exclusions');
+      ctx.regulatoryBasis = get('g-reg-basis');
+      ctx.regulatoryMarkets = ['g-mkt-fda','g-mkt-mdr','g-mkt-ca','g-mkt-apac']
+        .map(id => { const el = document.getElementById(id); return el && el.checked ? el.value : null; })
+        .filter(Boolean);
+      ctx.scopeActivities = ['g-sc-design','g-sc-mfg','g-sc-dist','g-sc-pm','g-sc-svc','g-sc-imp']
+        .map(id => { const el = document.getElementById(id); return el && el.checked ? el.value : null; })
+        .filter(Boolean);
+      localStorage.setItem('qms_context', JSON.stringify(ctx));
+      flashSaved('flash-general');
+    }
+
+    // ── AI & INTEGRATIONS ─────────────────────────────────────────────────
+    function loadAI() {
+      let ctx = {};
+      try { ctx = JSON.parse(localStorage.getItem('qms_context') || '{}'); } catch(e) {}
+      const keyEl = document.getElementById('ai-key');
+      if (keyEl) keyEl.value = ctx.anthropicApiKey || '';
+      const modelEl = document.getElementById('ai-model');
+      if (modelEl && ctx.aiModel) modelEl.value = ctx.aiModel;
+    }
+
+    function saveAI() {
+      let ctx = {};
+      try { ctx = JSON.parse(localStorage.getItem('qms_context') || '{}'); } catch(e) {}
+      const keyEl = document.getElementById('ai-key');
+      const modelEl = document.getElementById('ai-model');
+      ctx.anthropicApiKey = keyEl ? keyEl.value.trim() : '';
+      ctx.aiModel = modelEl ? modelEl.value : 'claude-sonnet-4-6';
+      localStorage.setItem('qms_context', JSON.stringify(ctx));
+      flashSaved('flash-ai');
+    }
+
+    function toggleApiKeyVisibility() {
+      const input = document.getElementById('ai-key');
+      const icon = document.getElementById('eye-icon');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+      } else {
+        input.type = 'password';
+        icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+      }
+    }
+
+    async function testApiKey() {
+      const btn = document.getElementById('btn-test-key');
+      const keyEl = document.getElementById('ai-key');
+      const key = keyEl ? keyEl.value.trim() : '';
+      if (!key) { alert('Enter an API key first.'); return; }
+      const origText = btn.innerHTML;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 0.8s linear infinite"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg> Testing…';
+      btn.disabled = true;
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': key,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json',
+            'anthropic-dangerous-direct-browser-access': 'true',
+          },
+          body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 10, messages: [{ role: 'user', content: 'Hi' }] }),
+        });
+        if (resp.ok) {
+          btn.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Connected';
+        } else {
+          const data = await resp.json();
+          btn.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Failed: ' + (data.error && data.error.type ? data.error.type : resp.status);
+        }
+      } catch(e) {
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Error';
+      }
+      btn.disabled = false;
+      setTimeout(() => { btn.innerHTML = origText; }, 4000);
+    }
+
+    // ── USER PROFILE ──────────────────────────────────────────────────────
+    function loadProfile() {
+      let user = null;
+      try { user = JSON.parse(localStorage.getItem('qms_current_user') || 'null'); } catch(e) {}
+      const noUser = document.getElementById('profile-no-user');
+      const exists = document.getElementById('profile-exists');
+      if (user) {
+        if (noUser) noUser.style.display = 'none';
+        if (exists) exists.style.display = '';
+        const nameEl = document.getElementById('profile-name'); if (nameEl) nameEl.value = user.name || '';
+        const roleEl = document.getElementById('profile-role'); if (roleEl) roleEl.value = user.role || '';
+      } else {
+        if (noUser) noUser.style.display = '';
+        if (exists) exists.style.display = 'none';
+      }
+      // Audit log preview
+      renderAuditLogPreview();
+    }
+
+    function saveProfile() {
+      let user = null;
+      try { user = JSON.parse(localStorage.getItem('qms_current_user') || 'null'); } catch(e) {}
+      if (!user) { alert('No profile found. Create one first.'); return; }
+      const nameEl = document.getElementById('profile-name');
+      const roleEl = document.getElementById('profile-role');
+      user.name = nameEl ? nameEl.value.trim() : user.name;
+      user.role = roleEl ? roleEl.value.trim() : user.role;
+      localStorage.setItem('qms_current_user', JSON.stringify(user));
+      flashSaved('flash-profile');
+    }
+
+    function createUserProfile() {
+      if (typeof ESign !== 'undefined') {
+        ESign.setupUserProfile();
+        setTimeout(loadProfile, 500);
+      } else {
+        alert('ESign module not loaded. Make sure esign.js is available.');
+      }
+    }
+
+    function changePassword() {
+      const errEl = document.getElementById('pw-error');
+      errEl.style.display = 'none';
+      let user = null;
+      try { user = JSON.parse(localStorage.getItem('qms_current_user') || 'null'); } catch(e) {}
+      if (!user) { errEl.textContent = 'No profile found.'; errEl.style.display = ''; return; }
+      const curEl = document.getElementById('pw-current');
+      const newEl = document.getElementById('pw-new');
+      const current = curEl ? curEl.value : '';
+      const newPw = newEl ? newEl.value.trim() : '';
+      if (!newPw || newPw.length < 6) { errEl.textContent = 'New password must be at least 6 characters.'; errEl.style.display = ''; return; }
+      // Verify current password (sha256 hash comparison)
+      const currentHash = simpleHash(current);
+      if (currentHash !== user.passwordHash) { errEl.textContent = 'Current password is incorrect.'; errEl.style.display = ''; return; }
+      user.passwordHash = simpleHash(newPw);
+      localStorage.setItem('qms_current_user', JSON.stringify(user));
+      if (curEl) curEl.value = '';
+      if (newEl) newEl.value = '';
+      flashSaved('flash-pw');
+    }
+
+    function simpleHash(str) {
+      // Same naive hash as esign.js (for prototype only)
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash |= 0; }
+      return 'hash-' + Math.abs(hash).toString(16);
+    }
+
+    function renderAuditLogPreview() {
+      const container = document.getElementById('audit-log-preview');
+      if (!container) return;
+      let log = [];
+      try { log = JSON.parse(localStorage.getItem('qms_signature_log') || '[]'); } catch(e) {}
+      if (!log.length) { container.textContent = 'No signatures recorded yet.'; return; }
+      const recent = log.slice(-5).reverse();
+      container.innerHTML = recent.map(entry => {
+        const date = new Date(entry.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        return `<div style="border-left:2px solid rgba(10,192,233,0.25);padding:0.3rem 0.65rem;margin-bottom:0.35rem;"><strong>${escHtml(entry.signerName)}</strong> · ${escHtml(entry.signerRole)} · ${date}<br><span style="color:rgba(11,39,64,0.38);font-size:0.72rem;">${escHtml(entry.recordType)} / ${escHtml(entry.recordId)}</span></div>`;
+      }).join('') + (log.length > 5 ? `<div style="color:rgba(11,39,64,0.35);font-size:0.72rem;margin-top:0.25rem;">… and ${log.length - 5} more entries</div>` : '');
+    }
+
+    function exportAuditLog() {
+      let log = [];
+      try { log = JSON.parse(localStorage.getItem('qms_signature_log') || '[]'); } catch(e) {}
+      if (!log.length) { alert('No audit log entries to export.'); return; }
+      const rows = [['Timestamp', 'Signer Name', 'Signer Role', 'Record ID', 'Record Type', 'Meaning', 'Content Hash'].join('\t')];
+      log.forEach(e => rows.push([e.timestamp, e.signerName, e.signerRole, e.recordId, e.recordType, e.meaning, e.contentHash].map(v => `"${(v||'').replace(/"/g,'""')}"`).join('\t')));
+      const blob = new Blob([rows.join('\n')], { type: 'text/tab-separated-values' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'qms-audit-log-' + new Date().toISOString().slice(0,10) + '.tsv';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+
+    // ── DATA & RESET ──────────────────────────────────────────────────────
+    function renderStorageSummary() {
+      const container = document.getElementById('storage-summary');
+      if (!container) return;
+      let html = '';
+      Object.entries(STORES).forEach(([key, label]) => {
+        const raw = localStorage.getItem(key);
+        let count = '—';
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) count = parsed.length + ' entries';
+            else if (typeof parsed === 'object') count = Object.keys(parsed).length + ' entries';
+            else count = (Math.ceil(raw.length / 1024)) + ' KB';
+          } catch(e) { count = Math.ceil(raw.length / 1024) + ' KB'; }
+        } else count = 'Not set';
+        html += `<div style="display:flex;justify-content:space-between;gap:1rem;"><span>${escHtml(label)}</span><span style="color:rgba(11,39,64,0.35);font-size:0.75rem;font-family:'Courier New',monospace;">${count}</span></div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function rerunSetup() {
+      if (confirm('Re-run QMS Setup? This will redirect you to the setup wizard. Your existing data will be preserved.')) {
+        window.location.href = 'qms-setup.html';
+      }
+    }
+
+    function confirmClear(key, label) {
+      if (confirm(`Delete ${label}? This cannot be undone.`)) {
+        localStorage.removeItem(key);
+        renderStorageSummary();
+        alert('Cleared.');
+      }
+    }
+
+    function confirmClearAll() {
+      if (confirm('Reset ALL QMS data? This will permanently delete all records, signatures, and settings. This cannot be undone.')) {
+        if (confirm('Are you absolutely sure? All QMS data in this browser will be lost.')) {
+          Object.keys(STORES).forEach(k => localStorage.removeItem(k));
+          renderStorageSummary();
+          alert('All QMS data has been cleared.');
+        }
+      }
+    }
+
+    // ── NAV ───────────────────────────────────────────────────────────────
+    function showPanel(id) {
+      document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.settings-nav-item').forEach(n => n.classList.remove('active'));
+      const panel = document.getElementById('panel-' + id);
+      const nav = document.getElementById('snav-' + id);
+      if (panel) panel.classList.add('active');
+      if (nav) nav.classList.add('active');
+      if (id === 'data') renderStorageSummary();
+      if (id === 'profile') loadProfile();
+      if (id === 'approvals') { loadRoutes(); renderRoutesUI(); }
+    }
+
+    // ── HELPERS ───────────────────────────────────────────────────────────
+    function flashSaved(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 2200);
+    }
+
+    function escHtml(str) {
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── INIT ─────────────────────────────────────────────────────────────
+    loadGeneral();
+    loadAI();
+    // Hash routing: settings.html#approvals → show that tab
+    const _initHash = window.location.hash.replace('#', '');
+    if (_initHash && document.getElementById('panel-' + _initHash)) {
+      showPanel(_initHash);
+    }
+
+    // CSS for spin animation (used in test button)
+    const spinStyle = document.createElement('style');
+    spinStyle.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+    document.head.appendChild(spinStyle);
+  </script>
+</body>
+</html>

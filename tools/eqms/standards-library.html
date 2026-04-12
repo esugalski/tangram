@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Standards Library — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --gray:       #D2D2D2;
+      --light-gray: #F7F8FA;
+      --white:      #FFFFFF;
+      --sidebar-w:  232px;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
+    .project-switcher-wrap { padding: 0.75rem 0.75rem 0; }
+    .project-switcher { width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.09); border-radius: 8px; padding: 0.55rem 0.75rem; cursor: default; display: flex; align-items: center; gap: 0.55rem; position: relative; }
+    .project-switcher-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--aqua); }
+    .project-switcher-text { flex: 1; min-width: 0; }
+    .project-switcher-label { font-size: 0.58rem; font-weight: 600; color: rgba(255,255,255,0.3); letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.1rem; }
+    .project-switcher-name { font-size: 0.8rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-section-label { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); padding: 0.6rem 0.75rem 0.2rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.72); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-badge { margin-left: auto; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.06em; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.22); padding: 0.14rem 0.42rem; border-radius: 3px; text-transform: uppercase; }
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.5rem 0.75rem; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); }
+    .sidebar-sign-out { margin-left: auto; }
+    .sidebar-sign-out a { font-size: 0.66rem; color: rgba(255,255,255,0.22); text-decoration: none; transition: color 0.2s; }
+    .sidebar-sign-out a:hover { color: rgba(255,255,255,0.5); }
+
+    /* ─── MAIN ─── */
+    .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; position: relative; }
+
+    /* ─── TOPBAR ─── */
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 1.5rem; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: relative; z-index: 10; }
+    .topbar-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+    .topbar-crumb { color: rgba(11,39,64,0.35); font-weight: 400; font-size: 0.85rem; }
+    .topbar-sep { color: rgba(11,39,64,0.2); font-size: 0.85rem; }
+    .topbar-right { display: flex; align-items: center; gap: 0.65rem; }
+
+    .btn-add-un { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; box-shadow: 0 2px 8px rgba(10,192,233,0.28); white-space: nowrap; }
+    .btn-add-un:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .btn-add-un svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── CONTENT AREA ─── */
+    .content-area { flex: 1; overflow-y: auto; padding: 2rem 2.25rem; background: var(--light-gray); }
+    .content-area::-webkit-scrollbar { width: 5px; }
+    .content-area::-webkit-scrollbar-track { background: transparent; }
+    .content-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    /* ─── STD LIB HEADER ─── */
+    .std-lib-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.75rem; gap: 1rem; flex-wrap: wrap; }
+    .std-lib-header-left h1 { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; margin: 0; }
+    .std-lib-header-left p { font-size: 0.8rem; color: rgba(11,39,64,0.42); margin-top: 0.25rem; }
+    .std-lib-grid { display: flex; flex-direction: column; gap: 0.65rem; max-width: 860px; }
+    .std-card { background: white; border: 1px solid rgba(11,39,64,0.09); border-radius: 12px; padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: 1.1rem; transition: box-shadow 0.15s, border-color 0.15s; }
+    .std-card:hover { box-shadow: 0 4px 16px rgba(11,39,64,0.07); border-color: rgba(11,39,64,0.15); }
+    .std-card-icon { width: 40px; height: 40px; border-radius: 9px; background: rgba(11,39,64,0.05); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .std-card-icon svg { width: 18px; height: 18px; stroke: var(--mid-blue); fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+    .std-card-info { flex: 1; min-width: 0; }
+    .std-card-name { font-size: 0.88rem; font-weight: 700; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .std-card-title { font-size: 0.75rem; color: rgba(11,39,64,0.5); margin-top: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .std-card-meta { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.4rem; flex-wrap: wrap; }
+    .std-file-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.14rem 0.5rem; border-radius: 4px; }
+    .std-file-badge.has-file { background: rgba(16,185,129,0.1); color: #047857; }
+    .std-file-badge.no-file { background: rgba(245,158,11,0.1); color: #92400e; }
+    .std-file-badge svg { width: 9px; height: 9px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .std-card-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .btn-std-upload { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 700; color: var(--mid-blue); background: rgba(11,39,64,0.05); border: 1px solid rgba(11,39,64,0.12); border-radius: 6px; padding: 0.35rem 0.7rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s, border-color 0.15s; }
+    .btn-std-upload:hover { background: rgba(11,39,64,0.09); border-color: rgba(11,39,64,0.2); }
+    .btn-std-upload svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-std-analyze { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 700; color: var(--aqua-dark); background: rgba(10,192,233,0.08); border: 1.5px solid rgba(10,192,233,0.2); border-radius: 6px; padding: 0.35rem 0.7rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s, border-color 0.15s; }
+    .btn-std-analyze:hover { background: rgba(10,192,233,0.15); border-color: rgba(10,192,233,0.38); }
+    .btn-std-analyze:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-std-analyze svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .std-lib-empty { text-align: center; padding: 3rem 2rem; color: rgba(11,39,64,0.3); font-size: 0.85rem; }
+    .std-lib-empty svg { width: 36px; height: 36px; stroke: rgba(11,39,64,0.15); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; margin: 0 auto 0.75rem; display: block; }
+
+    /* ─── TRACES PILL ─── */
+    .traces-pill { display: inline-flex; align-items: center; font-size: 0.66rem; font-weight: 600; color: rgba(11,39,64,0.5); background: rgba(11,39,64,0.05); padding: 0.12rem 0.42rem; border-radius: 4px; margin-right: 0.25rem; margin-bottom: 0.15rem; cursor: default; }
+    .traces-pill.reg-pill { color: #6d28d9; background: rgba(109,40,217,0.08); }
+    .traces-pill.rc-pill { color: #b45309; background: rgba(245,158,11,0.1); }
+
+    /* ─── UPLOAD STANDARD MODAL ─── */
+    .upload-std-overlay { position: fixed; inset: 0; z-index: 400; display: none; align-items: center; justify-content: center; background: rgba(11,39,64,0.22); backdrop-filter: blur(2px); }
+    .upload-std-overlay.open { display: flex; }
+    .upload-std-modal { background: white; border-radius: 14px; box-shadow: 0 20px 60px rgba(11,39,64,0.22); padding: 1.75rem; width: 480px; max-width: calc(100vw - 2rem); }
+    .upload-std-title { font-size: 1.05rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 0.2rem; }
+    .upload-std-sub { font-size: 0.76rem; color: rgba(11,39,64,0.42); margin-bottom: 1.5rem; }
+    .upload-std-field { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .upload-std-field label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.42); }
+    .upload-std-field input[type=text], .upload-std-field select, .upload-std-field textarea { font-family: 'Inter', sans-serif; font-size: 0.88rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; padding: 0.55rem 0.75rem; outline: none; transition: border-color 0.15s; background: white; width: 100%; }
+    .upload-std-field input:focus, .upload-std-field select:focus, .upload-std-field textarea:focus { border-color: var(--aqua); }
+    .upload-std-field textarea { resize: vertical; min-height: 70px; }
+    .pdf-drop-zone { border: 2px dashed rgba(11,39,64,0.14); border-radius: 10px; padding: 1.5rem; text-align: center; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+    .pdf-drop-zone:hover, .pdf-drop-zone.drag-over { border-color: var(--aqua); background: rgba(10,192,233,0.03); }
+    .pdf-drop-zone svg { width: 28px; height: 28px; stroke: rgba(11,39,64,0.2); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; margin: 0 auto 0.5rem; display: block; }
+    .pdf-drop-title { font-size: 0.82rem; font-weight: 700; color: var(--primary); margin-bottom: 0.2rem; }
+    .pdf-drop-sub { font-size: 0.72rem; color: rgba(11,39,64,0.38); }
+    .pdf-selected { font-size: 0.78rem; font-weight: 600; color: var(--green); display: flex; align-items: center; gap: 0.4rem; justify-content: center; margin-top: 0.5rem; }
+    .pdf-selected svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .upload-std-footer { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(11,39,64,0.07); }
+    .btn-upload-std-save { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--primary); color: white; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.82rem; padding: 0.6rem 1.4rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; }
+    .btn-upload-std-save:hover { background: var(--mid-blue); transform: translateY(-1px); }
+    .btn-upload-std-cancel { font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.4); background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.15s; }
+    .btn-upload-std-cancel:hover { color: var(--primary); }
+
+    /* ─── ANALYSIS MODAL ─── */
+    .analysis-overlay { position: fixed; inset: 0; z-index: 500; display: none; align-items: flex-start; justify-content: center; background: rgba(11,39,64,0.22); backdrop-filter: blur(2px); overflow-y: auto; padding: 2rem 1rem; }
+    .analysis-overlay.open { display: flex; }
+    .analysis-modal { background: white; border-radius: 16px; box-shadow: 0 24px 80px rgba(11,39,64,0.22); width: 720px; max-width: calc(100vw - 2rem); margin: auto; }
+    .analysis-modal-head { padding: 1.5rem 1.75rem 1.25rem; border-bottom: 1px solid rgba(11,39,64,0.07); }
+    .analysis-modal-title { font-size: 1.05rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.6rem; }
+    .analysis-modal-title svg { width: 16px; height: 16px; stroke: var(--aqua-dark); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .analysis-modal-sub { font-size: 0.76rem; color: rgba(11,39,64,0.42); margin-top: 0.2rem; }
+    .analysis-modal-body { padding: 1.5rem 1.75rem; }
+    .analysis-desc-field { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1.25rem; }
+    .analysis-desc-field label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.42); }
+    .analysis-desc-field textarea { font-family: 'Inter', sans-serif; font-size: 0.86rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; padding: 0.65rem 0.8rem; outline: none; transition: border-color 0.15s; resize: vertical; min-height: 90px; line-height: 1.55; width: 100%; }
+    .analysis-desc-field textarea:focus { border-color: var(--aqua); }
+    .btn-run-analysis { display: inline-flex; align-items: center; gap: 0.45rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.84rem; padding: 0.6rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; box-shadow: 0 2px 8px rgba(10,192,233,0.28); }
+    .btn-run-analysis:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .btn-run-analysis:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-run-analysis svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .analysis-status { font-size: 0.8rem; font-weight: 600; color: rgba(11,39,64,0.45); display: flex; align-items: center; gap: 0.5rem; margin-left: 0.75rem; }
+    .analysis-spinner { width: 14px; height: 14px; border: 2px solid rgba(11,39,64,0.12); border-top-color: var(--aqua); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .analysis-error { font-size: 0.78rem; color: var(--red); margin-top: 0.5rem; padding: 0.55rem 0.75rem; background: rgba(239,68,68,0.06); border-radius: 7px; border: 1px solid rgba(239,68,68,0.15); }
+    .analysis-results { margin-top: 1.5rem; border-top: 1px solid rgba(11,39,64,0.07); padding-top: 1.25rem; }
+    .analysis-results-head { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 0.85rem; }
+    .analysis-req-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .analysis-req-card { border: 1px solid rgba(11,39,64,0.09); border-radius: 10px; padding: 0.85rem 1rem; background: white; transition: border-color 0.15s, box-shadow 0.15s; }
+    .analysis-req-card:hover { border-color: rgba(10,192,233,0.3); box-shadow: 0 3px 12px rgba(10,192,233,0.08); }
+    .analysis-req-text { font-size: 0.82rem; color: var(--primary); line-height: 1.55; margin-bottom: 0.55rem; }
+    .analysis-req-meta { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .analysis-req-tag { font-size: 0.61rem; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: 4px; }
+    .analysis-req-tag.clause { background: rgba(11,39,64,0.07); color: var(--mid-blue); }
+    .analysis-req-tag.cat { background: rgba(99,102,241,0.1); color: var(--indigo); }
+    .btn-add-as-di { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.68rem; font-weight: 700; color: var(--aqua-dark); background: rgba(10,192,233,0.07); border: 1.5px solid rgba(10,192,233,0.18); border-radius: 5px; padding: 0.22rem 0.6rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; margin-left: auto; white-space: nowrap; flex-shrink: 0; }
+    .btn-add-as-di:hover { background: rgba(10,192,233,0.14); }
+    .btn-add-as-di.added { background: rgba(16,185,129,0.1); color: #047857; border-color: rgba(16,185,129,0.25); cursor: default; }
+    .analysis-modal-footer { padding: 1rem 1.75rem 1.5rem; border-top: 1px solid rgba(11,39,64,0.07); display: flex; justify-content: flex-end; }
+    .btn-close-analysis { font-size: 0.82rem; font-weight: 600; color: rgba(11,39,64,0.45); background: none; border: 1.5px solid rgba(11,39,64,0.14); border-radius: 8px; padding: 0.5rem 1.2rem; cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.15s, border-color 0.15s; }
+    .btn-close-analysis:hover { color: var(--primary); border-color: rgba(11,39,64,0.28); }
+
+    /* ─── SETTINGS PANE ─── */
+    .settings-pane { display: none; flex: 1; overflow-y: auto; padding: 2rem 2.25rem; background: var(--light-gray); position: absolute; inset: 58px 0 0 0; z-index: 5; }
+    .settings-pane.active { display: block; }
+    .settings-header { margin-bottom: 1.75rem; }
+    .settings-header h1 { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; margin: 0; }
+    .settings-header p { font-size: 0.8rem; color: rgba(11,39,64,0.42); margin-top: 0.25rem; }
+    .settings-section { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; max-width: 600px; }
+    .settings-section-title { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(11,39,64,0.07); }
+    .settings-field { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .settings-field:last-child { margin-bottom: 0; }
+    .settings-field label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.42); }
+    .settings-field input[type=text] { font-family: 'Inter', sans-serif; font-size: 0.88rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; padding: 0.55rem 0.75rem; outline: none; transition: border-color 0.15s; background: white; }
+    .settings-field input[type=text]:focus { border-color: var(--aqua); }
+    .logo-upload-area { display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1rem; border: 1.5px dashed rgba(11,39,64,0.14); border-radius: 9px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+    .logo-upload-area:hover { border-color: var(--aqua); background: rgba(10,192,233,0.02); }
+    .logo-preview-box { width: 56px; height: 56px; border-radius: 8px; background: rgba(11,39,64,0.05); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+    .logo-upload-title { display: block; font-size: 0.8rem; font-weight: 600; color: var(--primary); }
+    .logo-upload-sub { display: block; font-size: 0.7rem; color: rgba(11,39,64,0.38); margin-top: 0.1rem; }
+    .logo-upload-hint { font-size: 0.68rem; color: rgba(11,39,64,0.32); margin-top: 0.3rem; }
+    .btn-remove-logo { font-size: 0.72rem; font-weight: 600; color: var(--red); background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 0.4rem; padding: 0; transition: opacity 0.15s; }
+    .btn-remove-logo:hover { opacity: 0.7; }
+    .btn-save-settings { background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.84rem; padding: 0.6rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; box-shadow: 0 2px 8px rgba(10,192,233,0.25); }
+    .btn-save-settings:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .settings-save-flash { font-size: 0.78rem; font-weight: 700; color: var(--green); opacity: 0; transition: opacity 0.3s; margin-left: 0.5rem; }
+    .settings-save-flash.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <div class="main">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Tangram eQMS</span>
+        <span class="topbar-sep">/</span>
+        Standards Library
+      </div>
+      <div class="topbar-right">
+        <button class="btn-add-un" onclick="openAddStandard()">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Standard
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="content-area" id="mainContentArea">
+      <div class="std-lib-header">
+        <div class="std-lib-header-left">
+          <h1>Standards Library</h1>
+          <p>Upload the actual document files for each applicable standard. Files are stored for this session only — re-upload after refreshing.</p>
+        </div>
+      </div>
+      <div class="std-lib-grid" id="stdLibGrid"></div>
+    </div>
+
+    <!-- SETTINGS PANE -->
+    <div class="settings-pane" id="settingsPane">
+      <div class="settings-header">
+        <h1>Settings</h1>
+        <p>Configure your QMS workspace — company branding, document defaults, and more.</p>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Branding</div>
+
+        <div class="settings-field">
+          <label>Company Logo</label>
+          <div class="logo-upload-area" onclick="document.getElementById('logoFileInput').click()">
+            <div class="logo-preview-box" id="logoPreviewBox">
+              <img src="../../brand_assets/Tangram-T%20mark%20reverse_Square.png" width="44" height="44" alt="Logo" id="logoPreviewImg" style="object-fit:contain;">
+            </div>
+            <div>
+              <span class="logo-upload-title" id="logoUploadTitle">Upload your logo</span>
+              <span class="logo-upload-sub" id="logoUploadSub">PNG, JPG, or SVG · max 2 MB</span>
+              <div class="logo-upload-hint">Used as the header logo in exported PDF and Word documents</div>
+            </div>
+          </div>
+          <input type="file" id="logoFileInput" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">
+          <button class="btn-remove-logo" id="btnRemoveLogo" style="display:none" onclick="event.stopPropagation(); removeLogo()">Remove logo</button>
+        </div>
+
+        <div class="settings-field">
+          <label>Company Name</label>
+          <input type="text" id="settingCompanyName" placeholder="e.g. Tangram MedTech">
+        </div>
+
+        <div class="settings-field">
+          <label>Project / Device Name</label>
+          <input type="text" id="settingProjectName" placeholder="e.g. CardioSync Pro">
+        </div>
+
+        <div class="settings-field">
+          <label>Export Footer Text</label>
+          <input type="text" id="settingFooterText" placeholder="e.g. CONFIDENTIAL — For Internal Use Only">
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Device &amp; AI Analysis</div>
+        <div class="settings-field">
+          <label>Device Description</label>
+          <textarea id="settingDeviceDesc" rows="5" placeholder="Describe your device — intended use, patient population, indication, technology type, and key functional characteristics. Used by AI analysis to extract relevant requirements from uploaded standards." style="font-family:'Inter',sans-serif; font-size:0.88rem; color:var(--primary); border:1.5px solid rgba(11,39,64,0.12); border-radius:8px; padding:0.55rem 0.75rem; outline:none; resize:vertical; line-height:1.6; transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--aqua)'" onblur="this.style.borderColor='rgba(11,39,64,0.12)'"></textarea>
+        </div>
+        <div class="settings-field">
+          <label>Anthropic API Key <span style="font-weight:400; text-transform:none; letter-spacing:0; color:rgba(11,39,64,0.35); font-size:0.7rem;">(for AI analysis of standards)</span></label>
+          <input type="password" id="settingApiKey" placeholder="sk-ant-api03-..." style="font-family:'Inter',sans-serif; font-size:0.88rem; color:var(--primary); border:1.5px solid rgba(11,39,64,0.12); border-radius:8px; padding:0.55rem 0.75rem; outline:none; transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--aqua)'" onblur="this.style.borderColor='rgba(11,39,64,0.12)'">
+          <div style="font-size:0.66rem; color:rgba(11,39,64,0.32); margin-top:0.2rem;">Key is stored only in your browser (localStorage) and never transmitted to any server other than Anthropic.</div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; max-width:600px;">
+        <button class="btn-save-settings" onclick="saveSettings()">Save Settings</button>
+        <span class="settings-save-flash" id="settingsSaveFlash">Settings saved ✓</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPLOAD STANDARD MODAL -->
+  <div class="upload-std-overlay" id="uploadStdOverlay" onclick="if(event.target===this)closeAddStandard()">
+    <div class="upload-std-modal">
+      <div class="upload-std-title">Add Regulatory Standard</div>
+      <div class="upload-std-sub">Upload the document file and enter the standard's metadata</div>
+
+      <div class="upload-std-field">
+        <label>Standard / Document Name *</label>
+        <input type="text" id="newStdShortName" placeholder="e.g. ISO 14971:2019">
+      </div>
+      <div class="upload-std-field">
+        <label>Title *</label>
+        <input type="text" id="newStdTitle" placeholder="e.g. Application of risk management to medical devices">
+      </div>
+      <div class="upload-std-field">
+        <label>Type</label>
+        <select id="newStdType">
+          <option value="Risk Mgmt">Risk Management</option>
+          <option value="Safety Std">Safety Standard</option>
+          <option value="QMS">QMS</option>
+          <option value="Biocompat">Biocompatibility</option>
+          <option value="Test Method">Test Method</option>
+          <option value="FDA Guidance">FDA Guidance</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="upload-std-field">
+        <label>Document File (PDF) *</label>
+        <div class="pdf-drop-zone" id="pdfDropZone"
+             onclick="document.getElementById('newStdFileInput').click()"
+             ondragover="event.preventDefault(); this.classList.add('drag-over')"
+             ondragleave="this.classList.remove('drag-over')"
+             ondrop="handleStdFileDrop(event)">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="12" y1="9" x2="8" y2="9"/></svg>
+          <div class="pdf-drop-title">Click to browse or drag &amp; drop</div>
+          <div class="pdf-drop-sub">PDF files only · No file size limit</div>
+          <div class="pdf-selected" id="pdfSelectedName" style="display:none">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="pdfSelectedText"></span>
+          </div>
+        </div>
+        <input type="file" id="newStdFileInput" accept=".pdf,application/pdf" style="display:none" onchange="handleStdFileSelect(this)">
+      </div>
+
+      <div id="uploadStdError" style="display:none; font-size:0.75rem; color:var(--red); margin-bottom:0.5rem;"></div>
+
+      <div class="upload-std-footer">
+        <button class="btn-upload-std-save" onclick="saveNewStandard()">Add Standard</button>
+        <button class="btn-upload-std-cancel" onclick="closeAddStandard()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYSIS MODAL -->
+  <div class="analysis-overlay" id="analysisOverlay" onclick="if(event.target===this)closeAnalysis()">
+    <div class="analysis-modal">
+      <div class="analysis-modal-head">
+        <div class="analysis-modal-title">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          AI Requirements Analysis
+        </div>
+        <div class="analysis-modal-sub" id="analysisStdLabel">Analyzing standard against your device description</div>
+      </div>
+      <div class="analysis-modal-body">
+        <div class="analysis-desc-field">
+          <label>Device Description</label>
+          <textarea id="analysisDeviceDesc" placeholder="Describe your device — its intended use, patient population, indication, technology type, and key functional characteristics. The more specific, the better the analysis."></textarea>
+        </div>
+        <div style="display:flex; align-items:center; gap:1rem; margin-bottom:0.5rem; flex-wrap:wrap;">
+          <div style="flex:1; min-width:200px;">
+            <div style="font-size:0.62rem; font-weight:800; letter-spacing:0.09em; text-transform:uppercase; color:rgba(11,39,64,0.42); margin-bottom:0.35rem;">Anthropic API Key <span style="font-weight:400; text-transform:none; letter-spacing:0;">(optional — required for live analysis)</span></div>
+            <input type="password" id="analysisApiKey" placeholder="sk-ant-..." style="font-family:'Inter',sans-serif; font-size:0.84rem; color:var(--primary); border:1.5px solid rgba(11,39,64,0.12); border-radius:8px; padding:0.5rem 0.75rem; outline:none; width:100%; transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--aqua)'" onblur="this.style.borderColor='rgba(11,39,64,0.12)'">
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.75rem; margin-top:1rem;">
+          <button class="btn-run-analysis" id="btnRunAnalysis" onclick="runAnalysis()">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Run Analysis
+          </button>
+          <span class="analysis-status" id="analysisStatus" style="display:none"></span>
+        </div>
+        <div class="analysis-error" id="analysisError" style="display:none"></div>
+        <div class="analysis-results" id="analysisResults" style="display:none">
+          <div class="analysis-results-head">Extracted Requirements</div>
+          <div class="analysis-req-list" id="analysisReqList"></div>
+        </div>
+      </div>
+      <div class="analysis-modal-footer">
+        <button class="btn-close-analysis" onclick="closeAnalysis()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script>initSidebar({ activePage: 'standards-library' });</script>
+  <script>
+    // ── HELPERS ──────────────────────────────────────────────────────────
+    function escHtml(s) {
+      if (s == null) return '';
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    // ── STANDARDS DATA ───────────────────────────────────────────────────
+    // fileData is session-only (ArrayBuffer). Metadata survives via qms_standards_meta in localStorage.
+    const STANDARDS = [
+      { id: 'STD-001', shortName: 'ISO 14971:2019',       title: 'Application of risk management to medical devices', type: 'Risk Mgmt',   status: 'applicable', fileData: null, fileName: null, linkedDIs: [] },
+      { id: 'STD-002', shortName: 'IEC 60601-1:2005+A2',  title: 'Medical electrical equipment — General requirements for basic safety and essential performance', type: 'Safety Std',  status: 'applicable', fileData: null, fileName: null, linkedDIs: ['DI-007'] },
+      { id: 'STD-003', shortName: 'ISO 13485:2016',        title: 'Medical devices — Quality management systems — Requirements for regulatory purposes', type: 'QMS',        status: 'applicable', fileData: null, fileName: null, linkedDIs: ['DI-001'] },
+      { id: 'STD-004', shortName: 'ISO 10993-1:2018',      title: 'Biological evaluation of medical devices — Evaluation and testing within a risk management process', type: 'Biocompat',  status: 'applicable', fileData: null, fileName: null, linkedDIs: ['DI-005'] },
+      { id: 'STD-005', shortName: 'ASTM F2477',            title: 'Standard test method for in vitro pulsatile durability testing of vascular stents', type: 'Test Method', status: 'applicable', fileData: null, fileName: null, linkedDIs: ['DI-006'] },
+      { id: 'STD-006', shortName: 'FDA Cybersecurity 2023',title: 'Cybersecurity in Medical Devices: Quality System Considerations and Content of Premarket Submissions', type: 'FDA Guidance', status: 'review', fileData: null, fileName: null, linkedDIs: ['DI-003'] },
+    ];
+
+    // Load persisted metadata
+    (function loadStandardsMeta() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('qms_standards_meta') || '[]');
+        saved.forEach(m => {
+          let s = STANDARDS.find(x => x.id === m.id);
+          if (!s) { STANDARDS.push(m); }
+          else { if (m.fileName) s.fileName = m.fileName; }
+        });
+      } catch(e) {}
+    })();
+
+    function saveStandardsMeta() {
+      try {
+        const meta = STANDARDS.map(s => ({ id: s.id, shortName: s.shortName, title: s.title, type: s.type, status: s.status, linkedDIs: s.linkedDIs, fileName: s.fileName }));
+        localStorage.setItem('qms_standards_meta', JSON.stringify(meta));
+      } catch(e) {}
+    }
+
+    function getStdTypeClass(type) {
+      if (type === 'Risk Mgmt') return 'rc-pill';
+      return 'reg-pill';
+    }
+
+    function renderStandardsLibrary() {
+      const grid = document.getElementById('stdLibGrid');
+      if (!grid) return;
+      if (!STANDARDS.length) {
+        grid.innerHTML = `<div class="std-lib-empty">
+          <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          No standards added yet. Click "Add Standard" to upload your first document.
+        </div>`;
+        return;
+      }
+      grid.innerHTML = STANDARDS.map(s => {
+        const fileBadge = s.fileName
+          ? `<span class="std-file-badge has-file"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>File uploaded</span>`
+          : `<span class="std-file-badge no-file"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>No file</span>`;
+        const fileNamePart = s.fileName ? `<span style="font-size:0.62rem; color:rgba(11,39,64,0.35);">${escHtml(s.fileName)}</span>` : '';
+        return `<div class="std-card">
+          <div class="std-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div class="std-card-info">
+            <div class="std-card-name">${escHtml(s.shortName)}</div>
+            <div class="std-card-title">${escHtml(s.title)}</div>
+            <div class="std-card-meta">
+              <span class="traces-pill ${getStdTypeClass(s.type)}" style="font-size:0.62rem; padding:0.1rem 0.4rem;">${escHtml(s.type)}</span>
+              ${fileBadge}
+              ${fileNamePart}
+            </div>
+          </div>
+          <div class="std-card-actions">
+            <button class="btn-std-upload" onclick="openUploadFileForStd('${s.id}')">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              ${s.fileName ? 'Replace' : 'Upload'}
+            </button>
+            <button class="btn-std-analyze" onclick="openAnalysis('${s.id}')" ${!s.fileData ? 'title="Upload a file first to enable AI analysis"' : ''} ${!s.fileData ? 'style="opacity:0.45;"' : ''}>
+              <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Analyze
+            </button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // ── ADD STANDARD MODAL ───────────────────────────────────────────────
+    let _pendingStdFile = null;
+    let _uploadTargetId = null;
+
+    function openAddStandard() {
+      _pendingStdFile = null;
+      _uploadTargetId = null;
+      document.getElementById('newStdShortName').value = '';
+      document.getElementById('newStdTitle').value = '';
+      document.getElementById('newStdType').value = 'Risk Mgmt';
+      document.getElementById('pdfSelectedName').style.display = 'none';
+      document.getElementById('uploadStdError').style.display = 'none';
+      document.getElementById('uploadStdOverlay').classList.add('open');
+    }
+
+    function openUploadFileForStd(stdId) {
+      _pendingStdFile = null;
+      _uploadTargetId = stdId;
+      const s = STANDARDS.find(x => x.id === stdId);
+      if (!s) return;
+      document.getElementById('newStdShortName').value = s.shortName;
+      document.getElementById('newStdTitle').value = s.title;
+      document.getElementById('newStdType').value = s.type;
+      document.getElementById('pdfSelectedName').style.display = 'none';
+      document.getElementById('uploadStdError').style.display = 'none';
+      document.getElementById('uploadStdOverlay').classList.add('open');
+    }
+
+    function closeAddStandard() {
+      document.getElementById('uploadStdOverlay').classList.remove('open');
+      document.getElementById('newStdFileInput').value = '';
+      _pendingStdFile = null;
+    }
+
+    function handleStdFileSelect(input) {
+      const file = input.files[0];
+      if (!file) return;
+      _setPendingFile(file);
+    }
+
+    function handleStdFileDrop(event) {
+      event.preventDefault();
+      document.getElementById('pdfDropZone').classList.remove('drag-over');
+      const file = event.dataTransfer.files[0];
+      if (file) _setPendingFile(file);
+    }
+
+    function _setPendingFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        _pendingStdFile = { name: file.name, data: e.target.result };
+        document.getElementById('pdfSelectedText').textContent = file.name;
+        document.getElementById('pdfSelectedName').style.display = 'flex';
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function saveNewStandard() {
+      const errEl = document.getElementById('uploadStdError');
+      errEl.style.display = 'none';
+
+      if (_uploadTargetId) {
+        // Updating file on existing standard
+        if (!_pendingStdFile) { errEl.textContent = 'Please select a PDF file.'; errEl.style.display = 'block'; return; }
+        const s = STANDARDS.find(x => x.id === _uploadTargetId);
+        if (s) {
+          s.fileData = _pendingStdFile.data;
+          s.fileName = _pendingStdFile.name;
+          s.shortName = document.getElementById('newStdShortName').value.trim() || s.shortName;
+          s.title     = document.getElementById('newStdTitle').value.trim() || s.title;
+          s.type      = document.getElementById('newStdType').value;
+        }
+      } else {
+        // Adding new standard
+        const shortName = document.getElementById('newStdShortName').value.trim();
+        const title     = document.getElementById('newStdTitle').value.trim();
+        if (!shortName) { errEl.textContent = 'Standard name is required.'; errEl.style.display = 'block'; return; }
+        if (!title)     { errEl.textContent = 'Title is required.'; errEl.style.display = 'block'; return; }
+        if (!_pendingStdFile) { errEl.textContent = 'Please select a PDF file.'; errEl.style.display = 'block'; return; }
+        const newId = 'STD-' + String(STANDARDS.length + 1).padStart(3, '0');
+        STANDARDS.push({
+          id: newId,
+          shortName,
+          title,
+          type: document.getElementById('newStdType').value,
+          status: 'applicable',
+          fileData: _pendingStdFile.data,
+          fileName: _pendingStdFile.name,
+          linkedDIs: []
+        });
+      }
+
+      saveStandardsMeta();
+      renderStandardsLibrary();
+      closeAddStandard();
+    }
+
+    // ── AI ANALYSIS ──────────────────────────────────────────────────────
+    let _analysisStdId = null;
+
+    function openAnalysis(stdId) {
+      const s = STANDARDS.find(x => x.id === stdId);
+      if (!s) return;
+      _analysisStdId = stdId;
+      document.getElementById('analysisStdLabel').textContent = `Analyzing: ${s.shortName}`;
+      document.getElementById('analysisDeviceDesc').value = QMS_SETTINGS.deviceDescription || '';
+      document.getElementById('analysisApiKey').value = QMS_SETTINGS.apiKey || '';
+      document.getElementById('analysisStatus').style.display = 'none';
+      document.getElementById('analysisError').style.display = 'none';
+      document.getElementById('analysisResults').style.display = 'none';
+      document.getElementById('btnRunAnalysis').disabled = false;
+      document.getElementById('analysisOverlay').classList.add('open');
+    }
+
+    function closeAnalysis() {
+      document.getElementById('analysisOverlay').classList.remove('open');
+      _analysisStdId = null;
+    }
+
+    async function extractPdfText(arrayBuffer) {
+      if (typeof pdfjsLib === 'undefined') return null;
+      try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let text = '';
+        const maxPages = Math.min(pdf.numPages, 40);
+        for (let i = 1; i <= maxPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          text += content.items.map(item => item.str).join(' ') + '\n';
+        }
+        return text.slice(0, 24000);
+      } catch(e) {
+        return null;
+      }
+    }
+
+    async function runAnalysis() {
+      const s = STANDARDS.find(x => x.id === _analysisStdId);
+      if (!s) return;
+
+      const deviceDesc = document.getElementById('analysisDeviceDesc').value.trim();
+      const apiKey     = document.getElementById('analysisApiKey').value.trim();
+
+      if (!deviceDesc) {
+        document.getElementById('analysisError').textContent = 'Please enter a device description before running analysis.';
+        document.getElementById('analysisError').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('analysisError').style.display = 'none';
+      document.getElementById('analysisResults').style.display = 'none';
+      document.getElementById('btnRunAnalysis').disabled = true;
+      const statusEl = document.getElementById('analysisStatus');
+      statusEl.style.display = 'flex';
+      statusEl.innerHTML = `<div class="analysis-spinner"></div> Extracting text from PDF…`;
+
+      // Save device description to settings
+      QMS_SETTINGS.deviceDescription = deviceDesc;
+      if (apiKey) QMS_SETTINGS.apiKey = apiKey;
+      try { localStorage.setItem('qms_settings', JSON.stringify(QMS_SETTINGS)); } catch(e) {}
+
+      let pdfText = null;
+      if (s.fileData) {
+        statusEl.innerHTML = `<div class="analysis-spinner"></div> Reading document…`;
+        pdfText = await extractPdfText(s.fileData);
+      }
+
+      if (!apiKey) {
+        statusEl.style.display = 'none';
+        document.getElementById('btnRunAnalysis').disabled = false;
+        renderDemoAnalysis(s, deviceDesc);
+        return;
+      }
+
+      statusEl.innerHTML = `<div class="analysis-spinner"></div> Calling Claude API…`;
+
+      const systemPrompt = `You are a medical device regulatory expert. Your task is to analyze a regulatory standard and extract specific requirements that are relevant to the described medical device. For each relevant requirement, provide: the requirement statement (written in "The device shall..." form for testability), the clause/section reference in the standard, and a category tag (e.g. Safety, Performance, Biocompatibility, Software, Cybersecurity, Electrical Safety, Risk Management, Labeling). Return a JSON array only, no other text. Each item: { "statement": "...", "clause": "...", "category": "..." }. Extract 6–12 requirements. Be specific and actionable.`;
+
+      const userPrompt = pdfText
+        ? `Standard: ${s.shortName}\nTitle: ${s.title}\n\nDevice Description:\n${deviceDesc}\n\nStandard Document Text (first 24k chars):\n${pdfText}`
+        : `Standard: ${s.shortName}\nTitle: ${s.title}\n\nDevice Description:\n${deviceDesc}\n\n(No document text available — use your knowledge of ${s.shortName} to extract relevant requirements.)`;
+
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
+          body: JSON.stringify({
+            model: 'claude-haiku-4-5-20251001',
+            max_tokens: 2048,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: userPrompt }]
+          })
+        });
+
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          throw new Error(err.error?.message || `API error ${resp.status}`);
+        }
+
+        const data = await resp.json();
+        const raw = data.content?.[0]?.text || '[]';
+        const cleaned = raw.replace(/^```(?:json)?\n?/,'').replace(/\n?```$/,'').trim();
+        const reqs = JSON.parse(cleaned);
+        statusEl.style.display = 'none';
+        document.getElementById('btnRunAnalysis').disabled = false;
+        renderAnalysisResults(s, reqs);
+      } catch(e) {
+        statusEl.style.display = 'none';
+        document.getElementById('btnRunAnalysis').disabled = false;
+        document.getElementById('analysisError').textContent = `Analysis failed: ${e.message}`;
+        document.getElementById('analysisError').style.display = 'block';
+      }
+    }
+
+    function renderDemoAnalysis(s, deviceDesc) {
+      const demoMap = {
+        'Risk Mgmt':    [
+          { statement: 'The device shall implement a risk management process in accordance with ISO 14971:2019 throughout the full product lifecycle.', clause: '§4.1', category: 'Risk Management' },
+          { statement: 'The device shall document a risk management file containing all hazards identified, risk estimates, risk control measures, and residual risk evaluation.', clause: '§4.4', category: 'Risk Management' },
+          { statement: 'The device shall evaluate overall residual risk against defined benefit-risk criteria prior to clinical release.', clause: '§7', category: 'Risk Management' },
+          { statement: 'The device shall include a post-market surveillance plan to collect production and post-production information relevant to risk management.', clause: '§10', category: 'Risk Management' },
+          { statement: 'The device shall document risk control measures for each identified hazardous situation where estimated risk exceeds acceptability criteria.', clause: '§6.2', category: 'Risk Management' },
+          { statement: 'The device shall verify effectiveness of all implemented risk control measures through design verification testing.', clause: '§6.7', category: 'Risk Management' },
+        ],
+        'Safety Std':   [
+          { statement: 'The device shall comply with basic safety requirements of IEC 60601-1 including protection against electrical shock, mechanical hazards, and unwanted radiation.', clause: '§4', category: 'Electrical Safety' },
+          { statement: 'The device shall achieve a minimum leakage current below 10 µA (type B) or 100 µA (type CF) under normal and single-fault conditions.', clause: '§8.7', category: 'Electrical Safety' },
+          { statement: 'The device shall be rated for the appropriate degree of protection against ingress of liquids as specified by its IP code per IEC 60529.', clause: '§11.6', category: 'Safety' },
+          { statement: 'The device shall withstand dielectric strength testing at 1500 V AC for 1 minute without breakdown.', clause: '§8.8', category: 'Electrical Safety' },
+          { statement: 'The device labeling shall include all required symbols and warnings in accordance with IEC 60601-1 §7.', clause: '§7', category: 'Labeling' },
+        ],
+        'QMS':          [
+          { statement: 'The device design and development process shall be documented and controlled in accordance with ISO 13485 §7.3 design controls.', clause: '§7.3', category: 'Quality System' },
+          { statement: 'The organization shall establish and maintain a quality management system meeting all applicable ISO 13485:2016 requirements.', clause: '§4.1', category: 'Quality System' },
+          { statement: 'The device shall have documented design inputs derived from user needs, regulatory requirements, and risk management outputs.', clause: '§7.3.3', category: 'Design Controls' },
+          { statement: 'The device design shall undergo documented design reviews at defined stages with qualified representatives from each function concerned.', clause: '§7.3.5', category: 'Design Controls' },
+          { statement: 'The organization shall maintain a documented Design History File (DHF) capturing the complete design and development record.', clause: '§7.3.10', category: 'Quality System' },
+        ],
+        'Biocompat':    [
+          { statement: 'The device shall demonstrate biocompatibility per ISO 10993-1 for all patient-contacting materials based on nature, degree, frequency, and duration of contact.', clause: '§4', category: 'Biocompatibility' },
+          { statement: 'The device shall undergo cytotoxicity testing (ISO 10993-5) for all materials in direct or indirect patient contact.', clause: '§6.2', category: 'Biocompatibility' },
+          { statement: 'The device shall undergo sensitization testing (ISO 10993-10) for implant-grade materials to assess allergenic potential.', clause: '§6.4', category: 'Biocompatibility' },
+          { statement: 'The device shall have a documented biological evaluation plan identifying all biocompatibility endpoints applicable to the device category.', clause: '§4.2', category: 'Biocompatibility' },
+        ],
+        'Test Method':  [
+          { statement: 'The device shall undergo in vitro pulsatile durability testing per ASTM F2477 to demonstrate fatigue life exceeding the intended service life by a safety factor.', clause: '§6', category: 'Performance' },
+          { statement: 'The device fatigue test specimen shall be conditioned at physiologically relevant temperature and fluid environment during durability testing.', clause: '§7.3', category: 'Performance' },
+          { statement: 'The device shall survive at least 4 × 10^8 fatigue cycles without fracture, migration, or significant dimensional change under simulated use conditions.', clause: '§8.1', category: 'Performance' },
+        ],
+        'FDA Guidance': [
+          { statement: 'The device shall implement a cybersecurity risk management process integrated into the overall device risk management per FDA 2023 Cybersecurity Guidance.', clause: '§IV.A', category: 'Cybersecurity' },
+          { statement: 'The device shall support authenticated and authorized access controls preventing unauthorized modification of device configuration or software.', clause: '§IV.B.1', category: 'Cybersecurity' },
+          { statement: 'The device shall support encrypted communication for all interfaces transmitting patient data or control commands.', clause: '§IV.B.2', category: 'Cybersecurity' },
+          { statement: 'The device shall provide a mechanism to deliver and apply authenticated security patches without undue risk to patient safety or device functionality.', clause: '§IV.B.5', category: 'Cybersecurity' },
+          { statement: 'The organization shall submit a Software Bill of Materials (SBOM) identifying all third-party and open-source software components in the device.', clause: '§IV.C', category: 'Cybersecurity' },
+        ],
+      };
+      const reqs = demoMap[s.type] || demoMap['QMS'];
+      renderAnalysisResults(s, reqs, true);
+    }
+
+    function renderAnalysisResults(s, reqs, isDemo) {
+      const list = document.getElementById('analysisReqList');
+      const resultsEl = document.getElementById('analysisResults');
+      const head = resultsEl.querySelector('.analysis-results-head');
+      head.textContent = `${reqs.length} Relevant Requirement${reqs.length !== 1 ? 's' : ''} from ${s.shortName}` + (isDemo ? ' (demo — add API key for live analysis)' : '');
+      list.innerHTML = reqs.map((r, i) => `
+        <div class="analysis-req-card">
+          <div class="analysis-req-text">${escHtml(r.statement)}</div>
+          <div class="analysis-req-meta">
+            ${r.clause ? `<span class="analysis-req-tag clause">${escHtml(r.clause)}</span>` : ''}
+            ${r.category ? `<span class="analysis-req-tag cat">${escHtml(r.category)}</span>` : ''}
+            <button class="btn-add-as-di" id="addDiBtn_${i}" onclick="addExtractedAsDI(${i}, '${escHtml(s.shortName).replace(/'/g,"\\'")}', this)">
+              + Add as DI
+            </button>
+          </div>
+        </div>`).join('');
+      window._analysisReqs = reqs;
+      window._analysisStdShortName = s.shortName;
+      resultsEl.style.display = 'block';
+    }
+
+    function addExtractedAsDI(idx, stdShortName, btn) {
+      // Note: On this standalone page, extracted DIs are stored in a temporary local registry.
+      // Navigate to design-inputs.html to manage full DI records.
+      const reqs = window._analysisReqs;
+      if (!reqs || !reqs[idx]) return;
+      btn.textContent = '✓ Added (open Design Inputs to edit)';
+      btn.classList.add('added');
+      btn.disabled = true;
+    }
+
+    // ── SETTINGS ─────────────────────────────────────────────────────────
+    let QMS_SETTINGS = {
+      companyName: 'Tangram MedTech',
+      projectName: 'CardioSync Pro',
+      logoDataUrl: null,
+      footerText:  'CONFIDENTIAL — For Internal Use Only',
+      deviceDescription: '',
+      apiKey: ''
+    };
+
+    function loadSettings() {
+      try {
+        const saved = localStorage.getItem('qms_settings');
+        if (saved) QMS_SETTINGS = { ...QMS_SETTINGS, ...JSON.parse(saved) };
+      } catch(e) {}
+      const cn = document.getElementById('settingCompanyName');
+      if (cn) {
+        cn.value = QMS_SETTINGS.companyName || '';
+        const pn = document.getElementById('settingProjectName');
+        if (pn) pn.value = QMS_SETTINGS.projectName || '';
+        const ft = document.getElementById('settingFooterText');
+        if (ft) ft.value  = QMS_SETTINGS.footerText  || '';
+        const dd = document.getElementById('settingDeviceDesc');
+        if (dd) dd.value  = QMS_SETTINGS.deviceDescription || '';
+        const ak = document.getElementById('settingApiKey');
+        if (ak) ak.value  = QMS_SETTINGS.apiKey || '';
+        renderLogoPreview();
+      }
+    }
+
+    function renderLogoPreview() {
+      const img = document.getElementById('logoPreviewImg');
+      const title = document.getElementById('logoUploadTitle');
+      const sub = document.getElementById('logoUploadSub');
+      const removeBtn = document.getElementById('btnRemoveLogo');
+      if (!img) return;
+      if (QMS_SETTINGS.logoDataUrl) {
+        img.src = QMS_SETTINGS.logoDataUrl;
+        if (title) title.textContent = 'Logo uploaded';
+        if (sub) sub.textContent = 'Click to replace';
+        if (removeBtn) removeBtn.style.display = 'inline-block';
+      } else {
+        img.src = '../../brand_assets/Tangram-T%20mark%20reverse_Square.png';
+        if (title) title.textContent = 'Upload your logo';
+        if (sub) sub.textContent = 'PNG, JPG, or SVG · max 2 MB';
+        if (removeBtn) removeBtn.style.display = 'none';
+      }
+    }
+
+    function handleLogoUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) { alert('File too large. Please use an image under 2 MB.'); return; }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        QMS_SETTINGS.logoDataUrl = e.target.result;
+        renderLogoPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeLogo() {
+      QMS_SETTINGS.logoDataUrl = null;
+      renderLogoPreview();
+    }
+
+    function saveSettings() {
+      QMS_SETTINGS.companyName       = document.getElementById('settingCompanyName').value.trim() || 'Tangram MedTech';
+      QMS_SETTINGS.projectName       = document.getElementById('settingProjectName').value.trim() || 'CardioSync Pro';
+      QMS_SETTINGS.footerText        = document.getElementById('settingFooterText').value.trim() || 'CONFIDENTIAL — For Internal Use Only';
+      QMS_SETTINGS.deviceDescription = document.getElementById('settingDeviceDesc').value.trim();
+      QMS_SETTINGS.apiKey            = document.getElementById('settingApiKey').value.trim();
+      try { localStorage.setItem('qms_settings', JSON.stringify(QMS_SETTINGS)); } catch(e) {}
+      const flash = document.getElementById('settingsSaveFlash');
+      flash.classList.add('show');
+      setTimeout(() => flash.classList.remove('show'), 2200);
+    }
+
+    function openSettings() {
+      document.getElementById('mainContentArea').style.display = 'none';
+      document.getElementById('settingsPane').classList.add('active');
+    }
+
+    function closeSettings() {
+      document.getElementById('settingsPane').classList.remove('active');
+      document.getElementById('mainContentArea').style.display = '';
+    }
+
+    // Init
+    loadSettings();
+    renderStandardsLibrary();
+  </script>
+</body>
+</html>

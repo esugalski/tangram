@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0B2740;
+      --mid-blue: #304F6B;
+      --dark-blue: #02192F;
+      --aqua: #0AC0E9;
+      --aqua-dark: #089bbf;
+      --gray: #D2D2D2;
+      --light-gray: #F7F8FA;
+      --white: #FFFFFF;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--primary); min-height: 100vh; display: flex; overflow: hidden; }
+
+    /* Grain */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      opacity: 0.025; pointer-events: none; z-index: 9999;
+    }
+
+    /* Left panel */
+    .auth-left {
+      width: 420px;
+      min-height: 100vh;
+      background: var(--dark-blue);
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .auth-left-orb { position: absolute; bottom: -150px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(10,192,233,0.08) 0%, transparent 70%); pointer-events: none; }
+    .auth-left-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(10,192,233,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(10,192,233,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+
+    .auth-logo { height: 26px; width: auto; max-width: 180px; display: block; margin-bottom: 3rem; position: relative; z-index: 1; object-fit: contain; }
+    .auth-left-content { flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 1; }
+    .auth-left-tag { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(10,192,233,0.1); border: 1px solid rgba(10,192,233,0.2); color: rgba(10,192,233,0.8); font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.3rem 0.75rem; border-radius: 100px; margin-bottom: 1.5rem; }
+    .auth-left-headline { font-family: 'Inter', sans-serif;font-size: 1.9rem; font-weight: 800; color: white; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1rem; }
+    .auth-left-headline em { font-style: normal; color: var(--aqua); }
+    .auth-left-sub { font-size: 0.9rem; line-height: 1.72; color: rgba(255,255,255,0.45); margin-bottom: 2.5rem; }
+    .auth-proof { display: flex; flex-direction: column; gap: 0.75rem; }
+    .auth-proof-item { display: flex; align-items: center; gap: 0.65rem; }
+    .auth-proof-check { width: 18px; height: 18px; background: rgba(10,192,233,0.12); border: 1px solid rgba(10,192,233,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .auth-proof-check svg { width: 9px; height: 9px; stroke: var(--aqua); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .auth-proof-text { font-size: 0.82rem; color: rgba(255,255,255,0.55); }
+
+    .auth-left-footer { position: relative; z-index: 1; }
+    .auth-back { font-size: 0.78rem; color: rgba(255,255,255,0.3); text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: color 0.2s; }
+    .auth-back:hover { color: rgba(255,255,255,0.6); }
+    .auth-back svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Right panel — form */
+    .auth-right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+    }
+    .auth-form-wrap {
+      width: 100%;
+      max-width: 420px;
+    }
+    .auth-tabs { display: flex; background: rgba(255,255,255,0.06); border-radius: 9px; padding: 4px; margin-bottom: 2.5rem; }
+    .auth-tab { flex: 1; text-align: center; padding: 0.6rem; font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.45); cursor: pointer; border-radius: 6px; transition: background 0.2s, color 0.2s; }
+    .auth-tab.active { background: white; color: var(--primary); }
+    .auth-tab:not(.active):hover { color: rgba(255,255,255,0.7); }
+
+    .auth-form-title { font-family: 'Inter', sans-serif;font-size: 1.6rem; font-weight: 800; color: white; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
+    .auth-form-sub { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-bottom: 2rem; line-height: 1.5; }
+    .auth-form-sub a { color: rgba(10,192,233,0.8); text-decoration: none; border-bottom: 1px solid rgba(10,192,233,0.2); transition: color 0.2s; }
+    .auth-form-sub a:hover { color: var(--aqua); }
+
+    .form-group { margin-bottom: 1.1rem; }
+    .form-label { display: block; font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.6); margin-bottom: 0.45rem; letter-spacing: 0.01em; }
+    .form-input { width: 100%; background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.92rem; color: white; font-family: 'Inter', sans-serif; transition: border-color 0.2s, background 0.2s; outline: none; }
+    .form-input::placeholder { color: rgba(255,255,255,0.22); }
+    .form-input:focus { border-color: rgba(10,192,233,0.5); background: rgba(255,255,255,0.09); }
+    .form-input:hover:not(:focus) { border-color: rgba(255,255,255,0.22); }
+
+    .form-input-group { position: relative; }
+    .form-input-icon { position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%); cursor: pointer; opacity: 0.4; transition: opacity 0.2s; }
+    .form-input-icon:hover { opacity: 0.7; }
+    .form-input-icon svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: block; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+    .form-forgot { display: flex; justify-content: flex-end; margin-top: -0.6rem; margin-bottom: 1.1rem; }
+    .form-forgot a { font-size: 0.75rem; color: rgba(255,255,255,0.35); text-decoration: none; transition: color 0.2s; }
+    .form-forgot a:hover { color: rgba(10,192,233,0.8); }
+
+    .btn-submit { width: 100%; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.95rem; padding: 0.9rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 16px rgba(10,192,233,0.28); display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .btn-submit:hover { background: var(--aqua-dark); transform: translateY(-1px); box-shadow: 0 6px 22px rgba(10,192,233,0.38); }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit svg { width: 16px; height: 16px; transition: transform 0.2s; }
+    .btn-submit:hover svg { transform: translateX(2px); }
+
+    .auth-divider { display: flex; align-items: center; gap: 0.75rem; margin: 1.5rem 0; }
+    .auth-divider-line { flex: 1; height: 1px; background: rgba(255,255,255,0.09); }
+    .auth-divider-text { font-size: 0.72rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
+
+    .btn-google { width: 100%; background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.75); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.88rem; padding: 0.8rem; border-radius: 8px; cursor: pointer; transition: background 0.2s, border-color 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.65rem; }
+    .btn-google:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+    .google-icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+    .auth-terms { font-size: 0.72rem; color: rgba(255,255,255,0.22); text-align: center; margin-top: 1.5rem; line-height: 1.55; }
+    .auth-terms a { color: rgba(255,255,255,0.35); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.12); }
+    .auth-terms a:hover { color: rgba(255,255,255,0.55); }
+
+    /* Sign-up only fields (hidden in signin mode) */
+    .signup-only { display: none; }
+    .signup-only.visible { display: block; }
+    .signup-only-row { display: none; }
+    .signup-only-row.visible { display: grid; }
+
+    @media (max-width: 768px) {
+      .auth-left { display: none; }
+      .auth-right { padding: 2rem 1.5rem; align-items: flex-start; padding-top: 4rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Left panel -->
+  <div class="auth-left">
+    <div class="auth-left-grid"></div>
+    <div class="auth-left-orb"></div>
+    <img src="../../brand_assets/Tangram_white logo.png" alt="Tangram MedTech" class="auth-logo">
+    <div class="auth-left-content">
+      <div class="auth-left-tag">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--aqua);display:inline-block;"></span>
+        Tangram eQMS · Early Access
+      </div>
+      <h2 class="auth-left-headline">Quality is your<br><em>competitive advantage.</em></h2>
+      <p class="auth-left-sub">Join founders and consultants who are building quality into their medical devices from day one — not bolting it on at the end.</p>
+      <div class="auth-proof">
+        <div class="auth-proof-item">
+          <div class="auth-proof-check">
+            <svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5 4.5-4"/></svg>
+          </div>
+          <span class="auth-proof-text">All 9 modules — completely free during early access</span>
+        </div>
+        <div class="auth-proof-item">
+          <div class="auth-proof-check">
+            <svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5 4.5-4"/></svg>
+          </div>
+          <span class="auth-proof-text">Education embedded at every step — not a separate course</span>
+        </div>
+        <div class="auth-proof-item">
+          <div class="auth-proof-check">
+            <svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5 4.5-4"/></svg>
+          </div>
+          <span class="auth-proof-text">Templates for hardware, software &amp; combination devices — FDA 21 CFR 820 &amp; ISO 13485</span>
+        </div>
+        <div class="auth-proof-item">
+          <div class="auth-proof-check">
+            <svg viewBox="0 0 10 10"><path d="M2 5l2.5 2.5 4.5-4"/></svg>
+          </div>
+          <span class="auth-proof-text">Direct access to Eric and the Tangram founding team</span>
+        </div>
+      </div>
+    </div>
+    <div class="auth-left-footer">
+      <a href="index.html" class="auth-back">
+        <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Back to Tangram eQMS
+      </a>
+    </div>
+  </div>
+
+  <!-- Right panel — form -->
+  <div class="auth-right">
+    <div class="auth-form-wrap">
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</div>
+        <div class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Create Account</div>
+      </div>
+
+      <div id="form-signin">
+        <h2 class="auth-form-title">Welcome back.</h2>
+        <p class="auth-form-sub">Don't have an account? <a href="#" onclick="switchTab('signup'); return false;">Get early access →</a></p>
+
+        <form onsubmit="handleAuth(event)">
+          <div class="form-group">
+            <label class="form-label" for="email-in">Email address</label>
+            <input type="email" id="email-in" class="form-input" placeholder="you@company.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pass-in">Password</label>
+            <div class="form-input-group">
+              <input type="password" id="pass-in" class="form-input" placeholder="Your password" required>
+              <span class="form-input-icon" onclick="togglePass('pass-in', this)">
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="form-forgot"><a href="#">Forgot password?</a></div>
+          <button type="submit" class="btn-submit">
+            Sign In
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </form>
+
+        <div class="auth-divider">
+          <div class="auth-divider-line"></div>
+          <span class="auth-divider-text">or continue with</span>
+          <div class="auth-divider-line"></div>
+        </div>
+        <button class="btn-google" onclick="handleAuth(event)">
+          <svg class="google-icon" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Continue with Google
+        </button>
+      </div>
+
+      <div id="form-signup" style="display:none;">
+        <h2 class="auth-form-title">Get early access.</h2>
+        <p class="auth-form-sub">Free during our founding period. No credit card required. Already have an account? <a href="#" onclick="switchTab('signin'); return false;">Sign in →</a></p>
+
+        <form onsubmit="handleAuth(event)">
+          <div class="form-row" style="margin-bottom:1.1rem;">
+            <div>
+              <label class="form-label" for="fname">First name</label>
+              <input type="text" id="fname" class="form-input" placeholder="First" required>
+            </div>
+            <div>
+              <label class="form-label" for="lname">Last name</label>
+              <input type="text" id="lname" class="form-input" placeholder="Last" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="company">Company / Organization</label>
+            <input type="text" id="company" class="form-input" placeholder="Your company name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email-up">Work email</label>
+            <input type="email" id="email-up" class="form-input" placeholder="you@company.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pass-up">Create password</label>
+            <div class="form-input-group">
+              <input type="password" id="pass-up" class="form-input" placeholder="At least 8 characters" required minlength="8">
+              <span class="form-input-icon" onclick="togglePass('pass-up', this)">
+                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </span>
+            </div>
+          </div>
+          <button type="submit" class="btn-submit" style="margin-top:0.5rem;">
+            Create My Account
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </form>
+
+        <div class="auth-divider">
+          <div class="auth-divider-line"></div>
+          <span class="auth-divider-text">or sign up with</span>
+          <div class="auth-divider-line"></div>
+        </div>
+        <button class="btn-google" onclick="handleAuth(event)">
+          <svg class="google-icon" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Continue with Google
+        </button>
+
+        <p class="auth-terms">By creating an account you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. We'll never share your information or spam you.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      const isSignin = tab === 'signin';
+      document.getElementById('tab-signin').className = 'auth-tab' + (isSignin ? ' active' : '');
+      document.getElementById('tab-signup').className = 'auth-tab' + (!isSignin ? ' active' : '');
+      document.getElementById('form-signin').style.display = isSignin ? 'block' : 'none';
+      document.getElementById('form-signup').style.display = !isSignin ? 'block' : 'none';
+    }
+
+    function togglePass(id, iconEl) {
+      const input = document.getElementById(id);
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      iconEl.innerHTML = isHidden
+        ? `<svg viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+        : `<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    }
+
+    function handleAuth(e) {
+      e.preventDefault();
+      // Redirect to coming-soon dashboard
+      window.location.href = 'dashboard.html';
+    }
+  </script>
+</body>
+</html>
