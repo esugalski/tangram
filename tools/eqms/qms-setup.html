@@ -269,6 +269,8 @@
       { label: 'Device' },
       { label: 'Scope' },
       { label: 'API Key' },
+      { label: 'QMS Docs' },
+      { label: 'DHF Docs' },
     ];
 
     let current = 0;
@@ -466,8 +468,8 @@
       const typeLabels  = { hardware:'Hardware', samd:'SaMD', combination:'Combination', ivd:'IVD' };
       return '<div class="complete-screen">' +
         '<div class="complete-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>' +
-        '<div class="complete-title">QMS Context Saved</div>' +
-        '<div class="complete-desc">Your Quality Manual is ready to open. AI generation is now enabled for all sections.</div>' +
+        '<div class="complete-title">Setup Complete — Step 4 of 6</div>' +
+        '<div class="complete-desc">Your QMS context is saved. Next, import your existing QMS documents so Tangram can analyze and organize them.</div>' +
         '<div class="summary-grid">' +
           summaryItem('Company', ctx.companyName || '—') +
           summaryItem('Device', ctx.deviceName || '—') +
@@ -476,10 +478,13 @@
           summaryItem('Markets', markets) +
           summaryItem('AI', ctx.anthropicApiKey ? 'Key configured ✓' : 'Not configured') +
         '</div>' +
-        '<button class="btn-launch" onclick="launchQM()">' +
-          'Open Quality Manual' +
+        '<button class="btn-launch" onclick="goToImportQMS()">' +
+          'Import QMS Documents' +
           '<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>' +
         '</button>' +
+        '<div style="margin-top:0.75rem;">' +
+          '<span class="skip-link" onclick="skipToImportDHF()">Skip QMS import →</span>' +
+        '</div>' +
       '</div>';
     }
 
@@ -488,7 +493,7 @@
 
     function head(step, title, desc) {
       return '<div class="card-head">' +
-        '<div class="card-step-label">Step ' + step + ' of 4</div>' +
+        '<div class="card-step-label">Step ' + step + ' of 6</div>' +
         '<div class="card-title">' + title + '</div>' +
         '<div class="card-desc">' + desc + '</div>' +
       '</div>';
@@ -498,7 +503,7 @@
       return '<div class="card-footer">' +
         (showBack ? '<button class="btn-back" onclick="goBack()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back</button>' : '<div></div>') +
         '<div style="display:flex;align-items:center;gap:0.75rem;">' +
-          '<span class="step-counter">Step ' + step + ' of 4</span>' +
+          '<span class="step-counter">Step ' + step + ' of 6</span>' +
           '<button class="btn-next" onclick="goNext()">' + label + ' <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>' +
         '</div>' +
       '</div>';
@@ -623,14 +628,19 @@
       document.getElementById('setupCard').innerHTML = buildComplete();
     }
 
-    function launchQM() {
-      window.location.href = 'quality-manual.html';
+    function goToImportQMS() {
+      window.location.href = 'import.html?onboarding=qms';
+    }
+
+    function skipToImportDHF() {
+      localStorage.setItem('qms_import_qms_complete', 'true');
+      window.location.href = 'import.html?onboarding=dhf';
     }
 
     // ── INIT ──────────────────────────────────────────────────────────────
     renderStep();
   </script>
   <script src="sidebar.js"></script>
-  <script>initSidebar({ activePage: 'quality-manual' });</script>
+  <script>initSidebar({ activePage: 'dashboard' });</script>
 </body>
 </html>

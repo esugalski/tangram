@@ -154,6 +154,19 @@
     .demo-hint { text-align: center; font-size: 0.73rem; color: rgba(11,39,64,0.35); margin-top: -0.5rem; }
     .demo-hint a { color: var(--aqua-dark); cursor: pointer; text-decoration: underline; }
 
+    /* ── ONBOARDING PROGRESS BAR ── */
+    .ob-progress-wrap { display: flex; align-items: center; padding: 0.85rem 2rem; background: white; border-bottom: 1px solid rgba(11,39,64,0.06); }
+    .ob-progress-step { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; flex: 1; }
+    .ob-progress-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 800; transition: background 0.3s, border-color 0.3s, color 0.3s; }
+    .ob-progress-dot.done    { background: var(--aqua); color: var(--primary); border: 2px solid var(--aqua); }
+    .ob-progress-dot.current { background: var(--primary); color: var(--aqua); border: 2px solid var(--aqua); }
+    .ob-progress-dot.pending { background: rgba(11,39,64,0.05); color: rgba(11,39,64,0.25); border: 2px solid rgba(11,39,64,0.12); }
+    .ob-progress-label { font-size: 0.58rem; font-weight: 600; color: rgba(11,39,64,0.3); text-align: center; white-space: nowrap; }
+    .ob-progress-label.current { color: var(--primary); }
+    .ob-progress-label.done    { color: rgba(11,39,64,0.5); }
+    .ob-progress-line { flex: 1; height: 1px; background: rgba(11,39,64,0.1); margin-top: -1.15rem; transition: background 0.3s; }
+    .ob-progress-line.done { background: rgba(10,192,233,0.5); }
+
     /* ─── STEP 2: PROCESSING ─── */
     .processing-container { max-width: 440px; margin: 3rem auto 0; text-align: center; }
     .processing-spinner { width: 56px; height: 56px; margin: 0 auto 1.5rem; }
@@ -656,15 +669,18 @@ const state = {
   activeFilter: 'all',
   selectedRecordId: null,
   apiKey: '',
+  onboardingMode: null, // 'qms', 'dhf', or null
 };
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
 
 window.addEventListener('DOMContentLoaded', () => {
+  state.onboardingMode = new URLSearchParams(window.location.search).get('onboarding') || null;
   loadSettings();
   setupDropZone();
   populateExistingProjects();
   checkApiKeyAndShowNotice();
+  applyOnboardingMode();
 });
 
 function loadSettings() {
@@ -1480,8 +1496,109 @@ function finalizeImport() {
     console.error('Import save error', e);
   }
 
-  // Navigate to dashboard
-  window.location.href = 'dashboard.html';
+  // Navigate: onboarding flow or normal use
+  if (state.onboardingMode === 'qms') {
+    localStorage.setItem('qms_import_qms_complete', 'true');
+    window.location.href = 'import.html?onboarding=dhf';
+  } else if (state.onboardingMode === 'dhf') {
+    localStorage.setItem('qms_import_dhf_complete', 'true');
+    localStorage.setItem('qms_onboarding_complete', 'true');
+    localStorage.setItem('qms_onboarding_just_finished', 'true');
+    window.location.href = 'dashboard.html';
+  } else {
+    window.location.href = 'dashboard.html';
+  }
+}
+
+// ── ONBOARDING MODE ────────────────────────────────────────────────────────────
+
+function applyOnboardingMode() {
+  if (!state.onboardingMode) return;
+  const isQMS = state.onboardingMode === 'qms';
+
+  // Hide sidebar, expand main to full width
+  var sidebar = document.querySelector('.sidebar');
+  var main    = document.querySelector('.main');
+  if (sidebar) sidebar.style.display = 'none';
+  if (main)    main.style.marginLeft = '0';
+
+  // Update topbar title
+  var titleEl = document.querySelector('.topbar-title');
+  if (titleEl) titleEl.textContent = isQMS ? 'Import QMS Documents' : 'Import Design History File';
+
+  // Update upload heading text
+  var eyebrow  = document.querySelector('.upload-eyebrow');
+  var title    = document.querySelector('.upload-title');
+  var subtitle = document.querySelector('.upload-subtitle');
+  if (eyebrow)  eyebrow.textContent  = isQMS ? 'Step 5 of 6 — QMS Documents' : 'Step 6 of 6 — Design History File';
+  if (title)    title.textContent    = isQMS ? 'Import your existing QMS' : 'Import your Design History File';
+  if (subtitle) subtitle.textContent = isQMS
+    ? 'Upload your Quality Manual, SOPs, or any existing QMS documentation. AI will classify and map each document to the correct module.'
+    : 'Upload your DHF, user needs spreadsheet, design inputs, or test protocols. AI will classify and organize them into the Trace Matrix.';
+
+  // Inject 6-step onboarding progress bar above the step-header
+  injectOnboardingProgressBar(isQMS ? 5 : 6);
+
+  // Inject skip link after the demo hint
+  injectSkipButton();
+
+  // Pre-fill and lock project name from qms_context
+  lockProjectTarget();
+}
+
+function injectOnboardingProgressBar(currentStep) {
+  var labels = ['Company', 'Device', 'Scope', 'API Key', 'QMS Docs', 'DHF Docs'];
+  var html = '<div class="ob-progress-wrap">';
+  labels.forEach(function(label, i) {
+    var stepNum = i + 1;
+    if (i > 0) {
+      html += '<div class="ob-progress-line' + (stepNum <= currentStep ? ' done' : '') + '"></div>';
+    }
+    var cls = stepNum < currentStep ? 'done' : stepNum === currentStep ? 'current' : 'pending';
+    var dot = cls === 'done'
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;stroke:var(--primary)"><polyline points="20 6 9 17 4 12"/></svg>'
+      : stepNum;
+    html += '<div class="ob-progress-step">' +
+      '<div class="ob-progress-dot ' + cls + '">' + dot + '</div>' +
+      '<div class="ob-progress-label ' + cls + '">' + label + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+  var stepHeader = document.getElementById('stepHeader');
+  if (stepHeader) stepHeader.insertAdjacentHTML('beforebegin', html);
+}
+
+function injectSkipButton() {
+  var demoHint = document.querySelector('.demo-hint');
+  if (!demoHint) return;
+  var skipDiv = document.createElement('div');
+  skipDiv.style.cssText = 'text-align:center;margin-top:0.5rem;';
+  skipDiv.innerHTML = '<span style="font-size:0.78rem;color:rgba(11,39,64,0.4);cursor:pointer;transition:color 0.15s;" onmouseover="this.style.color=\'var(--primary)\'" onmouseout="this.style.color=\'rgba(11,39,64,0.4)\'" onclick="skipOnboardingStep()">I\'ll do this later →</span>';
+  demoHint.insertAdjacentElement('afterend', skipDiv);
+}
+
+function lockProjectTarget() {
+  var ctx = {};
+  try { ctx = JSON.parse(localStorage.getItem('qms_context') || '{}'); } catch(e) {}
+  var deviceName = ctx.deviceName || '';
+  if (!deviceName) return;
+  selectTarget('new');
+  var nameInput = document.getElementById('newProjectName');
+  if (nameInput) { nameInput.value = deviceName; nameInput.readOnly = true; }
+  var cardExisting = document.getElementById('card-existing');
+  if (cardExisting) cardExisting.style.display = 'none';
+}
+
+function skipOnboardingStep() {
+  if (state.onboardingMode === 'qms') {
+    localStorage.setItem('qms_import_qms_complete', 'true');
+    window.location.href = 'import.html?onboarding=dhf';
+  } else {
+    localStorage.setItem('qms_import_dhf_complete', 'true');
+    localStorage.setItem('qms_onboarding_complete', 'true');
+    localStorage.setItem('qms_onboarding_just_finished', 'true');
+    window.location.href = 'dashboard.html';
+  }
 }
 </script>
 

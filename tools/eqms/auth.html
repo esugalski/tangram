@@ -307,8 +307,25 @@
 
     function handleAuth(e) {
       e.preventDefault();
-      // Redirect to coming-soon dashboard
-      window.location.href = 'dashboard.html';
+      routeAfterAuth();
+    }
+
+    function routeAfterAuth() {
+      // Returning user — fully onboarded
+      if (localStorage.getItem('qms_onboarding_complete') === 'true') {
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      // Partially onboarded — steps 1–4 done, imports pending
+      var ctx = {};
+      try { ctx = JSON.parse(localStorage.getItem('qms_context') || '{}'); } catch(e) {}
+      if (ctx.setupComplete === true) {
+        var qmsDone = localStorage.getItem('qms_import_qms_complete') === 'true';
+        window.location.href = qmsDone ? 'import.html?onboarding=dhf' : 'import.html?onboarding=qms';
+        return;
+      }
+      // First-time user — start the setup wizard
+      window.location.href = 'qms-setup.html';
     }
   </script>
 </body>

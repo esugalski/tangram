@@ -629,6 +629,84 @@
         closeDropdown();
       }
     });
+
+    // ── ONBOARDING INIT ───────────────────────────────────────────────────
+    function initDashboard() {
+      const justFinished = localStorage.getItem('qms_onboarding_just_finished') === 'true';
+      if (justFinished) {
+        localStorage.removeItem('qms_onboarding_just_finished');
+        showOnboardingWelcomeSection();
+      }
+      renderSetupSummary();
+    }
+
+    function renderSetupSummary() {
+      let ctx = {};
+      try { ctx = JSON.parse(localStorage.getItem('qms_context') || '{}'); } catch(e) {}
+      if (!ctx.companyName) return;
+
+      const classLabels = { i:'Class I', ii:'Class II', iii:'Class III', ivd:'IVD' };
+      const typeLabels  = { hardware:'Hardware', samd:'SaMD', combination:'Combination', ivd:'IVD' };
+      const qmsImported = localStorage.getItem('qms_import_qms_complete') === 'true';
+      const dhfImported = localStorage.getItem('qms_import_dhf_complete') === 'true';
+      const resumeHref  = !qmsImported ? 'import.html?onboarding=qms' : 'import.html?onboarding=dhf';
+
+      const greenDot = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      const grayDot  = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>';
+
+      const html = `<div id="setup-summary-card" style="background:white;border:1px solid rgba(11,39,64,0.08);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+        <div style="flex:1;min-width:180px;">
+          <div style="font-size:0.58rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(11,39,64,0.32);margin-bottom:0.3rem;">QMS Context</div>
+          <div style="font-size:0.88rem;font-weight:800;color:var(--primary);margin-bottom:0.1rem;">${esc(ctx.companyName)}</div>
+          <div style="font-size:0.75rem;color:var(--mid-blue);">${esc(ctx.deviceName || '')}${ctx.deviceClass ? ' &mdash; ' + (classLabels[ctx.deviceClass]||'') : ''}${ctx.deviceType ? ' ' + (typeLabels[ctx.deviceType]||'') : ''}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:0.35rem;font-size:0.74rem;color:${qmsImported ? '#10B981' : 'rgba(11,39,64,0.32)'};">${qmsImported ? greenDot : grayDot} QMS Docs</div>
+          <div style="display:flex;align-items:center;gap:0.35rem;font-size:0.74rem;color:${dhfImported ? '#10B981' : 'rgba(11,39,64,0.32)'};">${dhfImported ? greenDot : grayDot} DHF Docs</div>
+          ${(!qmsImported || !dhfImported) ? `<a href="${resumeHref}" style="font-size:0.74rem;font-weight:600;color:var(--aqua-dark);text-decoration:none;">Complete setup →</a>` : ''}
+        </div>
+      </div>`;
+
+      const projectView = document.getElementById('view-project');
+      const sectionLabel = projectView.querySelector('.section-label');
+      if (sectionLabel) sectionLabel.insertAdjacentHTML('beforebegin', html);
+    }
+
+    function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    function showOnboardingWelcomeSection() {
+      let ctx = {};
+      try { ctx = JSON.parse(localStorage.getItem('qms_context') || '{}'); } catch(e) {}
+      const firstName = ctx.companyName ? ctx.companyName.split(' ')[0] : '';
+
+      const tile = (title, body, color) =>
+        `<div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);border-radius:9px;padding:0.85rem 1rem;">
+          <div style="font-size:0.72rem;font-weight:700;color:${color};margin-bottom:0.3rem;">${title}</div>
+          <div style="font-size:0.7rem;color:rgba(255,255,255,0.45);line-height:1.55;">${body}</div>
+        </div>`;
+
+      const html = `<div id="onboarding-welcome" style="background:linear-gradient(135deg,#0B2740 0%,#0d3a55 100%);border-radius:13px;padding:1.5rem 1.75rem;margin-bottom:1.25rem;position:relative;overflow:hidden;">
+        <button onclick="dismissWelcome()" style="position:absolute;top:0.75rem;right:0.9rem;background:none;border:none;color:rgba(255,255,255,0.35);font-size:1.1rem;cursor:pointer;line-height:1;padding:0;" title="Dismiss">×</button>
+        <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(10,192,233,0.7);margin-bottom:0.4rem;">Welcome to Tangram eQMS</div>
+        <h2 style="font-size:1.15rem;font-weight:800;color:white;letter-spacing:-0.02em;margin-bottom:0.4rem;">You're set up${firstName ? ', ' + firstName : ''}.</h2>
+        <p style="font-size:0.81rem;color:rgba(255,255,255,0.45);line-height:1.6;max-width:560px;margin-bottom:1.1rem;">Your QMS context is saved. Here's a quick orientation to what's live and what's coming.</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.65rem;">
+          ${tile('Design Controls', 'ISO 13485 §7.3 / 21 CFR 820.30. User needs flow to design inputs, which flow to outputs — all traced and version-controlled.', '#0AC0E9')}
+          ${tile('Design History File', 'The complete record of how your device was designed and verified. Every decision, test, and change — documented chronologically.', '#10B981')}
+          ${tile('QMS Scope', 'Defines exactly which activities, products, and sites your quality system covers. Auditors will ask for it on day one.', '#6366f1')}
+        </div>
+      </div>`;
+
+      const projectView = document.getElementById('view-project');
+      projectView.insertAdjacentHTML('afterbegin', html);
+    }
+
+    function dismissWelcome() {
+      const el = document.getElementById('onboarding-welcome');
+      if (el) el.remove();
+    }
+
+    initDashboard();
   </script>
 </body>
 </html>
