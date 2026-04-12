@@ -220,8 +220,8 @@
     .btn-approve { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: #047857; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.48rem 1rem; border-radius: 7px; border: 1.5px solid rgba(16,185,129,0.35); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
     .btn-approve:hover { border-color: var(--green); background: rgba(16,185,129,0.06); }
     .btn-approve svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .btn-supersede { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: #b91c1c; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.75rem; padding: 0.4rem 0.85rem; border-radius: 7px; border: 1.5px solid rgba(239,68,68,0.25); cursor: pointer; transition: all 0.15s; margin-left: auto; }
-    .btn-supersede:hover { border-color: var(--red); background: rgba(239,68,68,0.05); }
+    .btn-revise { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: #0369a1; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.75rem; padding: 0.4rem 0.85rem; border-radius: 7px; border: 1.5px solid rgba(14,165,233,0.3); cursor: pointer; transition: border-color 0.15s, background 0.15s; margin-left: auto; }
+    .btn-revise:hover { border-color: #0ea5e9; background: rgba(14,165,233,0.06); }
     .save-flash { font-size: 0.74rem; font-weight: 600; color: var(--green); opacity: 0; transition: opacity 0.3s; }
     .save-flash.show { opacity: 1; }
 
@@ -815,7 +815,7 @@
         footerHTML += '<span class="save-flash" id="saveFlash">Saved ✓</span>';
       } else if (p.status === 'approved') {
         footerHTML += '<span style="font-size:0.76rem;font-weight:600;color:#059669;">✓ Approved — this procedure is locked</span>';
-        footerHTML += '<button class="btn-supersede" onclick="supersedeProc()">Mark Superseded</button>';
+        footerHTML += '<button class="btn-revise" onclick="initiateRevision()"><svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>Initiate Revision</button>';
       } else {
         footerHTML += '<span style="font-size:0.76rem;color:rgba(11,39,64,0.4);">This procedure is superseded and archived.</span>';
       }
@@ -892,11 +892,32 @@
       });
     }
 
-    // ── SUPERSEDE ─────────────────────────────────────────────────────────
-    function supersedeProc() {
-      if (!confirm('Mark this procedure as superseded? It will be archived and no longer active.')) return;
+    // ── INITIATE REVISION (Change Control) ───────────────────────────────
+    function initiateRevision() {
       const p = PROCS[currentId]; if (!p) return;
-      p.status = 'superseded'; save(); renderBoard(); renderDetail();
+      if (!confirm('Start a new revision of "' + (p.title || currentId) + '"?\n\nThe current approved version will remain active until the new revision is approved.')) return;
+      // Snapshot the current approved version into history
+      if (!p.history) p.history = [];
+      p.history.push({
+        version:           p.version || 1,
+        revision:          p.revision || 'A',
+        frozenAt:          new Date().toISOString(),
+        approvalSignature: p.approvalSignature || null,
+        itemSnapshot:      JSON.parse(JSON.stringify(p)),
+      });
+      // Bump version and revision letter
+      p.version  = (p.version || 1) + 1;
+      const curRev = (p.revision || 'A').toUpperCase();
+      p.revision = curRev.length === 1
+        ? String.fromCharCode(curRev.charCodeAt(0) + 1)   // A→B, B→C …
+        : curRev + '1';                                     // fallback for non-single-char
+      // Reset to draft for change control
+      p.status            = 'draft';
+      p.approvalSignature = null;
+      save();
+      isDirty = false;
+      renderBoard();
+      renderDetail();
     }
 
     // ── PER-FIELD AI GENERATION ───────────────────────────────────────────
