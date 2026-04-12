@@ -62,24 +62,15 @@
     .content-area::-webkit-scrollbar { width: 5px; }
     .content-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
 
-    /* ── SETUP INNER WRAP (dark themed, centered) ── */
+    /* ── SETUP INNER WRAP ── */
     .setup-inner {
-      background: #02192F;
+      background: #F0F2F5;
       min-height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 2.5rem 1.5rem 4rem;
       position: relative;
-    }
-    .setup-inner::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 0%, rgba(10,192,233,0.08) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 80% 100%, rgba(99,102,241,0.07) 0%, transparent 60%);
-      pointer-events: none;
     }
 
     /* ── PROGRESS ── */
@@ -96,20 +87,20 @@
     }
     .progress-dot.done    { background: var(--aqua); color: var(--primary); border: 2px solid var(--aqua); }
     .progress-dot.current { background: var(--primary); color: var(--aqua); border: 2px solid var(--aqua); }
-    .progress-dot.pending { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.25); border: 2px solid rgba(255,255,255,0.1); }
+    .progress-dot.pending { background: rgba(11,39,64,0.05); color: rgba(11,39,64,0.25); border: 2px solid rgba(11,39,64,0.12); }
     .progress-dot.done svg { width: 13px; height: 13px; stroke: var(--primary); fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-    .progress-label { font-size: 0.62rem; font-weight: 600; color: rgba(255,255,255,0.3); text-align: center; white-space: nowrap; transition: color 0.3s; }
-    .progress-label.current { color: rgba(255,255,255,0.7); }
-    .progress-label.done    { color: rgba(255,255,255,0.45); }
+    .progress-label { font-size: 0.62rem; font-weight: 600; color: rgba(11,39,64,0.3); text-align: center; white-space: nowrap; transition: color 0.3s; }
+    .progress-label.current { color: var(--primary); }
+    .progress-label.done    { color: rgba(11,39,64,0.5); }
     .progress-line {
-      flex: 1; height: 1px; background: rgba(255,255,255,0.1); margin-top: -1.35rem; transition: background 0.3s;
+      flex: 1; height: 1px; background: rgba(11,39,64,0.1); margin-top: -1.35rem; transition: background 0.3s;
     }
     .progress-line.done { background: rgba(10,192,233,0.4); }
 
     /* ── CARD ── */
     .setup-card {
       background: white; border-radius: 16px; width: 100%; max-width: 560px;
-      box-shadow: 0 32px 80px rgba(2,25,47,0.4), 0 4px 16px rgba(2,25,47,0.2);
+      box-shadow: 0 4px 24px rgba(11,39,64,0.08), 0 1px 4px rgba(11,39,64,0.06);
       overflow: hidden;
     }
     .card-head {
