@@ -1578,12 +1578,29 @@ function injectOnboardingProgressBar(currentStep) {
 }
 
 function injectSkipButton() {
-  var demoHint = document.querySelector('.demo-hint');
-  if (!demoHint) return;
+  // Insert a visible skip section before the parse button
+  var parseBtn = document.getElementById('parseBtn');
+  if (!parseBtn) return;
+  var isQMS = state.onboardingMode === 'qms';
+  var skipLabel = isQMS
+    ? 'Skip — I don\'t have QMS documentation yet'
+    : 'Skip — I don\'t have a Design History File yet';
   var skipDiv = document.createElement('div');
-  skipDiv.style.cssText = 'text-align:center;margin-top:0.5rem;';
-  skipDiv.innerHTML = '<span style="font-size:0.78rem;color:rgba(11,39,64,0.4);cursor:pointer;transition:color 0.15s;" onmouseover="this.style.color=\'var(--primary)\'" onmouseout="this.style.color=\'rgba(11,39,64,0.4)\'" onclick="skipOnboardingStep()">I\'ll do this later →</span>';
-  demoHint.insertAdjacentElement('afterend', skipDiv);
+  skipDiv.style.cssText = 'display:flex;align-items:center;gap:0.75rem;margin-top:-0.25rem;';
+  skipDiv.innerHTML =
+    '<div style="flex:1;height:1px;background:rgba(11,39,64,0.08);"></div>' +
+    '<button onclick="skipOnboardingStep()" style="' +
+      'display:inline-flex;align-items:center;gap:0.4rem;' +
+      'background:transparent;border:1.5px solid rgba(11,39,64,0.12);' +
+      'color:rgba(11,39,64,0.45);font-family:inherit;font-size:0.78rem;font-weight:600;' +
+      'padding:0.45rem 1rem;border-radius:8px;cursor:pointer;white-space:nowrap;' +
+      'transition:border-color 0.15s,color 0.15s;"' +
+      'onmouseover="this.style.borderColor=\'rgba(11,39,64,0.25)\';this.style.color=\'var(--primary)\'"' +
+      'onmouseout="this.style.borderColor=\'rgba(11,39,64,0.12)\';this.style.color=\'rgba(11,39,64,0.45)\'">' +
+      skipLabel +
+    '</button>' +
+    '<div style="flex:1;height:1px;background:rgba(11,39,64,0.08);"></div>';
+  parseBtn.insertAdjacentElement('beforebegin', skipDiv);
 }
 
 function lockProjectTarget() {
