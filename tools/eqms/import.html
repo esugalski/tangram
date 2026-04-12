@@ -1530,11 +1530,11 @@ function applyOnboardingMode() {
   var eyebrow  = document.querySelector('.upload-eyebrow');
   var title    = document.querySelector('.upload-title');
   var subtitle = document.querySelector('.upload-subtitle');
-  if (eyebrow)  eyebrow.textContent  = isQMS ? 'Step 5 of 6 — QMS Documents' : 'Step 6 of 6 — Design History File';
-  if (title)    title.textContent    = isQMS ? 'Import your existing QMS' : 'Import your Design History File';
+  if (eyebrow)  eyebrow.textContent  = isQMS ? 'Step 5 of 6 — Quality System Documents' : 'Step 6 of 6 — Design History File';
+  if (title)    title.textContent    = isQMS ? 'Import your QMS SOPs & procedures' : 'Import your Design History File';
   if (subtitle) subtitle.textContent = isQMS
-    ? 'Upload your Quality Manual, SOPs, or any existing QMS documentation. AI will classify and map each document to the correct module.'
-    : 'Upload your DHF, user needs spreadsheet, design inputs, or test protocols. AI will classify and organize them into the Trace Matrix.';
+    ? 'Upload your Quality Manual, SOPs, work instructions, or other process documentation. AI will classify each document and map it to the correct section of your Quality System — not a device project.'
+    : 'Upload your DHF, user needs spreadsheet, design inputs, design outputs, or test protocols. AI will classify and organize them into the correct design control modules for your device project.';
 
   // Inject 6-step onboarding progress bar above the step-header
   injectOnboardingProgressBar(isQMS ? 5 : 6);
@@ -1542,8 +1542,17 @@ function applyOnboardingMode() {
   // Inject skip link after the demo hint
   injectSkipButton();
 
-  // Pre-fill and lock project name from qms_context
-  lockProjectTarget();
+  // Replace import destination section with context-appropriate version
+  if (isQMS) {
+    replaceDestinationForQMS();
+  } else {
+    lockProjectTarget();
+  }
+
+  // For QMS mode: inject a "what comes next" callout after the subtitle
+  if (isQMS) {
+    injectNextStepCallout();
+  }
 }
 
 function injectOnboardingProgressBar(currentStep) {
@@ -1578,6 +1587,7 @@ function injectSkipButton() {
 }
 
 function lockProjectTarget() {
+  // For DHF mode: lock to the device project from qms_context
   var ctx = {};
   try { ctx = JSON.parse(localStorage.getItem('qms_context') || '{}'); } catch(e) {}
   var deviceName = ctx.deviceName || '';
@@ -1587,6 +1597,36 @@ function lockProjectTarget() {
   if (nameInput) { nameInput.value = deviceName; nameInput.readOnly = true; }
   var cardExisting = document.getElementById('card-existing');
   if (cardExisting) cardExisting.style.display = 'none';
+}
+
+function replaceDestinationForQMS() {
+  // Replace the project target cards with a plain info banner — QMS docs go into
+  // the Quality System section of the platform, not a device project.
+  var targetWrap = document.querySelector('.project-target-cards');
+  var targetLabel = document.querySelector('.project-target-label');
+  if (targetLabel) targetLabel.textContent = 'Import destination';
+  if (targetWrap) {
+    targetWrap.outerHTML =
+      '<div style="background:rgba(10,192,233,0.06);border:1px solid rgba(10,192,233,0.18);border-radius:10px;padding:0.85rem 1.1rem;display:flex;align-items:flex-start;gap:0.75rem;">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="var(--aqua-dark)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;margin-top:0.1rem;"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>' +
+        '<div>' +
+          '<div style="font-size:0.75rem;font-weight:700;color:var(--primary);margin-bottom:0.2rem;">Quality System — System-wide</div>' +
+          '<div style="font-size:0.72rem;color:rgba(11,39,64,0.55);line-height:1.55;">These documents will be organized into the <strong>Quality System</strong> section of the platform (Process Library, Quality Manual). They are shared across all device projects — not tied to a single device.</div>' +
+        '</div>' +
+      '</div>';
+  }
+}
+
+function injectNextStepCallout() {
+  // Add a subtle callout below the subtitle explaining DHF is step 6
+  var subtitle = document.querySelector('.upload-subtitle');
+  if (!subtitle) return;
+  var callout = document.createElement('div');
+  callout.style.cssText = 'background:rgba(11,39,64,0.04);border:1px solid rgba(11,39,64,0.08);border-radius:8px;padding:0.65rem 0.9rem;margin-top:0.25rem;display:flex;align-items:flex-start;gap:0.6rem;text-align:left;';
+  callout.innerHTML =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(11,39,64,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;flex-shrink:0;margin-top:0.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+    '<span style="font-size:0.71rem;color:rgba(11,39,64,0.45);line-height:1.55;"><strong style="color:rgba(11,39,64,0.6);">Step 6 follows:</strong> After this, you\'ll import your Design History File (DHF) — user needs, design inputs, outputs, and test records — which will be organized into your device project.</span>';
+  subtitle.insertAdjacentElement('afterend', callout);
 }
 
 function skipOnboardingStep() {
