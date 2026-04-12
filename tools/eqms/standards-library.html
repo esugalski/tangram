@@ -218,6 +218,7 @@
         Standards Library
       </div>
       <div class="topbar-right">
+        <div id="slExportBtnMount"></div>
         <button class="btn-add-un" onclick="openAddStandard()">
           <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Standard
@@ -393,6 +394,7 @@
   </div>
 
   <script src="sidebar.js"></script>
+  <script src="export.js"></script>
   <script>initSidebar({ activePage: 'standards-library' });</script>
   <script>
     // ── HELPERS ──────────────────────────────────────────────────────────
@@ -864,9 +866,51 @@
       document.getElementById('mainContentArea').style.display = '';
     }
 
+    // ── EXPORT ────────────────────────────────────────────────────────────
+    function buildSLExportHTML() {
+      var typeLabel = { mandatory:'Mandatory', guidance:'Guidance', voluntary:'Voluntary', internal:'Internal' };
+      var statusLabel = { active:'Active', superseded:'Superseded', withdrawn:'Withdrawn', pending:'Pending Review' };
+
+      var rows = STANDARDS.map(function(s) {
+        return '<tr>' +
+          '<td>' + escHtml(s.shortName||s.id) + '</td>' +
+          '<td>' + escHtml(s.title||'') + '</td>' +
+          '<td>' + escHtml(typeLabel[s.type] || s.type || '') + '</td>' +
+          '<td>' + escHtml(statusLabel[s.status] || s.status || '') + '</td>' +
+          '<td>' + escHtml((s.linkedDIs||[]).length ? s.linkedDIs.join(', ') : '—') + '</td>' +
+          '</tr>';
+      }).join('');
+
+      return TangramExport.buildDocumentHTML({
+        title:   'Standards Library',
+        subtitle: 'Applicable standards and regulatory requirements.',
+        meta: [{ label: 'Standards', value: String(STANDARDS.length) }],
+        sections: [{
+          heading: 'Standards Registry',
+          content: '<table class="data"><thead><tr>' +
+            '<th>Standard</th><th>Title</th><th>Type</th><th>Status</th><th>Linked DIs</th>' +
+            '</tr></thead><tbody>' +
+            (rows || '<tr><td colspan="5" style="color:#9ab0bf;">No standards added yet.</td></tr>') +
+            '</tbody></table>',
+        }],
+      });
+    }
+
+    function slExportPDF()  { TangramExport.exportAsPDF('standards-library', buildSLExportHTML()); }
+    function slExportWord() { TangramExport.exportAsWord('standards-library', buildSLExportHTML()); }
+
     // Init
     loadSettings();
     renderStandardsLibrary();
+
+    // Inject export button — uses inline style to match local btn-add-un pattern without btn-outline class
+    (function() {
+      var style = document.createElement('style');
+      style.textContent = '.sl-btn-outline{display:inline-flex;align-items:center;gap:.4rem;background:transparent;color:rgba(11,39,64,.65);font-family:"Inter",sans-serif;font-weight:600;font-size:.78rem;padding:.48rem 1rem;border-radius:7px;border:1.5px solid rgba(11,39,64,.18);cursor:pointer;transition:border-color .15s,color .15s,background .15s}.sl-btn-outline:hover{border-color:#0AC0E9;color:#0891b2;background:rgba(10,192,233,.04)}.sl-btn-outline svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}';
+      document.head.appendChild(style);
+      document.getElementById('slExportBtnMount').innerHTML =
+        TangramExport.exportButtonHTML('sl-btn-outline', 'slExportDD', 'slExportPDF()', 'slExportWord()');
+    })();
   </script>
 </body>
 </html>

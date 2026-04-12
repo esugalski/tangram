@@ -239,6 +239,7 @@
         <span class="status-pill none" id="statusPill">Not Approved</span>
       </div>
       <div class="topbar-right">
+        <div id="qmExportBtnMount"></div>
         <button class="btn-ai" onclick="openAiPanel()">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
           AI Assist
@@ -297,6 +298,7 @@
   <script src="sidebar.js"></script>
   <script src="esign.js"></script>
   <script src="versions.js"></script>
+  <script src="export.js"></script>
   <script>
     initSidebar({ activePage: 'quality-manual' });
 
@@ -841,9 +843,56 @@
       return html;
     }
 
+    // ── EXPORT ────────────────────────────────────────────────────────────
+    function buildQMExportHTML() {
+      collectFields();
+      var procs  = loadProcs();
+      var keys   = Object.keys(procs).sort();
+      var fmtDate = function(iso) { if (!iso) return '—'; try { return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); } catch(e){ return iso.slice(0,10); } };
+
+      // Section 3 table
+      var procRows = keys.length ? keys.map(function(k) {
+        var p = procs[k];
+        var statusLabel = { approved:'Approved', draft:'Draft', review:'In Review', planned:'Planned' }[p.status] || p.status;
+        return '<tr><td>' + esc(p.docNumber||k) + '</td><td>' + esc(p.title||'') + '</td><td>' + esc(p.owner||'') + '</td><td>' + esc(statusLabel) + '</td><td>' + fmtDate(p.updatedAt||p.createdAt) + '</td></tr>';
+      }).join('') : '<tr><td colspan="5" style="color:#9ab0bf;">No procedures yet.</td></tr>';
+
+      var sections = [
+        { heading: '1. Quality Policy',
+          content: '<pre>' + esc(QM.qualityPolicy||'') + '</pre>' },
+        { heading: '2. Scope of the Quality Management System',
+          content: '<div class="field-label">Included</div><pre>' + esc(QM.scopeIncluded||'') + '</pre>' +
+                   '<div class="field-label">Exclusions</div><pre>' + esc(QM.scopeExcluded||'') + '</pre>' },
+        { heading: '3. Controlled Procedures Registry',
+          content: '<table class="data"><thead><tr><th>Doc #</th><th>Title</th><th>Owner</th><th>Status</th><th>Revised</th></tr></thead><tbody>' + procRows + '</tbody></table>' },
+        { heading: '4. Organization Overview &amp; Responsibilities',
+          content: '<pre>' + esc(QM.orgOverview||'') + '</pre>' },
+        { heading: '5. Interaction of QMS Processes',
+          content: '<pre>' + esc(QM.processInteraction||'') + '</pre>' },
+      ];
+
+      return TangramExport.buildDocumentHTML({
+        title:    'Quality Manual',
+        subtitle: 'This document establishes the Quality Management System, defines quality policy and scope, and provides foundational authority for all controlled procedures and records.',
+        company:  QM.companyName,
+        meta: [
+          { label: 'Device / Product',   value: QM.deviceName },
+          { label: 'Revision',           value: 'v' + (QM.version||1) },
+          { label: 'Status',             value: QM.status === 'approved' ? 'Approved' : 'Draft' },
+          { label: 'Regulatory Basis',   value: QM.regulatoryBasis },
+        ],
+        sections: sections,
+      });
+    }
+
+    function qmExportPDF()  { TangramExport.exportAsPDF('quality-manual', buildQMExportHTML()); }
+    function qmExportWord() { TangramExport.exportAsWord('quality-manual', buildQMExportHTML()); }
+
     // ── INIT ──────────────────────────────────────────────────────────────
     loadManual();
     render();
+    document.getElementById('qmExportBtnMount').innerHTML =
+      TangramExport.exportButtonHTML('btn-outline', 'qmExportDD', 'qmExportPDF()', 'qmExportWord()');
   </script>
 </body>
 </html>

@@ -281,6 +281,7 @@
         Process Library
       </div>
       <div class="topbar-right">
+        <div id="plExportBtnMount"></div>
         <button class="btn-primary" onclick="openNewProc()">
           <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           New Procedure
@@ -338,6 +339,7 @@
   <script src="sidebar.js"></script>
   <script src="esign.js"></script>
   <script src="versions.js"></script>
+  <script src="export.js"></script>
   <script>
     initSidebar({ activePage: 'process-library' });
 
@@ -956,9 +958,66 @@
       return html;
     }
 
+    // ── EXPORT ────────────────────────────────────────────────────────────
+    function buildPLExportHTML(scopeId) {
+      var keys = Object.keys(PROCS).sort();
+      if (scopeId) keys = keys.filter(function(k){ return k === scopeId; });
+
+      var fmtDate = function(iso) { if (!iso) return '—'; try { return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); } catch(e){ return iso.slice(0,10); } };
+      var statusLabel = function(s) { return { approved:'Approved', draft:'Draft', review:'In Review', planned:'Planned' }[s] || s; };
+
+      var sections = [];
+
+      if (!scopeId) {
+        // Summary table first
+        var rows = keys.map(function(k) {
+          var p = PROCS[k];
+          return '<tr><td>' + esc(p.docNumber||k) + '</td><td>' + esc(p.title||'') + '</td>' +
+            '<td>' + esc(p.owner||'') + '</td><td>' + esc(statusLabel(p.status)) + '</td>' +
+            '<td>' + esc(fmtDate(p.updatedAt||p.createdAt)) + '</td></tr>';
+        }).join('');
+        sections.push({ heading: 'Procedure Index',
+          content: '<table class="data"><thead><tr><th>Doc #</th><th>Title</th><th>Owner</th><th>Status</th><th>Revised</th></tr></thead><tbody>' +
+            (rows || '<tr><td colspan="5" style="color:#9ab0bf;">No procedures.</td></tr>') + '</tbody></table>' });
+      }
+
+      keys.forEach(function(k) {
+        var p = PROCS[k];
+        var meta = '<div style="font-size:9pt;color:#5a7a90;margin-bottom:0.75rem;">' +
+          'Doc #: <strong>' + esc(p.docNumber||k) + '</strong> &nbsp;·&nbsp; ' +
+          'Status: <strong>' + esc(statusLabel(p.status)) + '</strong> &nbsp;·&nbsp; ' +
+          'Owner: <strong>' + esc(p.owner||'—') + '</strong></div>';
+        var body = meta + SECTIONS.map(function(sec) {
+          var val = (p.sections && p.sections[sec.id]) ? p.sections[sec.id].trim() : '';
+          return '<div class="field-label">' + esc(sec.title) + '</div><pre>' + esc(val||'—') + '</pre>';
+        }).join('');
+        sections.push({ heading: esc(p.title||k), content: body });
+      });
+
+      var title = scopeId && PROCS[scopeId] ? PROCS[scopeId].title : 'Process Library';
+      return TangramExport.buildDocumentHTML({
+        title:   title,
+        subtitle: scopeId ? '' : 'Compiled controlled procedures for ' + (TangramExport.getCompanyName() || 'this organization') + '.',
+        meta: scopeId ? [
+          { label: 'Doc #',   value: PROCS[scopeId].docNumber },
+          { label: 'Status',  value: statusLabel(PROCS[scopeId].status) },
+          { label: 'Owner',   value: PROCS[scopeId].owner },
+          { label: 'Revised', value: fmtDate(PROCS[scopeId].updatedAt || PROCS[scopeId].createdAt) },
+        ] : [
+          { label: 'Procedures', value: String(keys.length) },
+        ],
+        sections: sections,
+      });
+    }
+
+    function plExportPDF()  { TangramExport.exportAsPDF( currentId ? PROCS[currentId].docNumber : 'process-library', buildPLExportHTML(currentId || null)); }
+    function plExportWord() { TangramExport.exportAsWord(currentId ? PROCS[currentId].docNumber : 'process-library', buildPLExportHTML(currentId || null)); }
+
     // ── INIT ──────────────────────────────────────────────────────────────
     load();
     renderList();
+    document.getElementById('plExportBtnMount').innerHTML =
+      TangramExport.exportButtonHTML('btn-outline', 'plExportDD', 'plExportPDF()', 'plExportWord()');
   </script>
 </body>
 </html>
