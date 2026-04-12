@@ -267,6 +267,43 @@
     .btn-ai { display: inline-flex; align-items: center; gap: 0.4rem; background: linear-gradient(135deg, rgba(10,192,233,0.12), rgba(99,102,241,0.12)); color: var(--aqua-dark); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.48rem 1rem; border-radius: 7px; border: 1.5px solid rgba(10,192,233,0.3); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
     .btn-ai:hover { border-color: rgba(10,192,233,0.5); background: linear-gradient(135deg, rgba(10,192,233,0.18), rgba(99,102,241,0.18)); }
     .btn-ai svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    /* ── PER-FIELD GENERATE BUTTON ── */
+    .btn-generate { display: inline-flex; align-items: center; gap: 0.3rem; background: transparent; color: var(--aqua-dark); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.65rem; padding: 0.22rem 0.6rem; border-radius: 5px; border: 1.5px solid rgba(10,192,233,0.28); cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em; }
+    .btn-generate:hover { border-color: var(--aqua); background: rgba(10,192,233,0.07); }
+    .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-generate svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .section-gen-row { display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; margin-bottom: 0.45rem; }
+    .ctx-badge { font-size: 0.62rem; color: rgba(11,39,64,0.38); font-weight: 500; }
+    .ctx-badge a { color: rgba(10,192,233,0.7); cursor: pointer; text-decoration: none; border-bottom: 1px solid rgba(10,192,233,0.2); transition: color 0.15s; }
+    .ctx-badge a:hover { color: var(--aqua-dark); }
+    /* ── CONTEXT INTERVIEW MODAL ── */
+    .ctx-overlay { position: fixed; inset: 0; background: rgba(2,25,47,0.55); z-index: 3000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px); opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .ctx-overlay.open { opacity: 1; pointer-events: auto; }
+    .ctx-card { background: white; border-radius: 16px; box-shadow: 0 24px 80px rgba(2,25,47,0.22); width: 520px; max-width: calc(100vw - 2rem); max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+    .ctx-card-head { padding: 1.25rem 1.5rem 1rem; border-bottom: 1px solid rgba(11,39,64,0.08); }
+    .ctx-card-icon-row { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.6rem; }
+    .ctx-card-icon { width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(135deg, rgba(10,192,233,0.12), rgba(99,102,241,0.12)); border: 1px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; }
+    .ctx-card-icon svg { width: 15px; height: 15px; stroke: var(--aqua-dark); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .ctx-card-tag { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aqua-dark); background: rgba(10,192,233,0.08); border: 1px solid rgba(10,192,233,0.18); border-radius: 20px; padding: 0.18rem 0.55rem; }
+    .ctx-card-title { font-size: 1rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 0.25rem; }
+    .ctx-card-sub { font-size: 0.78rem; color: rgba(11,39,64,0.45); line-height: 1.5; }
+    .ctx-card-body { padding: 1.25rem 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+    .ctx-q { display: flex; flex-direction: column; gap: 0.35rem; }
+    .ctx-q-label { font-size: 0.72rem; font-weight: 700; color: var(--primary); letter-spacing: 0.01em; }
+    .ctx-q-label span { font-weight: 400; color: rgba(11,39,64,0.38); margin-left: 0.3rem; }
+    .ctx-q-input { font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; padding: 0.55rem 0.75rem; outline: none; transition: border-color 0.15s; resize: none; line-height: 1.55; }
+    .ctx-q-input:focus { border-color: rgba(10,192,233,0.5); }
+    .ctx-q-hint { font-size: 0.68rem; color: rgba(11,39,64,0.38); line-height: 1.5; }
+    .ctx-card-foot { padding: 1rem 1.5rem; border-top: 1px solid rgba(11,39,64,0.08); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-shrink: 0; }
+    .ctx-btn-generate { display: inline-flex; align-items: center; gap: 0.45rem; background: var(--primary); color: white; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.82rem; padding: 0.6rem 1.25rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.15s; }
+    .ctx-btn-generate:hover { background: var(--aqua-dark); }
+    .ctx-btn-generate svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .ctx-btn-skip { font-size: 0.76rem; font-weight: 600; color: rgba(11,39,64,0.38); background: none; border: none; cursor: pointer; padding: 0.5rem; transition: color 0.15s; }
+    .ctx-btn-skip:hover { color: rgba(11,39,64,0.6); }
+    .ctx-close { width: 28px; height: 28px; border-radius: 7px; background: rgba(11,39,64,0.05); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: rgba(11,39,64,0.4); transition: background 0.15s, color 0.15s; margin-left: auto; }
+    .ctx-close:hover { background: rgba(11,39,64,0.1); color: var(--primary); }
+    .ctx-close svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
   </style>
 </head>
 <body>
@@ -331,6 +368,44 @@
             </button>
           </div>
           <div class="ai-panel-body" id="aiPanelBody"></div>
+        </div>
+      </div>
+
+      <!-- CONTEXT INTERVIEW MODAL -->
+      <div class="ctx-overlay" id="ctxOverlay">
+        <div class="ctx-card">
+          <div class="ctx-card-head">
+            <div class="ctx-card-icon-row">
+              <div class="ctx-card-icon">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+              </div>
+              <span class="ctx-card-tag">AI Context</span>
+              <button class="ctx-close" onclick="closeCtxModal()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+            <div class="ctx-card-title">A few quick questions first</div>
+            <div class="ctx-card-sub">Your answers help generate content that's specific to this procedure — not just a generic template.</div>
+          </div>
+          <div class="ctx-card-body">
+            <div class="ctx-q">
+              <div class="ctx-q-label">What is the specific purpose of this procedure? <span>(required)</span></div>
+              <textarea class="ctx-q-input" id="ctxQ1" rows="2" placeholder="e.g., Establishes the process for identifying, documenting, and dispositioning nonconforming products during manufacturing."></textarea>
+            </div>
+            <div class="ctx-q">
+              <div class="ctx-q-label">What are the 2–3 most critical activities this procedure must cover? <span>(optional)</span></div>
+              <textarea class="ctx-q-input" id="ctxQ2" rows="2" placeholder="e.g., Detection and quarantine; root cause determination; disposition decision (use-as-is, rework, scrap); re-inspection after rework."></textarea>
+            </div>
+            <div class="ctx-q">
+              <div class="ctx-q-label">Any specific regulatory clauses or organizational constraints to incorporate? <span>(optional)</span></div>
+              <textarea class="ctx-q-input" id="ctxQ3" rows="2" placeholder="e.g., Must explicitly address 21 CFR 820.90; our quality manager doubles as regulatory lead; no dedicated QC inspector on the floor."></textarea>
+            </div>
+          </div>
+          <div class="ctx-card-foot">
+            <button class="ctx-btn-skip" onclick="skipCtxAndGenerate()">Skip — use defaults</button>
+            <button class="ctx-btn-generate" id="ctxGenerateBtn" onclick="submitCtxAndGenerate()">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+              Generate
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -592,9 +667,17 @@
       '</div>';
 
       // Sections
+      const hasCtx = !!(p.aiContext && p.aiContext.q1);
+      const ctxBadge = !locked ? '<span class="ctx-badge">' + (hasCtx ? 'Context set · ' : '') + '<a onclick="openCtxModal(null,true)">update context</a></span>' : '';
       const sectionsHTML = '<div class="sections-wrap">' +
         SECTIONS.map(function(sec) {
           const content = (p.sections||{})[sec.id] || '';
+          const genBtn = !locked
+            ? '<button class="btn-generate" id="genbtn-' + sec.id + '" onclick="triggerGenSection(\'' + sec.id + '\')">' +
+                '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>' +
+                '✦ Generate' +
+              '</button>'
+            : '';
           return '<div class="section-row">' +
             '<div class="section-header-row">' +
               '<div class="section-number">' + sec.id.charAt(0).toUpperCase() + '</div>' +
@@ -603,6 +686,7 @@
             '</div>' +
             '<div class="section-body">' +
               '<div class="section-hint">' + esc(sec.hint) + '</div>' +
+              (genBtn ? '<div class="section-gen-row">' + ctxBadge + genBtn + '</div>' : '') +
               '<textarea class="section-textarea" id="sec-' + sec.id + '" rows="6"' + (locked ? ' readonly' : '') + '>' + esc(content) + '</textarea>' +
             '</div>' +
           '</div>';
@@ -635,7 +719,6 @@
       } else {
         footerHTML += '<span style="font-size:0.76rem;color:rgba(11,39,64,0.4);">This procedure is superseded and archived.</span>';
       }
-      footerHTML += '<button class="btn-ai" style="margin-left:auto;" onclick="openAiPanel()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>AI Assist</button>';
       footerHTML += '</div>';
 
       return noticeHTML + trackHTML + headerHTML + governsHTML + sectionsHTML + sigHTML + footerHTML;
@@ -714,6 +797,202 @@
       if (!confirm('Mark this procedure as superseded? It will be archived and no longer active.')) return;
       const p = PROCS[currentId]; if (!p) return;
       p.status = 'superseded'; save(); renderList(); renderDetail();
+    }
+
+    // ── PER-FIELD AI GENERATION ───────────────────────────────────────────
+    let _pendingGenSection = null; // section id waiting for context
+
+    function triggerGenSection(sectionId) {
+      const p = PROCS[currentId]; if (!p) return;
+      // If we already have context for this procedure, generate immediately
+      if (p.aiContext && p.aiContext.q1) {
+        generateProcSection(sectionId);
+      } else {
+        openCtxModal(sectionId, false);
+      }
+    }
+
+    function openCtxModal(sectionId, updateOnly) {
+      _pendingGenSection = updateOnly ? null : sectionId;
+      const p = PROCS[currentId];
+      // Pre-fill from existing context
+      const ctx = (p && p.aiContext) || {};
+      document.getElementById('ctxQ1').value = ctx.q1 || (p && p.title && p.title !== 'New Procedure' ? 'Governs ' + p.title.toLowerCase() + '.' : '');
+      document.getElementById('ctxQ2').value = ctx.q2 || '';
+      document.getElementById('ctxQ3').value = ctx.q3 || '';
+      // Update button label
+      const btn = document.getElementById('ctxGenerateBtn');
+      if (updateOnly) {
+        btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v14a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg> Save Context';
+      } else {
+        const secLabel = sectionId ? (SECTIONS.find(function(s){ return s.id === sectionId; }) || {}).title || sectionId : '';
+        const shortLabel = secLabel.replace(/^\d+\.\s*/, '');
+        btn.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg> Generate ' + (shortLabel || '');
+      }
+      document.getElementById('ctxOverlay').classList.add('open');
+      setTimeout(function() { document.getElementById('ctxQ1').focus(); }, 80);
+    }
+
+    function closeCtxModal() {
+      document.getElementById('ctxOverlay').classList.remove('open');
+    }
+
+    function submitCtxAndGenerate() {
+      const q1 = document.getElementById('ctxQ1').value.trim();
+      if (!q1) { document.getElementById('ctxQ1').focus(); document.getElementById('ctxQ1').style.borderColor='rgba(239,68,68,0.6)'; return; }
+      document.getElementById('ctxQ1').style.borderColor='';
+      const p = PROCS[currentId]; if (!p) return;
+      p.aiContext = {
+        q1: q1,
+        q2: document.getElementById('ctxQ2').value.trim(),
+        q3: document.getElementById('ctxQ3').value.trim(),
+      };
+      save();
+      // Refresh the ctx badge without full re-render
+      document.querySelectorAll('.ctx-badge').forEach(function(el) {
+        el.innerHTML = 'Context set · <a onclick="openCtxModal(null,true)">update context</a>';
+      });
+      closeCtxModal();
+      if (_pendingGenSection) {
+        generateProcSection(_pendingGenSection);
+        _pendingGenSection = null;
+      }
+    }
+
+    function skipCtxAndGenerate() {
+      closeCtxModal();
+      if (_pendingGenSection) {
+        generateProcSection(_pendingGenSection);
+        _pendingGenSection = null;
+      }
+    }
+
+    async function generateProcSection(sectionId) {
+      const p = PROCS[currentId]; if (!p) return;
+      const btn = document.getElementById('genbtn-' + sectionId);
+      const textarea = document.getElementById('sec-' + sectionId);
+      if (!textarea) return;
+
+      const origLabel = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<svg viewBox="0 0 24 24" style="animation:spin 1s linear infinite"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Generating…';
+      }
+
+      try {
+        const resp = await fetch('/api/anthropic', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-6',
+            max_tokens: 800,
+            messages: [{ role: 'user', content: buildProcSectionPrompt(sectionId, p) }],
+          }),
+        });
+        if (!resp.ok) {
+          const err = await resp.json().catch(function(){ return {}; });
+          throw new Error((err.error && err.error.message) || 'API error ' + resp.status);
+        }
+        const data = await resp.json();
+        const text = (data.content && data.content[0] && data.content[0].text) || '';
+        textarea.value = text.trim();
+        textarea.dispatchEvent(new Event('input'));
+        markDirty();
+        // Auto-expand section if collapsed
+        const row = textarea.closest('.section-row');
+        if (row && !row.classList.contains('open')) row.classList.add('open');
+      } catch(e) {
+        alert('Generation failed: ' + e.message);
+      } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = origLabel; }
+      }
+    }
+
+    function buildProcSectionPrompt(sectionId, p) {
+      // Pull company/device context from qms_context
+      let qmsCtx = {};
+      try { qmsCtx = JSON.parse(localStorage.getItem('qms_context') || '{}'); } catch(e) {}
+      const co    = qmsCtx.companyName || 'the company';
+      const dev   = qmsCtx.deviceName || 'the medical device';
+      const cls   = { i:'Class I', ii:'Class II', iii:'Class III', ivd:'IVD' }[qmsCtx.deviceClass] || 'Class II';
+      const mkt   = (qmsCtx.regulatoryMarkets||['us']).map(function(m){ return ({us:'US FDA',eu:'EU MDR',canada:'Health Canada',apac:'APAC'})[m]||m; }).join(', ');
+      const reg   = qmsCtx.regulatoryBasis || 'ISO 13485:2016; 21 CFR Part 820';
+      const size  = { startup:'a startup (<20 people)', small:'a small company (20–100 people)', medium:'a mid-size company (100–500 people)', large:'a large company (500+ people)' }[qmsCtx.companySize] || 'a company';
+
+      // Procedure-specific context from the interview
+      const aiCtx = p.aiContext || {};
+      const procPurpose  = aiCtx.q1 || p.title || 'this controlled procedure';
+      const critSteps    = aiCtx.q2 || '';
+      const constraints  = aiCtx.q3 || '';
+
+      // Pull already-written sections for cross-reference context
+      const sections = p.sections || {};
+      const existingContext = SECTIONS
+        .filter(function(s){ return s.id !== sectionId && (sections[s.id]||'').trim().length > 30; })
+        .map(function(s){ return s.title + ':\n' + (sections[s.id]||'').slice(0, 200).trim() + (sections[s.id].length > 200 ? '…' : ''); })
+        .join('\n\n');
+
+      const sectionDef = SECTIONS.find(function(s){ return s.id === sectionId; }) || { title: sectionId, hint: '' };
+      const shortTitle = sectionDef.title.replace(/^\d+\.\s*/, '');
+
+      const companyBlock = [
+        'Company: ' + co + ' (' + size + ')',
+        'Device: ' + dev + ' (' + cls + ')',
+        'Markets: ' + mkt,
+        'Regulatory basis: ' + reg,
+      ].join('\n');
+
+      const procedureBlock = [
+        'Procedure title: ' + (p.title || 'New Procedure'),
+        'Document #: ' + (p.docNumber || currentId),
+        'Type: ' + (p.type || 'procedure'),
+        'Owner role: ' + (p.owner || 'not yet defined'),
+        'Applicable standards: ' + (p.applicableStandards || 'per regulatory basis above'),
+        'Specific purpose: ' + procPurpose,
+        critSteps  ? 'Critical activities to cover: ' + critSteps  : null,
+        constraints ? 'Constraints/requirements: ' + constraints : null,
+      ].filter(Boolean).join('\n');
+
+      const SECTION_PROMPTS = {
+        purpose:
+          'Write the "1. Purpose" section of a controlled medical device procedure.\n\n' +
+          'Company context:\n' + companyBlock + '\n\nProcedure context:\n' + procedureBlock + '\n\n' +
+          'Requirements:\n- 1–2 concise paragraphs\n- State WHY this procedure exists and what regulatory obligation or quality objective it satisfies\n- Reference the specific regulation/standard clause(s) that mandate this control\n- Name the device and company where appropriate\n- Do NOT include a heading — output the section text only',
+
+        scope:
+          'Write the "2. Scope" section of a controlled medical device procedure.\n\n' +
+          'Company context:\n' + companyBlock + '\n\nProcedure context:\n' + procedureBlock + '\n\n' +
+          'Requirements:\n- 2–3 sentences\n- State explicitly what products, processes, departments, or lifecycle phases this procedure applies to\n- State at least one explicit exclusion if appropriate\n- Be precise — vague scope statements are a common audit finding\n- Do NOT include a heading — output the section text only',
+
+        definitions:
+          'Write the "3. Definitions & Abbreviations" section of a controlled medical device procedure.\n\n' +
+          'Company context:\n' + companyBlock + '\n\nProcedure context:\n' + procedureBlock + '\n\n' +
+          'Requirements:\n- Bullet list or short paragraphs\n- Define any regulatory terms with their standard definitions (e.g., from ISO 14971, ISO 13485, 21 CFR)\n- Define any acronyms used in this procedure type\n- Include 4–8 relevant definitions — not too few, not exhaustive\n- Do NOT include a heading — output the definitions only',
+
+        responsibilities:
+          'Write the "4. Roles & Responsibilities" section of a controlled medical device procedure.\n\n' +
+          'Company context:\n' + companyBlock + '\n\nProcedure context:\n' + procedureBlock + '\n\n' +
+          'Requirements:\n- List each relevant role and their specific responsibilities for THIS procedure\n- Use role names, not individual names\n- Include at minimum: the procedure owner, Quality function, and any executing roles\n- Be specific about who performs, reviews, approves, and is notified\n- Appropriate for a ' + size + ' — avoid over-specifying roles for a small team\n- Do NOT include a heading — output the section text only',
+
+        procedure:
+          'Write the "5. Procedure" section — the step-by-step instructions — of a controlled medical device procedure.\n\n' +
+          'Company context:\n' + companyBlock + '\n\nProcedure context:\n' + procedureBlock + '\n\n' +
+          (existingContext ? 'Already-written sections for context:\n' + existingContext + '\n\n' : '') +
+          'Requirements:\n- Numbered steps, written as clear instructions (imperative mood: "Submit", "Review", "Verify")\n- Include decision points and branching where relevant\n- Reference forms, tools, or related procedures by their document type (e.g., "per the Document Control Procedure")\n- 8–15 steps appropriate for this procedure type\n- Do NOT include a heading — output the numbered steps only',
+
+        records:
+          'Write the "6. Records Generated" section of a controlled medical device procedure.\n\n' +
+          'Company context:\n' + companyBlock + '\n\nProcedure context:\n' + procedureBlock + '\n\n' +
+          'Requirements:\n- Bulleted list\n- List each record produced as evidence of executing this procedure\n- For each record: name, minimum content required, storage location (general), and retention period\n- Retention periods should align with FDA/ISO requirements (typically ≥ 2 years post-device lifecycle)\n- Do NOT include a heading — output the records list only',
+
+        references:
+          'Write the "7. References" section of a controlled medical device procedure.\n\n' +
+          'Company context:\n' + companyBlock + '\n\nProcedure context:\n' + procedureBlock + '\n\n' +
+          'Requirements:\n- Bulleted list\n- Include all applicable external standards and regulations with specific section numbers (e.g., "ISO 13485:2016, §4.2.4")\n- Include related internal procedures by type (e.g., "Document Control Procedure", "Change Control Procedure")\n- Do NOT include a heading — output the references list only',
+      };
+
+      return SECTION_PROMPTS[sectionId] ||
+        ('Write the "' + shortTitle + '" section of a controlled procedure titled "' + (p.title||'New Procedure') + '" for a medical device company (' + co + ', ' + dev + '). Be specific, professional, and audit-ready. Output section text only, no heading.');
     }
 
     // ── AI ASSIST ─────────────────────────────────────────────────────────
