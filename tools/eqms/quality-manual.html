@@ -602,15 +602,6 @@
     // ── AI GENERATION ─────────────────────────────────────────────────────
     async function generateField(fieldId, section) {
       const ctx = getCtx();
-      const apiKey = ctx.anthropicApiKey;
-      if (!apiKey) {
-        const entered = prompt('Enter your Anthropic API key to enable AI generation:\n(It will be saved to your QMS context for future use)');
-        if (!entered || !entered.trim()) return;
-        ctx.anthropicApiKey = entered.trim();
-        try { localStorage.setItem(LS_CTX, JSON.stringify(ctx)); } catch(e) {}
-      }
-
-      const key = ctx.anthropicApiKey;
       const btn = document.getElementById('genbtn-' + fieldId);
       const textarea = document.getElementById(fieldId);
       if (!textarea) return;
@@ -621,14 +612,9 @@
       const promptText = buildPrompt(section, ctx);
 
       try {
-        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        const resp = await fetch('/api/anthropic', {
           method: 'POST',
-          headers: {
-            'x-api-key': key,
-            'anthropic-version': '2023-06-01',
-            'content-type': 'application/json',
-            'anthropic-dangerous-direct-browser-access': 'true',
-          },
+          headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             model: 'claude-sonnet-4-6',
             max_tokens: 600,
@@ -646,7 +632,7 @@
         textarea.value = text.trim();
         textarea.dispatchEvent(new Event('input'));
       } catch(e) {
-        alert('Generation failed: ' + e.message + '\n\nCheck your API key in QMS Setup.');
+        alert('Generation failed: ' + e.message);
       } finally {
         if (btn) {
           btn.disabled = false;

@@ -703,9 +703,8 @@ function saveApiKey() {
 }
 
 function checkApiKeyAndShowNotice() {
-  if (!state.apiKey) {
-    document.getElementById('apiKeyNotice').style.display = 'flex';
-  }
+  // API key is now handled server-side via /api/anthropic proxy — no client key needed.
+  document.getElementById('apiKeyNotice').style.display = 'none';
 }
 
 function populateExistingProjects() {
@@ -940,8 +939,6 @@ async function readDOCX(file) {
 // ─── CLAUDE API ──────────────────────────────────────────────────────────────
 
 async function callClaudeAPI(documentText) {
-  const apiKey = state.apiKey;
-  if (!apiKey) throw new Error('No Claude API key found. Please add your API key at the top of the page or in Settings.');
 
   // Get device profile context
   let deviceContext = '';
@@ -993,13 +990,10 @@ Extract EVERY distinct requirement, statement, or documentable item. Do not skip
 
   const userPrompt = `Document content to analyze:\n\n${documentText.slice(0, 32000)}`;
 
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+  const resp = await fetch('/api/anthropic', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
