@@ -75,51 +75,77 @@
     .btn-outline:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
     .btn-outline svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-    /* ─── TWO COLUMN ─── */
-    .workspace { flex: 1; display: flex; overflow: hidden; min-height: 0; }
+    /* ─── KANBAN BOARD ─── */
+    .board-wrap { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+    .board { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); overflow: hidden; }
+    .kanban-col { display: flex; flex-direction: column; border-right: 1px solid rgba(11,39,64,0.07); overflow: hidden; }
+    .kanban-col:last-child { border-right: none; }
+    .kanban-col-head { padding: 0.9rem 1.1rem 0.8rem; background: white; border-bottom: 1px solid rgba(11,39,64,0.07); display: flex; align-items: center; gap: 0.55rem; flex-shrink: 0; }
+    .kanban-col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .col-draft   .kanban-col-dot { background: rgba(10,192,233,0.55); }
+    .col-review  .kanban-col-dot { background: #f59e0b; }
+    .col-approved .kanban-col-dot { background: #10b981; }
+    .kanban-col-title { font-size: 0.8rem; font-weight: 700; color: var(--primary); flex: 1; letter-spacing: -0.01em; }
+    .kanban-col-count { font-size: 0.64rem; font-weight: 700; background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.4); padding: 0.1rem 0.5rem; border-radius: 20px; min-width: 1.4rem; text-align: center; }
+    .kanban-add-btn { width: 24px; height: 24px; border-radius: 6px; background: rgba(10,192,233,0.1); border: 1.5px solid rgba(10,192,233,0.25); color: var(--aqua-dark); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s; flex-shrink: 0; }
+    .kanban-add-btn:hover { background: rgba(10,192,233,0.2); border-color: var(--aqua); }
+    .kanban-add-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .kanban-col-body { flex: 1; overflow-y: auto; padding: 0.65rem; }
+    .kanban-col-body::-webkit-scrollbar { width: 3px; }
+    .kanban-col-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+    .col-draft   .kanban-col-body { background: rgba(10,192,233,0.018); }
+    .col-review  .kanban-col-body { background: rgba(245,158,11,0.018); }
+    .col-approved .kanban-col-body { background: rgba(16,185,129,0.018); }
 
-    /* ─── LIST COLUMN ─── */
-    .list-col { width: 320px; flex-shrink: 0; border-right: 1px solid rgba(11,39,64,0.08); background: white; display: flex; flex-direction: column; overflow: hidden; }
-    .filter-bar { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(11,39,64,0.07); display: flex; flex-wrap: wrap; gap: 0.35rem; }
-    .filter-btn { font-family: 'Inter', sans-serif; font-size: 0.67rem; font-weight: 600; padding: 0.25rem 0.65rem; border-radius: 20px; border: 1.5px solid rgba(11,39,64,0.12); background: transparent; color: rgba(11,39,64,0.45); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-    .filter-btn:hover { border-color: var(--aqua); color: var(--aqua-dark); }
-    .filter-btn.active { background: rgba(10,192,233,0.1); border-color: rgba(10,192,233,0.35); color: var(--aqua-dark); }
-    .proc-list { flex: 1; overflow-y: auto; padding: 0.5rem; }
-    .proc-list::-webkit-scrollbar { width: 4px; }
-    .proc-list::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
-    .proc-card { padding: 0.75rem 0.85rem; border-radius: 9px; border: 1.5px solid rgba(11,39,64,0.08); margin-bottom: 0.4rem; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
-    .proc-card:hover { border-color: rgba(10,192,233,0.3); background: rgba(10,192,233,0.02); }
-    .proc-card.active { border-color: var(--aqua); background: rgba(10,192,233,0.05); }
-    .proc-card-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
-    .proc-id { font-size: 0.65rem; font-weight: 800; color: rgba(11,39,64,0.35); letter-spacing: 0.05em; font-family: monospace; }
+    /* ─── KANBAN CARDS ─── */
     .proc-type-badge { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 3px; }
-    .proc-type-badge.procedure { background: rgba(99,102,241,0.1); color: #4f46e5; }
+    .proc-type-badge.procedure      { background: rgba(99,102,241,0.1);  color: #4f46e5; }
     .proc-type-badge.work-instruction { background: rgba(249,115,22,0.1); color: #ea580c; }
-    .proc-type-badge.policy { background: rgba(16,185,129,0.1); color: #059669; }
-    .proc-type-badge.form { background: rgba(11,39,64,0.08); color: var(--mid-blue); }
-    .proc-status-badge { margin-left: auto; font-size: 0.58rem; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: 20px; }
-    .proc-status-badge.planned    { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); }
-    .proc-status-badge.draft      { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
-    .proc-status-badge.review     { background: rgba(245,158,11,0.12); color: #b45309; }
-    .proc-status-badge.approved   { background: rgba(16,185,129,0.12); color: #059669; }
-    .proc-status-badge.superseded { background: rgba(239,68,68,0.1); color: #dc2626; }
-    .proc-title { font-size: 0.8rem; font-weight: 600; color: var(--primary); line-height: 1.3; }
-    .proc-meta { font-size: 0.68rem; color: rgba(11,39,64,0.4); margin-top: 0.2rem; }
-    .proc-governs { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.4rem; }
-    .governs-pill { font-size: 0.6rem; font-weight: 700; padding: 0.08rem 0.4rem; border-radius: 3px; background: rgba(48,79,107,0.08); color: var(--mid-blue); }
+    .proc-type-badge.policy         { background: rgba(16,185,129,0.1);  color: #059669; }
+    .proc-type-badge.form           { background: rgba(11,39,64,0.08);   color: var(--mid-blue); }
+    .proc-status-badge { font-size: 0.58rem; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: 20px; }
+    .proc-status-badge.planned    { background: rgba(11,39,64,0.07);    color: rgba(11,39,64,0.45); }
+    .proc-status-badge.draft      { background: rgba(10,192,233,0.1);   color: var(--aqua-dark); }
+    .proc-status-badge.review     { background: rgba(245,158,11,0.12);  color: #b45309; }
+    .proc-status-badge.approved   { background: rgba(16,185,129,0.12);  color: #059669; }
+    .proc-status-badge.superseded { background: rgba(239,68,68,0.1);    color: #dc2626; }
+    .kanban-card { background: white; border: 1.5px solid rgba(11,39,64,0.08); border-radius: 10px; padding: 0.85rem 0.95rem; margin-bottom: 0.45rem; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s; }
+    .kanban-card:hover { border-color: rgba(10,192,233,0.35); box-shadow: 0 3px 10px rgba(11,39,64,0.08), 0 1px 3px rgba(11,39,64,0.05); transform: translateY(-1px); }
+    .kanban-card.active { border-color: var(--aqua); box-shadow: 0 0 0 3px rgba(10,192,233,0.12); }
+    .kanban-card-meta { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.45rem; flex-wrap: wrap; }
+    .kanban-card-id { font-size: 0.62rem; font-weight: 800; color: rgba(11,39,64,0.32); letter-spacing: 0.05em; font-family: monospace; }
+    .kanban-card-title { font-size: 0.82rem; font-weight: 700; color: var(--primary); line-height: 1.35; margin-bottom: 0.45rem; }
+    .kanban-card-foot { display: flex; align-items: center; gap: 0.5rem; }
+    .kanban-card-owner { font-size: 0.66rem; color: rgba(11,39,64,0.38); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .kanban-progress { display: flex; align-items: center; gap: 0.38rem; flex-shrink: 0; }
+    .kanban-progress-bar { width: 42px; height: 3px; background: rgba(11,39,64,0.1); border-radius: 2px; overflow: hidden; }
+    .kanban-progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--aqua), #6366f1); transition: width 0.3s; }
+    .kanban-progress-text { font-size: 0.59rem; font-weight: 700; color: rgba(11,39,64,0.32); }
+    .kanban-empty { padding: 2.5rem 1rem; text-align: center; }
+    .kanban-empty-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(11,39,64,0.04); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.65rem; }
+    .kanban-empty-icon svg { width: 18px; height: 18px; stroke: rgba(11,39,64,0.2); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .kanban-empty-text { font-size: 0.73rem; color: rgba(11,39,64,0.3); line-height: 1.55; }
 
-    /* ─── DETAIL COLUMN ─── */
-    .detail-col { flex: 1; overflow-y: auto; background: var(--light-gray); display: flex; flex-direction: column; }
-    .detail-col::-webkit-scrollbar { width: 5px; }
-    .detail-col::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
-    .detail-inner { padding: 1.5rem; max-width: 820px; }
+    /* ─── SLIDE-OUT DRAWER ─── */
+    .drawer-overlay { position: fixed; inset: 0; background: rgba(2,25,47,0.38); z-index: 500; opacity: 0; pointer-events: none; transition: opacity 0.25s; backdrop-filter: blur(1px); }
+    .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+    .drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 740px; max-width: 100vw; background: var(--light-gray); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: -16px 0 48px rgba(2,25,47,0.16), -1px 0 0 rgba(11,39,64,0.08); }
+    .drawer-overlay.open .drawer { transform: translateX(0); }
+    .drawer-topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 52px; padding: 0 1.25rem; display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+    .drawer-back { display: inline-flex; align-items: center; gap: 0.4rem; background: none; border: none; cursor: pointer; color: rgba(11,39,64,0.45); font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600; padding: 0.28rem 0.55rem; border-radius: 6px; transition: background 0.12s, color 0.12s; flex-shrink: 0; }
+    .drawer-back:hover { background: rgba(11,39,64,0.05); color: var(--primary); }
+    .drawer-back svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .drawer-breadcrumb { font-size: 0.75rem; color: rgba(11,39,64,0.32); }
+    .drawer-proc-title { font-size: 0.82rem; font-weight: 700; color: var(--primary); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+    .drawer-body { flex: 1; overflow-y: auto; position: relative; }
+    .drawer-body::-webkit-scrollbar { width: 5px; }
+    .drawer-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+    .detail-inner { padding: 1.5rem; max-width: 680px; }
 
-    .empty-detail { flex: 1; display: flex; align-items: center; justify-content: center; }
-    .empty-detail-inner { text-align: center; padding: 3rem; }
-    .empty-detail-icon { width: 52px; height: 52px; border-radius: 14px; background: rgba(11,39,64,0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
-    .empty-detail-icon svg { width: 26px; height: 26px; stroke: rgba(11,39,64,0.2); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-    .empty-detail-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.35rem; }
-    .empty-detail-sub { font-size: 0.77rem; color: rgba(11,39,64,0.4); }
+    /* ─── EMPTY LIST (kept for compat) ─── */
+    .empty-list { padding: 2rem 1rem; text-align: center; }
+    .empty-list-title { font-size: 0.8rem; font-weight: 600; color: rgba(11,39,64,0.4); margin-bottom: 0.3rem; }
+    .empty-list-sub { font-size: 0.7rem; color: rgba(11,39,64,0.3); }
 
     /* ─── DETAIL HEADER ─── */
     .detail-header { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; padding: 1.25rem 1.35rem; margin-bottom: 1rem; }
@@ -219,8 +245,8 @@
     .empty-list-sub { font-size: 0.7rem; color: rgba(11,39,64,0.3); }
 
     /* ─── AI ASSIST PANEL ─── */
-    .workspace { position: relative; }
-    .ai-panel-overlay { position: absolute; top: 0; right: 0; bottom: 0; width: 380px; pointer-events: none; z-index: 200; display: flex; flex-direction: column; }
+    .drawer-body { position: relative; }
+    .ai-panel-overlay { position: absolute; top: 0; right: 0; bottom: 0; width: 360px; pointer-events: none; z-index: 200; display: flex; flex-direction: column; }
     .ai-panel-overlay.open { pointer-events: auto; }
     .ai-panel { background: var(--primary); color: white; height: 100%; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: -8px 0 32px rgba(2,25,47,0.25); }
     .ai-panel-overlay.open .ai-panel { transform: translateX(0); }
@@ -326,48 +352,74 @@
       </div>
     </div>
 
-    <div class="workspace">
-      <!-- LIST -->
-      <div class="list-col">
-        <div class="filter-bar">
-          <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
-          <button class="filter-btn" data-filter="planned" onclick="setFilter('planned',this)">Planned</button>
-          <button class="filter-btn" data-filter="draft" onclick="setFilter('draft',this)">Draft</button>
-          <button class="filter-btn" data-filter="approved" onclick="setFilter('approved',this)">Approved</button>
-          <button class="filter-btn" data-filter="superseded" onclick="setFilter('superseded',this)">Superseded</button>
-        </div>
-        <div class="proc-list" id="procList"></div>
-      </div>
-
-      <!-- DETAIL -->
-      <div class="detail-col" id="detailCol">
-        <div class="empty-detail">
-          <div class="empty-detail-inner">
-            <div class="empty-detail-icon">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            </div>
-            <div class="empty-detail-title">Select a procedure</div>
-            <div class="empty-detail-sub">Choose from the list or create a new one</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- AI ASSIST PANEL -->
-      <div class="ai-panel-overlay" id="aiPanelOverlay">
-        <div class="ai-panel">
-          <div class="ai-panel-head">
-            <div class="ai-panel-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 010 2h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 010-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2z"/></svg>
-            </div>
-            <div class="ai-panel-head-text">
-              <div class="ai-panel-title">AI Assist</div>
-              <div class="ai-panel-subtitle" id="aiPanelSubtitle">Process Library</div>
-            </div>
-            <button class="ai-panel-close" onclick="closeAiPanel()">
-              <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <div class="board-wrap">
+      <!-- KANBAN BOARD -->
+      <div class="board" id="board">
+        <div class="kanban-col col-draft" id="col-draft">
+          <div class="kanban-col-head">
+            <div class="kanban-col-dot"></div>
+            <div class="kanban-col-title">Draft</div>
+            <span class="kanban-col-count" id="cnt-draft">0</span>
+            <button class="kanban-add-btn" onclick="openNewProc()" title="New procedure">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             </button>
           </div>
-          <div class="ai-panel-body" id="aiPanelBody"></div>
+          <div class="kanban-col-body" id="cards-draft"></div>
+        </div>
+        <div class="kanban-col col-review" id="col-review">
+          <div class="kanban-col-head">
+            <div class="kanban-col-dot"></div>
+            <div class="kanban-col-title">In Review</div>
+            <span class="kanban-col-count" id="cnt-review">0</span>
+          </div>
+          <div class="kanban-col-body" id="cards-review"></div>
+        </div>
+        <div class="kanban-col col-approved" id="col-approved">
+          <div class="kanban-col-head">
+            <div class="kanban-col-dot"></div>
+            <div class="kanban-col-title">Approved</div>
+            <span class="kanban-col-count" id="cnt-approved">0</span>
+          </div>
+          <div class="kanban-col-body" id="cards-approved"></div>
+        </div>
+      </div>
+
+      <!-- SLIDE-OUT DRAWER -->
+      <div class="drawer-overlay" id="drawerOverlay" onclick="handleDrawerOverlayClick(event)">
+        <div class="drawer" id="drawer">
+          <div class="drawer-topbar">
+            <button class="drawer-back" onclick="closeDrawer()">
+              <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              Board
+            </button>
+            <span class="drawer-breadcrumb">/</span>
+            <span class="drawer-proc-title" id="drawerProcTitle">Procedure</span>
+            <button class="btn-ai" style="flex-shrink:0;" onclick="openAiPanel()">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+              AI Assist
+            </button>
+          </div>
+          <div class="drawer-body">
+            <div id="detailCol"></div>
+            <!-- AI ASSIST PANEL -->
+            <div class="ai-panel-overlay" id="aiPanelOverlay">
+              <div class="ai-panel">
+                <div class="ai-panel-head">
+                  <div class="ai-panel-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 010 2h-1v1a2 2 0 01-2 2H5a2 2 0 01-2-2v-1H2a1 1 0 010-2h1a7 7 0 017-7h1V5.73A2 2 0 0110 4a2 2 0 012-2z"/></svg>
+                  </div>
+                  <div class="ai-panel-head-text">
+                    <div class="ai-panel-title">AI Assist</div>
+                    <div class="ai-panel-subtitle" id="aiPanelSubtitle">Process Library</div>
+                  </div>
+                  <button class="ai-panel-close" onclick="closeAiPanel()">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+                <div class="ai-panel-body" id="aiPanelBody"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -448,7 +500,6 @@
     let PROCS = {};
     let currentId = null;
     let isDirty = false;
-    let activeFilter = 'all';
 
     const DEFAULTS = {
       type: 'procedure', status: 'planned', title: '', revision: 'A',
@@ -516,49 +567,77 @@
     }
 
     // ── FILTER ────────────────────────────────────────────────────────────
-    function setFilter(f, btn) {
-      activeFilter = f;
-      document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.toggle('active', b === btn); });
-      renderList();
+    // ── KANBAN BOARD ──────────────────────────────────────────────────────
+    function renderBoard() {
+      const COLS = {
+        draft:    { statuses: ['planned','draft'],  emptyMsg: 'No draft procedures yet.<br>Click + to create one.' },
+        review:   { statuses: ['review'],           emptyMsg: 'No procedures in review.' },
+        approved: { statuses: ['approved'],         emptyMsg: 'No approved procedures yet.' },
+      };
+      Object.keys(COLS).forEach(function(col) {
+        const def = COLS[col];
+        const keys = Object.keys(PROCS)
+          .filter(function(k){ return def.statuses.indexOf(PROCS[k].status) !== -1; })
+          .sort(function(a,b){ return a.localeCompare(b); });
+        document.getElementById('cnt-' + col).textContent = keys.length;
+        document.getElementById('cards-' + col).innerHTML = keys.length
+          ? keys.map(buildKanbanCard).join('')
+          : '<div class="kanban-empty">' +
+              '<div class="kanban-empty-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>' +
+              '<div class="kanban-empty-text">' + def.emptyMsg + '</div>' +
+            '</div>';
+      });
     }
 
-    // ── LIST ──────────────────────────────────────────────────────────────
-    function renderList() {
-      const container = document.getElementById('procList');
-      const keys = Object.keys(PROCS).filter(function(k){
-        return activeFilter === 'all' || PROCS[k].status === activeFilter;
-      });
-      if (!keys.length) {
-        container.innerHTML = '<div class="empty-list"><div class="empty-list-title">No procedures match this filter</div><div class="empty-list-sub">Try a different status or create a new procedure</div></div>';
-        return;
-      }
-      keys.sort(function(a,b){ return a.localeCompare(b); });
-      container.innerHTML = keys.map(function(k) {
-        const p = PROCS[k];
-        const statusCls = p.status || 'planned';
-        const govPills = (p.governedRecordTypes||[]).map(function(rt){
-          const label = (RECORD_TYPES.find(function(r){ return r.key===rt; })||{}).label || rt;
-          return '<span class="governs-pill">' + esc(label) + '</span>';
-        }).join('');
-        return '<div class="proc-card' + (k === currentId ? ' active' : '') + '" onclick="openProc(\'' + esc(k) + '\')">' +
-          '<div class="proc-card-head">' +
-            '<span class="proc-id">' + esc(k) + '</span>' +
-            '<span class="proc-type-badge ' + esc(p.type||'procedure') + '">' + esc(TYPE_LABELS[p.type]||'Procedure') + '</span>' +
-            '<span class="proc-status-badge ' + esc(statusCls) + '">' + esc(STATUS_LABELS[statusCls]||statusCls) + '</span>' +
+    function buildKanbanCard(k) {
+      const p = PROCS[k];
+      const sections = p.sections || {};
+      const filled = SECTIONS.filter(function(s){ return (sections[s.id]||'').trim().length > 0; }).length;
+      const pct = Math.round((filled / SECTIONS.length) * 100);
+      const subBadge = (p.status === 'planned')
+        ? '<span class="proc-status-badge planned">Planned</span>'
+        : p.status === 'draft' ? '<span class="proc-status-badge draft">Draft</span>' : '';
+      return '<div class="kanban-card' + (k === currentId ? ' active' : '') + '" onclick="openProc(\'' + esc(k) + '\')">' +
+        '<div class="kanban-card-meta">' +
+          '<span class="kanban-card-id">' + esc(k) + '</span>' +
+          '<span class="proc-type-badge ' + esc(p.type||'procedure') + '">' + esc(TYPE_LABELS[p.type]||'Procedure') + '</span>' +
+          subBadge +
+        '</div>' +
+        '<div class="kanban-card-title">' + esc(p.title||'Untitled Procedure') + '</div>' +
+        '<div class="kanban-card-foot">' +
+          '<span class="kanban-card-owner">' + (p.owner ? '<svg style="width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-right:2px;vertical-align:middle;" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' + esc(p.owner) : 'No owner') + '</span>' +
+          '<div class="kanban-progress">' +
+            '<div class="kanban-progress-bar"><div class="kanban-progress-fill" style="width:' + pct + '%"></div></div>' +
+            '<span class="kanban-progress-text">' + filled + '/' + SECTIONS.length + '</span>' +
           '</div>' +
-          '<div class="proc-title">' + esc(p.title||'Untitled') + '</div>' +
-          '<div class="proc-meta">' + esc(p.owner||'No owner assigned') + (p.revision ? ' · Rev. ' + esc(p.revision) : '') + '</div>' +
-          (govPills ? '<div class="proc-governs">' + govPills + '</div>' : '') +
-        '</div>';
-      }).join('');
+        '</div>' +
+      '</div>';
+    }
+
+    // ── DRAWER ────────────────────────────────────────────────────────────
+    function openDrawer() {
+      document.getElementById('drawerOverlay').classList.add('open');
+    }
+
+    function closeDrawer() {
+      if (isDirty) { if (!confirm('You have unsaved changes. Discard them?')) return; isDirty = false; }
+      document.getElementById('drawerOverlay').classList.remove('open');
+      closeAiPanel();
+      currentId = null;
+      renderBoard();
+    }
+
+    function handleDrawerOverlayClick(e) {
+      if (e.target === document.getElementById('drawerOverlay')) closeDrawer();
     }
 
     // ── OPEN PROC ─────────────────────────────────────────────────────────
     function openProc(id) {
-      if (isDirty && currentId) { if (!confirm('You have unsaved changes. Discard them?')) return; }
+      if (isDirty && currentId && currentId !== id) { if (!confirm('You have unsaved changes. Discard them?')) return; }
       currentId = id; isDirty = false;
+      renderBoard();
       renderDetail();
-      renderList();
+      openDrawer();
     }
 
     function openNewProc() {
@@ -566,7 +645,7 @@
       const id = nextId('procedure');
       PROCS[id] = Object.assign({}, DEFAULTS, { type:'procedure', status:'planned', createdAt: new Date().toISOString(), sections: Object.assign({}, DEFAULTS.sections) });
       save(); currentId = id; isDirty = false;
-      renderList(); renderDetail();
+      renderBoard(); renderDetail(); openDrawer();
     }
 
     // ── DETAIL RENDER ─────────────────────────────────────────────────────
@@ -576,6 +655,9 @@
       const locked = p.status === 'approved' || p.status === 'superseded';
       const col = document.getElementById('detailCol');
       col.innerHTML = '<div class="detail-inner" id="detailInner">' + buildDetailHTML(p, locked) + '</div>';
+      // Update drawer title
+      var titleEl = document.getElementById('drawerProcTitle');
+      if (titleEl) titleEl.textContent = p.title || 'New Procedure';
       // Wire up section toggles
       col.querySelectorAll('.section-header-row').forEach(function(hdr) {
         hdr.addEventListener('click', function() { hdr.closest('.section-row').classList.toggle('open'); });
@@ -753,7 +835,7 @@
     // ── SAVE ─────────────────────────────────────────────────────────────
     function saveProc() {
       collectFields(); save(); isDirty = false;
-      renderList();
+      renderBoard();
       const flash = document.getElementById('saveFlash');
       if (flash) { flash.classList.add('show'); setTimeout(function(){ flash.classList.remove('show'); }, 2000); }
     }
@@ -785,7 +867,7 @@
             localStorage.setItem('qms_documents', JSON.stringify(docs));
           } catch(e) {}
           isDirty = false;
-          renderList();
+          renderBoard();
           renderDetail();
         },
         onCancel: function() {},
@@ -796,7 +878,7 @@
     function supersedeProc() {
       if (!confirm('Mark this procedure as superseded? It will be archived and no longer active.')) return;
       const p = PROCS[currentId]; if (!p) return;
-      p.status = 'superseded'; save(); renderList(); renderDetail();
+      p.status = 'superseded'; save(); renderBoard(); renderDetail();
     }
 
     // ── PER-FIELD AI GENERATION ───────────────────────────────────────────
@@ -1294,7 +1376,7 @@
 
     // ── INIT ──────────────────────────────────────────────────────────────
     load();
-    renderList();
+    renderBoard();
     document.getElementById('plExportBtnMount').innerHTML =
       TangramExport.exportButtonHTML('btn-outline', 'plExportDD', 'plExportPDF()', 'plExportWord()');
   </script>
