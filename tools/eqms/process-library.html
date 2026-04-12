@@ -114,6 +114,9 @@
     .kanban-card.active { border-color: var(--aqua); box-shadow: 0 0 0 3px rgba(10,192,233,0.12); }
     .kanban-card-meta { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.45rem; flex-wrap: wrap; }
     .kanban-card-id { font-size: 0.62rem; font-weight: 800; color: rgba(11,39,64,0.32); letter-spacing: 0.05em; font-family: monospace; }
+    .kanban-rev-badge { font-size: 0.6rem; font-weight: 700; font-family: monospace; color: rgba(11,39,64,0.55); background: rgba(11,39,64,0.06); border: 1px solid rgba(11,39,64,0.12); border-radius: 4px; padding: 1px 5px; letter-spacing: 0.03em; }
+    .kanban-card-supersede { margin: -0.1rem 0 0.4rem; }
+    .kanban-supersede-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 0.6rem; font-weight: 700; color: #d97706; background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3); border-radius: 4px; padding: 1px 6px; }
     .kanban-card-title { font-size: 0.82rem; font-weight: 700; color: var(--primary); line-height: 1.35; margin-bottom: 0.45rem; }
     .kanban-card-foot { display: flex; align-items: center; gap: 0.5rem; }
     .kanban-card-owner { font-size: 0.66rem; color: rgba(11,39,64,0.38); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -597,12 +600,27 @@
       const subBadge = (p.status === 'planned')
         ? '<span class="proc-status-badge planned">Planned</span>'
         : p.status === 'draft' ? '<span class="proc-status-badge draft">Draft</span>' : '';
+
+      // Version / revision badge
+      const rev = p.revision || 'A';
+      const ver = p.version || 1;
+      const revBadge = '<span class="kanban-rev-badge">v' + ver + ' Rev.\u202F' + esc(rev) + '</span>';
+
+      // If this procedure has history, it supersedes a previously approved version
+      const hasPrior = p.history && p.history.length > 0;
+      const priorVer = hasPrior ? p.history[p.history.length - 1].version : null;
+      const supersedeBadge = hasPrior
+        ? '<span class="kanban-supersede-badge">\u2191 revises v' + priorVer + '</span>'
+        : '';
+
       return '<div class="kanban-card' + (k === currentId ? ' active' : '') + '" onclick="openProc(\'' + esc(k) + '\')">' +
         '<div class="kanban-card-meta">' +
           '<span class="kanban-card-id">' + esc(k) + '</span>' +
+          revBadge +
           '<span class="proc-type-badge ' + esc(p.type||'procedure') + '">' + esc(TYPE_LABELS[p.type]||'Procedure') + '</span>' +
           subBadge +
         '</div>' +
+        (supersedeBadge ? '<div class="kanban-card-supersede">' + supersedeBadge + '</div>' : '') +
         '<div class="kanban-card-title">' + esc(p.title||'Untitled Procedure') + '</div>' +
         '<div class="kanban-card-foot">' +
           '<span class="kanban-card-owner">' + (p.owner ? '<svg style="width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-right:2px;vertical-align:middle;" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' + esc(p.owner) : 'No owner') + '</span>' +
