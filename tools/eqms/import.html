@@ -1531,7 +1531,7 @@ function applyOnboardingMode() {
     : 'Upload your DHF, user needs spreadsheet, design inputs, design outputs, or test protocols. AI will classify and organize them into the correct design control modules for your device project.';
 
   // Inject 6-step onboarding progress bar above the step-header
-  injectOnboardingProgressBar(isQMS ? 5 : 6);
+  injectOnboardingProgressBar(isQMS ? 4 : 5);
 
   // Inject skip link after the demo hint
   injectSkipButton();
@@ -1550,7 +1550,7 @@ function applyOnboardingMode() {
 }
 
 function injectOnboardingProgressBar(currentStep) {
-  var labels = ['Company', 'Device', 'Scope', 'API Key', 'QMS Docs', 'DHF Docs'];
+  var labels = ['Company', 'Device', 'Scope', 'QMS Docs', 'DHF Docs'];
   var html = '<div class="ob-progress-wrap">';
   labels.forEach(function(label, i) {
     var stepNum = i + 1;
@@ -1629,14 +1629,14 @@ function replaceDestinationForQMS() {
 }
 
 function injectNextStepCallout() {
-  // Add a subtle callout below the subtitle explaining DHF is step 6
+  // Add a subtle callout below the subtitle explaining DHF is step 5
   var subtitle = document.querySelector('.upload-subtitle');
   if (!subtitle) return;
   var callout = document.createElement('div');
   callout.style.cssText = 'background:rgba(11,39,64,0.04);border:1px solid rgba(11,39,64,0.08);border-radius:8px;padding:0.65rem 0.9rem;margin-top:0.25rem;display:flex;align-items:flex-start;gap:0.6rem;text-align:left;';
   callout.innerHTML =
     '<svg viewBox="0 0 24 24" fill="none" stroke="rgba(11,39,64,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;flex-shrink:0;margin-top:0.1rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
-    '<span style="font-size:0.71rem;color:rgba(11,39,64,0.45);line-height:1.55;"><strong style="color:rgba(11,39,64,0.6);">Step 6 follows:</strong> After this, you\'ll import your Design History File (DHF) — user needs, design inputs, outputs, and test records — which will be organized into your device project.</span>';
+    '<span style="font-size:0.71rem;color:rgba(11,39,64,0.45);line-height:1.55;"><strong style="color:rgba(11,39,64,0.6);">Step 5 follows:</strong> After this, you\'ll import your Design History File (DHF) — user needs, design inputs, outputs, and test records — which will be organized into your device project.</span>';
   subtitle.insertAdjacentElement('afterend', callout);
 }
 

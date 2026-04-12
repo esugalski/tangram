@@ -193,20 +193,6 @@
     .btn-back svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
     .step-counter { font-size: 0.72rem; color: rgba(11,39,64,0.35); font-weight: 500; }
 
-    /* ── API KEY STEP ── */
-    .api-key-wrap { position: relative; }
-    .api-key-toggle {
-      position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
-      background: none; border: none; cursor: pointer; color: rgba(11,39,64,0.35);
-      padding: 0.2rem; display: flex; align-items: center; transition: color 0.15s;
-    }
-    .api-key-toggle:hover { color: var(--primary); }
-    .api-key-toggle svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .api-key-note {
-      background: rgba(10,192,233,0.06); border: 1px solid rgba(10,192,233,0.18);
-      border-radius: 8px; padding: 0.75rem 0.9rem; margin-top: 0.75rem;
-      font-size: 0.72rem; color: #0369a1; line-height: 1.6;
-    }
     .skip-link {
       font-size: 0.72rem; color: rgba(11,39,64,0.35); text-decoration: none;
       transition: color 0.15s; cursor: pointer;
@@ -268,7 +254,6 @@
       { label: 'Company' },
       { label: 'Device' },
       { label: 'Scope' },
-      { label: 'API Key' },
       { label: 'QMS Docs' },
       { label: 'DHF Docs' },
     ];
@@ -310,7 +295,6 @@
       if (current === 0) card.innerHTML = buildStep1();
       else if (current === 1) card.innerHTML = buildStep2();
       else if (current === 2) card.innerHTML = buildStep3();
-      else if (current === 3) card.innerHTML = buildStep4();
       else card.innerHTML = buildComplete();
       wireCardSelects();
       wireCheckItems();
@@ -422,38 +406,11 @@
           '<div class="field-hint">List all standards and regulations your QMS is designed to satisfy.</div>' +
         '</div>' +
       '</div>' +
-      footer(true, 'Scope', 3);
-    }
-
-    // ── STEP 4: API KEY ───────────────────────────────────────────────────
-    function buildStep4() {
-      return head(4, 'Enable AI content generation', 'Connect your Anthropic API key to unlock AI-generated drafts for Quality Manual sections and procedure content.') +
-      '<div class="card-body">' +
-        '<div class="field-row">' +
-          '<label class="field-label">Anthropic API Key</label>' +
-          '<div class="api-key-wrap">' +
-            '<input class="field-input" id="f_api_key" type="password" value="' + esc(ctx.anthropicApiKey||'') + '" placeholder="sk-ant-…" style="padding-right:2.5rem;">' +
-            '<button class="api-key-toggle" onclick="toggleApiKeyVis()" type="button">' +
-              '<svg id="eyeIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
-            '</button>' +
-          '</div>' +
-          '<div class="api-key-note">' +
-            '<strong>Where to find it:</strong> Log in to <strong>console.anthropic.com</strong> → API Keys → Create Key. ' +
-            'The key is stored only in your browser\'s localStorage and is never sent anywhere except directly to Anthropic\'s API.' +
-          '</div>' +
-        '</div>' +
-        '<div style="margin-top:0.5rem;padding-top:0.75rem;border-top:1px solid rgba(11,39,64,0.08);">' +
-          '<p style="font-size:0.75rem;color:rgba(11,39,64,0.45);line-height:1.6;">You can skip this step and add your API key later from the Quality Manual. AI generation will be unavailable until a key is provided.</p>' +
-        '</div>' +
-      '</div>' +
       '<div class="card-footer">' +
-        '<button class="btn-back" onclick="goBack()">' +
-          '<svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>' +
-          'Back' +
-        '</button>' +
+        '<button class="btn-back" onclick="goBack()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back</button>' +
         '<div style="display:flex;align-items:center;gap:0.75rem;">' +
-          '<span class="skip-link" onclick="skipApiKey()">Skip for now</span>' +
-          '<button class="btn-next finish" onclick="finishSetup()">' +
+          '<span class="step-counter">Step 3 of 5</span>' +
+          '<button class="btn-next finish" onclick="goNext()">' +
             'Complete Setup' +
             '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' +
           '</button>' +
@@ -468,7 +425,7 @@
       const typeLabels  = { hardware:'Hardware', samd:'SaMD', combination:'Combination', ivd:'IVD' };
       return '<div class="complete-screen">' +
         '<div class="complete-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>' +
-        '<div class="complete-title">Setup Complete — Step 4 of 6</div>' +
+        '<div class="complete-title">Setup Complete — Step 3 of 5</div>' +
         '<div class="complete-desc">Your QMS context is saved. Next, import your existing QMS documents so Tangram can analyze and organize them.</div>' +
         '<div class="summary-grid">' +
           summaryItem('Company', ctx.companyName || '—') +
@@ -476,7 +433,6 @@
           summaryItem('Classification', classLabels[ctx.deviceClass] || '—') +
           summaryItem('Type', typeLabels[ctx.deviceType] || '—') +
           summaryItem('Markets', markets) +
-          summaryItem('AI', ctx.anthropicApiKey ? 'Key configured ✓' : 'Not configured') +
         '</div>' +
         '<button class="btn-launch" onclick="goToImportQMS()">' +
           'Import QMS Documents' +
@@ -493,7 +449,7 @@
 
     function head(step, title, desc) {
       return '<div class="card-head">' +
-        '<div class="card-step-label">Step ' + step + ' of 6</div>' +
+        '<div class="card-step-label">Step ' + step + ' of 5</div>' +
         '<div class="card-title">' + title + '</div>' +
         '<div class="card-desc">' + desc + '</div>' +
       '</div>';
@@ -503,7 +459,7 @@
       return '<div class="card-footer">' +
         (showBack ? '<button class="btn-back" onclick="goBack()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back</button>' : '<div></div>') +
         '<div style="display:flex;align-items:center;gap:0.75rem;">' +
-          '<span class="step-counter">Step ' + step + ' of 6</span>' +
+          '<span class="step-counter">Step ' + step + ' of 5</span>' +
           '<button class="btn-next" onclick="goNext()">' + label + ' <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>' +
         '</div>' +
       '</div>';
@@ -580,10 +536,6 @@
       ctx.regulatoryBasis  = (document.getElementById('f_reg_basis')||{value:''}).value.trim() || 'ISO 13485:2016; 21 CFR Part 820';
     }
 
-    function collectStep4() {
-      ctx.anthropicApiKey = (document.getElementById('f_api_key')||{value:''}).value.trim();
-    }
-
     function getSelected(group) {
       var el = document.querySelector('.cs-option.selected[data-group="' + group + '"]');
       return el ? el.dataset.value : null;
@@ -593,7 +545,7 @@
     function goNext() {
       if (current === 0) { collectStep1(); if (!ctx.companyName) { alert('Please enter your company name.'); return; } }
       if (current === 1) { collectStep2(); if (!ctx.deviceName)  { alert('Please enter your device name.');  return; } }
-      if (current === 2) { collectStep3(); }
+      if (current === 2) { collectStep3(); saveAndComplete(); return; }
       current++;
       renderStep();
       var ca = document.querySelector('.content-area'); if (ca) ca.scrollTo({ top: 0, behavior: 'smooth' });
@@ -603,27 +555,11 @@
       if (current > 0) { current--; renderStep(); }
     }
 
-    function toggleApiKeyVis() {
-      var inp = document.getElementById('f_api_key');
-      if (!inp) return;
-      inp.type = inp.type === 'password' ? 'text' : 'password';
-    }
-
-    function skipApiKey() {
-      ctx.anthropicApiKey = '';
-      saveAndComplete();
-    }
-
-    function finishSetup() {
-      collectStep4();
-      saveAndComplete();
-    }
-
     function saveAndComplete() {
       ctx.setupComplete = true;
       ctx.setupDate = new Date().toISOString();
       try { localStorage.setItem('qms_context', JSON.stringify(ctx)); } catch(e) {}
-      current = 4; // complete screen
+      current = 3; // complete screen
       renderProgress();
       document.getElementById('setupCard').innerHTML = buildComplete();
     }
