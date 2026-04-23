@@ -122,7 +122,7 @@
 
     /* ─── BOARD ─── */
     .board-wrap { flex: 1; overflow-x: auto; overflow-y: hidden; padding: 1.25rem 1.25rem 0; display: flex; flex-direction: column; min-height: 0; }
-    .board-grid { display: grid; grid-template-columns: repeat(7, minmax(220px, 1fr)); gap: 0.85rem; flex: 1; min-height: 0; min-width: 1540px; }
+    .board-grid { display: grid; grid-template-columns: repeat(6, minmax(220px, 1fr)); gap: 0.85rem; flex: 1; min-height: 0; min-width: 1320px; }
 
     /* Phase column */
     .phase-col { display: flex; flex-direction: column; min-height: 0; }
@@ -139,7 +139,6 @@
     .phase-info-hint { position: absolute; right: 0.75rem; top: 0.85rem; font-size: 0.6rem; color: rgba(255,255,255,0.35); font-weight: 500; }
 
     /* Phase column colors */
-    .ph0 .phase-col-head { background: linear-gradient(135deg, #374151, #1f2937); }
     .ph1 .phase-col-head { background: linear-gradient(135deg, #0AC0E9, #089bbf); }
     .ph2 .phase-col-head { background: linear-gradient(135deg, #304F6B, #1d3549); }
     .ph3 .phase-col-head { background: linear-gradient(135deg, #f97316, #ea580c); }
@@ -390,36 +389,24 @@
 <script>
 // ─── PHASE GUIDE ──────────────────────────────────────────────────────────────
 const PHASE_GUIDE = {
-  ph0: {
-    color: '#374151',
-    num: 'Phase 0',
-    name: 'QMS Foundation',
-    subtitle: 'Establish governing procedures before creating any records',
-    cite: '21 CFR 820.20 · ISO 13485 §4.2',
-    objective: 'Before generating design control or risk records, the QMS must be established with documented, approved procedures. These procedures define the rules under which all downstream records are created. An organization that has design control records but no Design Control Procedure has records that lack procedural authority — a common early-stage audit finding. The Quality Manual sets the framework; the SOPs implement it.',
-    mistakes: [
-      'Creating user needs or design inputs before a Design Control Procedure exists',
-      'Starting a risk register before a Risk Management Procedure defines the acceptability criteria',
-      'Treating the Quality Manual as a late-stage deliverable — it should frame every other document',
-      'Writing training records without a Training Procedure to authorize them',
-      'Approving records under uncontrolled drafts — Document Control must be in place first',
-    ],
-    gateQuestion: 'Are your core quality procedures approved and your team trained on them before any design control or risk records are generated?',
-  },
   ph1: {
     color: '#0AC0E9',
     num: 'Phase 1',
     name: 'Planning',
-    subtitle: 'Define what you\'re building and for whom',
-    cite: '21 CFR 820.30(b) · ISO 13485 §7.3.2',
-    objective: 'Establish the foundation for the entire design project. Planning locks in scope, regulatory pathway, risk management approach, and development methodology before any technical work begins. FDA\'s design controls require documented evidence that planning preceded design—not just that a plan eventually existed.',
+    subtitle: 'Establish QMS procedures and define what you\'re building',
+    cite: '21 CFR 820.20 · 820.30(b) · ISO 13485 §4.2 · §7.3.2',
+    objective: 'Planning is where both the QMS and the design project are established. Before any design records can be generated, the governing procedures must exist — the Quality Manual, Document Control, Design Control, Risk Management, and Training procedures are the procedural authority under which all downstream records derive their validity. Once that foundation is in place, planning locks in scope, regulatory pathway, risk management approach, and development methodology before any technical work begins. FDA\'s design controls require documented evidence that planning preceded design — not just that a plan eventually existed.',
     mistakes: [
-      'Starting design work before the Development Plan is in place',
+      'Creating user needs or design inputs before a Design Control Procedure is approved',
+      'Starting a risk register before a Risk Management Procedure defines the acceptability criteria',
+      'Treating the Quality Manual as a late-stage deliverable — it must frame every other document',
+      'Approving any record before Document Control is in place — undocumented approval is no approval',
+      'Starting design work before the Development Plan is signed',
       'Writing User Needs that describe solutions (e.g., "The device shall use BLE 5.2") rather than needs',
       'Conflating the MRD (market strategy) with User Needs (regulated stakeholder requirements)',
-      'Not classifying software safety class early—it drives all subsequent IEC 62304 obligations',
+      'Not classifying software safety class early — it drives all subsequent IEC 62304 obligations',
     ],
-    gateQuestion: 'Can you clearly state the intended use, user needs, and regulatory pathway—and does the team agree on the scope before any hardware or software work begins?',
+    gateQuestion: 'Are your core quality procedures approved and your team trained on them? Can you clearly state the intended use, user needs, and regulatory pathway before any hardware or software work begins?',
   },
   ph2: {
     color: '#304F6B',
@@ -501,7 +488,7 @@ const PHASE_GUIDE = {
 // ─── DOCUMENT DATA ────────────────────────────────────────────────────────────
 // type: 'all' | 'hw' | 'sw' | 'sterile' | 'clinical'
 const ROADMAP_DATA = {
-  ph0: [
+  ph1: [
     { id: 'p0-01', name: 'Quality Manual', type: 'all', core: true, cite: '21 CFR 820.20 · ISO 13485 §4.2.2', href: 'quality-manual.html', desc: 'The top-level document that describes the scope of the QMS, references all supporting procedures, and commits the organization to quality objectives. Sets context for every other document. Should be a living document that fills in as procedures are approved.' },
     { id: 'p0-02', name: 'Document Control Procedure', type: 'all', core: true, cite: '21 CFR 820.40 · ISO 13485 §4.2.4', href: 'document-control.html', desc: 'Establishes how documents are numbered, reviewed, approved, distributed, revised, and retired. Must be in place before any other procedure is approved — it defines the rules under which all records receive their authority.' },
     { id: 'p0-03', name: 'Records Management Procedure', type: 'all', core: true, cite: '21 CFR 820.180 · ISO 13485 §4.2.5', desc: 'Governs how QMS records are identified, stored, protected, retrieved, retained, and disposed of. Distinct from document control — records are evidence that activities were performed, not instructions for how to perform them.' },
@@ -511,8 +498,6 @@ const ROADMAP_DATA = {
     { id: 'p0-07', name: 'CAPA Procedure', type: 'all', core: false, cite: '21 CFR 820.100 · ISO 13485 §8.5.2–8.5.3', desc: 'Corrective Action and Preventive Action — one of the most frequently cited areas in FDA 483 observations. Must define the process for identifying nonconformances, root cause analysis, action planning, implementation, and effectiveness verification.' },
     { id: 'p0-08', name: 'Change Control Procedure', type: 'all', core: false, cite: '21 CFR 820.30(i) · ISO 13485 §7.3.9', href: 'change-control.html', desc: 'Governs how changes to approved design documents and production processes are initiated, evaluated for impact, approved, implemented, and verified. Becomes especially important post-design freeze when all changes require formal assessment.' },
     { id: 'p0-09', name: 'Supplier Qualification Procedure', type: 'all', core: false, cite: '21 CFR 820.50 · ISO 13485 §7.4', desc: 'Defines how critical suppliers are evaluated, approved, monitored, and re-qualified. Required when components, materials, or services that affect device quality are externally sourced. Supplier controls are a recurring FDA inspection focus.' },
-  ],
-  ph1: [
     { id: 'p1-01', name: 'Marketing Requirements Document (MRD)', type: 'all', core: false, cite: 'Non-regulated — product strategy', desc: 'A market-facing document that captures the commercial opportunity, target customers, competitive context, and high-level product goals. Not required by FDA but is a best-practice foundation for writing User Needs. Teams should understand the MRD as a business artifact, not a regulated quality document.' },
     { id: 'p1-02', name: 'User Needs Document', type: 'all', core: true, cite: '21 CFR 820.30(c)', href: 'user-needs.html', desc: 'The regulated translation of market requirements into stakeholder-level statements of need, written from the patient, clinician, or user perspective without specifying technical solutions. Every approved User Need must eventually trace to at least one Design Input.' },
     { id: 'p1-05', name: 'Design & Development Plan', type: 'all', core: true, cite: '21 CFR 820.30(b) · ISO 13485 §7.3.2', desc: 'A single planning document that satisfies both 21 CFR 820.30(b) and ISO 13485 §7.3.2. Defines design phases, milestones, review gates, responsibilities, and interfaces between groups. Should include a clearly labeled Intended Use section — FDA expects to find the intended use statement (patient population, medical condition, clinical purpose) in a discrete, findable location within this document rather than as a standalone file.' },
@@ -830,7 +815,7 @@ function renderBoard() {
   const grid = document.getElementById('boardGrid');
   grid.innerHTML = '';
 
-  const phases = ['ph0','ph1','ph2','ph3','ph4','ph5','ph6'];
+  const phases = ['ph1','ph2','ph3','ph4','ph5','ph6'];
 
   phases.forEach(phId => {
     const guide = PHASE_GUIDE[phId];
