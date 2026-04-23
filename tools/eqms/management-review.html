@@ -41,6 +41,13 @@
         <button class="btn-primary" onclick="newReview()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New review</button>
       </div>
     </header>
+    <div class="doc-approval-bar">
+      <div class="proc-status-pill draft" id="proc-status-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev A</div>
+      <div style="flex:1;"></div>
+      <div id="approval-route-panel"></div>
+      <button class="btn-approve" id="approve-btn" onclick="initiateApproval()"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve log</button>
+    </div>
+    <div class="doc-lock-banner" id="doc-lock" style="display:none;"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Management review records are approved. Existing records are locked. New reviews can still be scheduled.</div>
 
     <div class="content-cols">
       <div class="list-col">
@@ -59,6 +66,8 @@
     </div>
   </main>
 
+  <script src="esign.js?v=1776901546755"></script>
+  <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
 
   <script src="learn-mode.js?v=1776901546755"></script>
@@ -100,6 +109,7 @@
       document.getElementById('placeholder').style.display = 'none';
       document.getElementById('pane').style.display = 'flex';
       renderDetail();
+      applyLockState();
       renderList();
     }
 
@@ -284,10 +294,86 @@
       });
     }
 
-    document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) renderDetail(); });
+    const AKEY = 'qms_mgmt_review_approval';
+    let MOD = (function(){ try { return JSON.parse(localStorage.getItem(AKEY)) || {}; } catch(e){ return {}; } })();
+    function saveMod() { localStorage.setItem(AKEY, JSON.stringify(MOD)); }
+
+    function updateStatus() {
+      const pill = document.getElementById('proc-status-pill');
+      const btn = document.getElementById('approve-btn');
+      const lock = document.getElementById('doc-lock');
+      const panel = document.getElementById('approval-route-panel');
+      if (MOD.approved) {
+        pill.className = 'proc-status-pill approved';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved · Rev ' + (MOD.revision || 'A');
+        btn.style.display = 'none';
+        lock.style.display = '';
+        if (panel) panel.innerHTML = Approvals.renderStatusPanel();
+      } else {
+        pill.className = 'proc-status-pill draft';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev ' + (MOD.revision || 'A');
+        btn.style.display = '';
+        lock.style.display = 'none';
+        if (panel) panel.innerHTML = '';
+      }
+    }
+
+    function initiateApproval() {
+      Approvals.initiate({
+        recordType: 'management-review',
+        recordId: 'management-review-log',
+        recordSnapshot: { records: DATA },
+        meaning: 'I have reviewed and approve this Management Review log as of the date of this signature, in accordance with FDA 21 CFR 820.20(c) and ISO 13485 §5.6.',
+        onComplete: function(result) {
+          MOD.approved = true;
+          MOD.revision = MOD.revision || 'A';
+          MOD.approvedAt = result.completedAt;
+          MOD.approvedBy = result.signers;
+          MOD.signatures = result.signatures;
+          MOD.approvedIds = Object.keys(DATA);
+          if (!MOD.revHistory) MOD.revHistory = [];
+          MOD.revHistory.push({ revision: MOD.revision, approvedAt: MOD.approvedAt, approvedBy: MOD.approvedBy });
+          saveMod();
+          updateStatus();
+          applyLockState();
+        },
+        onCancel: function() {}
+      });
+    }
+
+    function initiateRevision() {
+      if (!MOD.approved) return;
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const cur = MOD.revision || 'A';
+      const idx = letters.indexOf(cur);
+      MOD.revision = letters[idx + 1] || cur;
+      MOD.approved = false;
+      MOD.approvedAt = null;
+      MOD.approvedBy = null;
+      MOD.signatures = null;
+      saveMod();
+      Approvals.clearInstance();
+      updateStatus();
+      unlockFields();
+    }
+
+    function applyLockState() {
+      const locked = !!MOD.approved;
+      document.getElementById('doc-lock').style.display = locked ? '' : 'none';
+      document.querySelectorAll('#pane .form-input, #pane .form-textarea, #pane .form-select, #pane .action-row input, #pane .action-row select, #pane textarea').forEach(function(el){ el.disabled = locked; });
+      document.querySelectorAll('#pane .btn-icon, #pane .add-row-btn').forEach(function(el){ el.style.pointerEvents = locked ? 'none' : ''; el.style.opacity = locked ? '0.35' : ''; });
+    }
+
+    function unlockFields() {
+      document.querySelectorAll('#pane .form-input, #pane .form-textarea, #pane .form-select, #pane .action-row input, #pane .action-row select, #pane textarea').forEach(function(el){ el.disabled = false; });
+      document.querySelectorAll('#pane .btn-icon, #pane .add-row-btn').forEach(function(el){ el.style.pointerEvents = ''; el.style.opacity = ''; });
+    }
+
+    document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) { renderDetail(); applyLockState(); } });
     initSidebar({ activePage: 'management-review' });
     renderIntro();
     renderList();
+    updateStatus();
   </script>
 </body>
 </html>

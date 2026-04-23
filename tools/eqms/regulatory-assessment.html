@@ -80,6 +80,13 @@
         <button class="btn-primary" onclick="saveAssessment()"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save</button>
       </div>
     </header>
+    <div class="doc-approval-bar">
+      <div class="proc-status-pill draft" id="proc-status-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev A</div>
+      <div style="flex:1;"></div>
+      <div id="approval-route-panel"></div>
+      <button class="btn-approve" id="approve-btn" onclick="initiateApproval()"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve</button>
+    </div>
+    <div class="doc-lock-banner" id="doc-lock" style="display:none;"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> This assessment is approved. Fields are locked. Use "Initiate Revision" to start a new draft.</div>
 
     <div class="page-scroll">
       <div id="intro-slot"></div>
@@ -290,6 +297,8 @@
     </div>
   </main>
 
+  <script src="esign.js?v=1776901546755"></script>
+  <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
 
   <script src="learn-mode.js?v=1776901546755"></script>
@@ -327,7 +336,8 @@
         standards: [],
         markets: [],
         narrative: '',
-        wizardAnswers: {}
+        wizardAnswers: {},
+        approved: false, revision: 'A', approvedAt: null, approvedBy: null, signatures: null, revHistory: []
       };
     }
     function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
@@ -597,6 +607,68 @@
       a.click();
     }
 
+    function updateStatus() {
+      var pill = document.getElementById('proc-status-pill');
+      var btn = document.getElementById('approve-btn');
+      var lock = document.getElementById('doc-lock');
+      if (!pill) return;
+      var rev = state.revision || 'A';
+      if (state.approved) {
+        pill.className = 'proc-status-pill approved';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved · Rev ' + rev;
+        if (btn) { btn.className = 'btn-revise'; btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Initiate Revision'; btn.onclick = initiateRevision; }
+        if (lock) lock.style.display = '';
+        lockFields();
+        if (window.Approvals) Approvals.renderStatusPanel('regulatory-assessment', 'doc', document.getElementById('approval-route-panel'));
+      } else {
+        pill.className = 'proc-status-pill draft';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev ' + rev;
+        if (btn) { btn.className = 'btn-approve'; btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve'; btn.onclick = initiateApproval; }
+        if (lock) lock.style.display = 'none';
+        unlockFields();
+      }
+    }
+
+    function initiateApproval() {
+      if (!window.Approvals) { alert('Approval module not loaded.'); return; }
+      Approvals.initiate({
+        recordType: 'regulatory-assessment', recordId: 'doc',
+        meaning: 'I have reviewed and approve this Regulatory Strategy Assessment as meeting the requirements of 21 CFR 807/814 and ISO 13485 §7.1.',
+        recordSnapshot: state,
+        onComplete: function(sigs) {
+          state.approved = true; state.approvedAt = sigs[sigs.length-1].timestamp;
+          state.approvedBy = sigs[sigs.length-1].signerName; state.signatures = sigs;
+          state.revision = state.revision || 'A';
+          save(); updateStatus();
+        },
+        onCancel: function() {}
+      });
+    }
+
+    function initiateRevision() {
+      if (!confirm('Start a new revision? This will unlock all fields for editing. The current approval will be preserved in revision history.')) return;
+      var hist = state.revHistory || [];
+      if (state.approved) hist.push({ revision: state.revision||'A', approvedAt: state.approvedAt, approvedBy: state.approvedBy, signatures: state.signatures });
+      var cur = state.revision || 'A'; var code = cur.charCodeAt(0);
+      var next = (cur.length === 1 && code < 90) ? String.fromCharCode(code + 1) : cur + '1';
+      state.approved = false; state.revision = next; state.approvedAt = null;
+      state.approvedBy = null; state.signatures = null; state.revHistory = hist;
+      save();
+      if (window.Approvals) Approvals.clearInstance('regulatory-assessment', 'doc');
+      updateStatus();
+    }
+
+    function lockFields() {
+      document.querySelectorAll('.page-scroll .form-input, .page-scroll .form-textarea, .page-scroll .form-select').forEach(function(el){ el.disabled = true; });
+      document.querySelectorAll('.page-scroll .class-card, .page-scroll .pathway-card, .page-scroll .market-chip, .page-scroll .add-row-btn, .page-scroll .btn-icon').forEach(function(el){ el.disabled = true; el.style.pointerEvents = 'none'; el.style.opacity = '0.5'; });
+      document.querySelectorAll('.page-scroll .predicate-row input').forEach(function(el){ el.disabled = true; });
+    }
+    function unlockFields() {
+      document.querySelectorAll('.page-scroll .form-input, .page-scroll .form-textarea, .page-scroll .form-select').forEach(function(el){ el.disabled = false; });
+      document.querySelectorAll('.page-scroll .class-card, .page-scroll .pathway-card, .page-scroll .market-chip, .page-scroll .add-row-btn, .page-scroll .btn-icon').forEach(function(el){ el.disabled = false; el.style.pointerEvents = ''; el.style.opacity = ''; });
+      document.querySelectorAll('.page-scroll .predicate-row input').forEach(function(el){ el.disabled = false; });
+    }
+
     document.addEventListener('qms-learn-mode-changed', function(){ renderHints(); renderWizard(); });
 
     // Bootstrap
@@ -604,6 +676,7 @@
     renderIntro();
     populateForm();
     renderHints();
+    updateStatus();
   </script>
 </body>
 </html>

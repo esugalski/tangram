@@ -132,17 +132,13 @@
 
     <!-- PLAN TAB -->
     <div class="tab-content active" data-tab-content="plan">
-      <div id="plan-approval-bar" class="plan-approval-bar">
-        <div>
-          <div style="font-size:0.72rem;font-weight:700;color:var(--primary);margin-bottom:0.1rem;">Risk Management Plan</div>
-          <div style="font-size:0.65rem;color:rgba(11,39,64,0.45);">ISO 14971 §4 · Device-specific scope, team, and acceptability criteria</div>
-        </div>
-        <div id="plan-status-pill" class="plan-status-pill draft" style="margin-left:auto;">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Draft
-        </div>
-        <button class="btn-secondary" onclick="approvePlan()" id="approve-btn">Mark as approved</button>
+      <div class="doc-approval-bar">
+        <div class="proc-status-pill draft" id="proc-status-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev A</div>
+        <div style="flex:1;"></div>
+        <div id="approval-route-panel"></div>
+        <button class="btn-approve" id="approve-btn" onclick="initiateApproval()"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve</button>
       </div>
+      <div class="doc-lock-banner" id="doc-lock" style="display:none;"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> This plan is approved. Fields are locked. Use "Initiate Revision" to start a new draft.</div>
       <div class="page-scroll">
         <div id="intro-slot-plan"></div>
         <div class="card">
@@ -257,6 +253,8 @@
     </div>
   </main>
 
+  <script src="esign.js?v=1776901546755"></script>
+  <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
@@ -275,9 +273,9 @@
     function loadPlan() {
       try {
         var d = JSON.parse(localStorage.getItem(PLAN_KEY));
-        return d || { scope:'', lifecycle:'', environments:'', rmLead:'', team:'', approver:'', sevScale:'', probScale:'', criteria:'', cycle:'', procRef:'', notes:'', approved: false };
+        return d || { scope:'', lifecycle:'', environments:'', rmLead:'', team:'', approver:'', sevScale:'', probScale:'', criteria:'', cycle:'', procRef:'', notes:'', approved: false, revision:'A', approvedAt:null, approvedBy:null, signatures:null, revHistory:[] };
       } catch(e) {
-        return { scope:'', lifecycle:'', environments:'', rmLead:'', team:'', approver:'', sevScale:'', probScale:'', criteria:'', cycle:'', procRef:'', notes:'', approved: false };
+        return { scope:'', lifecycle:'', environments:'', rmLead:'', team:'', approver:'', sevScale:'', probScale:'', criteria:'', cycle:'', procRef:'', notes:'', approved: false, revision:'A', approvedAt:null, approvedBy:null, signatures:null, revHistory:[] };
       }
     }
     function save() { localStorage.setItem(KEY, JSON.stringify(RISKS)); }
@@ -371,39 +369,69 @@
         if (!el) return;
         el.addEventListener('input', function() {
           PLAN[map[id]] = el.value;
-          if (PLAN.approved) { PLAN.approved = false; updatePlanStatus(); }
           savePlanData();
         });
       });
     }
 
-    function updatePlanStatus() {
-      var pill = document.getElementById('plan-status-pill');
+    function updateStatus() {
+      var pill = document.getElementById('proc-status-pill');
       var btn = document.getElementById('approve-btn');
+      var lock = document.getElementById('doc-lock');
       if (!pill) return;
+      var rev = PLAN.revision || 'A';
       if (PLAN.approved) {
-        pill.className = 'plan-status-pill approved';
-        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved';
-        if (btn) btn.textContent = 'Revise';
+        pill.className = 'proc-status-pill approved';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved · Rev ' + rev;
+        if (btn) { btn.className = 'btn-revise'; btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Initiate Revision'; btn.onclick = initiateRevision; }
+        if (lock) lock.style.display = '';
+        lockFields();
+        if (window.Approvals) Approvals.renderStatusPanel('risk-mgmt-plan', 'doc', document.getElementById('approval-route-panel'));
       } else {
-        pill.className = 'plan-status-pill draft';
-        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft';
-        if (btn) btn.textContent = 'Mark as approved';
+        pill.className = 'proc-status-pill draft';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev ' + rev;
+        if (btn) { btn.className = 'btn-approve'; btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve'; btn.onclick = initiateApproval; }
+        if (lock) lock.style.display = 'none';
+        unlockFields();
       }
     }
 
-    function approvePlan() {
-      if (PLAN.approved) {
-        PLAN.approved = false;
-      } else {
-        PLAN.approved = true;
-        PLAN.approvedDate = new Date().toISOString();
-      }
+    function initiateApproval() {
+      if (!window.Approvals) { alert('Approval module not loaded.'); return; }
+      Approvals.initiate({
+        recordType: 'risk-mgmt-plan', recordId: 'doc',
+        meaning: 'I have reviewed and approve this Risk Management Plan as meeting the requirements of ISO 14971:2019 §4 and 21 CFR 820.30(g).',
+        recordSnapshot: PLAN,
+        onComplete: function(sigs) {
+          PLAN.approved = true; PLAN.approvedAt = sigs[sigs.length-1].timestamp;
+          PLAN.approvedBy = sigs[sigs.length-1].signerName; PLAN.signatures = sigs;
+          PLAN.revision = PLAN.revision || 'A';
+          savePlanData();
+          if (typeof LearnMode !== 'undefined') { try { LearnMode.markStepComplete('risk-mgmt-plan'); } catch(e) {} }
+          updateStatus();
+        },
+        onCancel: function() {}
+      });
+    }
+
+    function initiateRevision() {
+      if (!confirm('Start a new revision? This will unlock all fields for editing. The current approval will be preserved in revision history.')) return;
+      var hist = PLAN.revHistory || [];
+      if (PLAN.approved) hist.push({ revision: PLAN.revision||'A', approvedAt: PLAN.approvedAt, approvedBy: PLAN.approvedBy, signatures: PLAN.signatures });
+      var cur = PLAN.revision || 'A'; var code = cur.charCodeAt(0);
+      var next = (cur.length === 1 && code < 90) ? String.fromCharCode(code + 1) : cur + '1';
+      PLAN.approved = false; PLAN.revision = next; PLAN.approvedAt = null;
+      PLAN.approvedBy = null; PLAN.signatures = null; PLAN.revHistory = hist;
       savePlanData();
-      updatePlanStatus();
-      if (typeof LearnMode !== 'undefined') {
-        try { LearnMode.markStepComplete('risk-mgmt-plan'); } catch(e) {}
-      }
+      if (window.Approvals) Approvals.clearInstance('risk-mgmt-plan', 'doc');
+      updateStatus();
+    }
+
+    function lockFields() {
+      document.querySelectorAll('[data-tab-content="plan"] .form-input, [data-tab-content="plan"] .form-textarea, [data-tab-content="plan"] .form-select').forEach(function(el){ el.disabled = true; });
+    }
+    function unlockFields() {
+      document.querySelectorAll('[data-tab-content="plan"] .form-input, [data-tab-content="plan"] .form-textarea, [data-tab-content="plan"] .form-select').forEach(function(el){ el.disabled = false; });
     }
 
     // ── List / Register ──
@@ -726,6 +754,7 @@
     renderRegisterIntro();
     renderList();
     checkSoftGate();
+    updateStatus();
   </script>
 </body>
 </html>

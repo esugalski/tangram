@@ -37,10 +37,18 @@
         <div style="font-size:0.72rem;font-weight:700;color:var(--primary);margin-bottom:0.05rem;">SOP-DC-001 Document Control</div>
         <div style="font-size:0.63rem;color:rgba(11,39,64,0.4);">21 CFR 820.40 · ISO 13485 §4.2.4 · Controls for QMS documents</div>
       </div>
-      <div id="proc-status-pill" class="proc-status-pill draft" style="margin-left:auto;">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft
-      </div>
-      <button id="approve-btn" class="btn-secondary" onclick="toggleApproval()">Mark as approved</button>
+      <div style="flex:1;"></div>
+      <div id="approval-route-panel"></div>
+      <span id="proc-status-pill" class="proc-status-pill draft">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev A
+      </span>
+      <button id="approve-btn" class="btn-approve" onclick="initiateApproval()">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Approve
+      </button>
+    </div>
+    <div class="doc-lock-banner" id="doc-lock" style="display:none;">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      This document is approved and locked. Use "Initiate Revision" to make changes.
     </div>
 
     <div class="page-scroll">
@@ -160,6 +168,8 @@
   <script src="seed-demo.js?v=1776901546755"></script>
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
+  <script src="esign.js?v=1776901546755"></script>
+  <script src="approvals.js?v=1776901546755"></script>
   <script>
     'use strict';
     const KEY = 'qms_proc_doc_control';
@@ -185,9 +195,7 @@
         var el = document.getElementById('f-' + f);
         if (!el) return;
         el.addEventListener('input', function() {
-          DATA[f] = el.value;
-          if (DATA.approved) { DATA.approved = false; updateStatus(); }
-          save();
+          DATA[f] = el.value; save();
         });
       });
     }
@@ -195,26 +203,57 @@
     function updateStatus() {
       var pill = document.getElementById('proc-status-pill');
       var btn = document.getElementById('approve-btn');
+      var lock = document.getElementById('doc-lock');
       if (!pill) return;
+      var rev = DATA.revision || 'A';
       if (DATA.approved) {
         pill.className = 'proc-status-pill approved';
-        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved';
-        if (btn) btn.textContent = 'Revise';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved · Rev ' + rev;
+        if (btn) { btn.className = 'btn-revise'; btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Initiate Revision'; btn.onclick = initiateRevision; }
+        if (lock) lock.style.display = '';
+        lockFields();
+        if (window.Approvals) Approvals.renderStatusPanel('doc-control', 'doc', document.getElementById('approval-route-panel'));
       } else {
         pill.className = 'proc-status-pill draft';
-        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft';
-        if (btn) btn.textContent = 'Mark as approved';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev ' + rev;
+        if (btn) { btn.className = 'btn-approve'; btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Approve'; btn.onclick = initiateApproval; }
+        if (lock) lock.style.display = 'none';
+        unlockFields();
       }
     }
 
-    function toggleApproval() {
-      DATA.approved = !DATA.approved;
-      if (DATA.approved) DATA.approvedDate = new Date().toISOString();
+    function initiateApproval() {
+      if (!window.Approvals) { alert('Approval module not loaded.'); return; }
+      Approvals.initiate({
+        recordType: 'doc-control', recordId: 'doc',
+        meaning: 'I have reviewed and approve this Document Control Procedure as meeting the requirements of 21 CFR 820.40 and ISO 13485 §4.2.4.',
+        recordSnapshot: DATA,
+        onComplete: function(sigs) {
+          DATA.approved = true; DATA.approvedAt = sigs[sigs.length-1].timestamp; DATA.approvedBy = sigs[sigs.length-1].signerName; DATA.signatures = sigs; DATA.revision = DATA.revision || 'A';
+          save(); updateStatus();
+          if (typeof LearnMode !== 'undefined') { try { LearnMode.markStepComplete('doc-control-sop'); } catch(e) {} }
+        },
+        onCancel: function() {}
+      });
+    }
+
+    function initiateRevision() {
+      if (!confirm('Start a new revision? This will unlock all fields for editing. The current approval will be preserved in revision history.')) return;
+      var hist = DATA.revHistory || [];
+      if (DATA.approved) hist.push({ revision: DATA.revision||'A', approvedAt: DATA.approvedAt, approvedBy: DATA.approvedBy, signatures: DATA.signatures });
+      var cur = DATA.revision || 'A'; var code = cur.charCodeAt(0);
+      var next = (cur.length === 1 && code < 90) ? String.fromCharCode(code + 1) : cur + '1';
+      DATA.approved = false; DATA.revision = next; DATA.approvedAt = null; DATA.approvedBy = null; DATA.signatures = null; DATA.revHistory = hist;
       save();
+      if (window.Approvals) Approvals.clearInstance('doc-control', 'doc');
       updateStatus();
-      if (DATA.approved && typeof LearnMode !== 'undefined') {
-        try { LearnMode.markStepComplete('doc-control-sop'); } catch(e) {}
-      }
+    }
+
+    function lockFields() {
+      document.querySelectorAll('.page-scroll .form-input, .page-scroll .form-textarea, .page-scroll .form-select').forEach(function(el){ el.disabled = true; });
+    }
+    function unlockFields() {
+      document.querySelectorAll('.page-scroll .form-input, .page-scroll .form-textarea, .page-scroll .form-select').forEach(function(el){ el.disabled = false; });
     }
 
     function renderIntro() {

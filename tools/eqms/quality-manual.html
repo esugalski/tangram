@@ -80,6 +80,9 @@
     .btn-approve { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: #047857; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.48rem 1rem; border-radius: 7px; border: 1.5px solid rgba(16,185,129,0.35); cursor: pointer; transition: all 0.15s; }
     .btn-approve:hover { border-color: var(--green); background: rgba(16,185,129,0.06); }
     .btn-approve svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-revise { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.48rem 1rem; border-radius: 7px; border: 1.5px solid rgba(48,79,107,0.3); cursor: pointer; transition: all 0.15s; }
+    .btn-revise:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-revise svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
     /* ─── CONTENT ─── */
     .content-area { flex: 1; overflow-y: auto; padding: 2rem; }
@@ -249,8 +252,12 @@
           Audit Log
         </button>
         <button class="btn-approve" id="btnApprove" onclick="approveManual()">
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Finalize &amp; Approve
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Approve
+        </button>
+        <button class="btn-revise" id="btnRevise" style="display:none;" onclick="initiateRevision()">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Initiate Revision
         </button>
       </div>
     </div>
@@ -300,6 +307,7 @@
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
   <script src="esign.js"></script>
+  <script src="approvals.js?v=1776901546755"></script>
   <script src="versions.js"></script>
   <script src="export.js"></script>
   <script>
@@ -396,6 +404,8 @@
       sp.className = 'status-pill ' + (locked ? 'approved' : 'draft');
       const btnApprove = document.getElementById('btnApprove');
       if (btnApprove) btnApprove.style.display = locked ? 'none' : '';
+      const btnRevise = document.getElementById('btnRevise');
+      if (btnRevise) btnRevise.style.display = locked ? '' : 'none';
 
       // Footer
       const footer = document.getElementById('docFooter');
@@ -544,32 +554,45 @@
 
     // ── APPROVE ───────────────────────────────────────────────────────────
     function approveManual() {
-      if (!ESign.hasUserProfile()) { ESign.setupUserProfile(); return; }
       collectFields();
       if (!QM.qualityPolicy) { alert('Please complete the Quality Policy before approving the Quality Manual.'); return; }
+      if (!window.Approvals) { alert('Approval module not loaded.'); return; }
       const snapshot = JSON.parse(JSON.stringify(QM));
-      ESign.open({
-        recordId:       'QM-001',
-        recordType:     'quality-manual',
-        meaning:        'I approve Quality Manual v' + (QM.version||1) + ' as the governing document for the Quality Management System. This document is authorized to serve as the QMS foundation for all controlled procedures and records.',
+      Approvals.initiate({
+        recordType: 'quality-manual', recordId: 'QM-001',
+        meaning: 'I have reviewed and approve Quality Manual v' + (QM.version||1) + ' as the governing document for the Quality Management System. This document is authorized to serve as the QMS foundation for all controlled procedures and records.',
         recordSnapshot: snapshot,
-        onSuccess: function(sig) {
+        onComplete: function(sigs) {
           QM.status = 'approved';
-          QM.approvalSignature = sig;
+          QM.approvalSignature = sigs[sigs.length - 1];
+          QM.signatures = sigs;
           try {
             localStorage.setItem(LS_KEY, JSON.stringify(QM));
-            // Write to qms_documents
             var docs = JSON.parse(localStorage.getItem('qms_documents') || '{}');
             var existing = docs['QM-001'];
             var history = existing ? (existing.history || []) : [];
             if (existing) history.push({ version: existing.version, frozenAt: new Date().toISOString(), approvalSignature: existing.approvalSignature, itemSnapshot: existing.itemSnapshot });
-            docs['QM-001'] = { type: 'quality-manual', name: 'Quality Manual', version: QM.version||1, status: 'approved', approvedAt: sig.timestamp, approvalSignature: sig, itemSnapshot: snapshot, changeRef: null, history: history };
+            docs['QM-001'] = { type: 'quality-manual', name: 'Quality Manual', version: QM.version||1, status: 'approved', approvedAt: QM.approvalSignature.timestamp, approvalSignature: QM.approvalSignature, itemSnapshot: snapshot, changeRef: null, history: history };
             localStorage.setItem('qms_documents', JSON.stringify(docs));
           } catch(e) {}
           render();
         },
-        onCancel: function() {},
+        onCancel: function() {}
       });
+    }
+
+    function initiateRevision() {
+      if (!confirm('Start a new revision? This will unlock all fields for editing. The current approval will be preserved in revision history.')) return;
+      var hist = QM.revHistory || [];
+      if (QM.status === 'approved') hist.push({ version: QM.version||1, approvalSignature: QM.approvalSignature, signatures: QM.signatures });
+      QM.status = 'draft';
+      QM.version = (QM.version || 1) + 1;
+      QM.approvalSignature = null;
+      QM.signatures = null;
+      QM.revHistory = hist;
+      try { localStorage.setItem(LS_KEY, JSON.stringify(QM)); } catch(e) {}
+      if (window.Approvals) Approvals.clearInstance('quality-manual', 'QM-001');
+      render();
     }
 
     // ── AUDIT LOG ─────────────────────────────────────────────────────────
