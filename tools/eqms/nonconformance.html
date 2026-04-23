@@ -62,6 +62,7 @@
     </div>
   </main>
 
+  <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js?v=1776901546755"></script>
   <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
@@ -166,7 +167,7 @@
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">2 · Description &amp; containment</div></div><div class="card-body">' +
-          '<div class="form-field" style="margin-bottom:0.75rem;"><label class="form-label">Description of nonconformity</label><textarea class="form-textarea" rows="3" oninput="u(\'description\',this.value)" placeholder="Exactly how the product/process failed to meet specification. Cite the spec where possible.">'+esc(n.description||'')+'</textarea></div>' +
+          '<div class="form-field" style="margin-bottom:0.75rem;"><div class="field-label-row"><label class="form-label">Description of nonconformity</label>'+AIAssist.genBtn('f-description','aiDescription()')+'</div><textarea class="form-textarea" id="f-description" rows="3" oninput="u(\'description\',this.value)" placeholder="Exactly how the product/process failed to meet specification. Cite the spec where possible.">'+esc(n.description||'')+'</textarea></div>' +
           '<div class="form-field"><label class="form-label">Segregation / hold reference</label><input class="form-input" value="'+esc(n.segregationRef||'')+'" oninput="u(\'segregationRef\',this.value)" placeholder="Hold tag ID, quarantine location, etc."></div>' +
         '</div></div>' +
 
@@ -178,7 +179,7 @@
             '</select></div>' +
             '<div class="form-field"><label class="form-label">Approver</label><input class="form-input" value="'+esc(n.approver||'')+'" oninput="u(\'approver\',this.value)"></div>' +
           '</div>' +
-          '<div class="form-field"><label class="form-label">Justification</label><textarea class="form-textarea" rows="3" oninput="u(\'dispositionJustification\',this.value)" placeholder="Why this disposition is appropriate. Mandatory for use-as-is.">'+esc(n.dispositionJustification||'')+'</textarea></div>' +
+          '<div class="form-field"><div class="field-label-row"><label class="form-label">Justification</label>'+AIAssist.genBtn('f-dispositionJustification','aiJustification()')+'</div><textarea class="form-textarea" id="f-dispositionJustification" rows="3" oninput="u(\'dispositionJustification\',this.value)" placeholder="Why this disposition is appropriate. Mandatory for use-as-is.">'+esc(n.dispositionJustification||'')+'</textarea></div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">4 · Closure &amp; escalation</div></div><div class="card-body">' +
@@ -291,6 +292,28 @@
     }
 
     document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) { renderDetail(); applyLockState(); } });
+
+    function aiDescription() {
+      var n = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (n.id ? '\nNC ID: ' + n.id : '') +
+        (n.stage ? '\nDetection stage: ' + n.stage : '') +
+        (n.productRef ? '\nProduct: ' + n.productRef : '') +
+        (n.lot ? '\nLot/batch: ' + n.lot : '') +
+        (n.quantity ? '\nQuantity affected: ' + n.quantity : '') +
+        '\n\nWrite a clear nonconformity description. State exactly how the product or process failed to meet specification — cite the specific requirement or specification it violated. Include the detection method and where in the process it was found. Be factual and specific. 2–4 sentences.';
+    }
+    function aiJustification() {
+      var n = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (n.id ? '\nNC ID: ' + n.id : '') +
+        (n.description ? '\nNonconformity: ' + n.description : '') +
+        (n.disposition ? '\nDisposition chosen: ' + n.disposition : '') +
+        '\n\nWrite the disposition justification for this nonconformity. Explain why the chosen disposition is appropriate — for use-as-is, demonstrate that the nonconformity does not affect fit, form, function, safety, or regulatory compliance, and cite the engineering or quality basis. For rework or scrap, state the basis. 3–5 sentences.';
+    }
+    AIAssist.register('f-description', aiDescription);
+    AIAssist.register('f-dispositionJustification', aiJustification);
+
     initSidebar({ activePage: 'nonconformance' });
     renderIntro();
     renderList();

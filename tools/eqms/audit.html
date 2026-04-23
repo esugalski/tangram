@@ -109,6 +109,7 @@
     </div>
   </main>
 
+  <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js?v=1776901546755"></script>
   <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
@@ -356,7 +357,7 @@
               ['scheduled','in-progress','complete'].map(function(s){ return '<option value="'+s+'" '+(a.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
             '</select></div>' +
           '</div>' +
-          '<div class="form-field"><label class="form-label">Audit summary</label><textarea class="form-textarea" rows="3" oninput="u(\'summary\',this.value)" placeholder="Executive summary of the audit (scope executed, departments engaged, overall conclusion).">'+esc(a.summary||'')+'</textarea></div>' +
+          '<div class="form-field"><div class="field-label-row"><label class="form-label">Audit summary</label>'+AIAssist.genBtn('f-summary','aiSummary()')+'</div><textarea class="form-textarea" id="f-summary" rows="3" oninput="u(\'summary\',this.value)" placeholder="Executive summary of the audit (scope executed, departments engaged, overall conclusion).">'+esc(a.summary||'')+'</textarea></div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">Findings</div><button class="add-row-btn" onclick="addFinding()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add finding</button></div><div class="card-body">' +
@@ -485,6 +486,24 @@
     }
 
     document.addEventListener('qms-learn-mode-changed', function(){ renderReadiness(); if (currentId) { renderAudit(); applyLockState(); } });
+
+    function aiSummary() {
+      var a = AUDITS[currentId] || {};
+      var findings = (a.findings || []);
+      var majors = findings.filter(function(f){ return f.grade === 'major'; }).length;
+      var minors = findings.filter(function(f){ return f.grade === 'minor'; }).length;
+      var obs = findings.filter(function(f){ return f.grade === 'observation'; }).length;
+      return AIAssist.ctxLines() +
+        (a.id ? '\nAudit ID: ' + a.id : '') +
+        (a.scope ? '\nAudit scope: ' + a.scope : '') +
+        (a.auditor ? '\nLead auditor: ' + a.auditor : '') +
+        (a.date ? '\nDate: ' + a.date : '') +
+        (a.standards ? '\nStandards audited against: ' + (Array.isArray(a.standards) ? a.standards.join(', ') : a.standards) : '') +
+        (findings.length ? '\nFindings: ' + majors + ' major, ' + minors + ' minor, ' + obs + ' observations' : '') +
+        '\n\nWrite the executive audit summary. Describe: (1) the scope of the audit as executed (areas covered, departments visited), (2) overall conformance with the relevant QMS standard(s), (3) summary of findings by grade, and (4) the overall conclusion on QMS effectiveness. Formal internal audit report tone. 3–5 sentences.';
+    }
+    AIAssist.register('f-summary', aiSummary);
+
     initSidebar({ activePage: 'audit' });
     renderIntro();
     renderReadiness();

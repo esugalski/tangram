@@ -66,6 +66,7 @@
     </div>
   </main>
 
+  <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js?v=1776901546755"></script>
   <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
@@ -193,7 +194,7 @@
             '</select></div>' +
           '</div>' +
           '<div class="form-field"><label class="form-label">Attendees</label><div id="attendees-host" style="padding:0.3rem 0;">'+attendeesHTML(r)+'</div><input class="form-input" placeholder="Type name + Enter to add" onkeydown="if(event.key===\'Enter\'){addAttendee(this.value);this.value=\'\';}" style="margin-top:0.4rem;"></div>' +
-          '<div class="form-field" style="margin-top:0.75rem;"><label class="form-label">Agenda</label><textarea class="form-textarea" rows="2" oninput="u(\'agenda\',this.value)">'+esc(r.agenda||'')+'</textarea></div>' +
+          '<div class="form-field" style="margin-top:0.75rem;"><div class="field-label-row"><label class="form-label">Agenda</label>'+AIAssist.genBtn('f-agenda','aiAgenda()')+'</div><textarea class="form-textarea" id="f-agenda" rows="2" oninput="u(\'agenda\',this.value)">'+esc(r.agenda||'')+'</textarea></div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">Inputs reviewed</div><span class="card-title-sub">Live data pulled from other modules</span></div><div class="card-body">' +
@@ -212,8 +213,8 @@
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">Decisions &amp; outcomes</div></div><div class="card-body">' +
-          '<div class="form-field" style="margin-bottom:0.75rem;"><label class="form-label">Decisions &amp; conclusions</label><textarea class="form-textarea" rows="3" oninput="u(\'decisions\',this.value)" placeholder="Management\'s conclusions on QMS effectiveness, product quality trends, and need for improvement.">'+esc(r.decisions||'')+'</textarea></div>' +
-          '<div class="form-field"><label class="form-label">Resource decisions</label><textarea class="form-textarea" rows="2" oninput="u(\'resourceDecisions\',this.value)" placeholder="Decisions about people, training, infrastructure, tooling needs.">'+esc(r.resourceDecisions||'')+'</textarea></div>' +
+          '<div class="form-field" style="margin-bottom:0.75rem;"><div class="field-label-row"><label class="form-label">Decisions &amp; conclusions</label>'+AIAssist.genBtn('f-decisions','aiDecisions()')+'</div><textarea class="form-textarea" id="f-decisions" rows="3" oninput="u(\'decisions\',this.value)" placeholder="Management\'s conclusions on QMS effectiveness, product quality trends, and need for improvement.">'+esc(r.decisions||'')+'</textarea></div>' +
+          '<div class="form-field"><div class="field-label-row"><label class="form-label">Resource decisions</label>'+AIAssist.genBtn('f-resourceDecisions','aiResourceDecisions()')+'</div><textarea class="form-textarea" id="f-resourceDecisions" rows="2" oninput="u(\'resourceDecisions\',this.value)" placeholder="Decisions about people, training, infrastructure, tooling needs.">'+esc(r.resourceDecisions||'')+'</textarea></div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">Action items</div><button class="add-row-btn" onclick="addAction()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add action</button></div><div class="card-body">' +
@@ -370,6 +371,32 @@
     }
 
     document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) { renderDetail(); applyLockState(); } });
+
+    function aiAgenda() {
+      var r = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (r.id ? '\nReview ID: ' + r.id : '') +
+        (r.date ? '\nDate: ' + r.date : '') +
+        '\n\nWrite a management review agenda per ISO 13485 §5.6.2 / 21 CFR 820.20. Include required review inputs: audit results, customer feedback/complaints, process performance and product conformity, CAPA status, follow-up from previous reviews, changes affecting the QMS, recommendations for improvement, regulatory changes, post-market surveillance data, and supplier performance. Bulleted agenda format with time allocations. Approximately 10 items.';
+    }
+    function aiDecisions() {
+      var r = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (r.id ? '\nReview ID: ' + r.id : '') +
+        (r.date ? '\nDate: ' + r.date : '') +
+        (r.agenda ? '\nAgenda covered: ' + r.agenda : '') +
+        '\n\nWrite the management decisions and conclusions from this review. Summarize management\'s assessment of overall QMS effectiveness, quality performance trends, and the need for improvement. Include one or two specific conclusions about product quality and QMS adequacy. 3–5 sentences, formal management minutes tone.';
+    }
+    function aiResourceDecisions() {
+      var r = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (r.id ? '\nReview ID: ' + r.id : '') +
+        '\n\nWrite the resource decisions from this management review per ISO 13485 §5.6.3. Document decisions about personnel needs, training requirements, infrastructure improvements, or tooling investments identified during the review. 2–4 sentences.';
+    }
+    AIAssist.register('f-agenda', aiAgenda);
+    AIAssist.register('f-decisions', aiDecisions);
+    AIAssist.register('f-resourceDecisions', aiResourceDecisions);
+
     initSidebar({ activePage: 'management-review' });
     renderIntro();
     renderList();

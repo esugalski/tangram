@@ -132,7 +132,7 @@
               </div>
               <div class="form-field">
                 <label class="form-label">Intended use statement</label>
-                <textarea class="form-textarea" id="f-intended-use" rows="3" placeholder="State who uses the device, on whom, for what condition, and in what setting."></textarea>
+                <textarea class="form-textarea" id="f-intended-use" data-ai rows="3" placeholder="State who uses the device, on whom, for what condition, and in what setting."></textarea>
               </div>
             </div>
           </div>
@@ -281,7 +281,7 @@
             <div class="card-head"><div class="card-title">8 · Strategy narrative</div></div>
             <div class="card-body">
               <div id="hint-narrative" class="learn-only" style="margin-bottom:0.5rem;"></div>
-              <textarea class="form-textarea" id="f-narrative" rows="6" placeholder="Summarize classification rationale, pathway decision, predicates chosen, and any open risks or assumptions."></textarea>
+              <textarea class="form-textarea" id="f-narrative" data-ai rows="6" placeholder="Summarize classification rationale, pathway decision, predicates chosen, and any open risks or assumptions."></textarea>
             </div>
           </div>
         </div>
@@ -297,6 +297,7 @@
     </div>
   </main>
 
+  <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js?v=1776901546755"></script>
   <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
@@ -670,6 +671,27 @@
     }
 
     document.addEventListener('qms-learn-mode-changed', function(){ renderHints(); renderWizard(); });
+
+    AIAssist.register('f-intended-use', function() {
+      var c = AIAssist.ctxLines();
+      var extra = '';
+      if (state.deviceName) extra += '\nDevice name: ' + state.deviceName;
+      if (state.productType) extra += '\nProduct type: ' + state.productType;
+      if (state.clinicalUse) extra += '\nClinical use: ' + state.clinicalUse;
+      return c + extra + '\n\nWrite a formal intended use statement for this medical device. Address: (1) who uses the device, (2) on whom it is used, (3) for what clinical condition or purpose, and (4) in what care setting. This language will appear in regulatory submissions — be precise. 2–4 sentences.';
+    });
+    AIAssist.register('f-narrative', function() {
+      var c = AIAssist.ctxLines();
+      var extra = '';
+      if (state.deviceName) extra += '\nDevice: ' + state.deviceName;
+      if (state.productType) extra += '\nType: ' + state.productType;
+      if (state.intendedUse) extra += '\nIntended use: ' + state.intendedUse;
+      if (state.fdaClass) extra += '\nFDA class: ' + state.fdaClass;
+      if (state.pathway) extra += '\nPathway: ' + state.pathway;
+      if (state.euClass) extra += '\nEU class: ' + state.euClass;
+      if (state.markets && state.markets.length) extra += '\nMarkets: ' + state.markets.join(', ');
+      return c + extra + '\n\nWrite the regulatory strategy narrative for this device. Summarize: (1) classification rationale for the selected markets, (2) chosen regulatory pathway and why, (3) key predicates or reference devices if applicable, and (4) open risks or unresolved assumptions. 1–2 short paragraphs, formal tone appropriate for a regulatory strategy document.';
+    });
 
     // Bootstrap
     initSidebar({ activePage: 'regulatory-assessment' });

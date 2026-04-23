@@ -122,11 +122,11 @@
           <div class="form-row" style="margin-top:0.85rem;">
             <div class="form-field">
               <label class="form-label">Project objective</label>
-              <textarea class="form-textarea" id="f-objective" rows="3" placeholder="What you're designing and why, in 2–3 sentences."></textarea>
+              <textarea class="form-textarea" id="f-objective" data-ai rows="3" placeholder="What you're designing and why, in 2–3 sentences."></textarea>
             </div>
             <div class="form-field">
               <label class="form-label">Success criteria</label>
-              <textarea class="form-textarea" id="f-success" rows="3" placeholder="How you'll know the project is done (e.g. 510(k) cleared, first shipment, pilot completed)."></textarea>
+              <textarea class="form-textarea" id="f-success" data-ai rows="3" placeholder="How you'll know the project is done (e.g. 510(k) cleared, first shipment, pilot completed)."></textarea>
             </div>
           </div>
         </div>
@@ -175,7 +175,7 @@
           </div>
           <div class="form-field">
             <label class="form-label">Notes / rationale</label>
-            <textarea class="form-textarea" id="f-review-notes" rows="3" placeholder="Any exceptions, sub-team reviews, or cross-functional gates."></textarea>
+            <textarea class="form-textarea" id="f-review-notes" data-ai rows="3" placeholder="Any exceptions, sub-team reviews, or cross-functional gates."></textarea>
           </div>
         </div>
       </div>
@@ -194,6 +194,7 @@
 
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
+  <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js"></script>
   <script src="approvals.js?v=1776901546755"></script>
   <script>
@@ -544,6 +545,26 @@
     }
 
     document.addEventListener('qms-learn-mode-changed', renderHints);
+
+    AIAssist.register('f-objective', function() {
+      var c = AIAssist.ctxLines();
+      var extra = '';
+      if (state.project) extra += '\nProject: ' + state.project;
+      return c + extra + '\n\nWrite a 2–3 sentence project objective for this medical device development plan per 21 CFR 820.30(b). State what is being designed, the primary clinical problem it solves, and the intended regulatory pathway. Formal but concise.';
+    });
+    AIAssist.register('f-success', function() {
+      var c = AIAssist.ctxLines();
+      var extra = '';
+      if (state.project) extra += '\nProject: ' + state.project;
+      if (state.objective) extra += '\nObjective: ' + state.objective;
+      return c + extra + '\n\nWrite the success criteria for this medical device development project. Define 3–5 measurable outcomes that mark project completion — e.g. regulatory clearance/approval, design freeze milestone, clinical validation, or first commercial shipment. Bulleted list.';
+    });
+    AIAssist.register('f-review-notes', function() {
+      var c = AIAssist.ctxLines();
+      var extra = '';
+      if (state.project) extra += '\nProject: ' + state.project;
+      return c + extra + '\n\nWrite the design review exceptions and sub-team review notes for our development plan. Describe any specialized reviews (risk review per ISO 14971, software architecture review per IEC 62304, usability review per IEC 62366), cross-functional gate requirements, and exceptions to the standard phase-gate cadence. 3–4 sentences.';
+    });
 
     initSidebar({ activePage: 'dev-plan' });
     renderIntro();

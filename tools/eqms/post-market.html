@@ -64,12 +64,12 @@
         <div class="card-body">
           <div id="hint-plan" class="learn-only" style="margin-bottom:0.55rem;"></div>
           <div class="pms-plan-row" style="margin-bottom:0.75rem;">
-            <div class="form-field"><label class="form-label">Scope of surveillance</label><textarea class="form-textarea" id="f-scope" rows="3" placeholder="Which devices, markets, and use populations are covered.">?</textarea></div>
-            <div class="form-field"><label class="form-label">Data sources</label><textarea class="form-textarea" id="f-sources" rows="3" placeholder="Complaints, returns, service logs, published literature, PMCF, registries, social media, etc."></textarea></div>
+            <div class="form-field"><label class="form-label">Scope of surveillance</label><textarea class="form-textarea" id="f-scope" data-ai rows="3" placeholder="Which devices, markets, and use populations are covered.">?</textarea></div>
+            <div class="form-field"><label class="form-label">Data sources</label><textarea class="form-textarea" id="f-sources" data-ai rows="3" placeholder="Complaints, returns, service logs, published literature, PMCF, registries, social media, etc."></textarea></div>
           </div>
           <div class="pms-plan-row">
-            <div class="form-field"><label class="form-label">Trending methodology</label><textarea class="form-textarea" id="f-trending" rows="3" placeholder="Thresholds for signal detection, statistical method, who reviews and when."></textarea></div>
-            <div class="form-field"><label class="form-label">Responsibilities</label><textarea class="form-textarea" id="f-resp" rows="3" placeholder="PMS owner, contributors, approvers, interfaces with complaints/CAPA/risk."></textarea></div>
+            <div class="form-field"><label class="form-label">Trending methodology</label><textarea class="form-textarea" id="f-trending" data-ai rows="3" placeholder="Thresholds for signal detection, statistical method, who reviews and when."></textarea></div>
+            <div class="form-field"><label class="form-label">Responsibilities</label><textarea class="form-textarea" id="f-resp" data-ai rows="3" placeholder="PMS owner, contributors, approvers, interfaces with complaints/CAPA/risk."></textarea></div>
           </div>
         </div>
       </div>
@@ -81,8 +81,8 @@
           <div id="hint-pmcf" class="learn-only" style="margin-bottom:0.55rem;"></div>
           <div class="form-field" style="margin-bottom:0.75rem;"><label class="form-label">PMCF required?</label><select class="form-select" id="f-pmcf-required" style="max-width:280px;"><option value="yes">Yes — plan required</option><option value="no">No — justify absence in PMS plan</option><option value="">Not yet determined</option></select></div>
           <div class="pms-plan-row">
-            <div class="form-field"><label class="form-label">General methods &amp; procedures</label><textarea class="form-textarea" id="f-pmcf-methods" rows="3" placeholder="e.g. Prospective registry, targeted survey, literature review cycle."></textarea></div>
-            <div class="form-field"><label class="form-label">Specific objectives</label><textarea class="form-textarea" id="f-pmcf-obj" rows="3" placeholder="e.g. Confirm safety &amp; performance in real-world use beyond 12 months."></textarea></div>
+            <div class="form-field"><label class="form-label">General methods &amp; procedures</label><textarea class="form-textarea" id="f-pmcf-methods" data-ai rows="3" placeholder="e.g. Prospective registry, targeted survey, literature review cycle."></textarea></div>
+            <div class="form-field"><label class="form-label">Specific objectives</label><textarea class="form-textarea" id="f-pmcf-obj" data-ai rows="3" placeholder="e.g. Confirm safety &amp; performance in real-world use beyond 12 months."></textarea></div>
           </div>
         </div>
       </div>
@@ -119,6 +119,7 @@
     </div>
   </main>
 
+  <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js?v=1776901546755"></script>
   <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
@@ -355,6 +356,32 @@
       document.querySelectorAll('.page-scroll .add-row-btn').forEach(function(el){ el.disabled = false; el.style.pointerEvents = ''; el.style.opacity = ''; });
       document.querySelectorAll('#metrics-host input, #reports-host input, #reports-host select, #fsca-host input, #fsca-host select').forEach(function(el){ el.disabled = false; });
     }
+
+    // ── AI prompt builders ────────────────────────────────────────────────
+    AIAssist.register('f-scope', function() {
+      var c = AIAssist.ctxLines();
+      return 'Write the "Scope of surveillance" section of a Post-Market Surveillance (PMS) plan for a medical device company.\n\nContext:\n' + c + '\n\nRequirements:\n- 2–3 sentences\n- State which device(s), regulatory markets, and patient/user populations are covered\n- Reference EU MDR Article 84 or FDA 21 CFR 820.198 as applicable\n- Do not include a heading';
+    });
+    AIAssist.register('f-sources', function() {
+      var c = AIAssist.ctxLines();
+      return 'Write the "Data sources" section of a Post-Market Surveillance plan for a medical device.\n\nContext:\n' + c + '\n\nRequirements:\n- List the specific data sources used for surveillance (complaints, returns, service records, published literature, PMCF, registries, social media monitoring, MAUDE/EUDAMED, etc.)\n- Be specific to the device type and markets\n- 3–5 sentences or a brief structured list\n- Do not include a heading';
+    });
+    AIAssist.register('f-trending', function() {
+      var c = AIAssist.ctxLines();
+      return 'Write the "Trending methodology" section of a Post-Market Surveillance plan.\n\nContext:\n' + c + '\n\nRequirements:\n- Describe how complaint rates and adverse event signals are tracked and trended\n- Include signal detection thresholds, review frequency, and who is responsible for trend analysis\n- Reference statistical or qualitative methods as appropriate for the device risk class\n- 3–5 sentences\n- Do not include a heading';
+    });
+    AIAssist.register('f-resp', function() {
+      var c = AIAssist.ctxLines();
+      return 'Write the "Responsibilities" section of a Post-Market Surveillance plan.\n\nContext:\n' + c + '\n\nRequirements:\n- Identify the PMS owner role and their core responsibilities\n- Describe interfaces with complaints, CAPA, risk management, and regulatory reporting functions\n- Note the review/approval authority for PMS reports\n- 3–5 sentences\n- Do not include a heading';
+    });
+    AIAssist.register('f-pmcf-methods', function() {
+      var c = AIAssist.ctxLines();
+      return 'Write the "General methods and procedures" section of a Post-Market Clinical Follow-up (PMCF) plan.\n\nContext:\n' + c + '\n\nRequirements:\n- Describe the general PMCF methodology (e.g. prospective registry, literature surveillance, targeted surveys, clinical investigation)\n- Reference EU MDR Annex XIV Part B\n- Be appropriate for the device risk class\n- 3–5 sentences\n- Do not include a heading';
+    });
+    AIAssist.register('f-pmcf-obj', function() {
+      var c = AIAssist.ctxLines();
+      return 'Write the "Specific objectives" section of a PMCF plan.\n\nContext:\n' + c + '\n\nRequirements:\n- List 3–5 specific PMCF objectives\n- Examples: confirm long-term safety and performance, identify rare adverse events, assess performance in specific patient subgroups, keep clinical evidence current\n- Be specific to the device type and intended use\n- Format as a numbered list or bullet points\n- Do not include a heading';
+    });
 
     document.addEventListener('qms-learn-mode-changed', renderHints);
     initSidebar({ activePage: 'post-market' });

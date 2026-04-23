@@ -69,6 +69,7 @@
     </div>
   </main>
 
+  <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js?v=1776901546755"></script>
   <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
@@ -189,7 +190,7 @@
             '<div class="form-field"><label class="form-label">Serial</label><input class="form-input" value="'+esc(c.serial||'')+'" oninput="u(\'serial\',this.value)"></div>' +
           '</div>' +
           '<div class="form-field" style="margin-bottom:0.7rem;"><label class="form-label">Event date (if different from receipt)</label><input class="form-input" type="date" value="'+esc(c.eventDate||'')+'" onchange="u(\'eventDate\',this.value)" style="max-width:200px;"></div>' +
-          '<div class="form-field"><label class="form-label">Description of alleged issue</label><textarea class="form-textarea" rows="4" oninput="u(\'description\',this.value);renderList()" placeholder="What the complainant reported — keep their words where possible.">'+esc(c.description||'')+'</textarea></div>' +
+          '<div class="form-field"><div class="field-label-row"><label class="form-label">Description of alleged issue</label>'+AIAssist.genBtn('f-description','aiDescription()')+'</div><textarea class="form-textarea" id="f-description" rows="4" oninput="u(\'description\',this.value);renderList()" placeholder="What the complainant reported — keep their words where possible.">'+esc(c.description||'')+'</textarea></div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">3 · Reportability triage</div></div><div class="card-body">' +
@@ -199,15 +200,15 @@
           decisionQ('Did a patient or user experience serious injury?', 'involvedSerious', c.involvedSerious) +
           decisionQ('If the event were to recur, could it cause or contribute to death or serious injury?', 'malfunctionCouldCause', c.malfunctionCouldCause) +
           '<div style="margin-top:0.9rem;"><button class="btn-primary" onclick="autoAssess()"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compute reportability</button></div>' +
-          '<div class="form-field" style="margin-top:0.75rem;"><label class="form-label">Reportability rationale</label><textarea class="form-textarea" rows="2" oninput="u(\'reportableRationale\',this.value)">'+esc(c.reportableRationale||'')+'</textarea></div>' +
+          '<div class="form-field" style="margin-top:0.75rem;"><div class="field-label-row"><label class="form-label">Reportability rationale</label>'+AIAssist.genBtn('f-reportableRationale','aiReportability()')+'</div><textarea class="form-textarea" id="f-reportableRationale" rows="2" oninput="u(\'reportableRationale\',this.value)">'+esc(c.reportableRationale||'')+'</textarea></div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">4 · Investigation</div></div><div class="card-body">' +
-          '<div class="form-field"><label class="form-label">Investigation findings</label><textarea class="form-textarea" rows="4" oninput="u(\'investigation\',this.value)" placeholder="Device returned? Root cause? Confirmed / not confirmed? Any pattern with other complaints?">'+esc(c.investigation||'')+'</textarea></div>' +
+          '<div class="form-field"><div class="field-label-row"><label class="form-label">Investigation findings</label>'+AIAssist.genBtn('f-investigation','aiInvestigation()')+'</div><textarea class="form-textarea" id="f-investigation" rows="4" oninput="u(\'investigation\',this.value)" placeholder="Device returned? Root cause? Confirmed / not confirmed? Any pattern with other complaints?">'+esc(c.investigation||'')+'</textarea></div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">5 · Response &amp; closure</div></div><div class="card-body">' +
-          '<div class="form-field" style="margin-bottom:0.7rem;"><label class="form-label">Response to complainant</label><textarea class="form-textarea" rows="3" oninput="u(\'response\',this.value)">'+esc(c.response||'')+'</textarea></div>' +
+          '<div class="form-field" style="margin-bottom:0.7rem;"><div class="field-label-row"><label class="form-label">Response to complainant</label>'+AIAssist.genBtn('f-response','aiResponse()')+'</div><textarea class="form-textarea" id="f-response" rows="3" oninput="u(\'response\',this.value)">'+esc(c.response||'')+'</textarea></div>' +
           '<div class="form-row-3" style="margin-bottom:0.7rem;">' +
             '<div class="form-field"><label class="form-label">Response sent</label><input class="form-input" type="date" value="'+esc(c.responseSent||'')+'" onchange="u(\'responseSent\',this.value)"></div>' +
             '<div class="form-field"><label class="form-label">Status</label><select class="form-select" onchange="u(\'status\',this.value);renderDetail();renderList()">' +
@@ -343,6 +344,47 @@
     }
 
     document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) { renderDetail(); applyLockState(); } });
+
+    function aiDescription() {
+      var c = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (c.id ? '\nComplaint ID: ' + c.id : '') +
+        (c.complainantType ? '\nComplainant type: ' + c.complainantType : '') +
+        (c.channel ? '\nReceived via: ' + c.channel : '') +
+        (c.deviceRef ? '\nDevice: ' + c.deviceRef : '') +
+        '\n\nWrite a structured complaint description based on the information available. Keep close to what a complainant would report: the event or issue observed, when it happened, and the product involved. If details are minimal, write a template-style description with bracketed placeholders. 2–4 sentences.';
+    }
+    function aiReportability() {
+      var c = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (c.id ? '\nComplaint ID: ' + c.id : '') +
+        (c.description ? '\nIssue: ' + c.description : '') +
+        (c.involvedDeath ? '\nDeath involved: yes' : '') +
+        (c.involvedSerious ? '\nSerious injury involved: yes' : '') +
+        (c.malfunctionCouldCause ? '\nMalfunction could cause harm: yes' : '') +
+        '\n\nWrite the MDR reportability rationale for this complaint per 21 CFR Part 803. State whether the event meets the criteria for reporting (death, serious injury, or malfunction that could cause death/serious injury), cite the relevant regulatory threshold, and conclude with a reportable/not reportable determination and the basis. 2–4 sentences.';
+    }
+    function aiInvestigation() {
+      var c = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (c.id ? '\nComplaint ID: ' + c.id : '') +
+        (c.description ? '\nReported issue: ' + c.description : '') +
+        (c.deviceRef ? '\nDevice: ' + c.deviceRef : '') +
+        '\n\nWrite the investigation findings for this complaint. Address: (1) whether the device was returned/evaluated, (2) whether the complaint is confirmed or not confirmed, (3) the likely root cause or contributing factor, and (4) whether this appears to be an isolated event or part of a pattern. 3–5 sentences.';
+    }
+    function aiResponse() {
+      var c = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (c.id ? '\nComplaint ID: ' + c.id : '') +
+        (c.description ? '\nIssue: ' + c.description : '') +
+        (c.investigation ? '\nInvestigation findings: ' + c.investigation : '') +
+        '\n\nWrite a professional response to the complainant. Acknowledge receipt, summarize the investigation outcome, describe any corrective action or follow-up taken, and thank them for the report. Tone should be empathetic and factual. Do not admit liability. 3–5 sentences.';
+    }
+    AIAssist.register('f-description', aiDescription);
+    AIAssist.register('f-reportableRationale', aiReportability);
+    AIAssist.register('f-investigation', aiInvestigation);
+    AIAssist.register('f-response', aiResponse);
+
     initSidebar({ activePage: 'complaints' });
     renderIntro();
     renderList();

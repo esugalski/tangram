@@ -73,6 +73,7 @@
     </div>
   </main>
 
+  <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js?v=1776901546755"></script>
   <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
@@ -168,12 +169,12 @@
 
         '<div class="card"><div class="card-head"><div class="card-title">Scope &amp; approach</div></div><div class="card-body">' +
           '<div class="learn-only" style="margin-bottom:0.6rem;">' + LearnMode.hint(i.kind === 'validation' ? 'Validation answers: "does the finished device meet user needs under actual use conditions?" It typically involves human factors, clinical use simulations, or production-equivalent units.' : 'Verification answers: "do the design outputs match the design inputs?" Testing, inspection, or analysis on units built to spec. More objective than validation.') + '</div>' +
-          '<div class="form-field" style="margin-bottom:0.75rem;"><label class="form-label">Scope (what\'s being tested, which build/revision)</label><textarea class="form-textarea" id="f-scope" rows="2" oninput="u(\'scope\',this.value)">'+esc(i.scope)+'</textarea></div>' +
+          '<div class="form-field" style="margin-bottom:0.75rem;"><div class="field-label-row"><label class="form-label">Scope (what\'s being tested, which build/revision)</label>'+AIAssist.genBtn('f-scope','aiScope()')+'</div><textarea class="form-textarea" id="f-scope" rows="2" oninput="u(\'scope\',this.value)">'+esc(i.scope)+'</textarea></div>' +
           '<div class="form-row">' +
             '<div class="form-field"><label class="form-label">Method (test, inspection, analysis, review)</label><input class="form-input" id="f-method" value="'+esc(i.method)+'" oninput="u(\'method\',this.value)"></div>' +
             '<div class="form-field"><label class="form-label">Traces to (DI / DO / UN references)</label><input class="form-input" id="f-traces" value="'+esc(i.tracesTo)+'" oninput="u(\'tracesTo\',this.value)" placeholder="e.g. DI-012, DI-014, UN-003"></div>' +
           '</div>' +
-          '<div class="form-field" style="margin-top:0.75rem;"><label class="form-label">Overall acceptance criteria</label><textarea class="form-textarea" id="f-acc" rows="2" oninput="u(\'acceptance\',this.value)">'+esc(i.acceptance)+'</textarea></div>' +
+          '<div class="form-field" style="margin-top:0.75rem;"><div class="field-label-row"><label class="form-label">Overall acceptance criteria</label>'+AIAssist.genBtn('f-acc','aiAcceptance()')+'</div><textarea class="form-textarea" id="f-acc" rows="2" oninput="u(\'acceptance\',this.value)">'+esc(i.acceptance)+'</textarea></div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">Test cases</div><button class="add-row-btn" onclick="addTC()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add test case</button></div>' +
@@ -342,6 +343,27 @@
     }
 
     document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) { renderDetail(); applyLockState(); } });
+
+    function aiScope() {
+      var item = ITEMS[currentId] || {};
+      return AIAssist.ctxLines() +
+        (item.id ? '\nV&V ID: ' + item.id : '') +
+        (item.kind ? '\nActivity type: ' + item.kind : '') +
+        (item.tracesTo ? '\nTraces to: ' + item.tracesTo : '') +
+        '\n\nWrite the scope statement for this ' + (item.kind || 'verification/validation') + ' activity. Describe what is being tested or evaluated (specific subsystem, feature, or requirement), which build or revision is under test, and any explicitly excluded items. 2–3 sentences.';
+    }
+    function aiAcceptance() {
+      var item = ITEMS[currentId] || {};
+      return AIAssist.ctxLines() +
+        (item.id ? '\nV&V ID: ' + item.id : '') +
+        (item.kind ? '\nActivity type: ' + item.kind : '') +
+        (item.scope ? '\nScope: ' + item.scope : '') +
+        (item.tracesTo ? '\nTraces to: ' + item.tracesTo : '') +
+        '\n\nWrite the overall acceptance criteria for this ' + (item.kind || 'verification/validation') + ' activity. Define what constitutes pass/fail at the activity level — all test cases must pass, specific performance thresholds must be met, or specific regulatory requirements satisfied. Be measurable and unambiguous. 2–3 sentences.';
+    }
+    AIAssist.register('f-scope', aiScope);
+    AIAssist.register('f-acc', aiAcceptance);
+
     initSidebar({ activePage: 'vv' });
     renderIntro();
     renderList();

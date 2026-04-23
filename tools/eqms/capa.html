@@ -80,6 +80,7 @@
     </div>
   </main>
 
+  <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js?v=1776901546755"></script>
   <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
@@ -192,14 +193,14 @@
             '<div class="form-field"><label class="form-label">Source reference</label><input class="form-input" value="'+esc(c.sourceRef||'')+'" oninput="u(\'sourceRef\',this.value)" placeholder="e.g. NC-014, COMP-003"></div>' +
           '</div>' +
           '<div class="form-field"><label class="form-label">Owner</label><input class="form-input" value="'+esc(c.owner||'')+'" oninput="u(\'owner\',this.value)"></div>' +
-          '<div class="form-field" style="margin-top:0.75rem;"><label class="form-label">Problem statement</label><textarea class="form-textarea" rows="3" oninput="u(\'problemStatement\',this.value)" placeholder="What happened, how it was detected, scope (affected units/lots/markets).">'+esc(c.problemStatement)+'</textarea></div>' +
-          '<div class="form-field" style="margin-top:0.75rem;"><label class="form-label">Immediate containment</label><textarea class="form-textarea" rows="2" oninput="u(\'immediateContainment\',this.value)" placeholder="Actions taken right away to prevent further exposure (quarantine, hold, rework, notify).">'+esc(c.immediateContainment)+'</textarea></div>' +
+          '<div class="form-field" style="margin-top:0.75rem;"><div class="field-label-row"><label class="form-label">Problem statement</label>'+AIAssist.genBtn('f-problemStatement','aiProblemStatement()')+'</div><textarea class="form-textarea" id="f-problemStatement" rows="3" oninput="u(\'problemStatement\',this.value)" placeholder="What happened, how it was detected, scope (affected units/lots/markets).">'+esc(c.problemStatement)+'</textarea></div>' +
+          '<div class="form-field" style="margin-top:0.75rem;"><div class="field-label-row"><label class="form-label">Immediate containment</label>'+AIAssist.genBtn('f-immediateContainment','aiContainment()')+'</div><textarea class="form-textarea" id="f-immediateContainment" rows="2" oninput="u(\'immediateContainment\',this.value)" placeholder="Actions taken right away to prevent further exposure (quarantine, hold, rework, notify).">'+esc(c.immediateContainment)+'</textarea></div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">2 · Root cause analysis</div></div><div class="card-body">' +
           '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('5 Whys is the simplest structured technique: keep asking "why did that happen?" until the answer is a system/process gap, not just a symptom. Stop when the root is actionable — "human error" is almost never the root.') + '</div>' +
           fiveWhys(c) +
-          '<div class="form-field" style="margin-top:0.85rem;"><label class="form-label">Root cause statement</label><textarea class="form-textarea" rows="2" oninput="u(\'rootCause\',this.value)" placeholder="One-sentence summary of the actual root cause.">'+esc(c.rootCause||'')+'</textarea></div>' +
+          '<div class="form-field" style="margin-top:0.85rem;"><div class="field-label-row"><label class="form-label">Root cause statement</label>'+AIAssist.genBtn('f-rootCause','aiRootCause()')+'</div><textarea class="form-textarea" id="f-rootCause" rows="2" oninput="u(\'rootCause\',this.value)" placeholder="One-sentence summary of the actual root cause.">'+esc(c.rootCause||'')+'</textarea></div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">3 · Action plan</div><button class="add-row-btn" onclick="addAction()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add action</button></div><div class="card-body">' +
@@ -208,7 +209,7 @@
 
         '<div class="card"><div class="card-head"><div class="card-title">4 · Verification of implementation</div></div><div class="card-body">' +
           '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('Verification = "was the action actually completed?" (training delivered, SOP updated, part redesigned). This is distinct from effectiveness, which asks "did it work?"') + '</div>' +
-          '<div class="form-field" style="margin-bottom:0.55rem;"><label class="form-label">Verification summary</label><textarea class="form-textarea" rows="2" oninput="u(\'verification\',this.value)" placeholder="Who verified, what they checked, when.">'+esc(c.verification||'')+'</textarea></div>' +
+          '<div class="form-field" style="margin-bottom:0.55rem;"><div class="field-label-row"><label class="form-label">Verification summary</label>'+AIAssist.genBtn('f-verification','aiVerification()')+'</div><textarea class="form-textarea" id="f-verification" rows="2" oninput="u(\'verification\',this.value)" placeholder="Who verified, what they checked, when.">'+esc(c.verification||'')+'</textarea></div>' +
           '<div class="form-field"><label class="form-label">Evidence reference(s)</label><input class="form-input" value="'+esc(c.verificationEvidence||'')+'" oninput="u(\'verificationEvidence\',this.value)" placeholder="e.g. SOP-014 Rev B, TR-102"></div>' +
         '</div></div>' +
 
@@ -218,7 +219,7 @@
             '<div class="form-field"><label class="form-label">Metric tracked</label><input class="form-input" value="'+esc(c.effectivenessMetric||'')+'" oninput="u(\'effectivenessMetric\',this.value)" placeholder="e.g. Complaint rate per 1000 units"></div>' +
             '<div class="form-field"><label class="form-label">Check date</label><input class="form-input" type="date" value="'+esc(c.effectivenessDate||'')+'" onchange="u(\'effectivenessDate\',this.value)"></div>' +
           '</div>' +
-          '<div class="form-field"><label class="form-label">Effectiveness conclusion</label><textarea class="form-textarea" rows="2" oninput="u(\'effectiveness\',this.value)" placeholder="Before/after data and conclusion. If ineffective, re-open investigation.">'+esc(c.effectiveness||'')+'</textarea></div>' +
+          '<div class="form-field"><div class="field-label-row"><label class="form-label">Effectiveness conclusion</label>'+AIAssist.genBtn('f-effectiveness','aiEffectiveness()')+'</div><textarea class="form-textarea" id="f-effectiveness" rows="2" oninput="u(\'effectiveness\',this.value)" placeholder="Before/after data and conclusion. If ineffective, re-open investigation.">'+esc(c.effectiveness||'')+'</textarea></div>' +
         '</div></div>' +
 
         '<div class="card"><div class="card-head"><div class="card-title">6 · Closure</div></div><div class="card-body">' +
@@ -378,6 +379,56 @@
     }
 
     document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) { renderDetail(); applyLockState(); } });
+
+    function aiProblemStatement() {
+      var c = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (c.id ? '\nCAPA ID: ' + c.id : '') +
+        (c.type ? '\nType: ' + c.type : '') +
+        (c.severity ? '\nSeverity: ' + c.severity : '') +
+        (c.source ? '\nSource: ' + c.source : '') +
+        (c.sourceRef ? '\nSource reference: ' + c.sourceRef : '') +
+        '\n\nWrite a clear, structured CAPA problem statement. Include: (1) what happened or was observed, (2) how it was detected (source), (3) scope (which products, lots, or markets may be affected). Keep it factual and specific — no root cause yet. 3–5 sentences.';
+    }
+    function aiContainment() {
+      var c = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (c.id ? '\nCAPA ID: ' + c.id : '') +
+        (c.problemStatement ? '\nProblem: ' + c.problemStatement : '') +
+        '\n\nWrite the immediate containment actions for this CAPA. Describe what should be done right away to prevent further exposure or harm: quarantine of affected product, hold on distribution, customer notification, or temporary rework. Be specific about timing and responsible party. 2–4 sentences.';
+    }
+    function aiRootCause() {
+      var c = DATA[currentId] || {};
+      var whys = (c.fiveWhys || []).filter(function(w){ return w; }).join(' → ');
+      return AIAssist.ctxLines() +
+        (c.id ? '\nCAPA ID: ' + c.id : '') +
+        (c.problemStatement ? '\nProblem: ' + c.problemStatement : '') +
+        (whys ? '\n5-Why chain: ' + whys : '') +
+        '\n\nWrite a one-sentence root cause statement. The root cause should be a system or process gap, not a symptom or "human error." It should be actionable — something that, if fixed, would prevent recurrence. Use this form: "The root cause is [specific gap] because [underlying system failure]."';
+    }
+    function aiVerification() {
+      var c = DATA[currentId] || {};
+      var actions = (c.actions || []).map(function(a){ return a.desc; }).filter(Boolean).join('; ');
+      return AIAssist.ctxLines() +
+        (c.id ? '\nCAPA ID: ' + c.id : '') +
+        (c.rootCause ? '\nRoot cause: ' + c.rootCause : '') +
+        (actions ? '\nActions taken: ' + actions : '') +
+        '\n\nWrite the verification summary for this CAPA. Describe how implementation of the corrective actions was verified: who checked, what evidence was reviewed (e.g. updated SOP, training records, re-test results), and when. This confirms the actions were completed — not whether they worked. 2–3 sentences.';
+    }
+    function aiEffectiveness() {
+      var c = DATA[currentId] || {};
+      return AIAssist.ctxLines() +
+        (c.id ? '\nCAPA ID: ' + c.id : '') +
+        (c.rootCause ? '\nRoot cause: ' + c.rootCause : '') +
+        (c.effectivenessMetric ? '\nMetric tracked: ' + c.effectivenessMetric : '') +
+        '\n\nWrite the effectiveness conclusion for this CAPA. Describe the before/after data comparison for the tracked metric, the observation period used, and whether the corrective action is deemed effective. If data is still pending, describe the evaluation plan. 2–4 sentences.';
+    }
+    AIAssist.register('f-problemStatement', aiProblemStatement);
+    AIAssist.register('f-immediateContainment', aiContainment);
+    AIAssist.register('f-rootCause', aiRootCause);
+    AIAssist.register('f-verification', aiVerification);
+    AIAssist.register('f-effectiveness', aiEffectiveness);
+
     initSidebar({ activePage: 'capa' });
     renderIntro();
     renderList();
