@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -96,7 +96,7 @@
     .status-pill.none { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.4); }
 
     /* ─── DOC COVER ─── */
-    .doc-wrap { max-width: 860px; margin: 0 auto; }
+    .doc-wrap { max-width: 1200px; margin: 0 auto; }
     .doc-cover { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 14px; padding: 2rem 2.25rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
     .doc-cover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #f97316, var(--amber)); }
     .doc-cover-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
@@ -393,11 +393,18 @@
           </div>
         </div><!-- /doc-cover -->
 
+        <!-- What this page is (Guided mode) -->
+        <div class="learn-only" style="background:rgba(10,192,233,0.06);border:1px solid rgba(10,192,233,0.22);border-radius:10px;padding:0.85rem 1.1rem;margin:1.25rem 0 0.75rem;font-family:'Inter',sans-serif;">
+          <div style="font-size:0.58rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#089bbf;margin-bottom:0.3rem;">What is a &quot;Design Output&quot;?</div>
+          <div style="font-size:0.82rem;color:#0B2740;line-height:1.55;margin-bottom:0.5rem;">If design inputs are <em>what</em> the device must do, <strong>design outputs</strong> are <em>how</em> it does it — the actual drawings, specs, firmware source, schematics, labels, and IFU (instructions for use). The physical and documentary artifacts that make up your device.</div>
+          <div style="font-size:0.76rem;color:#304F6B;line-height:1.55;">Rules of thumb: (1) every output must trace to at least one design input, (2) outputs must be reviewed and approved before use in production, and (3) changes to outputs go through Change Control. Together with the inputs + V&amp;V reports, these outputs make up the <strong>Device Master Record (DMR)</strong>.</div>
+        </div>
+
         <!-- Outputs Table -->
         <div class="req-section-head">
           <div class="req-section-left">
-            <span class="req-section-title">Design Output Documents</span>
-            <span class="req-section-count" id="reqCount">3</span>
+            <span class="req-section-title">Design outputs</span>
+            <span class="req-section-count" id="reqCount">0</span>
           </div>
         </div>
         <div class="list-table-wrap">
@@ -629,7 +636,7 @@
 
     // ── SETTINGS ──────────────────────────────────────────────────────────
     let QMS_SETTINGS = {
-      companyName: 'Tangram MedTech', projectName: 'CardioSync Pro',
+      companyName: '', projectName: '',
       logoDataUrl: null, footerText: 'CONFIDENTIAL — For Internal Use Only',
       deviceDescription: '', apiKey: ''
     };
@@ -646,7 +653,7 @@
       const img = document.getElementById('logoPreviewImg'); const title = document.getElementById('logoUploadTitle');
       const sub = document.getElementById('logoUploadSub'); const rmBtn = document.getElementById('btnRemoveLogo');
       if (QMS_SETTINGS.logoDataUrl) { img.src = QMS_SETTINGS.logoDataUrl; title.textContent = 'Logo uploaded'; sub.textContent = 'Click to replace'; rmBtn.style.display = 'block'; }
-      else { img.src = '../../brand_assets/Tangram-T%20mark%20reverse_Square.png'; title.textContent = 'Upload your logo'; sub.textContent = 'PNG, JPG, or SVG · max 2 MB'; rmBtn.style.display = 'none'; }
+      else { img.src = 'brand_assets/Tangram-T%20mark%20reverse_Square.png'; title.textContent = 'Upload your logo'; sub.textContent = 'PNG, JPG, or SVG · max 2 MB'; rmBtn.style.display = 'none'; }
     }
     function handleLogoUpload(input) {
       const file = input.files[0]; if (!file) return;
@@ -1103,7 +1110,10 @@
     })();
   </script>
 
-  <script src="sidebar.js"></script>
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
   <script src="esign.js"></script>
   <script src="versions.js"></script>
   <script src="governance.js"></script>

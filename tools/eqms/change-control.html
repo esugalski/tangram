@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -255,6 +255,8 @@
       </div>
     </div>
 
+    <div id="intro-slot" style="padding:0 1.25rem;"></div>
+
     <div class="content-cols">
       <!-- LIST -->
       <div class="list-col">
@@ -342,7 +344,10 @@
     </div>
   </div>
 
-  <script src="sidebar.js"></script>
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
   <script src="esign.js"></script>
   <script src="versions.js"></script>
   <script src="approvals.js"></script>
@@ -812,9 +817,35 @@
     // ── UTILS ─────────────────────────────────────────────────────────────
     function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+    function renderIntro() {
+      const slot = document.getElementById('intro-slot');
+      if (!slot || typeof LearnMode === 'undefined') return;
+      slot.innerHTML = LearnMode.introCard({
+        id: 'change-control',
+        tag: 'Design Controls · FDA 21 CFR 820.30(i)',
+        title: 'Change control — every change, documented',
+        what: 'Once your design is baselined, every change — a tweak to a spec, a new component, a firmware patch — has to be written up, impact-assessed, and approved before it\'s made. Each row here is a Change Request (CR) that captures what\'s changing, why, what it affects (design inputs, outputs, risks, V&V), who approves, and when it\'s implemented.',
+        why: 'Undocumented changes are one of the most common FDA 483 observations. Regulators expect a traceable loop: each change tied to the records it touches, impact-assessed against risk and V&V, approved before implementation, and re-verified when the impact warrants it.',
+        facts: [
+          { label: 'Trigger',  value: 'Any change after baseline' },
+          { label: 'Gate',     value: 'Approval before implementation' },
+          { label: 'Evidence', value: 'Approved CR + impact assessment' },
+        ],
+        checklist: [
+          'Describe the change and the reason for it',
+          'Assess impact on design inputs, outputs, risks, V&V',
+          'Route for approval — engineering + quality at minimum',
+          'Implement only after approval',
+          'Close with updated records; re-verify where impact warrants it',
+        ],
+        standards: ['FDA 21 CFR 820.30(i)', 'ISO 13485 §7.3.9', 'EU MDR Art. 10(9)']
+      });
+    }
+
     // ── INIT ──────────────────────────────────────────────────────────────
     load();
     renderList();
+    renderIntro();
 
     // Listen for propose-change events from other pages
     window.addEventListener('storage', function(e) {

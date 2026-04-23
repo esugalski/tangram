@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -238,10 +238,13 @@
     <div class="content">
       <div class="content-inner">
 
+        <!-- Guided-mode journey hero (rendered by learn-mode if active) -->
+        <div id="lm-dashboard-hero" class="learn-only"></div>
+
         <!-- ══════════════════════════════════════════ -->
-        <!-- PORTFOLIO VIEW                             -->
+        <!-- PORTFOLIO VIEW (hidden in Guided mode)     -->
         <!-- ══════════════════════════════════════════ -->
-        <div class="view" id="view-portfolio">
+        <div class="view power-only" id="view-portfolio">
 
           <div class="portfolio-header">
             <div class="portfolio-header-text">
@@ -373,7 +376,7 @@
         <!-- ══════════════════════════════════════════ -->
         <!-- PROJECT / ALIGNMENT DASHBOARD VIEW         -->
         <!-- ══════════════════════════════════════════ -->
-        <div class="view active" id="view-project">
+        <div class="view active power-only" id="view-project">
 
           <div class="founding-banner">
             <div class="founding-banner-left">
@@ -483,55 +486,21 @@
     </div>
   </div>
 
-  <script src="sidebar.js"></script>
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
   <script>
     // Init global sidebar
     initSidebar({ activePage: 'dashboard' });
 
-    // Replace static project switcher with the interactive dropdown version
-    (function() {
-      const wrap = document.querySelector('.project-switcher-wrap');
-      if (wrap) {
-        wrap.innerHTML =
-          '<div class="project-switcher" id="projectSwitcher" onclick="toggleDropdown()" style="cursor:pointer;position:relative;">' +
-            '<div class="project-switcher-dot" id="switcherDot" style="background:var(--aqua)"></div>' +
-            '<div class="project-switcher-text">' +
-              '<span class="project-switcher-label">Active project</span>' +
-              '<span class="project-switcher-name" id="switcherName">CardioSync Pro</span>' +
-            '</div>' +
-            '<div class="project-switcher-chevron">' +
-              '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l4 4 4-4"/></svg>' +
-            '</div>' +
-            '<div class="project-dropdown" id="projectDropdown">' +
-              '<div class="project-dropdown-header">Your devices</div>' +
-              '<div class="project-option selected" onclick="selectProject(event,\'CardioSync Pro\',\'var(--aqua)\',\'design\')">' +
-                '<div class="project-option-dot" style="background:var(--aqua)"></div>' +
-                '<div class="project-option-text">' +
-                  '<div class="project-option-name">CardioSync Pro</div>' +
-                  '<div class="project-option-meta">Implantable cardiac monitor · Design</div>' +
-                '</div>' +
-                '<svg class="project-option-check" viewBox="0 0 14 14" fill="none" stroke="#0AC0E9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7l3 3 6-6"/></svg>' +
-              '</div>' +
-              '<div class="project-option" onclick="selectProject(event,\'NovaBand SW\',\'var(--amber)\',\'planning\')">' +
-                '<div class="project-option-dot" style="background:var(--amber)"></div>' +
-                '<div class="project-option-text">' +
-                  '<div class="project-option-name">NovaBand SW</div>' +
-                  '<div class="project-option-meta">SaMD companion app · Planning</div>' +
-                '</div>' +
-                '<svg class="project-option-check" viewBox="0 0 14 14" fill="none" stroke="transparent" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7l3 3 6-6"/></svg>' +
-              '</div>' +
-              '<div class="project-dropdown-footer">' +
-                '<button onclick="showPortfolio(event)">' +
-                  '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h8M6 2l4 4-4 4"/></svg>' +
-                  'All projects' +
-                '</button>' +
-              '</div>' +
-            '</div>' +
-          '</div>';
-      }
-    })();
+    // Keep the sidebar.js default project switcher (dynamically reads from qms_context).
+    // (Previously this page replaced it with a dropdown containing hardcoded
+    // "CardioSync Pro" and "NovaBand SW" options.)
 
-    let currentProject = 'CardioSync Pro';
+    let currentProject = (function(){
+      try { const c = JSON.parse(localStorage.getItem('qms_context')) || {}; return c.deviceName || ''; } catch(e) { return ''; }
+    })();
 
     function toggleDropdown() {
       const switcher = document.getElementById('projectSwitcher');

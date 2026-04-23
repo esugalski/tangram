@@ -1,0 +1,294 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post-Market Hub — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .pms-plan-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+
+    .metric-bar-row { display: grid; grid-template-columns: 180px 1fr 60px 90px 30px; gap: 0.6rem; align-items: center; padding: 0.45rem 0.55rem; border-radius: 6px; margin-bottom: 0.3rem; }
+    .metric-bar-row input { font-family: inherit; font-size: 0.74rem; padding: 0.3rem 0.45rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; background: white; outline: none; }
+    .metric-bar-bar { height: 7px; background: rgba(11,39,64,0.08); border-radius: 3px; overflow: hidden; }
+    .metric-bar-fill { height: 100%; background: var(--aqua); }
+    .metric-bar-fill.warn { background: var(--amber); }
+    .metric-bar-fill.alarm { background: var(--red); }
+
+    .report-row { display: grid; grid-template-columns: 120px 1fr 140px 110px 100px 30px; gap: 0.5rem; align-items: center; padding: 0.45rem 0.55rem; border-radius: 6px; background: rgba(11,39,64,0.025); margin-bottom: 0.3rem; }
+    .report-row input, .report-row select { font-family: inherit; font-size: 0.74rem; padding: 0.3rem 0.45rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; background: white; outline: none; min-width: 0; }
+
+    .fsca-row { display: grid; grid-template-columns: 110px 1fr 130px 100px 110px 30px; gap: 0.5rem; align-items: center; padding: 0.45rem 0.55rem; border-radius: 6px; background: rgba(11,39,64,0.025); margin-bottom: 0.3rem; }
+    .fsca-row input, .fsca-row select { font-family: inherit; font-size: 0.74rem; padding: 0.3rem 0.45rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; background: white; outline: none; min-width: 0; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Post-Market</span>
+        <span class="topbar-sep">/</span>
+        Post-Market Hub
+      </div>
+      <div class="topbar-right">
+        <button class="btn-primary" onclick="savePM()"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Save</button>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+      <div id="intro-slot"></div>
+
+      <div class="kpi-row">
+        <div class="kpi-tile"><div class="kpi-tile-label">Open complaints (30d)</div><div class="kpi-tile-value" id="kpi-open">0</div><div class="kpi-tile-sub">From complaints module</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">MDRs reported (YTD)</div><div class="kpi-tile-value" id="kpi-mdr">0</div><div class="kpi-tile-sub">Serious events</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">Open FSCAs</div><div class="kpi-tile-value" id="kpi-fsca">0</div><div class="kpi-tile-sub">Field safety actions</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">Next periodic report</div><div class="kpi-tile-value" id="kpi-next" style="font-size:1.05rem;">—</div><div class="kpi-tile-sub">Earliest due</div></div>
+      </div>
+
+      <!-- PMS plan -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">PMS plan</div><span class="card-title-sub">MDR Article 84, Annex III</span></div>
+        <div class="card-body">
+          <div id="hint-plan" class="learn-only" style="margin-bottom:0.55rem;"></div>
+          <div class="pms-plan-row" style="margin-bottom:0.75rem;">
+            <div class="form-field"><label class="form-label">Scope of surveillance</label><textarea class="form-textarea" id="f-scope" rows="3" placeholder="Which devices, markets, and use populations are covered.">?</textarea></div>
+            <div class="form-field"><label class="form-label">Data sources</label><textarea class="form-textarea" id="f-sources" rows="3" placeholder="Complaints, returns, service logs, published literature, PMCF, registries, social media, etc."></textarea></div>
+          </div>
+          <div class="pms-plan-row">
+            <div class="form-field"><label class="form-label">Trending methodology</label><textarea class="form-textarea" id="f-trending" rows="3" placeholder="Thresholds for signal detection, statistical method, who reviews and when."></textarea></div>
+            <div class="form-field"><label class="form-label">Responsibilities</label><textarea class="form-textarea" id="f-resp" rows="3" placeholder="PMS owner, contributors, approvers, interfaces with complaints/CAPA/risk."></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PMCF plan -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">PMCF plan</div><span class="card-title-sub">MDR Annex XIV Part B (when required)</span></div>
+        <div class="card-body">
+          <div id="hint-pmcf" class="learn-only" style="margin-bottom:0.55rem;"></div>
+          <div class="form-field" style="margin-bottom:0.75rem;"><label class="form-label">PMCF required?</label><select class="form-select" id="f-pmcf-required" style="max-width:280px;"><option value="yes">Yes — plan required</option><option value="no">No — justify absence in PMS plan</option><option value="">Not yet determined</option></select></div>
+          <div class="pms-plan-row">
+            <div class="form-field"><label class="form-label">General methods &amp; procedures</label><textarea class="form-textarea" id="f-pmcf-methods" rows="3" placeholder="e.g. Prospective registry, targeted survey, literature review cycle."></textarea></div>
+            <div class="form-field"><label class="form-label">Specific objectives</label><textarea class="form-textarea" id="f-pmcf-obj" rows="3" placeholder="e.g. Confirm safety &amp; performance in real-world use beyond 12 months."></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metrics -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Trending indicators</div><button class="add-row-btn" onclick="addMetric()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add indicator</button></div>
+        <div class="card-body">
+          <div id="hint-metrics" class="learn-only" style="margin-bottom:0.55rem;"></div>
+          <div class="metric-bar-row" style="background:transparent;font-size:0.6rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(11,39,64,0.4);"><div>Indicator</div><div>vs threshold</div><div>Current</div><div>Threshold</div><div></div></div>
+          <div id="metrics-host"></div>
+        </div>
+      </div>
+
+      <!-- Periodic reports -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Periodic reports</div><button class="add-row-btn" onclick="addReport()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add report</button></div>
+        <div class="card-body">
+          <div id="hint-reports" class="learn-only" style="margin-bottom:0.55rem;"></div>
+          <div class="report-row" style="background:transparent;font-size:0.6rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(11,39,64,0.4);"><div>Type</div><div>Period</div><div>Due</div><div>Owner</div><div>Status</div><div></div></div>
+          <div id="reports-host"></div>
+        </div>
+      </div>
+
+      <!-- FSCAs -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Field Safety Corrective Actions (FSCAs)</div><button class="add-row-btn" onclick="addFSCA()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add FSCA</button></div>
+        <div class="card-body">
+          <div id="hint-fsca" class="learn-only" style="margin-bottom:0.55rem;"></div>
+          <div class="fsca-row" style="background:transparent;font-size:0.6rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(11,39,64,0.4);"><div>FSCA #</div><div>Description</div><div>Type</div><div>Opened</div><div>Status</div><div></div></div>
+          <div id="fsca-host"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_post_market';
+    let data = load();
+    function load() {
+      try { const s = JSON.parse(localStorage.getItem(KEY)); if (s) return s; } catch(e) {}
+      return {
+        scope: '', sources: '', trending: '', resp: '',
+        pmcfRequired: '', pmcfMethods: '', pmcfObjectives: '',
+        metrics: [],
+        reports: [],
+        fscas: [],
+      };
+    }
+    function save() { localStorage.setItem(KEY, JSON.stringify(data)); }
+    function savePM() { sync(); save(); toast('Saved'); }
+    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function toast(m) { const t = document.createElement('div'); t.textContent = m; t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#0B2740;color:white;padding:0.6rem 1rem;border-radius:8px;font-size:0.78rem;font-weight:600;z-index:3000;box-shadow:0 4px 14px rgba(2,25,47,0.25);'; document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 1800); }
+
+    function sync() {
+      data.scope = document.getElementById('f-scope').value;
+      data.sources = document.getElementById('f-sources').value;
+      data.trending = document.getElementById('f-trending').value;
+      data.resp = document.getElementById('f-resp').value;
+      data.pmcfRequired = document.getElementById('f-pmcf-required').value;
+      data.pmcfMethods = document.getElementById('f-pmcf-methods').value;
+      data.pmcfObjectives = document.getElementById('f-pmcf-obj').value;
+    }
+
+    // Metrics
+    function addMetric() { data.metrics.push({ name:'', current: 0, threshold: 0 }); save(); renderMetrics(); }
+    function rmMetric(i) { data.metrics.splice(i,1); save(); renderMetrics(); }
+    function uMetric(i, field, val) {
+      if (field === 'current' || field === 'threshold') val = parseFloat(val) || 0;
+      data.metrics[i][field] = val; save(); renderMetrics();
+    }
+    function renderMetrics() {
+      const host = document.getElementById('metrics-host');
+      if (!data.metrics.length) { host.innerHTML = '<div class="subtle">No indicators yet.</div>'; return; }
+      host.innerHTML = data.metrics.map(function(m, i) {
+        const pct = m.threshold > 0 ? Math.min(150, (m.current / m.threshold) * 100) : 0;
+        let cls = '';
+        if (pct > 100) cls = 'alarm';
+        else if (pct > 80) cls = 'warn';
+        return '<div class="metric-bar-row">' +
+          '<input placeholder="Indicator name" value="'+esc(m.name)+'" oninput="uMetric('+i+',\'name\',this.value)">' +
+          '<div class="metric-bar-bar"><div class="metric-bar-fill '+cls+'" style="width:'+Math.min(100, pct)+'%;"></div></div>' +
+          '<input type="number" step="any" placeholder="Now" value="'+esc(m.current)+'" oninput="uMetric('+i+',\'current\',this.value)">' +
+          '<input type="number" step="any" placeholder="Threshold" value="'+esc(m.threshold)+'" oninput="uMetric('+i+',\'threshold\',this.value)">' +
+          '<button class="btn-icon danger" onclick="rmMetric('+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>';
+      }).join('');
+    }
+
+    // Reports
+    function addReport() { data.reports.push({ type:'PSUR', period:'', due:'', owner:'', status:'planned' }); save(); renderReports(); }
+    function rmReport(i) { data.reports.splice(i,1); save(); renderReports(); renderKPI(); }
+    function uReport(i, field, val) { data.reports[i][field] = val; save(); renderKPI(); }
+    function renderReports() {
+      const host = document.getElementById('reports-host');
+      if (!data.reports.length) { host.innerHTML = '<div class="subtle">No reports planned yet.</div>'; return; }
+      host.innerHTML = data.reports.map(function(r, i) {
+        return '<div class="report-row">' +
+          '<select onchange="uReport('+i+',\'type\',this.value)">' +
+            ['PMS Report (Class I)','PSUR (Class IIa–III)','PMCF Evaluation Report','Annual FDA MDR Summary','Other'].map(function(t){ return '<option value="'+t+'" '+(r.type===t?'selected':'')+'>'+t+'</option>'; }).join('') +
+          '</select>' +
+          '<input placeholder="Reporting period (e.g. 2026 H1)" value="'+esc(r.period)+'" oninput="uReport('+i+',\'period\',this.value)">' +
+          '<input type="date" value="'+esc(r.due)+'" onchange="uReport('+i+',\'due\',this.value)">' +
+          '<input placeholder="Owner" value="'+esc(r.owner)+'" oninput="uReport('+i+',\'owner\',this.value)">' +
+          '<select onchange="uReport('+i+',\'status\',this.value)">' +
+            ['planned','drafting','in-review','approved','submitted'].map(function(s){ return '<option value="'+s+'" '+(r.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+          '</select>' +
+          '<button class="btn-icon danger" onclick="rmReport('+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>';
+      }).join('');
+    }
+
+    // FSCAs
+    function addFSCA() {
+      const nid = 'FSCA-' + String(data.fscas.length+1).padStart(3,'0');
+      data.fscas.push({ id: nid, desc:'', type:'Recall', opened:'', status:'open' }); save(); renderFSCAs(); renderKPI();
+    }
+    function rmFSCA(i) { data.fscas.splice(i,1); save(); renderFSCAs(); renderKPI(); }
+    function uFSCA(i, field, val) { data.fscas[i][field] = val; save(); renderKPI(); }
+    function renderFSCAs() {
+      const host = document.getElementById('fsca-host');
+      if (!data.fscas.length) { host.innerHTML = '<div class="subtle">No FSCAs logged. An FSCA is any action to reduce device-related risk post-market (field correction, recall, safety notice).</div>'; return; }
+      host.innerHTML = data.fscas.map(function(f, i) {
+        return '<div class="fsca-row">' +
+          '<input value="'+esc(f.id)+'" oninput="uFSCA('+i+',\'id\',this.value)">' +
+          '<input placeholder="Description" value="'+esc(f.desc)+'" oninput="uFSCA('+i+',\'desc\',this.value)">' +
+          '<select onchange="uFSCA('+i+',\'type\',this.value)">' +
+            ['Recall','Field correction','Safety notice','Advisory'].map(function(t){ return '<option value="'+t+'" '+(f.type===t?'selected':'')+'>'+t+'</option>'; }).join('') +
+          '</select>' +
+          '<input type="date" value="'+esc(f.opened)+'" onchange="uFSCA('+i+',\'opened\',this.value)">' +
+          '<select onchange="uFSCA('+i+',\'status\',this.value)">' +
+            ['open','in-progress','closed'].map(function(s){ return '<option value="'+s+'" '+(f.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+          '</select>' +
+          '<button class="btn-icon danger" onclick="rmFSCA('+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderKPI() {
+      try {
+        const complaints = JSON.parse(localStorage.getItem('qms_complaints')) || {};
+        const list = Object.values(complaints);
+        const now = new Date();
+        const thirty = new Date(now.getTime() - 30*24*60*60*1000).toISOString().slice(0,10);
+        document.getElementById('kpi-open').textContent = list.filter(function(c){ return c.status !== 'closed' && (c.dateReceived || '') >= thirty; }).length;
+        document.getElementById('kpi-mdr').textContent = list.filter(function(c){ return c.reportable === 'yes'; }).length;
+      } catch(e) {
+        document.getElementById('kpi-open').textContent = 0;
+        document.getElementById('kpi-mdr').textContent = 0;
+      }
+      document.getElementById('kpi-fsca').textContent = data.fscas.filter(function(f){ return f.status !== 'closed'; }).length;
+      const upcoming = data.reports.filter(function(r){ return r.status !== 'approved' && r.status !== 'submitted' && r.due; }).map(function(r){ return r.due; }).sort()[0];
+      document.getElementById('kpi-next').textContent = upcoming || '—';
+    }
+
+    function renderHints() {
+      if (!LearnMode.isGuided()) return;
+      document.getElementById('hint-plan').innerHTML = LearnMode.hint('Even a Class I, US-only device needs some form of surveillance under FDA 820.198 (complaints) + MDR reporting. EU MDR goes further: every device needs a documented PMS plan proportional to risk class.');
+      document.getElementById('hint-pmcf').innerHTML = LearnMode.hint('PMCF = proactive post-market studies (surveys, registries) to keep clinical evidence current. Usually required for Class IIa+ under MDR unless you can justify its absence in the PMS plan.');
+      document.getElementById('hint-metrics').innerHTML = LearnMode.hint('Pick indicators that will signal a real-world problem early. Common ones: complaint rate, device return rate, software crash rate, customer satisfaction score. Set thresholds that trigger a deeper investigation.');
+      document.getElementById('hint-reports').innerHTML = LearnMode.hint('Class I devices file a PMS Report on change; Class IIa must update PMS Report at least every 2 years; Class IIb/III file a PSUR annually. FDA also requires annual MDR summaries for certain devices.');
+      document.getElementById('hint-fsca').innerHTML = LearnMode.hint('A Field Safety Corrective Action is anything you do to reduce risk on devices already in the field: recall, field correction (software patch, labeling update), or an advisory. Each must be reported to competent authorities.');
+    }
+
+    function populate() {
+      document.getElementById('f-scope').value = data.scope || '';
+      document.getElementById('f-sources').value = data.sources || '';
+      document.getElementById('f-trending').value = data.trending || '';
+      document.getElementById('f-resp').value = data.resp || '';
+      document.getElementById('f-pmcf-required').value = data.pmcfRequired || '';
+      document.getElementById('f-pmcf-methods').value = data.pmcfMethods || '';
+      document.getElementById('f-pmcf-obj').value = data.pmcfObjectives || '';
+      ['f-scope','f-sources','f-trending','f-resp','f-pmcf-required','f-pmcf-methods','f-pmcf-obj'].forEach(function(id){
+        const el = document.getElementById(id);
+        el.addEventListener('input', function(){ sync(); save(); });
+        el.addEventListener('change', function(){ sync(); save(); });
+      });
+      renderMetrics(); renderReports(); renderFSCAs(); renderKPI();
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'post-market-hub',
+        tag: 'Post-Market Surveillance · EU MDR Articles 83–86, FDA 21 CFR 822',
+        title: 'What post-market surveillance really means',
+        what: 'Your device leaves the factory and enters the real world — where patients, clinicians, and environments do things you couldn\'t simulate. PMS is the systematic, proactive process of gathering and analyzing that real-world experience, and acting on it.',
+        why: 'FDA expects complaint handling + MDR reporting. The EU MDR goes much further: a formal PMS plan, trending, periodic reports (PSUR), and PMCF studies that stay active for the product lifecycle. Missing this is one of the fastest ways to lose a CE mark.',
+        facts: [
+          { label: 'Input to', value: 'Risk management, CAPA, design change' },
+          { label: 'Output', value: 'PSUR, PMS Report, PMCF Report' },
+          { label: 'Cadence', value: 'Continuous + periodic reports' },
+        ],
+        checklist: [
+          'Write a PMS plan (scope, sources, trending, responsibilities)',
+          'Define trending indicators with thresholds',
+          'Schedule PSUR / PMS Reports per device class',
+          'Decide if PMCF is required; if not, document rationale',
+          'Track FSCAs and report to authorities within deadlines',
+        ],
+        standards: ['EU MDR Articles 83–86, Annex III + XIV-B', 'FDA 21 CFR 822 (PS orders)', 'ISO/TR 20416 (PMS for medical devices)']
+      });
+    }
+
+    document.addEventListener('qms-learn-mode-changed', renderHints);
+    initSidebar({ activePage: 'post-market-hub' });
+    renderIntro();
+    populate();
+    renderHints();
+  </script>
+</body>
+</html>

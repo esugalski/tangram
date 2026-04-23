@@ -1,0 +1,276 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DMR Builder — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .dmr-section { margin-bottom: 1.25rem; }
+    .dmr-section-head { display: flex; align-items: center; gap: 0.65rem; padding: 0.75rem 0.9rem; background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px 10px 0 0; border-bottom: none; }
+    .dmr-section-num { width: 26px; height: 26px; border-radius: 7px; background: rgba(10,192,233,0.12); color: var(--aqua-dark); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; flex-shrink: 0; }
+    .dmr-section-title { font-size: 0.86rem; font-weight: 700; color: var(--primary); letter-spacing: -0.01em; }
+    .dmr-section-ref { font-size: 0.63rem; font-weight: 600; letter-spacing: 0.04em; color: rgba(11,39,64,0.5); margin-left: 0.35rem; }
+    .dmr-section-count { margin-left: auto; font-size: 0.7rem; color: rgba(11,39,64,0.5); font-weight: 600; }
+    .dmr-section-body { background: white; border: 1px solid rgba(11,39,64,0.08); border-top: none; border-radius: 0 0 10px 10px; padding: 0.75rem; }
+    .dmr-section-desc { padding: 0 0.3rem 0.55rem; font-size: 0.74rem; color: rgba(11,39,64,0.6); line-height: 1.55; }
+
+    .doc-row { display: grid; grid-template-columns: 28px 1fr 150px 110px 120px 30px; gap: 0.5rem; align-items: center; padding: 0.45rem 0.55rem; border-radius: 6px; margin-bottom: 0.2rem; }
+    .doc-row:hover { background: rgba(11,39,64,0.025); }
+    .doc-row.empty-row { background: rgba(11,39,64,0.025); border: 1.5px dashed rgba(11,39,64,0.1); }
+    .doc-row input, .doc-row select { font-family: inherit; font-size: 0.74rem; padding: 0.32rem 0.5rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; background: white; outline: none; min-width: 0; }
+    .doc-row input:focus, .doc-row select:focus { border-color: var(--aqua); }
+
+    .doc-status-sel { padding: 0.3rem 0.45rem; font-weight: 600; }
+
+    .doc-status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin: 0 auto; }
+    .doc-status-dot.approved { background: var(--green); box-shadow: 0 0 0 3px rgba(16,185,129,0.15); }
+    .doc-status-dot.review { background: var(--amber); box-shadow: 0 0 0 3px rgba(245,158,11,0.15); }
+    .doc-status-dot.draft { background: rgba(11,39,64,0.25); }
+    .doc-status-dot.retired { background: rgba(11,39,64,0.45); border: 1.5px solid rgba(11,39,64,0.3); }
+
+    .dmr-title-row { display: grid; grid-template-columns: 28px 1fr 150px 110px 120px 30px; gap: 0.5rem; align-items: center; padding: 0.35rem 0.55rem 0.5rem; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.4); }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Design Outputs</span>
+        <span class="topbar-sep">/</span>
+        DMR Builder
+      </div>
+      <div class="topbar-right">
+        <button class="btn-secondary" onclick="loadStarter()" title="Pre-populate common DMR doc types as drafts"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10"/></svg>Load starter</button>
+        <button class="btn-secondary" onclick="exportDMR()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export</button>
+        <button class="btn-primary" onclick="saveDMR()"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Save</button>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+      <div id="intro-slot"></div>
+
+      <div class="kpi-row">
+        <div class="kpi-tile"><div class="kpi-tile-label">Total documents</div><div class="kpi-tile-value" id="kpi-total">0</div><div class="kpi-tile-sub">In DMR index</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">Approved</div><div class="kpi-tile-value" id="kpi-approved">0</div><div class="kpi-tile-sub">Released for production</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">In review / draft</div><div class="kpi-tile-value" id="kpi-pending">0</div><div class="kpi-tile-sub">Not yet released</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">DMR readiness</div><div class="kpi-tile-value" id="kpi-ready" style="font-size:1.2rem;">0%</div><div class="kpi-tile-sub">Complete &amp; approved</div></div>
+      </div>
+
+      <!-- Device header -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Device identity</div></div>
+        <div class="card-body">
+          <div id="hint-identity" class="learn-only" style="margin-bottom:0.55rem;"></div>
+          <div class="form-row-3">
+            <div class="form-field"><label class="form-label">Device name</label><input class="form-input" id="f-name" oninput="sync()"></div>
+            <div class="form-field"><label class="form-label">Model / part number</label><input class="form-input" id="f-model" oninput="sync()"></div>
+            <div class="form-field"><label class="form-label">DMR version</label><input class="form-input" id="f-version" oninput="sync()"></div>
+          </div>
+          <div class="form-row" style="margin-top:0.85rem;">
+            <div class="form-field"><label class="form-label">UDI (if assigned)</label><input class="form-input" id="f-udi" placeholder="Unique Device Identifier" oninput="sync()"></div>
+            <div class="form-field"><label class="form-label">Effective date</label><input class="form-input" type="date" id="f-effective" oninput="sync()"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sections-host"></div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_dmr';
+    const SECTIONS = [
+      { id: 'device',     title: 'Device specifications',            ref: 'FDA 820.181(a)', desc: 'Drawings, composition, formulation, component specs, software specifications.' },
+      { id: 'production', title: 'Production process specifications', ref: 'FDA 820.181(b)', desc: 'Equipment, methods, procedures, and environmental specifications used to produce the device.' },
+      { id: 'qa',         title: 'Quality assurance procedures',      ref: 'FDA 820.181(c)', desc: 'Inspection procedures, acceptance criteria, and the quality assurance equipment to be used.' },
+      { id: 'packaging',  title: 'Packaging &amp; labeling',          ref: 'FDA 820.181(d)', desc: 'Labeling specifications, including methods and processes used.' },
+      { id: 'servicing',  title: 'Installation, maintenance, service',ref: 'FDA 820.181(e)', desc: 'Procedures for installation, maintenance, and servicing in the field.' },
+    ];
+
+    // Optional starter — loaded on demand via Load starter button
+    const STARTER = {
+      device: [
+        { title: 'Device assembly drawing', num: '', rev: '', status: 'draft' },
+        { title: 'Bill of materials (BOM)', num: '', rev: '', status: 'draft' },
+      ],
+      production: [
+        { title: 'Manufacturing process flow', num: '', rev: '', status: 'draft' },
+      ],
+      qa: [
+        { title: 'Incoming inspection procedure', num: '', rev: '', status: 'draft' },
+        { title: 'Finished device release criteria', num: '', rev: '', status: 'draft' },
+      ],
+      packaging: [
+        { title: 'Primary label artwork', num: '', rev: '', status: 'draft' },
+        { title: 'IFU / user manual', num: '', rev: '', status: 'draft' },
+      ],
+      servicing: [
+        { title: 'Installation guide', num: '', rev: '', status: 'draft' },
+      ],
+    };
+
+    let state = load();
+    function load() {
+      try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.sections) return s; } catch(e) {}
+      const emptySections = {};
+      SECTIONS.forEach(function(s){ emptySections[s.id] = []; });
+      return { name:'', model:'', version:'', udi:'', effective:'', sections: emptySections };
+    }
+
+    function loadStarter() {
+      if (!confirm('Load common DMR document types as draft entries?')) return;
+      Object.keys(STARTER).forEach(function(secId) {
+        state.sections[secId] = state.sections[secId] || [];
+        STARTER[secId].forEach(function(d) {
+          if (!state.sections[secId].some(function(x){ return x.title === d.title; })) {
+            state.sections[secId].push(Object.assign({}, d));
+          }
+        });
+      });
+      save();
+      renderSections();
+      renderKPI();
+      toast('Starter loaded');
+    }
+    function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+    function saveDMR() { sync(); save(); toast('DMR saved'); }
+    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function toast(m) { const t = document.createElement('div'); t.textContent = m; t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#0B2740;color:white;padding:0.6rem 1rem;border-radius:8px;font-size:0.78rem;font-weight:600;z-index:3000;box-shadow:0 4px 14px rgba(2,25,47,0.25);'; document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 1800); }
+
+    function sync() {
+      state.name = document.getElementById('f-name').value;
+      state.model = document.getElementById('f-model').value;
+      state.version = document.getElementById('f-version').value;
+      state.udi = document.getElementById('f-udi').value;
+      state.effective = document.getElementById('f-effective').value;
+      renderKPI();
+      save();
+    }
+
+    function renderSections() {
+      const host = document.getElementById('sections-host');
+      host.innerHTML = SECTIONS.map(function(sec, idx) {
+        const items = state.sections[sec.id] || [];
+        const approved = items.filter(function(i){ return i.status === 'approved'; }).length;
+        const rows = items.map(function(it, i) {
+          return '<div class="doc-row">' +
+            '<div class="doc-status-dot '+(it.status||'draft')+'"></div>' +
+            '<input type="text" placeholder="Document title" value="'+esc(it.title||'')+'" oninput="updateDoc(\''+sec.id+'\','+i+',\'title\',this.value)">' +
+            '<input type="text" placeholder="Doc number" value="'+esc(it.num||'')+'" oninput="updateDoc(\''+sec.id+'\','+i+',\'num\',this.value)">' +
+            '<input type="text" placeholder="Rev" value="'+esc(it.rev||'')+'" oninput="updateDoc(\''+sec.id+'\','+i+',\'rev\',this.value)">' +
+            '<select class="doc-status-sel" onchange="updateDoc(\''+sec.id+'\','+i+',\'status\',this.value)">' +
+              ['draft','review','approved','retired'].map(function(s){ return '<option value="'+s+'" '+(it.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+            '</select>' +
+            '<button class="btn-icon danger" onclick="removeDoc(\''+sec.id+'\','+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+          '</div>';
+        }).join('');
+        return '<div class="dmr-section">' +
+          '<div class="dmr-section-head">' +
+            '<div class="dmr-section-num">'+(idx+1)+'</div>' +
+            '<div class="dmr-section-title">'+sec.title+'<span class="dmr-section-ref">'+sec.ref+'</span></div>' +
+            '<span class="dmr-section-count">'+approved+' / '+items.length+' approved</span>' +
+          '</div>' +
+          '<div class="dmr-section-body">' +
+            '<div class="dmr-section-desc">'+sec.desc+'</div>' +
+            '<div class="dmr-title-row"><div></div><div>Title</div><div>Doc #</div><div>Rev</div><div>Status</div><div></div></div>' +
+            rows +
+            '<button class="add-row-btn" style="margin-top:0.35rem;" onclick="addDoc(\''+sec.id+'\')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add document</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function addDoc(secId) { (state.sections[secId] = state.sections[secId] || []).push({ title:'', num:'', rev:'', status:'draft' }); save(); renderSections(); renderKPI(); }
+    function removeDoc(secId, i) { state.sections[secId].splice(i, 1); save(); renderSections(); renderKPI(); }
+    function updateDoc(secId, i, field, val) { state.sections[secId][i][field] = val; save(); renderKPI(); }
+
+    function renderKPI() {
+      let total = 0, approved = 0;
+      SECTIONS.forEach(function(sec){ const items = state.sections[sec.id] || []; total += items.length; approved += items.filter(function(i){ return i.status === 'approved'; }).length; });
+      document.getElementById('kpi-total').textContent = total;
+      document.getElementById('kpi-approved').textContent = approved;
+      document.getElementById('kpi-pending').textContent = total - approved;
+      const pct = total ? Math.round(100 * approved / total) : 0;
+      document.getElementById('kpi-ready').textContent = pct + '%';
+    }
+
+    function renderHints() {
+      if (!LearnMode.isGuided()) return;
+      document.getElementById('hint-identity').innerHTML = LearnMode.hint('One DMR per unique device configuration. If you ship multiple models/SKUs, each usually has its own DMR or at least a distinct section. The UDI-DI identifies the exact variant.');
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'dmr-builder',
+        tag: 'Design Outputs · FDA 21 CFR 820.181',
+        title: 'What is a Device Master Record?',
+        what: 'A DMR is the complete set of documents that defines "how to build this device." Think of it as a recipe: if you lost everyone on your team, the DMR would let someone else produce the device to spec.',
+        why: 'FDA requires that the DMR is prepared, approved, maintained, and under change control. An auditor will pull the DMR first because it shows whether your design outputs actually became production-ready.',
+        facts: [
+          { label: 'Output format', value: 'Index of approved documents' },
+          { label: 'Owner', value: 'Operations + QA' },
+          { label: 'Updated', value: 'Each approved change (via Change Control)' },
+        ],
+        checklist: [
+          'Device specifications (drawings, BOM, software)',
+          'Production specs (equipment, process, environment)',
+          'QA procedures (inspection, acceptance, release)',
+          'Packaging & labeling including IFU',
+          'Installation / maintenance / service procedures',
+        ],
+        standards: ['FDA 21 CFR 820.181', 'ISO 13485 §4.2.3 (Medical device file)']
+      });
+    }
+
+    function populate() {
+      document.getElementById('f-name').value = state.name || '';
+      document.getElementById('f-model').value = state.model || '';
+      document.getElementById('f-version').value = state.version || '';
+      document.getElementById('f-udi').value = state.udi || '';
+      document.getElementById('f-effective').value = state.effective || '';
+      renderSections();
+      renderKPI();
+    }
+
+    function exportDMR() {
+      let md = '# Device Master Record — ' + (state.name || 'Device') + '\n\n';
+      md += '**Model:** ' + (state.model || '—') + '  \n';
+      md += '**DMR version:** ' + (state.version || '—') + '  \n';
+      md += '**UDI:** ' + (state.udi || '—') + '  \n';
+      md += '**Effective:** ' + (state.effective || '—') + '\n\n---\n\n';
+      SECTIONS.forEach(function(sec, i) {
+        md += '## ' + (i+1) + '. ' + sec.title.replace(/&amp;/g,'&') + '  \n*' + sec.ref + '*\n\n';
+        md += '| Title | Doc # | Rev | Status |\n|---|---|---|---|\n';
+        (state.sections[sec.id] || []).forEach(function(it) {
+          md += '| ' + (it.title||'') + ' | ' + (it.num||'') + ' | ' + (it.rev||'') + ' | ' + (it.status||'') + ' |\n';
+        });
+        md += '\n';
+      });
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'DMR-' + (state.model || 'device') + '.md';
+      a.click();
+    }
+
+    document.addEventListener('qms-learn-mode-changed', renderHints);
+
+    initSidebar({ activePage: 'dmr-builder' });
+    renderIntro();
+    populate();
+    renderHints();
+  </script>
+</body>
+</html>

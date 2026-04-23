@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -251,6 +251,15 @@
       </div>
     </div>
 
+    <!-- Soft gate: Design Control SOP prerequisite -->
+    <div id="soft-gate-warning" style="display:none;background:rgba(245,158,11,0.08);border-bottom:1px solid rgba(245,158,11,0.3);padding:0.65rem 1.25rem;flex-shrink:0;align-items:flex-start;gap:0.65rem;font-size:0.79rem;color:#92400e;line-height:1.55;">
+      <svg style="width:14px;height:14px;stroke:#d97706;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:0.1rem;" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div>Design reviews should be governed by an approved Design Control Procedure. If you haven't set that up yet, <a href="design-control.html" style="color:#b45309;font-weight:600;text-decoration:none;">go to Design Control Procedure →</a>. You can continue here, but close this gap before any regulatory review.</div>
+      <button onclick="this.parentElement.style.display='none';sessionStorage.setItem('qms_gate_dismissed_design_review','1');" style="margin-left:auto;font-size:0.7rem;font-weight:600;color:#b45309;background:none;border:none;cursor:pointer;flex-shrink:0;">Dismiss</button>
+    </div>
+
+    <div id="intro-slot" style="padding:0 1.25rem;"></div>
+
     <div class="content-cols">
       <!-- LEFT LIST -->
       <div class="list-col">
@@ -276,12 +285,22 @@
     </div>
   </div>
 
-  <script src="sidebar.js"></script>
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
   <script src="esign.js"></script>
   <script src="versions.js"></script>
   <script src="approvals.js"></script>
   <script>
     initSidebar({ activePage: 'design-review' });
+    (function(){
+      if (typeof LearnMode === 'undefined' || !LearnMode.isGuided()) return;
+      if (sessionStorage.getItem('qms_gate_dismissed_design_review')) return;
+      try { var p = JSON.parse(localStorage.getItem('qms_proc_design_control')); if (p && p.approved) return; } catch(e) {}
+      var el = document.getElementById('soft-gate-warning');
+      if (el) el.style.display = 'flex';
+    })();
 
     // ── DATA ──────────────────────────────────────────────────────────────
     const LS_KEY = 'qms_design_reviews';
@@ -794,9 +813,34 @@
       return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
+    function renderIntro() {
+      const slot = document.getElementById('intro-slot');
+      if (!slot || typeof LearnMode === 'undefined') return;
+      slot.innerHTML = LearnMode.introCard({
+        id: 'design-review',
+        tag: 'Design Controls · FDA 21 CFR 820.30(e)',
+        title: 'Design reviews — independent eyes on the design',
+        what: 'A design review is a formal, documented meeting where your team (plus at least one independent reviewer) checks design progress against plans. Required at defined points in development — typically at the end of each phase.',
+        why: 'A common 483 finding is "review happened but no independent reviewer" or "action items never closed." Auditors want: an attendees list that names the independent reviewer, the outcome (approved / conditional / hold), decisions, action items, and e-signatures that lock the record.',
+        facts: [
+          { label: 'When',     value: 'At each phase gate' },
+          { label: 'Who',      value: 'Design team + independent reviewer' },
+          { label: 'Evidence', value: 'Signed minutes + closed actions' },
+        ],
+        checklist: [
+          'Name an independent reviewer not on the core design team',
+          'Document attendees, decisions, and action items',
+          'Track action items to closure before closing the review',
+          'E-sign to lock the record in the Design History File',
+        ],
+        standards: ['FDA 21 CFR 820.30(e)', 'ISO 13485 §7.3.5']
+      });
+    }
+
     // ── INIT ──────────────────────────────────────────────────────────────
     load();
     renderList();
+    renderIntro();
   </script>
 </body>
 </html>

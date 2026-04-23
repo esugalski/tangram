@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -285,6 +285,13 @@
 
     <!-- CONTENT AREA -->
     <div class="content-area" id="mainContentArea">
+
+      <!-- What this page is (Guided mode) -->
+      <div class="learn-only" style="background:rgba(10,192,233,0.06);border:1px solid rgba(10,192,233,0.22);border-radius:10px;padding:0.85rem 1.1rem;margin-bottom:1rem;font-family:'Inter',sans-serif;">
+        <div style="font-size:0.58rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#089bbf;margin-bottom:0.3rem;">What is a &quot;Traceability Matrix&quot;?</div>
+        <div style="font-size:0.82rem;color:#0B2740;line-height:1.55;margin-bottom:0.5rem;">Auditors constantly ask one question: <em>&quot;Where's the proof?&quot;</em> The traceability matrix answers it. Each row follows one thread from a <strong>User Need → Design Input → Design Output → Verification → Validation</strong>. If any cell in a row is empty, you have a gap you need to close.</div>
+        <div style="font-size:0.76rem;color:#304F6B;line-height:1.55;">Gaps highlighted with <span style="color:#b45309;font-weight:700;">⚠ orange</span> are traceability holes — a requirement with no test, or an output without a design input. The filter bar above lets you sort by origin or hide rows that are already complete.</div>
+      </div>
 
       <div class="filter-bar" id="filterBar">
         <button class="filter-btn active" id="fAll" onclick="setFilter('all')">All Origins</button>
@@ -1077,7 +1084,10 @@
     }
   </script>
 
-  <script src="sidebar.js"></script>
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
   <script>initSidebar({ activePage: 'trace-matrix' });</script>
 </body>
 </html>

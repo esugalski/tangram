@@ -1,0 +1,418 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team &amp; Training — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .view-tabs { display: flex; gap: 0.25rem; background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 1.25rem; }
+    .view-tab { border: none; background: transparent; font-family: inherit; font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.52); padding: 0.7rem 0.9rem; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .view-tab:hover { color: var(--primary); }
+    .view-tab.active { color: var(--aqua-dark); border-bottom-color: var(--aqua); }
+
+    .tab-content { flex: 1; overflow: hidden; display: none; min-height: 0; flex-direction: column; }
+    .tab-content.active { display: flex; }
+
+    .matrix { width: 100%; border-collapse: collapse; font-size: 0.74rem; }
+    .matrix thead th { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; color: rgba(11,39,64,0.5); padding: 0.5rem 0.45rem; border-bottom: 1.5px solid rgba(11,39,64,0.08); text-align: center; writing-mode: horizontal-tb; }
+    .matrix thead th.name-col { text-align: left; font-size: 0.62rem; width: 180px; }
+    .matrix thead th.role-col { text-align: left; width: 120px; }
+    .matrix tbody td { padding: 0.42rem 0.45rem; border-bottom: 1px solid rgba(11,39,64,0.05); text-align: center; vertical-align: middle; }
+    .matrix tbody td.name-col { text-align: left; font-weight: 600; color: var(--primary); }
+    .matrix tbody td.role-col { text-align: left; color: rgba(11,39,64,0.55); font-size: 0.7rem; }
+    .matrix-check { width: 22px; height: 22px; border-radius: 50%; display: inline-block; cursor: pointer; transition: transform 0.12s; }
+    .matrix-check:hover { transform: scale(1.15); }
+    .matrix-check.pending { background: rgba(11,39,64,0.06); border: 1.5px solid rgba(11,39,64,0.12); }
+    .matrix-check.complete { background: var(--green); }
+    .matrix-check.complete::after { content: '✓'; color: white; font-size: 0.72rem; font-weight: 800; display: inline; }
+    .matrix-check.expired { background: var(--red); }
+    .matrix-check.expired::after { content: '!'; color: white; font-size: 0.72rem; font-weight: 800; display: inline; }
+    .matrix-check.na { background: transparent; border: 1.5px dashed rgba(11,39,64,0.15); color: rgba(11,39,64,0.28); font-size: 0.68rem; line-height: 20px; }
+    .matrix-check.na::after { content: '—'; }
+
+    .person-card { padding: 0.75rem 0.9rem; border-radius: 8px; cursor: pointer; border: 1.5px solid transparent; margin-bottom: 0.28rem; }
+    .person-card:hover { background: rgba(11,39,64,0.03); }
+    .person-card.selected { background: rgba(10,192,233,0.06); border-color: rgba(10,192,233,0.25); }
+    .person-top { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.25rem; }
+    .person-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); color: var(--aqua-dark); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; flex-shrink: 0; }
+    .person-name { font-size: 0.8rem; font-weight: 700; color: var(--primary); line-height: 1.3; }
+    .person-role { font-size: 0.68rem; color: rgba(11,39,64,0.5); margin-top: 0.1rem; }
+    .person-progress { display: flex; align-items: center; gap: 0.45rem; font-size: 0.68rem; color: rgba(11,39,64,0.5); }
+    .person-bar { flex: 1; height: 5px; background: rgba(11,39,64,0.08); border-radius: 3px; overflow: hidden; }
+    .person-bar-fill { height: 100%; background: var(--green); transition: width 0.2s; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Quality System</span>
+        <span class="topbar-sep">/</span>
+        Team &amp; Training
+      </div>
+      <div class="topbar-right">
+        <button class="btn-secondary" onclick="loadStarterCourses()" title="Load common medtech training items"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10"/></svg>Load starter</button>
+        <button class="btn-secondary" onclick="addCourse()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Training item</button>
+        <button class="btn-primary" onclick="addPerson()"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>Add person</button>
+      </div>
+    </header>
+
+    <div class="view-tabs">
+      <button class="view-tab active" data-tab="people" onclick="setTab('people')">People</button>
+      <button class="view-tab" data-tab="matrix" onclick="setTab('matrix')">Training matrix</button>
+      <button class="view-tab" data-tab="catalog" onclick="setTab('catalog')">Training catalog</button>
+    </div>
+
+    <!-- PEOPLE TAB -->
+    <div class="tab-content active" data-tab-content="people">
+      <div class="content-cols">
+        <div class="list-col">
+          <div class="list-col-head"><input class="list-col-search" id="search" placeholder="Search people…" oninput="renderPeopleList()"></div>
+          <div class="list-col-body" id="people-list"></div>
+        </div>
+        <div class="detail-col">
+          <div class="detail-placeholder" id="placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8 8 0 0113 0"/></svg><h2>Select someone</h2><p>Pick a person from the left, or add a new team member.</p><div id="intro-slot" style="max-width:620px;margin-top:1.4rem;"></div></div>
+          <div class="detail-pane" id="pane" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATRIX TAB -->
+    <div class="tab-content" data-tab-content="matrix">
+      <div class="page-scroll">
+        <div id="intro-slot-matrix"></div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Training matrix</div></div>
+          <div class="card-body" style="overflow-x:auto;" id="matrix-host"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATALOG TAB -->
+    <div class="tab-content" data-tab-content="catalog">
+      <div class="page-scroll">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Training catalog</div><button class="add-row-btn" onclick="addCourse()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add item</button></div>
+          <div class="card-body" id="catalog-host"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const PKEY = 'qms_team_people';
+    const CKEY = 'qms_team_courses';
+    const RKEY = 'qms_training_records'; // { personId-courseId: { date, evidence, expires, signature } }
+
+    let PEOPLE = loadP();
+    let COURSES = loadC();
+    let RECORDS = loadR();
+    let currentPersonId = null;
+
+    function loadP() {
+      try { const s = JSON.parse(localStorage.getItem(PKEY)); if (s) return s; } catch(e){}
+      return {};
+    }
+    function loadC() {
+      try { const s = JSON.parse(localStorage.getItem(CKEY)); if (s) return s; } catch(e){}
+      return {};  // start empty
+    }
+
+    const STARTER_COURSES = {
+      'T-001': { id:'T-001', name:'QMS overview + ISO 13485 basics', sopRef:'QMS-SOP-001', roles:['*'], refreshMonths: 24 },
+      'T-002': { id:'T-002', name:'Design Control procedure', sopRef:'DC-SOP-001', roles:['R&D','QA','RA'], refreshMonths: 24 },
+      'T-003': { id:'T-003', name:'Risk Management per ISO 14971', sopRef:'RM-SOP-001', roles:['R&D','QA','RA'], refreshMonths: 24 },
+      'T-004': { id:'T-004', name:'CAPA procedure', sopRef:'CAPA-SOP-001', roles:['QA','Ops'], refreshMonths: 36 },
+      'T-005': { id:'T-005', name:'Complaint handling & MDR reporting', sopRef:'PMS-SOP-002', roles:['QA'], refreshMonths: 12 },
+      'T-006': { id:'T-006', name:'GMP / cleanroom behavior', sopRef:'MFG-SOP-003', roles:['Ops'], refreshMonths: 12 },
+    };
+
+    function loadStarterCourses() {
+      if (!confirm('Load common medtech training items as starter courses?')) return;
+      Object.keys(STARTER_COURSES).forEach(function(id) {
+        if (!COURSES[id]) COURSES[id] = Object.assign({}, STARTER_COURSES[id]);
+      });
+      saveC();
+      renderCatalog();
+      renderPeopleList();
+    }
+    function loadR() { try { return JSON.parse(localStorage.getItem(RKEY)) || {}; } catch(e) { return {}; } }
+    function saveP() { localStorage.setItem(PKEY, JSON.stringify(PEOPLE)); }
+    function saveC() { localStorage.setItem(CKEY, JSON.stringify(COURSES)); }
+    function saveR() { localStorage.setItem(RKEY, JSON.stringify(RECORDS)); }
+    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function initials(name) { return (name||'—').split(/\s+/).map(function(p){return p[0]||'';}).join('').slice(0,2).toUpperCase() || '—'; }
+
+    function newPersonId() {
+      let n = 1;
+      Object.keys(PEOPLE).forEach(function(id){ const m = id.match(/^P-(\d+)$/); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
+      return 'P-' + String(n).padStart(3,'0');
+    }
+    function newCourseId() {
+      let n = 1;
+      Object.keys(COURSES).forEach(function(id){ const m = id.match(/^T-(\d+)$/); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
+      return 'T-' + String(n).padStart(3,'0');
+    }
+
+    // ── Tabs ──
+    function setTab(name) {
+      document.querySelectorAll('.view-tab').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab') === name); });
+      document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab-content') === name); });
+      if (name === 'matrix') renderMatrix();
+      if (name === 'catalog') renderCatalog();
+    }
+
+    // ── People ──
+    function addPerson() {
+      const id = newPersonId();
+      PEOPLE[id] = { id: id, name: '', role: '', started: '', quals: '' };
+      saveP();
+      currentPersonId = id;
+      renderPeopleList();
+      openPerson(id);
+      setTab('people');
+    }
+    function removePerson(id) {
+      if (!confirm('Delete this person? Training records will also be removed.')) return;
+      delete PEOPLE[id];
+      Object.keys(RECORDS).forEach(function(k){ if (k.indexOf(id+'-') === 0) delete RECORDS[k]; });
+      saveP(); saveR();
+      if (currentPersonId === id) { currentPersonId = null; document.getElementById('placeholder').style.display = 'flex'; document.getElementById('pane').style.display = 'none'; }
+      renderPeopleList();
+    }
+
+    function openPerson(id) {
+      currentPersonId = id;
+      document.getElementById('placeholder').style.display = 'none';
+      document.getElementById('pane').style.display = 'flex';
+      renderPersonDetail();
+      renderPeopleList();
+    }
+
+    function updatePerson(field, val) { if (!currentPersonId) return; PEOPLE[currentPersonId][field] = val; saveP(); renderPeopleList(); }
+
+    function renderPeopleList() {
+      const q = (document.getElementById('search').value || '').toLowerCase();
+      const host = document.getElementById('people-list');
+      const list = Object.values(PEOPLE).filter(function(p){ return !q || (p.name+' '+p.role).toLowerCase().indexOf(q) !== -1; });
+      list.sort(function(a,b){ return (a.name||'zzz') < (b.name||'zzz') ? -1 : 1; });
+
+      if (!list.length) { host.innerHTML = '<div class="list-empty"><div class="list-empty-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a8 8 0 0113 0"/></svg></div><div class="list-empty-title">No people yet</div><div class="list-empty-body">Add yourself and teammates — QMS auditors want names, roles, qualifications, and proof of training.</div></div>'; return; }
+
+      host.innerHTML = list.map(function(p) {
+        const sel = p.id === currentPersonId ? ' selected' : '';
+        const progress = personProgress(p);
+        return '<div class="person-card'+sel+'" onclick="openPerson(\''+p.id+'\')">' +
+          '<div class="person-top">' +
+            '<div class="person-avatar">'+esc(initials(p.name))+'</div>' +
+            '<div><div class="person-name">'+esc(p.name||'Unnamed')+'</div><div class="person-role">'+esc(p.role||'—')+'</div></div>' +
+          '</div>' +
+          '<div class="person-progress">' +
+            '<div class="person-bar"><div class="person-bar-fill" style="width:'+progress.pct+'%;background:'+(progress.pct===100?'#10B981':'#0AC0E9')+';"></div></div>' +
+            progress.completed+'/'+progress.applicable +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function applicableCourses(p) {
+      const role = (p.role || '').toLowerCase();
+      return Object.values(COURSES).filter(function(c) {
+        if (!c.roles || !c.roles.length) return true;
+        if (c.roles.indexOf('*') !== -1) return true;
+        return c.roles.some(function(r){ return role.indexOf(r.toLowerCase()) !== -1; });
+      });
+    }
+
+    function recordFor(personId, courseId) { return RECORDS[personId+'-'+courseId]; }
+
+    function statusFor(p, c) {
+      const r = recordFor(p.id, c.id);
+      if (!r || !r.completed) return 'pending';
+      if (r.expires) {
+        const now = new Date().toISOString().slice(0,10);
+        if (r.expires < now) return 'expired';
+      }
+      return 'complete';
+    }
+
+    function personProgress(p) {
+      const applicable = applicableCourses(p);
+      const completed = applicable.filter(function(c){ return statusFor(p,c) === 'complete'; }).length;
+      return { completed: completed, applicable: applicable.length, pct: applicable.length ? Math.round(100*completed/applicable.length) : 0 };
+    }
+
+    function renderPersonDetail() {
+      const p = PEOPLE[currentPersonId]; if (!p) return;
+      const host = document.getElementById('pane');
+      const applicable = applicableCourses(p);
+      const progress = personProgress(p);
+
+      host.innerHTML =
+        '<div style="display:flex;align-items:center;gap:0.7rem;">' +
+          '<div class="person-avatar" style="width:40px;height:40px;font-size:0.92rem;">'+esc(initials(p.name))+'</div>' +
+          '<div style="flex:1;">' +
+            '<input class="form-input" id="f-name" placeholder="Full name" value="'+esc(p.name)+'" oninput="updatePerson(\'name\',this.value)" style="font-size:1rem;font-weight:600;margin-bottom:0.3rem;">' +
+            '<input class="form-input" id="f-role" placeholder="Role / title" value="'+esc(p.role)+'" oninput="updatePerson(\'role\',this.value);renderPersonDetail()" style="font-size:0.82rem;">' +
+          '</div>' +
+          '<button class="btn-icon danger" onclick="removePerson(\''+p.id+'\')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">Qualifications</div></div><div class="card-body">' +
+          '<div class="form-row" style="margin-bottom:0.75rem;">' +
+            '<div class="form-field"><label class="form-label">Start date</label><input class="form-input" type="date" value="'+esc(p.started||'')+'" onchange="updatePerson(\'started\',this.value)"></div>' +
+            '<div class="form-field"><label class="form-label">Employee ID</label><input class="form-input" value="'+esc(p.empId||'')+'" oninput="updatePerson(\'empId\',this.value)"></div>' +
+          '</div>' +
+          '<div class="form-field"><label class="form-label">Education &amp; experience</label><textarea class="form-textarea" rows="3" oninput="updatePerson(\'quals\',this.value)" placeholder="Degrees, certifications, relevant prior experience.">'+esc(p.quals||'')+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">Training assignments</div><span class="card-title-sub">'+progress.completed+' of '+progress.applicable+' complete ('+progress.pct+'%)</span></div><div class="card-body">' +
+          (applicable.length ? applicable.map(function(c){ return renderPersonCourseRow(p, c); }).join('') : '<div class="subtle">No applicable training items. Either set a role, or add training items to the catalog.</div>') +
+        '</div></div>';
+    }
+
+    function renderPersonCourseRow(p, c) {
+      const r = recordFor(p.id, c.id) || {};
+      const status = statusFor(p, c);
+      const stColor = { pending:'gray', complete:'green', expired:'red' }[status];
+      return '<div style="padding:0.65rem 0.75rem;border-bottom:1px solid rgba(11,39,64,0.06);display:grid;grid-template-columns:110px 1fr 150px 120px 120px;gap:0.5rem;align-items:center;">' +
+        '<span class="item-card-id">'+esc(c.id)+'</span>' +
+        '<div><div style="font-size:0.78rem;font-weight:600;color:var(--primary);">'+esc(c.name)+'</div>' +
+        '<div style="font-size:0.66rem;color:rgba(11,39,64,0.5);margin-top:0.1rem;">SOP: '+esc(c.sopRef||'—')+' · Refresh: '+(c.refreshMonths||'—')+' mo</div></div>' +
+        '<span class="badge '+stColor+'">'+status+'</span>' +
+        '<input type="date" value="'+esc(r.completed||'')+'" onchange="updateRecord(\''+p.id+'\',\''+c.id+'\',\'completed\',this.value)" style="font-size:0.72rem;padding:0.3rem;border:1px solid rgba(11,39,64,0.12);border-radius:5px;outline:none;font-family:inherit;">' +
+        '<input type="date" value="'+esc(r.expires||'')+'" onchange="updateRecord(\''+p.id+'\',\''+c.id+'\',\'expires\',this.value)" placeholder="Expires" style="font-size:0.72rem;padding:0.3rem;border:1px solid rgba(11,39,64,0.12);border-radius:5px;outline:none;font-family:inherit;">' +
+      '</div>';
+    }
+
+    function updateRecord(pid, cid, field, val) {
+      const key = pid+'-'+cid;
+      if (!RECORDS[key]) RECORDS[key] = {};
+      RECORDS[key][field] = val;
+      // Auto-set expires if completion set and course has refresh
+      if (field === 'completed' && val && !RECORDS[key].expires && COURSES[cid] && COURSES[cid].refreshMonths) {
+        const d = new Date(val); d.setMonth(d.getMonth() + COURSES[cid].refreshMonths);
+        RECORDS[key].expires = d.toISOString().slice(0,10);
+      }
+      saveR();
+      renderPeopleList();
+      if (currentPersonId) renderPersonDetail();
+    }
+
+    // ── Matrix ──
+    function renderMatrix() {
+      document.getElementById('intro-slot-matrix').innerHTML = LearnMode.introCard({
+        id: 'training-matrix',
+        tag: 'FDA 820.25, ISO 13485 §6.2',
+        title: 'Reading the training matrix',
+        what: 'Each row is a person; each column is a training item. Green = completed and current; red = expired; circled minus = not applicable to this role; empty = pending.',
+        why: 'Auditors sample this matrix the moment they ask for training records. A single missing cell on a required role can be a 483 observation.',
+      });
+
+      const host = document.getElementById('matrix-host');
+      const people = Object.values(PEOPLE);
+      const courses = Object.values(COURSES);
+      if (!people.length || !courses.length) { host.innerHTML = '<div class="subtle" style="padding:1rem;">Add people and training items to see the matrix.</div>'; return; }
+
+      let html = '<table class="matrix"><thead><tr><th class="name-col">Name</th><th class="role-col">Role</th>';
+      courses.forEach(function(c){ html += '<th title="'+esc(c.name)+'" style="min-width:60px;">'+esc(c.id)+'</th>'; });
+      html += '</tr></thead><tbody>';
+
+      people.forEach(function(p){
+        html += '<tr>';
+        html += '<td class="name-col">'+esc(p.name||'Unnamed')+'</td>';
+        html += '<td class="role-col">'+esc(p.role||'—')+'</td>';
+        courses.forEach(function(c){
+          const applicable = applicableCourses(p).some(function(ac){ return ac.id === c.id; });
+          if (!applicable) { html += '<td><span class="matrix-check na"></span></td>'; return; }
+          const st = statusFor(p, c);
+          html += '<td><span class="matrix-check '+st+'" onclick="openPersonAt(\''+p.id+'\')"></span></td>';
+        });
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      host.innerHTML = html;
+    }
+    function openPersonAt(id) { openPerson(id); setTab('people'); }
+
+    // ── Catalog ──
+    function addCourse() {
+      const id = newCourseId();
+      COURSES[id] = { id: id, name: 'New training item', sopRef: '', roles: ['*'], refreshMonths: 24 };
+      saveC();
+      renderCatalog();
+    }
+    function updateCourse(id, field, val) {
+      if (field === 'roles') val = val.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+      if (field === 'refreshMonths') val = parseInt(val,10) || 0;
+      COURSES[id][field] = val;
+      saveC();
+    }
+    function removeCourse(id) {
+      if (!confirm('Delete ' + id + '? Associated training records will also be removed.')) return;
+      delete COURSES[id];
+      Object.keys(RECORDS).forEach(function(k){ if (k.indexOf('-'+id) !== -1) delete RECORDS[k]; });
+      saveC(); saveR();
+      renderCatalog();
+    }
+
+    function renderCatalog() {
+      const host = document.getElementById('catalog-host');
+      const list = Object.values(COURSES);
+      if (!list.length) { host.innerHTML = '<div class="subtle">No training items yet.</div>'; return; }
+      host.innerHTML = '<table class="data-table"><thead><tr><th>ID</th><th>Training</th><th>SOP reference</th><th>Applies to roles</th><th>Refresh (months)</th><th style="width:30px;"></th></tr></thead><tbody>' +
+        list.map(function(c) {
+          return '<tr>' +
+            '<td class="id-cell">'+esc(c.id)+'</td>' +
+            '<td><input style="font-family:inherit;font-size:0.76rem;padding:0.3rem;border:1px solid rgba(11,39,64,0.1);border-radius:5px;width:100%;outline:none;" value="'+esc(c.name)+'" oninput="updateCourse(\''+c.id+'\',\'name\',this.value)"></td>' +
+            '<td><input style="font-family:inherit;font-size:0.76rem;padding:0.3rem;border:1px solid rgba(11,39,64,0.1);border-radius:5px;width:100%;outline:none;" value="'+esc(c.sopRef||'')+'" oninput="updateCourse(\''+c.id+'\',\'sopRef\',this.value)"></td>' +
+            '<td><input style="font-family:inherit;font-size:0.76rem;padding:0.3rem;border:1px solid rgba(11,39,64,0.1);border-radius:5px;width:100%;outline:none;" value="'+esc((c.roles||[]).join(', '))+'" placeholder="R&amp;D, QA, * for all" oninput="updateCourse(\''+c.id+'\',\'roles\',this.value)"></td>' +
+            '<td><input type="number" style="font-family:inherit;font-size:0.76rem;padding:0.3rem;border:1px solid rgba(11,39,64,0.1);border-radius:5px;width:70px;outline:none;" value="'+esc(c.refreshMonths||0)+'" oninput="updateCourse(\''+c.id+'\',\'refreshMonths\',this.value)"></td>' +
+            '<td><button class="btn-icon danger" onclick="removeCourse(\''+c.id+'\')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></td>' +
+          '</tr>';
+        }).join('') +
+      '</tbody></table>';
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'team-training',
+        tag: 'Personnel · FDA 21 CFR 820.25, ISO 13485 §6.2',
+        title: 'Keeping your team audit-ready',
+        what: 'Every person doing work that affects the device must have documented education, training, or experience for the task. This module tracks who, what training, when, and when it expires.',
+        why: '"Show me the training records" is one of the first things an FDA inspector asks. An uncovered role (e.g. QA signed off CAPA but has no CAPA training on file) creates findings fast.',
+        facts: [
+          { label: 'Records to keep', value: 'Per-person, per-training, with date + evidence' },
+          { label: 'Common trap', value: 'Refresher training expired but signatures continuing' },
+          { label: 'Good practice', value: 'Tie training items to SOPs — new SOP triggers retraining' },
+        ],
+        checklist: [
+          'Add every person whose work affects device quality',
+          'Add training items (one per SOP minimum)',
+          'Assign applicability by role',
+          'Record completion dates and evidence',
+          'Set refresh intervals; track expiry dates',
+        ],
+        standards: ['FDA 21 CFR 820.25', 'ISO 13485:2016 §6.2', 'ISO 14971 §3.3 (competence for risk activities)']
+      });
+    }
+
+    document.addEventListener('qms-learn-mode-changed', function(){ if (currentPersonId) renderPersonDetail(); });
+    initSidebar({ activePage: 'team-training' });
+    renderIntro();
+    renderPeopleList();
+  </script>
+</body>
+</html>

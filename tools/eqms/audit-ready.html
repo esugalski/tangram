@@ -1,0 +1,408 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Center — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .view-tabs { display: flex; gap: 0.25rem; background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 1.25rem; }
+    .view-tab { border: none; background: transparent; font-family: inherit; font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.52); padding: 0.7rem 0.9rem; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .view-tab:hover { color: var(--primary); }
+    .view-tab.active { color: var(--aqua-dark); border-bottom-color: var(--aqua); }
+    .tab-content { flex: 1; overflow: hidden; display: none; min-height: 0; flex-direction: column; }
+    .tab-content.active { display: flex; }
+
+    .readiness-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.9rem; }
+    .readiness-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 11px; padding: 1rem 1.1rem; }
+    .readiness-card-head { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.3rem; }
+    .readiness-card-title { font-size: 0.84rem; font-weight: 700; color: var(--primary); letter-spacing: -0.01em; flex: 1; }
+    .readiness-card-sub { font-size: 0.68rem; color: rgba(11,39,64,0.5); margin-bottom: 0.55rem; }
+    .readiness-card-score { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.02em; }
+    .readiness-card-score.green { color: #047857; }
+    .readiness-card-score.amber { color: #b45309; }
+    .readiness-card-score.red { color: #dc2626; }
+    .readiness-bar { height: 6px; background: rgba(11,39,64,0.08); border-radius: 3px; overflow: hidden; margin: 0.4rem 0 0.55rem; }
+    .readiness-bar-fill { height: 100%; transition: width 0.2s; }
+    .readiness-bar-fill.green { background: var(--green); }
+    .readiness-bar-fill.amber { background: var(--amber); }
+    .readiness-bar-fill.red { background: var(--red); }
+    .readiness-missing { font-size: 0.72rem; color: rgba(11,39,64,0.6); line-height: 1.5; }
+    .readiness-missing ul { padding-left: 1.1rem; margin-top: 0.25rem; }
+    .readiness-missing li { margin-bottom: 0.12rem; }
+
+    .finding-row { display: grid; grid-template-columns: 90px 1fr 110px 120px 30px; gap: 0.5rem; align-items: center; padding: 0.5rem 0.55rem; border-radius: 7px; background: rgba(11,39,64,0.025); margin-bottom: 0.35rem; }
+    .finding-row input, .finding-row select { font-family: inherit; font-size: 0.74rem; padding: 0.32rem 0.45rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; background: white; outline: none; min-width: 0; }
+
+    .audit-card { padding: 0.75rem 0.85rem; border-radius: 8px; cursor: pointer; border: 1.5px solid transparent; margin-bottom: 0.3rem; }
+    .audit-card:hover { background: rgba(11,39,64,0.03); }
+    .audit-card.selected { background: rgba(10,192,233,0.06); border-color: rgba(10,192,233,0.25); }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Quality System</span>
+        <span class="topbar-sep">/</span>
+        Audit Center
+      </div>
+      <div class="topbar-right">
+        <button class="btn-primary" onclick="newAudit()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Schedule audit</button>
+      </div>
+    </header>
+
+    <div class="view-tabs">
+      <button class="view-tab active" data-tab="readiness" onclick="setTab('readiness')">Audit readiness</button>
+      <button class="view-tab" data-tab="internal" onclick="setTab('internal')">Internal audits</button>
+    </div>
+
+    <!-- READINESS -->
+    <div class="tab-content active" data-tab-content="readiness">
+      <div class="page-scroll">
+        <div id="intro-slot-ready"></div>
+
+        <div class="kpi-row">
+          <div class="kpi-tile"><div class="kpi-tile-label">Overall readiness</div><div class="kpi-tile-value" id="kpi-overall">—</div><div class="kpi-tile-sub" id="kpi-overall-sub">Weighted across domains</div></div>
+          <div class="kpi-tile"><div class="kpi-tile-label">Critical gaps</div><div class="kpi-tile-value" id="kpi-gaps" style="color:#dc2626;">0</div><div class="kpi-tile-sub">Areas below 50%</div></div>
+          <div class="kpi-tile"><div class="kpi-tile-label">Internal audits (12mo)</div><div class="kpi-tile-value" id="kpi-audits">0</div><div class="kpi-tile-sub">Completed last 12 months</div></div>
+          <div class="kpi-tile"><div class="kpi-tile-label">Open findings</div><div class="kpi-tile-value" id="kpi-findings">0</div><div class="kpi-tile-sub">Not yet closed</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div class="card-title">Readiness by domain</div></div>
+          <div class="card-body">
+            <div id="readiness-grid" class="readiness-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERNAL -->
+    <div class="tab-content" data-tab-content="internal">
+      <div class="content-cols">
+        <div class="list-col">
+          <div class="list-col-head">
+            <input class="list-col-search" id="search" placeholder="Search audits…" oninput="renderAuditList()">
+          </div>
+          <div class="list-col-body" id="audit-list"></div>
+        </div>
+        <div class="detail-col">
+          <div class="detail-placeholder" id="placeholder"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><h2>Select an audit</h2><p>Pick one from the left or click "Schedule audit" to plan a new one.</p><div id="intro-slot-audit" style="max-width:640px;margin-top:1.4rem;"></div></div>
+          <div class="detail-pane" id="pane" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const AKEY = 'qms_internal_audits';
+    let AUDITS = load();
+    let currentId = null;
+
+    function load() { try { return JSON.parse(localStorage.getItem(AKEY)) || {}; } catch(e) { return {}; } }
+    function save() { localStorage.setItem(AKEY, JSON.stringify(AUDITS)); }
+    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function newId() {
+      let n = 1;
+      Object.keys(AUDITS).forEach(function(id){ const m = id.match(/^IA-(\d+)$/); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
+      return 'IA-' + String(n).padStart(3,'0');
+    }
+
+    function setTab(name) {
+      document.querySelectorAll('.view-tab').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab') === name); });
+      document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab-content') === name); });
+      if (name === 'readiness') renderReadiness();
+    }
+
+    // ── Readiness ──
+    const DOMAINS = [
+      { id: 'docs',    label: 'Document control',       sub: 'SOPs, manuals, versioning', regs: '820.40 / §4.2' },
+      { id: 'training', label: 'Training & competency', sub: 'Per-role training current',  regs: '820.25 / §6.2' },
+      { id: 'design',  label: 'Design controls',        sub: 'DHF, reviews, V&V, risk',     regs: '820.30 / §7.3' },
+      { id: 'risk',    label: 'Risk management',        sub: 'Risk file, residual risk',   regs: 'ISO 14971' },
+      { id: 'capa',    label: 'CAPA',                   sub: 'Open, closed, effectiveness',regs: '820.100 / §8.5.2' },
+      { id: 'nc',      label: 'Nonconformance',         sub: 'Logged, investigated',       regs: '820.90 / §8.3' },
+      { id: 'complaints', label: 'Complaints & MDR',    sub: 'Logged, dispositioned',      regs: '820.198 / §8.2.3' },
+      { id: 'suppliers', label: 'Supplier controls',    sub: 'Qualification, monitoring',  regs: '820.50 / §7.4' },
+      { id: 'equip',   label: 'Equipment & calibration',sub: 'Calibration current',        regs: '820.72 / §7.6' },
+      { id: 'mgmt',    label: 'Management review',      sub: 'At planned intervals',       regs: '820.20(c) / §5.6' },
+      { id: 'pms',     label: 'Post-market surveillance',sub: 'PMS plan, periodic reports',regs: '820.198 / MDR Art 83' },
+      { id: 'audit',   label: 'Internal audits',        sub: 'Scheduled, findings closed', regs: '820.22 / §8.2.4' },
+    ];
+
+    function computeDomainScore(id) {
+      // Pull signals from other localStorage keys.
+      let score = 0, max = 100, missing = [];
+      try {
+        if (id === 'docs') {
+          const procs = JSON.parse(localStorage.getItem('qms_procedures')) || {};
+          const n = Object.keys(procs).length;
+          const approved = Object.values(procs).filter(function(p){ return p.approvalSignature; }).length;
+          score = n ? Math.round(100 * approved / n) : 0;
+          if (!n) missing.push('No SOPs in process library');
+          if (n && approved < n) missing.push((n - approved) + ' SOP(s) not approved');
+        } else if (id === 'training') {
+          const people = JSON.parse(localStorage.getItem('qms_team_people')) || {};
+          const courses = JSON.parse(localStorage.getItem('qms_team_courses')) || {};
+          const records = JSON.parse(localStorage.getItem('qms_training_records')) || {};
+          let total = 0, done = 0;
+          Object.values(people).forEach(function(p){
+            Object.values(courses).forEach(function(c){
+              const roles = c.roles || ['*'];
+              const role = (p.role||'').toLowerCase();
+              const applies = roles.indexOf('*') !== -1 || roles.some(function(r){ return role.indexOf(r.toLowerCase()) !== -1; });
+              if (!applies) return;
+              total++;
+              const rec = records[p.id+'-'+c.id];
+              if (rec && rec.completed && (!rec.expires || rec.expires >= new Date().toISOString().slice(0,10))) done++;
+            });
+          });
+          score = total ? Math.round(100 * done / total) : 0;
+          if (!Object.keys(people).length) missing.push('No people in roster');
+          if (total && done < total) missing.push((total - done) + ' training assignment(s) outstanding/expired');
+        } else if (id === 'design') {
+          const reviews = JSON.parse(localStorage.getItem('qms_design_reviews')) || {};
+          const n = Object.keys(reviews).length;
+          score = Math.min(100, n * 20); // 5+ reviews = 100%
+          if (!n) missing.push('No design reviews logged');
+        } else if (id === 'risk') {
+          const risks = JSON.parse(localStorage.getItem('qms_risks')) || {};
+          const list = Object.values(risks);
+          const controlled = list.filter(function(r){ return (r.controls||[]).length > 0; }).length;
+          score = list.length ? Math.round(100 * controlled / list.length) : 0;
+          if (!list.length) missing.push('Risk register empty — start hazard analysis');
+          if (list.length && controlled < list.length) missing.push((list.length - controlled) + ' risk(s) without controls');
+        } else if (id === 'capa') {
+          const capas = JSON.parse(localStorage.getItem('qms_capas')) || {};
+          const list = Object.values(capas);
+          const closed = list.filter(function(c){ return c.status === 'closed'; }).length;
+          score = list.length ? Math.min(100, 50 + Math.round(50 * closed / list.length)) : 50;
+          if (!list.length) missing.push('No CAPAs logged — expected to have some activity');
+        } else if (id === 'nc') {
+          const ncs = JSON.parse(localStorage.getItem('qms_nonconformances')) || {};
+          const list = Object.values(ncs);
+          const closed = list.filter(function(n){ return n.status === 'closed'; }).length;
+          score = list.length ? Math.min(100, 50 + Math.round(50 * closed / list.length)) : 50;
+          if (!list.length) missing.push('No nonconformances logged');
+        } else if (id === 'complaints') {
+          const c = JSON.parse(localStorage.getItem('qms_complaints')) || {};
+          const list = Object.values(c);
+          const closed = list.filter(function(x){ return x.status === 'closed'; }).length;
+          score = list.length ? Math.min(100, 50 + Math.round(50 * closed / list.length)) : 50;
+          if (!list.length) missing.push('No complaint records');
+        } else if (id === 'suppliers') {
+          const s = JSON.parse(localStorage.getItem('qms_suppliers')) || {};
+          const list = Object.values(s);
+          const qualified = list.filter(function(x){ return x.status === 'qualified'; }).length;
+          score = list.length ? Math.round(100 * qualified / list.length) : 0;
+          if (!list.length) missing.push('No suppliers in registry');
+        } else if (id === 'equip') {
+          const e = JSON.parse(localStorage.getItem('qms_equipment')) || {};
+          const list = Object.values(e);
+          const now = new Date().toISOString().slice(0,10);
+          const current = list.filter(function(x){ return x.nextCalibration && x.nextCalibration >= now; }).length;
+          score = list.length ? Math.round(100 * current / list.length) : 0;
+          if (!list.length) missing.push('No equipment registered');
+          if (list.length && current < list.length) missing.push((list.length - current) + ' item(s) overdue for calibration');
+        } else if (id === 'mgmt') {
+          const m = JSON.parse(localStorage.getItem('qms_management_reviews')) || {};
+          const list = Object.values(m);
+          const completed = list.filter(function(x){ return x.status === 'complete'; }).length;
+          score = completed >= 1 ? 100 : (list.length ? 50 : 0);
+          if (!list.length) missing.push('No management review scheduled');
+        } else if (id === 'pms') {
+          const p = JSON.parse(localStorage.getItem('qms_post_market')) || {};
+          const hasPlan = (p.scope || '') && (p.sources || '');
+          score = hasPlan ? 75 : 0;
+          if ((p.fscas||[]).length || (p.reports||[]).filter(function(r){ return r.status==='approved'; }).length) score = 100;
+          if (!hasPlan) missing.push('PMS plan not yet drafted');
+        } else if (id === 'audit') {
+          const a = AUDITS;
+          const completed = Object.values(a).filter(function(x){ return x.status === 'complete'; }).length;
+          score = completed >= 1 ? Math.min(100, 50 + 50 * completed) : (Object.keys(a).length ? 30 : 0);
+          if (!Object.keys(a).length) missing.push('No internal audits scheduled');
+          if (Object.keys(a).length && completed === 0) missing.push('Scheduled audits not yet executed');
+        }
+      } catch(e) { score = 0; }
+      const level = score >= 80 ? 'green' : score >= 50 ? 'amber' : 'red';
+      return { score: score, level: level, missing: missing };
+    }
+
+    function renderReadiness() {
+      document.getElementById('intro-slot-ready').innerHTML = LearnMode.introCard({
+        id: 'audit-readiness',
+        tag: 'External audit preparation',
+        title: 'Are you ready if an inspector walks in tomorrow?',
+        what: 'This scorecard samples every other module and estimates how ready you are for an FDA, Notified Body, or ISO 13485 audit. Green = in good shape; amber = gaps; red = fix before anyone external looks.',
+        why: 'The #1 audit finding on medtech startups is "records exist but are inconsistent." The scorecard catches that early — inconsistencies between modules show up as low scores.',
+        checklist: [
+          'Walk through any red domain first — those trigger 483 observations',
+          'Look for mismatches (e.g. CAPAs opened but no Management Review record)',
+          'Sign & date every document before you count it as approved',
+          'Schedule internal audits BEFORE external ones',
+        ],
+        standards: ['FDA 21 CFR 820 (QSR)', 'ISO 13485:2016', 'EU MDR Annex IX/X/XI', 'MDSAP']
+      });
+
+      const grid = document.getElementById('readiness-grid');
+      const scores = DOMAINS.map(function(d){ return Object.assign({ id: d.id, label: d.label, sub: d.sub, regs: d.regs }, computeDomainScore(d.id)); });
+      grid.innerHTML = scores.map(function(s){
+        const missingHTML = s.missing.length ? '<div class="readiness-missing">Gaps:<ul>' + s.missing.map(function(m){ return '<li>'+esc(m)+'</li>'; }).join('') + '</ul></div>' : '<div class="readiness-missing" style="color:#047857;">No obvious gaps.</div>';
+        return '<div class="readiness-card">' +
+          '<div class="readiness-card-head"><div class="readiness-card-title">'+esc(s.label)+'</div><span class="badge gray" style="font-size:0.56rem;">'+esc(s.regs)+'</span></div>' +
+          '<div class="readiness-card-sub">'+esc(s.sub)+'</div>' +
+          '<div class="readiness-card-score '+s.level+'">'+s.score+'%</div>' +
+          '<div class="readiness-bar"><div class="readiness-bar-fill '+s.level+'" style="width:'+s.score+'%;"></div></div>' +
+          missingHTML +
+        '</div>';
+      }).join('');
+
+      const avg = Math.round(scores.reduce(function(a,s){ return a+s.score; }, 0) / scores.length);
+      const gaps = scores.filter(function(s){ return s.score < 50; }).length;
+      const openFindings = Object.values(AUDITS).reduce(function(acc, a){ return acc + (a.findings||[]).filter(function(f){ return f.status !== 'closed'; }).length; }, 0);
+      const now = new Date(); const yearAgo = new Date(now.getTime() - 365*24*60*60*1000).toISOString().slice(0,10);
+      const completedLastYear = Object.values(AUDITS).filter(function(a){ return a.status === 'complete' && a.date && a.date >= yearAgo; }).length;
+      document.getElementById('kpi-overall').textContent = avg + '%';
+      document.getElementById('kpi-gaps').textContent = gaps;
+      document.getElementById('kpi-findings').textContent = openFindings;
+      document.getElementById('kpi-audits').textContent = completedLastYear;
+    }
+
+    // ── Internal audits ──
+    function newAudit() {
+      const id = newId();
+      AUDITS[id] = { id: id, title: 'New audit', scope: '', auditor: '', date: '', status: 'scheduled', summary: '', findings: [] };
+      save();
+      renderAuditList();
+      openAudit(id);
+      setTab('internal');
+    }
+    function openAudit(id) {
+      currentId = id;
+      document.getElementById('placeholder').style.display = 'none';
+      document.getElementById('pane').style.display = 'flex';
+      renderAudit();
+      renderAuditList();
+    }
+    function removeAudit() {
+      if (!confirm('Delete ' + currentId + '?')) return;
+      delete AUDITS[currentId]; save(); currentId = null;
+      document.getElementById('pane').style.display = 'none';
+      document.getElementById('placeholder').style.display = 'flex';
+      renderAuditList();
+    }
+
+    function renderAuditList() {
+      const q = (document.getElementById('search').value || '').toLowerCase();
+      const host = document.getElementById('audit-list');
+      const list = Object.values(AUDITS).filter(function(a){ return !q || (a.title+' '+a.id+' '+a.scope).toLowerCase().indexOf(q) !== -1; });
+      list.sort(function(a,b){ return (b.date || '') < (a.date || '') ? -1 : 1; });
+
+      if (!list.length) { host.innerHTML = '<div class="list-empty"><div class="list-empty-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="list-empty-title">No audits yet</div><div class="list-empty-body">Plan an internal audit schedule that hits each QMS domain at least every 12 months.</div></div>'; return; }
+
+      host.innerHTML = list.map(function(a){
+        const sel = a.id === currentId ? ' selected' : '';
+        const st = { scheduled:'gray', 'in-progress':'amber', complete:'green' }[a.status] || 'gray';
+        return '<div class="audit-card'+sel+'" onclick="openAudit(\''+a.id+'\')">' +
+          '<div class="item-card-top"><span class="item-card-id">'+esc(a.id)+'</span><span class="badge '+st+'">'+esc(a.status)+'</span></div>' +
+          '<div class="item-card-title">'+esc(a.title||'Untitled')+'</div>' +
+          '<div class="item-card-meta">'+esc(a.date||'No date')+' · '+(a.findings||[]).length+' finding(s)</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderAudit() {
+      const a = AUDITS[currentId]; if (!a) return;
+      const pane = document.getElementById('pane');
+      pane.innerHTML =
+        '<div style="display:flex;align-items:flex-start;gap:0.7rem;">' +
+          '<span class="item-card-id" style="font-size:0.72rem;padding:0.2rem 0.55rem;">'+esc(a.id)+'</span>' +
+          '<input class="form-input" id="f-title" value="'+esc(a.title)+'" oninput="u(\'title\',this.value);renderAuditList()" style="flex:1;font-size:0.95rem;font-weight:600;">' +
+          '<button class="btn-icon danger" onclick="removeAudit()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">Audit plan</div></div><div class="card-body">' +
+          '<div class="form-row" style="margin-bottom:0.75rem;">' +
+            '<div class="form-field"><label class="form-label">Scope / subject area</label><input class="form-input" value="'+esc(a.scope)+'" oninput="u(\'scope\',this.value)" placeholder="e.g. Design Controls, Complaints"></div>' +
+            '<div class="form-field"><label class="form-label">Standards audited</label><input class="form-input" value="'+esc(a.standards||'')+'" oninput="u(\'standards\',this.value)" placeholder="e.g. ISO 13485 §7.3, FDA 820.30"></div>' +
+          '</div>' +
+          '<div class="form-row-3" style="margin-bottom:0.75rem;">' +
+            '<div class="form-field"><label class="form-label">Lead auditor</label><input class="form-input" value="'+esc(a.auditor)+'" oninput="u(\'auditor\',this.value)"></div>' +
+            '<div class="form-field"><label class="form-label">Date</label><input class="form-input" type="date" value="'+esc(a.date||'')+'" onchange="u(\'date\',this.value);renderAuditList()"></div>' +
+            '<div class="form-field"><label class="form-label">Status</label><select class="form-select" onchange="u(\'status\',this.value);renderAuditList()">' +
+              ['scheduled','in-progress','complete'].map(function(s){ return '<option value="'+s+'" '+(a.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+            '</select></div>' +
+          '</div>' +
+          '<div class="form-field"><label class="form-label">Audit summary</label><textarea class="form-textarea" rows="3" oninput="u(\'summary\',this.value)" placeholder="Executive summary of the audit (scope executed, departments engaged, overall conclusion).">'+esc(a.summary||'')+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">Findings</div><button class="add-row-btn" onclick="addFinding()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add finding</button></div><div class="card-body">' +
+          '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('Findings are usually graded: Major (systemic QMS failure), Minor (isolated lapse), or Observation (improvement suggestion). Majors typically need a CAPA; Minors may need containment + root cause.') + '</div>' +
+          '<div id="findings-host"></div>' +
+        '</div></div>';
+
+      renderFindings();
+    }
+
+    function u(field, val) { if (!currentId) return; AUDITS[currentId][field] = val; save(); }
+    function addFinding() { AUDITS[currentId].findings.push({ id:'F-'+String((AUDITS[currentId].findings.length+1)).padStart(2,'0'), desc:'', grade:'minor', status:'open', due:'' }); save(); renderFindings(); renderAuditList(); }
+    function uFinding(i, field, val) { AUDITS[currentId].findings[i][field] = val; save(); renderAuditList(); }
+    function rmFinding(i) { AUDITS[currentId].findings.splice(i, 1); save(); renderFindings(); renderAuditList(); }
+
+    function renderFindings() {
+      const host = document.getElementById('findings-host');
+      const list = AUDITS[currentId].findings || [];
+      if (!list.length) { host.innerHTML = '<div class="subtle">No findings yet.</div>'; return; }
+      host.innerHTML = list.map(function(f, i) {
+        return '<div class="finding-row">' +
+          '<input value="'+esc(f.id)+'" oninput="uFinding('+i+',\'id\',this.value)">' +
+          '<input placeholder="Finding description" value="'+esc(f.desc)+'" oninput="uFinding('+i+',\'desc\',this.value)">' +
+          '<select onchange="uFinding('+i+',\'grade\',this.value)">' +
+            ['major','minor','observation'].map(function(g){ return '<option value="'+g+'" '+(f.grade===g?'selected':'')+'>'+g+'</option>'; }).join('') +
+          '</select>' +
+          '<select onchange="uFinding('+i+',\'status\',this.value)">' +
+            ['open','action-planned','closed'].map(function(s){ return '<option value="'+s+'" '+(f.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+          '</select>' +
+          '<button class="btn-icon danger" onclick="rmFinding('+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot-audit').innerHTML = LearnMode.introCard({
+        id: 'internal-audits',
+        tag: 'FDA 21 CFR 820.22, ISO 13485 §8.2.4',
+        title: 'Internal audits',
+        what: 'Internal audits are scheduled, independent checks that your own QMS is doing what the procedures say. Done right, they surface problems before external auditors do.',
+        why: 'Regulators explicitly require internal audits at planned intervals covering every QMS area at least annually. They also expect findings to feed CAPA where systemic.',
+        checklist: [
+          'Cover every QMS domain at least every 12 months',
+          'Use auditors independent of the work being audited',
+          'Grade findings consistently (Major / Minor / Observation)',
+          'Track corrections AND corrective actions',
+          'Close findings — escalate stale ones to Management Review',
+        ],
+        standards: ['FDA 21 CFR 820.22', 'ISO 13485:2016 §8.2.4', 'ISO 19011 (auditing guidelines)']
+      });
+    }
+
+    document.addEventListener('qms-learn-mode-changed', function(){ renderReadiness(); if (currentId) renderAudit(); });
+    initSidebar({ activePage: 'audit-ready' });
+    renderIntro();
+    renderReadiness();
+    renderAuditList();
+  </script>
+</body>
+</html>

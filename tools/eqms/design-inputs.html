@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -96,7 +96,7 @@
     .status-pill.none { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.4); }
 
     /* ─── DOC COVER ─── */
-    .doc-wrap { max-width: 860px; margin: 0 auto; }
+    .doc-wrap { max-width: 1200px; margin: 0 auto; }
     .doc-cover { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 14px; padding: 2rem 2.25rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
     .doc-cover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--primary), var(--mid-blue)); }
     .doc-cover-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
@@ -366,6 +366,13 @@
       </div>
     </header>
 
+    <!-- Soft gate: Design Control SOP prerequisite -->
+    <div id="soft-gate-warning" style="display:none;background:rgba(245,158,11,0.08);border-bottom:1px solid rgba(245,158,11,0.3);padding:0.65rem 1.5rem;flex-shrink:0;align-items:flex-start;gap:0.65rem;font-size:0.79rem;color:#92400e;line-height:1.55;">
+      <svg style="width:14px;height:14px;stroke:#d97706;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:0.1rem;" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div>Design inputs records should be governed by an approved Design Control Procedure. If you haven't set that up yet, <a href="design-control.html" style="color:#b45309;font-weight:600;text-decoration:none;">go to Design Control Procedure →</a>. You can continue here, but close this gap before any regulatory review.</div>
+      <button onclick="this.parentElement.style.display='none';sessionStorage.setItem('qms_gate_dismissed_design_inputs','1');" style="margin-left:auto;font-size:0.7rem;font-weight:600;color:#b45309;background:none;border:none;cursor:pointer;flex-shrink:0;">Dismiss</button>
+    </div>
+
     <!-- CONTENT AREA -->
     <div class="content-area" id="mainContentArea">
       <div class="doc-wrap">
@@ -429,10 +436,17 @@
           </div>
         </div><!-- /doc-cover -->
 
+        <!-- What this page is (Guided mode) -->
+        <div class="learn-only" style="background:rgba(10,192,233,0.06);border:1px solid rgba(10,192,233,0.22);border-radius:10px;padding:0.85rem 1.1rem;margin:1.25rem 0 0.75rem;font-family:'Inter',sans-serif;">
+          <div style="font-size:0.58rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#089bbf;margin-bottom:0.3rem;">What is a &quot;Design Input&quot;?</div>
+          <div style="font-size:0.82rem;color:#0B2740;line-height:1.55;margin-bottom:0.5rem;">A <strong>design input</strong> is the engineer's version of a user need — testable, specific, measurable. If the user need is <em>&quot;the patient should be continuously monitored,&quot;</em> the design input is <em>&quot;detect arrhythmia events with ≥98% sensitivity and ≤2% false positive rate.&quot;</em></div>
+          <div style="font-size:0.76rem;color:#304F6B;line-height:1.55;">Each design input should: (1) trace back to a user need (or a regulation/risk control), (2) have an objective pass/fail criterion, and (3) be verifiable by test, inspection, or analysis. This is the <strong>single most important document</strong> in the DHF — FDA and Notified Bodies reference it constantly.</div>
+        </div>
+
         <!-- Requirements Table -->
         <div class="req-section-head">
           <div class="req-section-left">
-            <span class="req-section-title">Design Input Requirements</span>
+            <span class="req-section-title">Design inputs</span>
             <span class="req-section-count" id="reqCount">7</span>
           </div>
         </div>
@@ -775,11 +789,18 @@
     let isProposingChange = false;
 
     // ── SETTINGS ──────────────────────────────────────────────────────────
-    let QMS_SETTINGS = {
-      companyName: 'Tangram MedTech', projectName: 'CardioSync Pro',
-      logoDataUrl: null, footerText: 'CONFIDENTIAL — For Internal Use Only',
-      deviceDescription: '', apiKey: ''
-    };
+    let QMS_SETTINGS = (function(){
+      let ctx = {};
+      try { ctx = JSON.parse(localStorage.getItem('qms_context')) || {}; } catch(e) {}
+      return {
+        companyName: ctx.companyName || '',
+        projectName: ctx.deviceName || '',
+        logoDataUrl: null,
+        footerText: 'CONFIDENTIAL — For Internal Use Only',
+        deviceDescription: ctx.intendedUse || '',
+        apiKey: ''
+      };
+    })();
     function loadSettings() {
       try { const s = localStorage.getItem('qms_settings'); if (s) QMS_SETTINGS = { ...QMS_SETTINGS, ...JSON.parse(s) }; } catch(e) {}
       const cn = document.getElementById('settingCompanyName'); if (cn) cn.value = QMS_SETTINGS.companyName || '';
@@ -793,7 +814,7 @@
       const img = document.getElementById('logoPreviewImg'); const title = document.getElementById('logoUploadTitle');
       const sub = document.getElementById('logoUploadSub'); const rmBtn = document.getElementById('btnRemoveLogo');
       if (QMS_SETTINGS.logoDataUrl) { img.src = QMS_SETTINGS.logoDataUrl; title.textContent = 'Logo uploaded'; sub.textContent = 'Click to replace'; rmBtn.style.display = 'block'; }
-      else { img.src = '../../brand_assets/Tangram-T%20mark%20reverse_Square.png'; title.textContent = 'Upload your logo'; sub.textContent = 'PNG, JPG, or SVG · max 2 MB'; rmBtn.style.display = 'none'; }
+      else { img.src = 'brand_assets/Tangram-T%20mark%20reverse_Square.png'; title.textContent = 'Upload your logo'; sub.textContent = 'PNG, JPG, or SVG · max 2 MB'; rmBtn.style.display = 'none'; }
     }
     function handleLogoUpload(input) {
       const file = input.files[0]; if (!file) return;
@@ -1367,11 +1388,23 @@
     })();
   </script>
 
-  <script src="sidebar.js"></script>
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
   <script src="esign.js"></script>
   <script src="versions.js"></script>
   <script src="governance.js"></script>
   <script src="approvals.js"></script>
-  <script>initSidebar({ activePage: 'design-inputs-tool' });</script>
+  <script>
+    initSidebar({ activePage: 'design-inputs-tool' });
+    (function(){
+      if (typeof LearnMode === 'undefined' || !LearnMode.isGuided()) return;
+      if (sessionStorage.getItem('qms_gate_dismissed_design_inputs')) return;
+      try { var p = JSON.parse(localStorage.getItem('qms_proc_design_control')); if (p && p.approved) return; } catch(e) {}
+      var el = document.getElementById('soft-gate-warning');
+      if (el) el.style.display = 'flex';
+    })();
+  </script>
 </body>
 </html>

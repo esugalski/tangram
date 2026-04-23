@@ -1,0 +1,276 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complaints &amp; MDR — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .comp-card { padding: 0.7rem 0.85rem; border-radius: 8px; cursor: pointer; border: 1.5px solid transparent; margin-bottom: 0.28rem; }
+    .comp-card:hover { background: rgba(11,39,64,0.03); }
+    .comp-card.selected { background: rgba(10,192,233,0.06); border-color: rgba(10,192,233,0.25); }
+
+    .reportable-banner { padding: 0.85rem 1rem; border-radius: 9px; margin-bottom: 0.9rem; display: flex; align-items: flex-start; gap: 0.65rem; }
+    .reportable-banner.yes { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.22); color: #dc2626; }
+    .reportable-banner.no { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2); color: #047857; }
+    .reportable-banner.pending { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.22); color: #b45309; }
+    .reportable-banner svg { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .reportable-text { font-size: 0.82rem; font-weight: 600; line-height: 1.45; }
+    .reportable-sub { font-size: 0.72rem; font-weight: 500; margin-top: 0.25rem; opacity: 0.85; }
+
+    .decision-q { padding: 0.7rem 0.85rem; background: rgba(11,39,64,0.025); border: 1px solid rgba(11,39,64,0.06); border-radius: 8px; margin-bottom: 0.45rem; }
+    .decision-q-label { font-size: 0.78rem; font-weight: 600; color: var(--primary); margin-bottom: 0.4rem; }
+    .decision-q-opts { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .decision-q-opts button { font-family: inherit; font-size: 0.7rem; font-weight: 600; padding: 0.32rem 0.65rem; border: 1.5px solid rgba(11,39,64,0.12); background: white; border-radius: 5px; cursor: pointer; }
+    .decision-q-opts button:hover { border-color: rgba(10,192,233,0.4); }
+    .decision-q-opts button.selected { background: var(--aqua); color: white; border-color: var(--aqua); }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Post-Market</span>
+        <span class="topbar-sep">/</span>
+        Complaints &amp; MDR
+      </div>
+      <div class="topbar-right">
+        <button class="btn-primary" onclick="newComplaint()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Log complaint</button>
+      </div>
+    </header>
+
+    <div class="content-cols">
+      <div class="list-col">
+        <div class="list-col-head"><input class="list-col-search" id="search" placeholder="Search complaints…" oninput="renderList()"></div>
+        <div class="list-col-body" id="list-body"></div>
+      </div>
+      <div class="detail-col">
+        <div class="detail-placeholder" id="placeholder">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <h2>Select a complaint</h2>
+          <p>Pick a record on the left, or log a new one.</p>
+          <div id="intro-slot" style="max-width:640px;margin-top:1.4rem;"></div>
+        </div>
+        <div class="detail-pane" id="pane" style="display:none;"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_complaints';
+    let DATA = load();
+    let currentId = null;
+
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    function save() { localStorage.setItem(KEY, JSON.stringify(DATA)); }
+    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function newId() {
+      let n = 1;
+      Object.keys(DATA).forEach(function(id){ const m = id.match(/^COMP-(\d+)$/); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
+      return 'COMP-' + String(n).padStart(3,'0');
+    }
+
+    function newComplaint() {
+      const id = newId();
+      DATA[id] = {
+        id: id, title: '', dateReceived: new Date().toISOString().slice(0,10), receivedBy: '',
+        complainantName: '', complainantType: 'patient',
+        channel: 'email', contactInfo: '',
+        deviceRef: '', lot: '', serial: '', eventDate: '',
+        description: '',
+        isComplaint: null, // yes/no
+        involvedDeath: null, involvedSerious: null, malfunctionCouldCause: null,
+        reportable: 'pending', // pending / yes / no
+        reportableRationale: '',
+        jurisdictions: [],
+        investigation: '',
+        response: '', responseSent: '',
+        status: 'open', closureDate: '',
+        linkedNC: '', linkedCAPA: '', linkedFSCA: '',
+      };
+      save();
+      renderList();
+      open(id);
+    }
+
+    function open(id) {
+      currentId = id;
+      document.getElementById('placeholder').style.display = 'none';
+      document.getElementById('pane').style.display = 'flex';
+      renderDetail();
+      renderList();
+    }
+
+    function renderList() {
+      const q = (document.getElementById('search').value || '').toLowerCase();
+      const host = document.getElementById('list-body');
+      const list = Object.values(DATA).filter(function(c){ return !q || (c.title+' '+c.id+' '+c.complainantName+' '+c.deviceRef).toLowerCase().indexOf(q) !== -1; });
+      list.sort(function(a,b){ return (b.dateReceived||'') < (a.dateReceived||'') ? -1 : 1; });
+
+      if (!list.length) { host.innerHTML = '<div class="list-empty"><div class="list-empty-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="list-empty-title">No complaints logged</div><div class="list-empty-body">A complaint is any customer communication alleging a deficiency in device identity, quality, safety, or performance.</div></div>'; return; }
+
+      host.innerHTML = list.map(function(c){
+        const sel = c.id === currentId ? ' selected' : '';
+        const statusBadge = c.status === 'closed' ? '<span class="badge green">Closed</span>' : '<span class="badge amber">Open</span>';
+        const rep = c.reportable === 'yes' ? '<span class="badge red">Reportable</span>' : (c.reportable === 'no' ? '' : '<span class="badge gray">Assessing</span>');
+        return '<div class="comp-card'+sel+'" onclick="open(\''+c.id+'\')">' +
+          '<div class="item-card-top"><span class="item-card-id">'+esc(c.id)+'</span>'+statusBadge+rep+'</div>' +
+          '<div class="item-card-title">'+esc(c.title || c.description.slice(0, 60) || 'No description')+'</div>' +
+          '<div class="item-card-meta">'+esc(c.dateReceived||'—')+' · '+esc(c.deviceRef||'—')+'</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderDetail() {
+      const c = DATA[currentId]; if (!c) return;
+      const pane = document.getElementById('pane');
+
+      let repState = c.reportable || 'pending';
+      let repText = '';
+      if (repState === 'yes') repText = 'Reportable under applicable regulation(s). Submit MDR / EU MIR / similar within required deadline.';
+      else if (repState === 'no') repText = 'Not reportable. Document decision + rationale in the record.';
+      else repText = 'Reportability not yet assessed — answer the triage questions below.';
+
+      pane.innerHTML =
+        '<div style="display:flex;align-items:flex-start;gap:0.7rem;">' +
+          '<span class="item-card-id" style="font-size:0.72rem;padding:0.2rem 0.55rem;">'+esc(c.id)+'</span>' +
+          '<input class="form-input" value="'+esc(c.title)+'" oninput="u(\'title\',this.value);renderList()" placeholder="Complaint summary title" style="flex:1;font-weight:600;font-size:0.95rem;">' +
+          '<button class="btn-icon danger" onclick="del()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>' +
+
+        '<div class="reportable-banner '+repState+'"><svg viewBox="0 0 24 24">'+
+          (repState === 'yes' ? '<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/>' :
+            repState === 'no' ? '<polyline points="20 6 9 17 4 12"/>' :
+            '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>') +
+          '</svg><div><div class="reportable-text">'+ (repState==='yes'?'REPORTABLE': repState==='no'?'Not reportable':'Reportability pending') + '</div><div class="reportable-sub">'+repText+'</div></div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">1 · Receipt</div></div><div class="card-body">' +
+          '<div class="form-row-3" style="margin-bottom:0.7rem;">' +
+            '<div class="form-field"><label class="form-label">Date received</label><input class="form-input" type="date" value="'+esc(c.dateReceived||'')+'" onchange="u(\'dateReceived\',this.value);renderList()"></div>' +
+            '<div class="form-field"><label class="form-label">Received by</label><input class="form-input" value="'+esc(c.receivedBy||'')+'" oninput="u(\'receivedBy\',this.value)"></div>' +
+            '<div class="form-field"><label class="form-label">Channel</label><select class="form-select" onchange="u(\'channel\',this.value)">' +
+              ['email','phone','letter','web-form','in-person','social-media','other'].map(function(s){ return '<option value="'+s+'" '+(c.channel===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+            '</select></div>' +
+          '</div>' +
+          '<div class="form-row-3">' +
+            '<div class="form-field"><label class="form-label">Complainant</label><input class="form-input" value="'+esc(c.complainantName||'')+'" oninput="u(\'complainantName\',this.value)"></div>' +
+            '<div class="form-field"><label class="form-label">Type</label><select class="form-select" onchange="u(\'complainantType\',this.value)">' +
+              ['patient','clinician','distributor','internal','regulator','other'].map(function(t){ return '<option value="'+t+'" '+(c.complainantType===t?'selected':'')+'>'+t+'</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="form-field"><label class="form-label">Contact info</label><input class="form-input" value="'+esc(c.contactInfo||'')+'" oninput="u(\'contactInfo\',this.value)"></div>' +
+          '</div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">2 · Device &amp; event</div></div><div class="card-body">' +
+          '<div class="form-row-3" style="margin-bottom:0.7rem;">' +
+            '<div class="form-field"><label class="form-label">Device / part</label><input class="form-input" value="'+esc(c.deviceRef||'')+'" oninput="u(\'deviceRef\',this.value);renderList()"></div>' +
+            '<div class="form-field"><label class="form-label">Lot</label><input class="form-input" value="'+esc(c.lot||'')+'" oninput="u(\'lot\',this.value)"></div>' +
+            '<div class="form-field"><label class="form-label">Serial</label><input class="form-input" value="'+esc(c.serial||'')+'" oninput="u(\'serial\',this.value)"></div>' +
+          '</div>' +
+          '<div class="form-field" style="margin-bottom:0.7rem;"><label class="form-label">Event date (if different from receipt)</label><input class="form-input" type="date" value="'+esc(c.eventDate||'')+'" onchange="u(\'eventDate\',this.value)" style="max-width:200px;"></div>' +
+          '<div class="form-field"><label class="form-label">Description of alleged issue</label><textarea class="form-textarea" rows="4" oninput="u(\'description\',this.value);renderList()" placeholder="What the complainant reported — keep their words where possible.">'+esc(c.description||'')+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">3 · Reportability triage</div></div><div class="card-body">' +
+          '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('FDA MDR 21 CFR 803: you must report to FDA within 30 calendar days if a death or serious injury occurred, OR if a malfunction would likely cause or contribute to one if it recurred. EU MDR sets similar but stricter timelines (serious incidents: 15 days).') + '</div>' +
+          decisionQ('Is this actually a complaint? (Does it allege a deficiency in identity/quality/durability/reliability/safety/effectiveness/performance?)', 'isComplaint', c.isComplaint) +
+          decisionQ('Did a patient or user experience death?', 'involvedDeath', c.involvedDeath) +
+          decisionQ('Did a patient or user experience serious injury?', 'involvedSerious', c.involvedSerious) +
+          decisionQ('If the event were to recur, could it cause or contribute to death or serious injury?', 'malfunctionCouldCause', c.malfunctionCouldCause) +
+          '<div style="margin-top:0.9rem;"><button class="btn-primary" onclick="autoAssess()"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compute reportability</button></div>' +
+          '<div class="form-field" style="margin-top:0.75rem;"><label class="form-label">Reportability rationale</label><textarea class="form-textarea" rows="2" oninput="u(\'reportableRationale\',this.value)">'+esc(c.reportableRationale||'')+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">4 · Investigation</div></div><div class="card-body">' +
+          '<div class="form-field"><label class="form-label">Investigation findings</label><textarea class="form-textarea" rows="4" oninput="u(\'investigation\',this.value)" placeholder="Device returned? Root cause? Confirmed / not confirmed? Any pattern with other complaints?">'+esc(c.investigation||'')+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">5 · Response &amp; closure</div></div><div class="card-body">' +
+          '<div class="form-field" style="margin-bottom:0.7rem;"><label class="form-label">Response to complainant</label><textarea class="form-textarea" rows="3" oninput="u(\'response\',this.value)">'+esc(c.response||'')+'</textarea></div>' +
+          '<div class="form-row-3" style="margin-bottom:0.7rem;">' +
+            '<div class="form-field"><label class="form-label">Response sent</label><input class="form-input" type="date" value="'+esc(c.responseSent||'')+'" onchange="u(\'responseSent\',this.value)"></div>' +
+            '<div class="form-field"><label class="form-label">Status</label><select class="form-select" onchange="u(\'status\',this.value);renderDetail();renderList()">' +
+              ['open','in-investigation','closed'].map(function(s){ return '<option value="'+s+'" '+(c.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="form-field"><label class="form-label">Closure date</label><input class="form-input" type="date" value="'+esc(c.closureDate||'')+'" onchange="u(\'closureDate\',this.value)"></div>' +
+          '</div>' +
+          '<div class="form-row-3">' +
+            '<div class="form-field"><label class="form-label">Linked NC</label><input class="form-input" value="'+esc(c.linkedNC||'')+'" oninput="u(\'linkedNC\',this.value)" placeholder="e.g. NC-014"></div>' +
+            '<div class="form-field"><label class="form-label">Linked CAPA</label><input class="form-input" value="'+esc(c.linkedCAPA||'')+'" oninput="u(\'linkedCAPA\',this.value)" placeholder="e.g. CAPA-007"></div>' +
+            '<div class="form-field"><label class="form-label">Linked FSCA</label><input class="form-input" value="'+esc(c.linkedFSCA||'')+'" oninput="u(\'linkedFSCA\',this.value)" placeholder="e.g. FSCA-001"></div>' +
+          '</div>' +
+        '</div></div>';
+    }
+
+    function decisionQ(label, field, val) {
+      return '<div class="decision-q"><div class="decision-q-label">'+esc(label)+'</div><div class="decision-q-opts">' +
+        ['yes','no','unknown'].map(function(o){ return '<button class="'+(val===o?'selected':'')+'" onclick="u(\''+field+'\',\''+o+'\');autoAssess();renderDetail()">'+o+'</button>'; }).join('') +
+      '</div></div>';
+    }
+
+    function autoAssess() {
+      const c = DATA[currentId]; if (!c) return;
+      if (c.isComplaint === 'no') { c.reportable = 'no'; c.reportableRationale = 'Not a complaint — no deficiency alleged.'; save(); renderDetail(); renderList(); return; }
+      if (c.involvedDeath === 'yes' || c.involvedSerious === 'yes' || c.malfunctionCouldCause === 'yes') {
+        c.reportable = 'yes';
+        c.reportableRationale = (c.reportableRationale || '') || 'Meets FDA MDR reportability threshold (death, serious injury, or malfunction that could cause one if recurring).';
+      } else if (c.involvedDeath === 'no' && c.involvedSerious === 'no' && c.malfunctionCouldCause === 'no') {
+        c.reportable = 'no';
+        c.reportableRationale = c.reportableRationale || 'No death/serious injury; malfunction assessed as unlikely to cause one if recurring. Document rationale.';
+      } else {
+        c.reportable = 'pending';
+      }
+      save();
+    }
+
+    function u(field, val) { if (!currentId) return; DATA[currentId][field] = val; save(); }
+    function del() {
+      if (!confirm('Delete ' + currentId + '?')) return;
+      delete DATA[currentId]; save(); currentId = null;
+      document.getElementById('pane').style.display = 'none';
+      document.getElementById('placeholder').style.display = 'flex';
+      renderList();
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'complaints-intro',
+        tag: 'FDA 21 CFR 820.198 + 803, EU MDR Articles 87–91',
+        title: 'Complaints and when to report',
+        what: 'A complaint is any communication (written, electronic, or oral) alleging a device deficiency. Not every complaint is "reportable" — but you must evaluate each one against the reporting criteria and document the decision.',
+        why: 'Failing to report reportable events is one of the most serious FDA findings — it can trigger a warning letter, consent decree, or criminal referral. Conversely, over-reporting wastes resources. The triage process is both legal protection and good practice.',
+        facts: [
+          { label: 'FDA MDR deadline', value: '30 days (death/injury/malfunction)' },
+          { label: 'EU MDR serious incident', value: '15 days (2 days for imminent threat)' },
+          { label: 'Retention', value: 'Records for device lifetime + 2 years (FDA)' },
+        ],
+        checklist: [
+          'Log receipt date, channel, complainant, device, lot',
+          'Capture the alleged issue in complainant\'s words',
+          'Answer the four triage questions',
+          'If reportable, file MDR / MIR within deadline',
+          'Investigate, respond to complainant, close with rationale',
+          'Escalate to NC/CAPA/FSCA where warranted',
+        ],
+        standards: ['FDA 21 CFR 820.198 (Complaints)', 'FDA 21 CFR 803 (MDR)', 'EU MDR Articles 87–91 (Vigilance)', 'ISO 13485 §8.2.2']
+      });
+    }
+
+    document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) renderDetail(); });
+    initSidebar({ activePage: 'complaints' });
+    renderIntro();
+    renderList();
+  </script>
+</body>
+</html>

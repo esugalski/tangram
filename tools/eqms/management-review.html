@@ -1,0 +1,293 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Management Review — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .mr-card { padding: 0.85rem 1rem; border-radius: 9px; cursor: pointer; border: 1.5px solid transparent; margin-bottom: 0.35rem; }
+    .mr-card:hover { background: rgba(11,39,64,0.03); }
+    .mr-card.selected { background: rgba(10,192,233,0.06); border-color: rgba(10,192,233,0.25); }
+
+    .input-block { background: rgba(11,39,64,0.03); border: 1px solid rgba(11,39,64,0.06); border-radius: 8px; padding: 0.75rem 0.9rem; margin-bottom: 0.5rem; }
+    .input-block-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; font-size: 0.78rem; font-weight: 700; color: var(--primary); }
+    .input-block-head .badge { margin-left: auto; }
+    .input-block-data { font-size: 0.75rem; color: var(--mid-blue); line-height: 1.55; }
+    .input-block-data strong { color: var(--primary); }
+
+    .action-row { display: grid; grid-template-columns: 1fr 140px 110px 100px 30px; gap: 0.5rem; align-items: center; padding: 0.45rem 0.55rem; background: rgba(11,39,64,0.025); border-radius: 6px; margin-bottom: 0.3rem; }
+    .action-row input, .action-row select { font-family: inherit; font-size: 0.74rem; padding: 0.3rem 0.45rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; background: white; outline: none; min-width: 0; }
+
+    .attendee-chip { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; padding: 0.25rem 0.55rem; background: white; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; margin: 0.15rem 0.2rem 0.15rem 0; }
+    .attendee-chip button { border: none; background: transparent; color: rgba(11,39,64,0.35); cursor: pointer; font-size: 0.8rem; padding: 0 0.1rem; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Quality System</span>
+        <span class="topbar-sep">/</span>
+        Management Review
+      </div>
+      <div class="topbar-right">
+        <button class="btn-primary" onclick="newReview()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New review</button>
+      </div>
+    </header>
+
+    <div class="content-cols">
+      <div class="list-col">
+        <div class="list-col-head"><input class="list-col-search" id="search" placeholder="Search reviews…" oninput="renderList()"></div>
+        <div class="list-col-body" id="list-body"></div>
+      </div>
+      <div class="detail-col">
+        <div class="detail-placeholder" id="placeholder">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <h2>Select a review</h2>
+          <p>Pick a review on the left, or schedule a new one.</p>
+          <div id="intro-slot" style="max-width:640px;margin-top:1.4rem;"></div>
+        </div>
+        <div class="detail-pane" id="pane" style="display:none;"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_management_reviews';
+    let DATA = load();
+    let currentId = null;
+
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    function save() { localStorage.setItem(KEY, JSON.stringify(DATA)); }
+    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function newId() {
+      let n = 1;
+      Object.keys(DATA).forEach(function(id){ const m = id.match(/^MR-(\d+)$/); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
+      return 'MR-' + String(n).padStart(3,'0');
+    }
+
+    function newReview() {
+      const id = newId();
+      const today = new Date().toISOString().slice(0,10);
+      DATA[id] = {
+        id: id, title: 'Management Review — ' + today.slice(0,7), date: today,
+        attendees: [], agenda: '',
+        inputNotes: { audits:'', complaints:'', processes:'', capa:'', followup:'', changes:'', improvements:'', regulatory:'', pms:'', supplier:'' },
+        decisions: '',
+        actions: [],
+        resourceDecisions: '',
+        status: 'scheduled',
+      };
+      save();
+      renderList();
+      open(id);
+    }
+
+    function open(id) {
+      currentId = id;
+      document.getElementById('placeholder').style.display = 'none';
+      document.getElementById('pane').style.display = 'flex';
+      renderDetail();
+      renderList();
+    }
+
+    function renderList() {
+      const q = (document.getElementById('search').value || '').toLowerCase();
+      const host = document.getElementById('list-body');
+      const list = Object.values(DATA).filter(function(r){ return !q || (r.title+' '+r.id+' '+r.date).toLowerCase().indexOf(q) !== -1; });
+      list.sort(function(a,b){ return (b.date||'') < (a.date||'') ? -1 : 1; });
+
+      if (!list.length) { host.innerHTML = '<div class="list-empty"><div class="list-empty-icon"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div><div class="list-empty-title">No reviews yet</div><div class="list-empty-body">Top management must review the QMS at planned intervals — typically annually for small companies.</div></div>'; return; }
+
+      host.innerHTML = list.map(function(r){
+        const sel = r.id === currentId ? ' selected' : '';
+        const statusBadge = r.status === 'complete' ? '<span class="badge green">Complete</span>' : (r.status === 'in-progress' ? '<span class="badge amber">In progress</span>' : '<span class="badge gray">Scheduled</span>');
+        return '<div class="mr-card'+sel+'" onclick="open(\''+r.id+'\')">' +
+          '<div class="item-card-top"><span class="item-card-id">'+esc(r.id)+'</span>'+statusBadge+'</div>' +
+          '<div class="item-card-title">'+esc(r.title)+'</div>' +
+          '<div class="item-card-meta">'+esc(r.date||'—')+' · '+(r.attendees||[]).length+' attendee(s) · '+(r.actions||[]).length+' action(s)</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function liveInputs() {
+      // Pull summaries from other modules
+      const out = {};
+      try {
+        const audits = JSON.parse(localStorage.getItem('qms_internal_audits')) || {};
+        const aList = Object.values(audits);
+        const findings = aList.reduce(function(acc,a){ return acc + (a.findings||[]).length; }, 0);
+        const open = aList.reduce(function(acc,a){ return acc + (a.findings||[]).filter(function(f){ return f.status !== 'closed'; }).length; }, 0);
+        out.audits = { completed: aList.filter(function(a){ return a.status === 'complete'; }).length, findings: findings, openFindings: open };
+      } catch(e) { out.audits = {}; }
+      try {
+        const complaints = JSON.parse(localStorage.getItem('qms_complaints')) || {};
+        const list = Object.values(complaints);
+        out.complaints = { total: list.length, open: list.filter(function(c){ return c.status !== 'closed'; }).length, reportable: list.filter(function(c){ return c.reportable === 'yes'; }).length };
+      } catch(e) { out.complaints = {}; }
+      try {
+        const capas = JSON.parse(localStorage.getItem('qms_capas')) || {};
+        const list = Object.values(capas);
+        out.capa = { total: list.length, open: list.filter(function(c){ return c.stage !== 'closed'; }).length, effectiveness: list.filter(function(c){ return c.effectiveness; }).length };
+      } catch(e) { out.capa = {}; }
+      try {
+        const ncs = JSON.parse(localStorage.getItem('qms_nonconformances')) || {};
+        const list = Object.values(ncs);
+        out.nc = { total: list.length, open: list.filter(function(n){ return n.status !== 'closed'; }).length };
+      } catch(e) { out.nc = {}; }
+      try {
+        const risks = JSON.parse(localStorage.getItem('qms_risks')) || {};
+        out.risk = { total: Object.keys(risks).length };
+      } catch(e) { out.risk = {}; }
+      try {
+        const s = JSON.parse(localStorage.getItem('qms_suppliers')) || {};
+        const list = Object.values(s);
+        out.supplier = { total: list.length, qualified: list.filter(function(x){ return x.status === 'qualified' || x.status === 'approved'; }).length };
+      } catch(e) { out.supplier = {}; }
+      try {
+        const pm = JSON.parse(localStorage.getItem('qms_post_market')) || {};
+        out.pms = { planInPlace: !!(pm.scope && pm.sources), fscas: (pm.fscas||[]).length, openFscas: (pm.fscas||[]).filter(function(f){ return f.status !== 'closed'; }).length };
+      } catch(e) { out.pms = {}; }
+      return out;
+    }
+
+    function renderDetail() {
+      const r = DATA[currentId]; if (!r) return;
+      const pane = document.getElementById('pane');
+      const live = liveInputs();
+
+      pane.innerHTML =
+        '<div style="display:flex;align-items:flex-start;gap:0.7rem;">' +
+          '<span class="item-card-id" style="font-size:0.72rem;padding:0.2rem 0.55rem;">'+esc(r.id)+'</span>' +
+          '<input class="form-input" value="'+esc(r.title)+'" oninput="u(\'title\',this.value);renderList()" style="flex:1;font-weight:600;font-size:0.95rem;">' +
+          '<button class="btn-icon danger" onclick="del()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">Meeting</div></div><div class="card-body">' +
+          '<div class="form-row-3" style="margin-bottom:0.75rem;">' +
+            '<div class="form-field"><label class="form-label">Date</label><input class="form-input" type="date" value="'+esc(r.date||'')+'" onchange="u(\'date\',this.value);renderList()"></div>' +
+            '<div class="form-field"><label class="form-label">Status</label><select class="form-select" onchange="u(\'status\',this.value);renderList()">' +
+              ['scheduled','in-progress','complete'].map(function(s){ return '<option value="'+s+'" '+(r.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+            '</select></div>' +
+          '</div>' +
+          '<div class="form-field"><label class="form-label">Attendees</label><div id="attendees-host" style="padding:0.3rem 0;">'+attendeesHTML(r)+'</div><input class="form-input" placeholder="Type name + Enter to add" onkeydown="if(event.key===\'Enter\'){addAttendee(this.value);this.value=\'\';}" style="margin-top:0.4rem;"></div>' +
+          '<div class="form-field" style="margin-top:0.75rem;"><label class="form-label">Agenda</label><textarea class="form-textarea" rows="2" oninput="u(\'agenda\',this.value)">'+esc(r.agenda||'')+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">Inputs reviewed</div><span class="card-title-sub">Live data pulled from other modules</span></div><div class="card-body">' +
+          '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('ISO 13485 §5.6.2 specifies what must be reviewed. Each item below maps to a required input. Add narrative commentary to each — a table of numbers without context doesn\'t satisfy the standard.') + '</div>' +
+
+          inputBlock('Audit results', 'audits', '<strong>'+(live.audits.completed||0)+'</strong> audits completed · <strong>'+(live.audits.findings||0)+'</strong> findings (' + (live.audits.openFindings||0) + ' open)', r) +
+          inputBlock('Feedback (complaints, customer)', 'complaints', '<strong>'+(live.complaints.total||0)+'</strong> complaints · <strong>'+(live.complaints.open||0)+'</strong> open · <strong>'+(live.complaints.reportable||0)+'</strong> reportable', r) +
+          inputBlock('Process performance &amp; product conformity', 'processes', 'Review NC rate: <strong>'+(live.nc.total||0)+'</strong> NCs logged, <strong>'+(live.nc.open||0)+'</strong> open', r) +
+          inputBlock('Status of corrective &amp; preventive actions', 'capa', '<strong>'+(live.capa.total||0)+'</strong> CAPAs · <strong>'+(live.capa.open||0)+'</strong> open · <strong>'+(live.capa.effectiveness||0)+'</strong> with effectiveness data', r) +
+          inputBlock('Follow-up from previous reviews', 'followup', 'Check prior review\'s action items', r) +
+          inputBlock('Changes affecting the QMS', 'changes', 'Any regulatory, organizational, process, or product changes', r) +
+          inputBlock('Recommendations for improvement', 'improvements', 'From internal audits, CAPA trending, employee input', r) +
+          inputBlock('New/revised regulatory requirements', 'regulatory', 'e.g. MDR deadlines, new guidance documents', r) +
+          inputBlock('Post-market surveillance', 'pms', (live.pms.planInPlace?'PMS plan in place':'<strong>PMS plan missing</strong>')+' · <strong>'+(live.pms.fscas||0)+'</strong> FSCAs ('+(live.pms.openFscas||0)+' open)', r) +
+          inputBlock('Supplier performance', 'supplier', '<strong>'+(live.supplier.qualified||0)+'</strong> qualified / <strong>'+(live.supplier.total||0)+'</strong> suppliers', r) +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">Decisions &amp; outcomes</div></div><div class="card-body">' +
+          '<div class="form-field" style="margin-bottom:0.75rem;"><label class="form-label">Decisions &amp; conclusions</label><textarea class="form-textarea" rows="3" oninput="u(\'decisions\',this.value)" placeholder="Management\'s conclusions on QMS effectiveness, product quality trends, and need for improvement.">'+esc(r.decisions||'')+'</textarea></div>' +
+          '<div class="form-field"><label class="form-label">Resource decisions</label><textarea class="form-textarea" rows="2" oninput="u(\'resourceDecisions\',this.value)" placeholder="Decisions about people, training, infrastructure, tooling needs.">'+esc(r.resourceDecisions||'')+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">Action items</div><button class="add-row-btn" onclick="addAction()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add action</button></div><div class="card-body">' +
+          '<div id="actions-host"></div>' +
+        '</div></div>';
+
+      renderActions();
+    }
+
+    function attendeesHTML(r) {
+      const list = r.attendees || [];
+      if (!list.length) return '<span class="subtle">No attendees yet.</span>';
+      return list.map(function(a, i) { return '<span class="attendee-chip">'+esc(a)+'<button onclick="rmAttendee('+i+')">×</button></span>'; }).join('');
+    }
+    function addAttendee(name) { if (!name) return; DATA[currentId].attendees.push(name); save(); renderDetail(); renderList(); }
+    function rmAttendee(i) { DATA[currentId].attendees.splice(i,1); save(); renderDetail(); renderList(); }
+
+    function inputBlock(label, field, liveSummary, r) {
+      const note = (r.inputNotes && r.inputNotes[field]) || '';
+      return '<div class="input-block">' +
+        '<div class="input-block-head">'+esc(label)+'</div>' +
+        '<div class="input-block-data">'+liveSummary+'</div>' +
+        '<textarea placeholder="Commentary…" style="margin-top:0.4rem;width:100%;font-family:inherit;font-size:0.74rem;padding:0.4rem 0.5rem;border:1px solid rgba(11,39,64,0.1);border-radius:5px;background:white;outline:none;min-height:40px;resize:vertical;" oninput="uInputNote(\''+field+'\',this.value)">'+esc(note)+'</textarea>' +
+      '</div>';
+    }
+    function uInputNote(field, val) { if (!DATA[currentId].inputNotes) DATA[currentId].inputNotes = {}; DATA[currentId].inputNotes[field] = val; save(); }
+
+    function renderActions() {
+      const host = document.getElementById('actions-host');
+      const list = DATA[currentId].actions || [];
+      if (!list.length) { host.innerHTML = '<div class="subtle">No action items yet.</div>'; return; }
+      host.innerHTML = list.map(function(a, i) {
+        return '<div class="action-row">' +
+          '<input placeholder="Action" value="'+esc(a.desc||'')+'" oninput="uAction('+i+',\'desc\',this.value)">' +
+          '<input placeholder="Owner" value="'+esc(a.owner||'')+'" oninput="uAction('+i+',\'owner\',this.value)">' +
+          '<input type="date" value="'+esc(a.due||'')+'" onchange="uAction('+i+',\'due\',this.value)">' +
+          '<select onchange="uAction('+i+',\'status\',this.value)">' +
+            ['open','in-progress','done'].map(function(s){ return '<option value="'+s+'" '+(a.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+          '</select>' +
+          '<button class="btn-icon danger" onclick="rmAction('+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function u(field, val) { if (!currentId) return; DATA[currentId][field] = val; save(); }
+    function addAction() { DATA[currentId].actions.push({ desc:'', owner:'', due:'', status:'open' }); save(); renderActions(); renderList(); }
+    function rmAction(i) { DATA[currentId].actions.splice(i,1); save(); renderActions(); renderList(); }
+    function uAction(i, field, val) { DATA[currentId].actions[i][field] = val; save(); }
+
+    function del() {
+      if (!confirm('Delete ' + currentId + '?')) return;
+      delete DATA[currentId]; save(); currentId = null;
+      document.getElementById('pane').style.display = 'none';
+      document.getElementById('placeholder').style.display = 'flex';
+      renderList();
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'management-review',
+        tag: 'Management Review · FDA 21 CFR 820.20(c), ISO 13485 §5.6',
+        title: 'Top management reviews the QMS',
+        what: 'A formal, periodic meeting where top management assesses the QMS — its effectiveness, product quality trends, and whether the organization needs to change direction or add resources. Not a status meeting. Not a team review.',
+        why: 'ISO 13485 and FDA both require it at "planned intervals." Typical cadence: annually for small companies, quarterly for larger ones. Missing management reviews is often a Major audit finding because it suggests senior management isn\'t owning the QMS.',
+        facts: [
+          { label: 'Minimum attendees', value: 'Top management (CEO / Head of ops) + Mgmt Rep' },
+          { label: 'Required inputs', value: '10 per ISO 13485 §5.6.2' },
+          { label: 'Required outputs', value: 'Decisions + action items + resource decisions' },
+        ],
+        checklist: [
+          'Schedule at planned intervals (annually minimum)',
+          'Prepare input data packet 1 week before',
+          'Cover every required §5.6.2 input with narrative',
+          'Record decisions + action items with owners and dates',
+          'Sign the minutes; track actions through to closure',
+        ],
+        standards: ['FDA 21 CFR 820.20(c)', 'ISO 13485:2016 §5.6', 'MDSAP Chapter 2']
+      });
+    }
+
+    document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) renderDetail(); });
+    initSidebar({ activePage: 'management-review' });
+    renderIntro();
+    renderList();
+  </script>
+</body>
+</html>

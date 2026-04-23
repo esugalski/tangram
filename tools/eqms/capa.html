@@ -1,0 +1,311 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPA — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .capa-card { padding: 0.7rem 0.85rem; border-radius: 8px; cursor: pointer; border: 1.5px solid transparent; margin-bottom: 0.28rem; }
+    .capa-card:hover { background: rgba(11,39,64,0.03); }
+    .capa-card.selected { background: rgba(10,192,233,0.06); border-color: rgba(10,192,233,0.25); }
+
+    .capa-stage { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.05em; padding: 0.1rem 0.4rem; border-radius: 3px; text-transform: uppercase; }
+    .capa-stage.opened { background: rgba(99,102,241,0.14); color: #4338ca; }
+    .capa-stage.investigation { background: rgba(245,158,11,0.14); color: #b45309; }
+    .capa-stage.action { background: rgba(10,192,233,0.12); color: #089bbf; }
+    .capa-stage.verification { background: rgba(147,51,234,0.12); color: #7e22ce; }
+    .capa-stage.effectiveness { background: rgba(16,185,129,0.1); color: #047857; }
+    .capa-stage.closed { background: rgba(11,39,64,0.08); color: rgba(11,39,64,0.55); }
+
+    .stage-stepper { display: flex; align-items: center; gap: 0.25rem; margin-bottom: 1rem; padding: 0.6rem 0.75rem; background: rgba(11,39,64,0.025); border-radius: 9px; flex-wrap: wrap; }
+    .stage-step { display: flex; align-items: center; gap: 0.4rem; font-size: 0.7rem; color: rgba(11,39,64,0.45); font-weight: 600; padding: 0.28rem 0.55rem; border-radius: 5px; cursor: pointer; }
+    .stage-step.active { background: white; color: var(--primary); box-shadow: 0 1px 3px rgba(11,39,64,0.1); }
+    .stage-step.done { color: #047857; }
+    .stage-step-dot { width: 14px; height: 14px; border-radius: 50%; background: rgba(11,39,64,0.12); color: rgba(11,39,64,0.5); display: inline-flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 800; flex-shrink: 0; }
+    .stage-step.active .stage-step-dot { background: var(--aqua); color: white; }
+    .stage-step.done .stage-step-dot { background: var(--green); color: white; }
+    .stage-step-dot svg { width: 8px; height: 8px; stroke: currentColor; fill: none; stroke-width: 3; }
+    .stage-sep { color: rgba(11,39,64,0.2); font-size: 0.7rem; }
+
+    .five-whys-row { display: grid; grid-template-columns: 70px 1fr 30px; gap: 0.4rem; align-items: center; margin-bottom: 0.3rem; }
+    .five-whys-row input { font-family: inherit; font-size: 0.76rem; padding: 0.4rem 0.55rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 6px; outline: none; background: white; }
+    .five-whys-label { font-size: 0.7rem; font-weight: 700; color: rgba(11,39,64,0.55); text-align: center; background: rgba(11,39,64,0.05); border-radius: 5px; padding: 0.35rem; }
+
+    .action-row { display: grid; grid-template-columns: 1fr 160px 110px 100px 30px; gap: 0.5rem; align-items: center; padding: 0.45rem 0.55rem; background: rgba(11,39,64,0.025); border-radius: 6px; margin-bottom: 0.3rem; }
+    .action-row input, .action-row select { font-family: inherit; font-size: 0.74rem; padding: 0.3rem 0.45rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; background: white; outline: none; min-width: 0; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Governance</span>
+        <span class="topbar-sep">/</span>
+        CAPA
+      </div>
+      <div class="topbar-right">
+        <button class="btn-primary" onclick="newCAPA()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New CAPA</button>
+      </div>
+    </header>
+
+    <div class="content-cols">
+      <div class="list-col">
+        <div class="list-col-head"><input class="list-col-search" id="search" placeholder="Search CAPAs…" oninput="renderList()"></div>
+        <div class="list-col-body" id="list-body"></div>
+      </div>
+
+      <div class="detail-col">
+        <div class="detail-placeholder" id="placeholder">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          <h2>Select a CAPA</h2>
+          <p>Pick a record on the left, or open a new one.</p>
+          <div id="intro-slot" style="max-width:640px;margin-top:1.4rem;"></div>
+        </div>
+        <div class="detail-pane" id="pane" style="display:none;"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_capas';
+    let DATA = load();
+    let currentId = null;
+
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    function save() { localStorage.setItem(KEY, JSON.stringify(DATA)); }
+    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function newId() {
+      let n = 1;
+      Object.keys(DATA).forEach(function(id){ const m = id.match(/^CAPA-(\d+)$/); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
+      return 'CAPA-' + String(n).padStart(3,'0');
+    }
+
+    const STAGES = [
+      { id: 'opened',         label: 'Opened',        desc: 'Logged from a source (NC, complaint, audit, trend)' },
+      { id: 'investigation',  label: 'Investigation', desc: 'Root cause analysis' },
+      { id: 'action',         label: 'Action plan',   desc: 'Define corrective & preventive actions' },
+      { id: 'verification',   label: 'Verification',  desc: 'Confirm actions were implemented' },
+      { id: 'effectiveness',  label: 'Effectiveness', desc: 'Confirm actions actually solved the problem' },
+      { id: 'closed',         label: 'Closed',        desc: 'All evidence in place; closure signed' },
+    ];
+
+    function stageIndex(id) { for (let i = 0; i < STAGES.length; i++) if (STAGES[i].id === id) return i; return 0; }
+
+    function newCAPA() {
+      const id = newId();
+      DATA[id] = {
+        id: id, title: '', type: 'corrective',
+        source: 'internal-audit', sourceRef: '', opened: new Date().toISOString().slice(0,10), owner: '',
+        severity: 'medium',
+        problemStatement: '',
+        immediateContainment: '',
+        stage: 'opened',
+        rootCause: '',
+        fiveWhys: ['','','','',''],
+        actions: [],
+        verification: '', verificationEvidence: '',
+        effectiveness: '', effectivenessDate: '', effectivenessMetric: '',
+        closureSignature: null, closureDate: ''
+      };
+      save();
+      renderList();
+      open(id);
+    }
+
+    function open(id) {
+      currentId = id;
+      document.getElementById('placeholder').style.display = 'none';
+      document.getElementById('pane').style.display = 'flex';
+      renderDetail();
+      renderList();
+    }
+
+    function renderList() {
+      const q = (document.getElementById('search').value || '').toLowerCase();
+      const host = document.getElementById('list-body');
+      const list = Object.values(DATA).filter(function(c){ return !q || (c.title+' '+c.id+' '+(c.rootCause||'')).toLowerCase().indexOf(q) !== -1; });
+      list.sort(function(a,b){ return (b.opened||'') < (a.opened||'') ? -1 : 1; });
+
+      if (!list.length) { host.innerHTML = '<div class="list-empty"><div class="list-empty-icon"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></div><div class="list-empty-title">No CAPAs yet</div><div class="list-empty-body">CAPAs are opened in response to a known problem (corrective) or a potential problem you\'ve identified through trending (preventive).</div></div>'; return; }
+
+      host.innerHTML = list.map(function(c){
+        const sel = c.id === currentId ? ' selected' : '';
+        return '<div class="capa-card'+sel+'" onclick="open(\''+c.id+'\')">' +
+          '<div class="item-card-top"><span class="item-card-id">'+esc(c.id)+'</span><span class="capa-stage '+c.stage+'">'+esc((STAGES.find(function(s){return s.id===c.stage;})||{label:c.stage}).label)+'</span></div>' +
+          '<div class="item-card-title">'+esc(c.title || 'Untitled')+'</div>' +
+          '<div class="item-card-meta">'+esc(c.type||'—')+' · Opened '+esc(c.opened||'—')+' · Owner: '+esc(c.owner||'—')+'</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderDetail() {
+      const c = DATA[currentId]; if (!c) return;
+      const pane = document.getElementById('pane');
+      const currentIdx = stageIndex(c.stage);
+
+      pane.innerHTML =
+        '<div style="display:flex;align-items:flex-start;gap:0.7rem;">' +
+          '<span class="item-card-id" style="font-size:0.72rem;padding:0.2rem 0.55rem;">'+esc(c.id)+'</span>' +
+          '<input class="form-input" id="f-title" value="'+esc(c.title)+'" oninput="u(\'title\',this.value);renderList()" placeholder="Brief title" style="flex:1;font-weight:600;font-size:0.95rem;">' +
+          '<button class="btn-icon danger" onclick="del()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>' +
+
+        stageStepper(c) +
+
+        '<div class="card"><div class="card-head"><div class="card-title">1 · Problem &amp; source</div></div><div class="card-body">' +
+          '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('Start by writing the problem as narrowly as you can: what happened, how you know, and the scope (which devices/lots/markets). Vague problem statements produce vague root causes.') + '</div>' +
+          '<div class="form-row-3" style="margin-bottom:0.75rem;">' +
+            '<div class="form-field"><label class="form-label">Type</label><select class="form-select" onchange="u(\'type\',this.value)">' +
+              ['corrective','preventive','both'].map(function(t){ return '<option value="'+t+'" '+(c.type===t?'selected':'')+'>'+t+'</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="form-field"><label class="form-label">Severity</label><select class="form-select" onchange="u(\'severity\',this.value)">' +
+              ['low','medium','high'].map(function(s){ return '<option value="'+s+'" '+(c.severity===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="form-field"><label class="form-label">Opened</label><input class="form-input" type="date" value="'+esc(c.opened||'')+'" onchange="u(\'opened\',this.value)"></div>' +
+          '</div>' +
+          '<div class="form-row" style="margin-bottom:0.75rem;">' +
+            '<div class="form-field"><label class="form-label">Source</label><select class="form-select" onchange="u(\'source\',this.value)">' +
+              ['internal-audit','external-audit','complaint','nonconformance','trend','management-review','supplier','other'].map(function(s){ return '<option value="'+s+'" '+(c.source===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="form-field"><label class="form-label">Source reference</label><input class="form-input" value="'+esc(c.sourceRef||'')+'" oninput="u(\'sourceRef\',this.value)" placeholder="e.g. NC-014, COMP-003"></div>' +
+          '</div>' +
+          '<div class="form-field"><label class="form-label">Owner</label><input class="form-input" value="'+esc(c.owner||'')+'" oninput="u(\'owner\',this.value)"></div>' +
+          '<div class="form-field" style="margin-top:0.75rem;"><label class="form-label">Problem statement</label><textarea class="form-textarea" rows="3" oninput="u(\'problemStatement\',this.value)" placeholder="What happened, how it was detected, scope (affected units/lots/markets).">'+esc(c.problemStatement)+'</textarea></div>' +
+          '<div class="form-field" style="margin-top:0.75rem;"><label class="form-label">Immediate containment</label><textarea class="form-textarea" rows="2" oninput="u(\'immediateContainment\',this.value)" placeholder="Actions taken right away to prevent further exposure (quarantine, hold, rework, notify).">'+esc(c.immediateContainment)+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">2 · Root cause analysis</div></div><div class="card-body">' +
+          '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('5 Whys is the simplest structured technique: keep asking "why did that happen?" until the answer is a system/process gap, not just a symptom. Stop when the root is actionable — "human error" is almost never the root.') + '</div>' +
+          fiveWhys(c) +
+          '<div class="form-field" style="margin-top:0.85rem;"><label class="form-label">Root cause statement</label><textarea class="form-textarea" rows="2" oninput="u(\'rootCause\',this.value)" placeholder="One-sentence summary of the actual root cause.">'+esc(c.rootCause||'')+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">3 · Action plan</div><button class="add-row-btn" onclick="addAction()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add action</button></div><div class="card-body">' +
+          '<div id="actions-host"></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">4 · Verification of implementation</div></div><div class="card-body">' +
+          '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('Verification = "was the action actually completed?" (training delivered, SOP updated, part redesigned). This is distinct from effectiveness, which asks "did it work?"') + '</div>' +
+          '<div class="form-field" style="margin-bottom:0.55rem;"><label class="form-label">Verification summary</label><textarea class="form-textarea" rows="2" oninput="u(\'verification\',this.value)" placeholder="Who verified, what they checked, when.">'+esc(c.verification||'')+'</textarea></div>' +
+          '<div class="form-field"><label class="form-label">Evidence reference(s)</label><input class="form-input" value="'+esc(c.verificationEvidence||'')+'" oninput="u(\'verificationEvidence\',this.value)" placeholder="e.g. SOP-014 Rev B, TR-102"></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">5 · Effectiveness check</div></div><div class="card-body">' +
+          '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('Effectiveness = "did the action actually fix the problem?" This usually requires a follow-up period (3–12 months of data) and a measurable metric. This is the step FDA most often says companies skip.') + '</div>' +
+          '<div class="form-row" style="margin-bottom:0.65rem;">' +
+            '<div class="form-field"><label class="form-label">Metric tracked</label><input class="form-input" value="'+esc(c.effectivenessMetric||'')+'" oninput="u(\'effectivenessMetric\',this.value)" placeholder="e.g. Complaint rate per 1000 units"></div>' +
+            '<div class="form-field"><label class="form-label">Check date</label><input class="form-input" type="date" value="'+esc(c.effectivenessDate||'')+'" onchange="u(\'effectivenessDate\',this.value)"></div>' +
+          '</div>' +
+          '<div class="form-field"><label class="form-label">Effectiveness conclusion</label><textarea class="form-textarea" rows="2" oninput="u(\'effectiveness\',this.value)" placeholder="Before/after data and conclusion. If ineffective, re-open investigation.">'+esc(c.effectiveness||'')+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">6 · Closure</div></div><div class="card-body">' +
+          '<div class="form-row">' +
+            '<div class="form-field"><label class="form-label">Stage</label><select class="form-select" onchange="u(\'stage\',this.value);renderDetail();renderList()">' +
+              STAGES.map(function(s){ return '<option value="'+s.id+'" '+(c.stage===s.id?'selected':'')+'>'+s.label+'</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="form-field"><label class="form-label">Closure date</label><input class="form-input" type="date" value="'+esc(c.closureDate||'')+'" onchange="u(\'closureDate\',this.value)"></div>' +
+          '</div>' +
+        '</div></div>';
+
+      renderActions();
+    }
+
+    function stageStepper(c) {
+      const cur = stageIndex(c.stage);
+      let html = '<div class="stage-stepper">';
+      STAGES.forEach(function(s, i) {
+        const cls = i === cur ? 'active' : (i < cur ? 'done' : '');
+        const inner = i < cur ? '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' : (i+1);
+        html += '<div class="stage-step '+cls+'" onclick="u(\'stage\',\''+s.id+'\');renderDetail();renderList()" title="'+esc(s.desc)+'"><span class="stage-step-dot">'+inner+'</span>'+esc(s.label)+'</div>';
+        if (i < STAGES.length - 1) html += '<span class="stage-sep">›</span>';
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function fiveWhys(c) {
+      const arr = (c.fiveWhys && c.fiveWhys.length === 5) ? c.fiveWhys : ['','','','',''];
+      return arr.map(function(w, i) {
+        return '<div class="five-whys-row"><div class="five-whys-label">Why #'+(i+1)+'</div><input placeholder="'+(i===0?'Because…':'And because of that…')+'" value="'+esc(w)+'" oninput="uFiveWhy('+i+',this.value)"><div></div></div>';
+      }).join('');
+    }
+
+    function uFiveWhy(i, val) {
+      if (!currentId) return;
+      if (!DATA[currentId].fiveWhys) DATA[currentId].fiveWhys = ['','','','',''];
+      DATA[currentId].fiveWhys[i] = val; save();
+    }
+
+    function renderActions() {
+      const host = document.getElementById('actions-host');
+      const list = DATA[currentId].actions || [];
+      if (!list.length) { host.innerHTML = '<div class="subtle">No actions yet. Each action should link back to the root cause and have an owner + due date.</div>'; return; }
+      host.innerHTML = list.map(function(a, i) {
+        return '<div class="action-row">' +
+          '<input placeholder="Action description" value="'+esc(a.desc||'')+'" oninput="uAction('+i+',\'desc\',this.value)">' +
+          '<input placeholder="Owner" value="'+esc(a.owner||'')+'" oninput="uAction('+i+',\'owner\',this.value)">' +
+          '<input type="date" value="'+esc(a.due||'')+'" onchange="uAction('+i+',\'due\',this.value)">' +
+          '<select onchange="uAction('+i+',\'status\',this.value)">' +
+            ['open','in-progress','done'].map(function(s){ return '<option value="'+s+'" '+(a.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+          '</select>' +
+          '<button class="btn-icon danger" onclick="rmAction('+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function u(field, val) { if (!currentId) return; DATA[currentId][field] = val; save(); }
+    function addAction() { DATA[currentId].actions.push({ desc:'', owner:'', due:'', status:'open' }); save(); renderActions(); }
+    function rmAction(i) { DATA[currentId].actions.splice(i,1); save(); renderActions(); }
+    function uAction(i, field, val) { DATA[currentId].actions[i][field] = val; save(); }
+
+    function del() {
+      if (!confirm('Delete ' + currentId + '?')) return;
+      delete DATA[currentId]; save(); currentId = null;
+      document.getElementById('pane').style.display = 'none';
+      document.getElementById('placeholder').style.display = 'flex';
+      renderList();
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'capa-intro',
+        tag: 'CAPA · FDA 21 CFR 820.100, ISO 13485 §8.5.2/8.5.3',
+        title: 'CAPA — Corrective &amp; Preventive Action',
+        what: 'A structured process to find, investigate, correct, and prevent recurrence of quality problems. Corrective = for something that has already happened. Preventive = for something trending toward happening.',
+        why: 'CAPA is the most commonly-cited failure in FDA 483s. The specific failure is almost always "ineffective" — actions were taken but the problem came back. The process here enforces a real effectiveness check.',
+        facts: [
+          { label: 'Stages', value: 'Open → Investigate → Action → Verify → Effectiveness → Close' },
+          { label: 'Common mistake', value: 'Closing before effectiveness can be measured' },
+          { label: 'Tie-ins', value: 'NC, Complaints, Audits, Risk, Management Review' },
+        ],
+        checklist: [
+          'Tight problem statement with scope and detection source',
+          'Root cause that\'s actionable — not "human error"',
+          'Both corrective AND preventive actions',
+          'Verification of implementation AND effectiveness',
+          'Close only when data shows the problem is gone',
+        ],
+        standards: ['FDA 21 CFR 820.100', 'ISO 13485:2016 §8.5.2 (Corrective)', 'ISO 13485:2016 §8.5.3 (Preventive)']
+      });
+    }
+
+    document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) renderDetail(); });
+    initSidebar({ activePage: 'capa' });
+    renderIntro();
+    renderList();
+  </script>
+</body>
+</html>

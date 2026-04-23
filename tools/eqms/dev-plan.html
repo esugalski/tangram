@@ -1,0 +1,504 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dev Plan Hub — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .phase-timeline { display: grid; grid-template-columns: 160px 1fr; gap: 1rem; margin-bottom: 1.25rem; }
+    .phase-marker { position: relative; padding-top: 0.4rem; }
+    .phase-marker-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--aqua); margin-bottom: 0.25rem; box-shadow: 0 0 0 4px rgba(10,192,233,0.15); }
+    .phase-marker-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.52); }
+    .phase-marker-date { font-size: 0.72rem; color: rgba(11,39,64,0.7); font-weight: 600; margin-top: 0.1rem; }
+    .phase-block { border: 1px solid rgba(11,39,64,0.08); border-left: 3px solid var(--aqua); border-radius: 10px; padding: 0.95rem 1.1rem; background: white; }
+    .phase-block[data-phase="inputs"] { border-left-color: #304F6B; }
+    .phase-block[data-phase="outputs"] { border-left-color: #f97316; }
+    .phase-block[data-phase="verification"] { border-left-color: #6366f1; }
+    .phase-block[data-phase="validation"] { border-left-color: #9333ea; }
+    .phase-block[data-phase="transfer"] { border-left-color: #10B981; }
+    .phase-block[data-phase="postmarket"] { border-left-color: #10B981; }
+    .phase-title { font-size: 0.92rem; font-weight: 700; color: var(--primary); margin-bottom: 0.15rem; letter-spacing: -0.01em; }
+    .phase-desc { font-size: 0.75rem; color: rgba(11,39,64,0.55); margin-bottom: 0.75rem; line-height: 1.5; }
+
+    .deliv-list { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.6rem; }
+    .deliv-row { display: grid; grid-template-columns: 18px 1fr 130px 110px 24px; gap: 0.45rem; align-items: center; padding: 0.35rem 0.45rem; background: rgba(11,39,64,0.025); border-radius: 6px; }
+    .deliv-row input[type="text"] { font-family: inherit; font-size: 0.74rem; border: 1px solid transparent; background: transparent; outline: none; padding: 0.2rem 0.3rem; border-radius: 4px; }
+    .deliv-row input[type="text"]:hover, .deliv-row input[type="text"]:focus { background: white; border-color: rgba(11,39,64,0.12); }
+    .deliv-row select { font-family: inherit; font-size: 0.72rem; border: 1px solid rgba(11,39,64,0.08); border-radius: 5px; padding: 0.22rem 0.35rem; background: white; outline: none; }
+    .deliv-check { width: 16px; height: 16px; border: 1.5px solid rgba(11,39,64,0.22); border-radius: 4px; cursor: pointer; background: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .deliv-check.done { background: var(--green); border-color: var(--green); }
+    .deliv-check.done svg { width: 10px; height: 10px; stroke: white; fill: none; stroke-width: 3; }
+
+    .phase-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.6rem; margin-top: 0.75rem; }
+    .phase-meta-item { background: rgba(11,39,64,0.025); border-radius: 6px; padding: 0.5rem 0.65rem; }
+    .phase-meta-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.45); margin-bottom: 0.2rem; }
+    .phase-meta-val { font-size: 0.74rem; color: var(--primary); font-weight: 600; }
+    .phase-meta-val input { font-family: inherit; font-size: 0.74rem; border: 1px solid transparent; background: transparent; outline: none; width: 100%; padding: 0.1rem 0; }
+    .phase-meta-val input:hover, .phase-meta-val input:focus { background: white; border-color: rgba(11,39,64,0.12); padding: 0.1rem 0.3rem; border-radius: 4px; }
+
+    .progress-bar { height: 5px; background: rgba(11,39,64,0.08); border-radius: 3px; overflow: hidden; margin-top: 0.5rem; }
+    .progress-fill { height: 100%; background: var(--aqua); transition: width 0.3s; }
+
+    .resp-matrix { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
+    .resp-matrix th { text-align: left; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.5); padding: 0.5rem 0.65rem; border-bottom: 1.5px solid rgba(11,39,64,0.08); }
+    .resp-matrix td { padding: 0.45rem 0.65rem; border-bottom: 1px solid rgba(11,39,64,0.05); vertical-align: middle; }
+    .resp-matrix input { font-family: inherit; font-size: 0.76rem; border: 1px solid transparent; background: transparent; outline: none; padding: 0.2rem 0.3rem; border-radius: 4px; width: 100%; }
+    .resp-matrix input:hover, .resp-matrix input:focus { background: white; border-color: rgba(11,39,64,0.12); }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Planning</span>
+        <span class="topbar-sep">/</span>
+        Dev Plan Hub
+      </div>
+      <div class="topbar-right">
+        <button class="btn-secondary" onclick="loadStarter()"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>Load starter</button>
+        <button class="btn-primary" onclick="savePlan()"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Save</button>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+      <div id="intro-slot"></div>
+
+      <div class="kpi-row">
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Overall completion</div>
+          <div class="kpi-tile-value" id="kpi-completion">0%</div>
+          <div class="kpi-tile-sub" id="kpi-completion-sub">0 of 0 deliverables</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Active phase</div>
+          <div class="kpi-tile-value" id="kpi-phase" style="font-size:1.1rem;">—</div>
+          <div class="kpi-tile-sub">Based on first incomplete phase</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Target launch</div>
+          <div class="kpi-tile-value" id="kpi-launch" style="font-size:1.1rem;">—</div>
+          <div class="kpi-tile-sub">From last phase end date</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Team members</div>
+          <div class="kpi-tile-value" id="kpi-team">0</div>
+          <div class="kpi-tile-sub">With named responsibilities</div>
+        </div>
+      </div>
+
+      <!-- Project scope -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Project scope</div></div>
+        <div class="card-body">
+          <div id="hint-scope" class="learn-only" style="margin-bottom:0.6rem;"></div>
+          <div class="form-row-3">
+            <div class="form-field">
+              <label class="form-label">Project name</label>
+              <input class="form-input" id="f-project" placeholder="e.g. CardioSync Pro Rev A">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Project manager</label>
+              <input class="form-input" id="f-pm" placeholder="Name + role">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Plan version</label>
+              <input class="form-input" id="f-version" placeholder="1.0">
+            </div>
+          </div>
+          <div class="form-row" style="margin-top:0.85rem;">
+            <div class="form-field">
+              <label class="form-label">Project objective</label>
+              <textarea class="form-textarea" id="f-objective" rows="3" placeholder="What you're designing and why, in 2–3 sentences."></textarea>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Success criteria</label>
+              <textarea class="form-textarea" id="f-success" rows="3" placeholder="How you'll know the project is done (e.g. 510(k) cleared, first shipment, pilot completed)."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phases -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Design &amp; development phases</div>
+          <span class="card-title-sub">Per FDA 21 CFR 820.30(b)</span>
+        </div>
+        <div class="card-body" style="padding:1.1rem 1.1rem 0.5rem;">
+          <div id="hint-phases" class="learn-only" style="margin-bottom:0.9rem;"></div>
+          <div id="phases-host"></div>
+        </div>
+      </div>
+
+      <!-- Responsibility matrix -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Responsibility matrix</div>
+          <button class="add-row-btn" onclick="addResp()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add role</button>
+        </div>
+        <div class="card-body">
+          <div id="hint-resp" class="learn-only" style="margin-bottom:0.6rem;"></div>
+          <table class="resp-matrix">
+            <thead><tr><th>Role</th><th>Name</th><th>Scope / ownership</th><th style="width:28px;"></th></tr></thead>
+            <tbody id="resp-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Reviews & Risk/Reg links -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Planned reviews &amp; decision gates</div></div>
+        <div class="card-body">
+          <div id="hint-reviews" class="learn-only" style="margin-bottom:0.6rem;"></div>
+          <div class="form-field" style="margin-bottom:0.85rem;">
+            <label class="form-label">Review cadence</label>
+            <select class="form-select" id="f-cadence">
+              <option>Phase-gate (review at end of each phase)</option>
+              <option>Monthly core team review + phase-gate</option>
+              <option>Bi-weekly team review + phase-gate</option>
+              <option>Custom (describe in notes)</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Notes / rationale</label>
+            <textarea class="form-textarea" id="f-review-notes" rows="3" placeholder="Any exceptions, sub-team reviews, or cross-functional gates."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Approval</div></div>
+        <div class="card-body" id="approval-body">
+          <div class="subtle">Once the plan is drafted, route it for signature via the e-sign flow (same module used for SOPs).</div>
+          <button class="btn-primary" style="margin-top:0.8rem;" onclick="signPlan()"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Sign &amp; approve plan</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script src="esign.js"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_dev_plan';
+
+    const TEMPLATE_PHASES = [
+      { id:'planning',     label:'Planning',      blurb:'Scope, intended use, classification, team, resources, plan itself.' },
+      { id:'inputs',       label:'Design Inputs', blurb:'User needs, requirements, standards, risk inputs, regulatory inputs.' },
+      { id:'outputs',      label:'Design Outputs',blurb:'Specs, drawings, code, labels. Each output traces to an input.' },
+      { id:'verification', label:'Verification',  blurb:'Design outputs meet design inputs — testing, inspection, analysis.' },
+      { id:'validation',   label:'Validation',    blurb:'The device meets user needs in the real-world use environment.' },
+      { id:'transfer',     label:'Design Transfer',blurb:'Production can reliably build the approved design (DMR → DHR).' },
+      { id:'postmarket',   label:'Post-Market',   blurb:'Surveillance, PMS reports, complaints, CAPA, change control.' },
+    ];
+
+    // Optional starter templates — user-triggered via "Load starter" button
+    const STARTER_DELIVERABLES = {
+      planning: [
+        { name: 'Regulatory assessment', owner: 'RA Lead' },
+        { name: 'Development plan approved', owner: 'PM' },
+        { name: 'Risk management plan', owner: 'RA Lead' },
+      ],
+      inputs: [
+        { name: 'User needs captured & reviewed', owner: 'Product' },
+        { name: 'Design inputs approved', owner: 'R&D Lead' },
+        { name: 'Hazard analysis / initial FMEA', owner: 'RA Lead' },
+      ],
+      outputs: [
+        { name: 'Design output documents (specs, drawings)', owner: 'R&D' },
+        { name: 'Labels & IFU drafted', owner: 'RA' },
+        { name: 'Traceability matrix updated', owner: 'QA' },
+      ],
+      verification: [
+        { name: 'V&V master plan', owner: 'V&V Lead' },
+        { name: 'Design verification protocols & reports', owner: 'V&V' },
+      ],
+      validation: [
+        { name: 'Design validation protocols & reports', owner: 'V&V Lead' },
+        { name: 'Human factors / usability summary', owner: 'HFE Lead' },
+      ],
+      transfer: [
+        { name: 'DMR assembled', owner: 'Ops' },
+        { name: 'Production process validation (IQ/OQ/PQ)', owner: 'Ops' },
+      ],
+      postmarket: [
+        { name: 'PMS plan & trending metrics', owner: 'PMS Lead' },
+        { name: 'Complaint handling in place', owner: 'QA' },
+      ],
+    };
+
+    const STARTER_ROLES = [
+      { role: 'Project manager', name: '', scope: 'Schedule, cross-functional coordination, phase gates' },
+      { role: 'R&D Lead', name: '', scope: 'Design inputs/outputs, verification strategy' },
+      { role: 'Quality Assurance', name: '', scope: 'QMS conformance, document control, audits' },
+      { role: 'Regulatory Affairs', name: '', scope: 'Classification, pathway, submission' },
+    ];
+
+    let state = load();
+
+    function load() {
+      try {
+        const s = JSON.parse(localStorage.getItem(KEY));
+        if (s && s.phases) return s;
+      } catch (e) {}
+      return defaults();
+    }
+    function defaults() {
+      return {
+        project: '', pm: '', version: '1.0', objective: '', success: '',
+        cadence: 'Phase-gate (review at end of each phase)',
+        reviewNotes: '',
+        phases: TEMPLATE_PHASES.map(function(p){
+          return {
+            id: p.id, label: p.label, blurb: p.blurb,
+            start: '', end: '', exit: '',
+            deliverables: []  // empty by default; use "Load starter" to pre-populate
+          };
+        }),
+        roles: [],  // empty by default
+        signature: null,
+      };
+    }
+
+    function loadStarter() {
+      if (!confirm('Load FDA 820.30(b) starter deliverables and generic roles? Your current custom entries will be kept.')) return;
+      state.phases.forEach(function(ph) {
+        const starter = STARTER_DELIVERABLES[ph.id] || [];
+        starter.forEach(function(d) {
+          if (!ph.deliverables.some(function(x){ return x.name === d.name; })) {
+            ph.deliverables.push({ name: d.name, owner: d.owner, status: 'pending' });
+          }
+        });
+      });
+      STARTER_ROLES.forEach(function(r) {
+        if (!state.roles.some(function(x){ return x.role === r.role; })) state.roles.push({ role: r.role, name: '', scope: r.scope });
+      });
+      save();
+      renderPhases();
+      renderRoles();
+      renderKPIs();
+      toast('Starter template loaded');
+    }
+    function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+    function savePlan() { sync(); save(); toast('Plan saved'); }
+    function seedDefault() {
+      if (!confirm('Reset to the default FDA 820.30(b) phase template? Your current edits will be lost.')) return;
+      state = defaults();
+      save();
+      render();
+    }
+
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+    function toast(m) {
+      const t = document.createElement('div');
+      t.textContent = m;
+      t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#0B2740;color:white;padding:0.6rem 1rem;border-radius:8px;font-size:0.78rem;font-weight:600;z-index:3000;box-shadow:0 4px 14px rgba(2,25,47,0.25);';
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 1800);
+    }
+
+    function sync() {
+      state.project = document.getElementById('f-project').value;
+      state.pm = document.getElementById('f-pm').value;
+      state.version = document.getElementById('f-version').value;
+      state.objective = document.getElementById('f-objective').value;
+      state.success = document.getElementById('f-success').value;
+      state.cadence = document.getElementById('f-cadence').value;
+      state.reviewNotes = document.getElementById('f-review-notes').value;
+      renderKPIs();
+      save();  // auto-persist so Journey detects progress
+    }
+
+    function renderPhases() {
+      const host = document.getElementById('phases-host');
+      host.innerHTML = state.phases.map(function(ph, phIdx) {
+        const doneCount = ph.deliverables.filter(function(d){ return d.status === 'done'; }).length;
+        const total = ph.deliverables.length;
+        const pct = total ? Math.round(100 * doneCount / total) : 0;
+        const timelineDate = ph.end || ph.start || '—';
+        return '<div class="phase-timeline">' +
+          '<div class="phase-marker">' +
+            '<div class="phase-marker-dot" style="background:'+phaseColor(ph.id)+';box-shadow:0 0 0 4px '+phaseColor(ph.id,0.15)+';"></div>' +
+            '<div class="phase-marker-label">'+esc(ph.label)+'</div>' +
+            '<div class="phase-marker-date">'+esc(timelineDate)+'</div>' +
+          '</div>' +
+          '<div class="phase-block" data-phase="'+esc(ph.id)+'">' +
+            '<div class="phase-title">'+esc(ph.label)+' phase</div>' +
+            '<div class="phase-desc">'+esc(ph.blurb)+'</div>' +
+            '<div class="deliv-list">' +
+              ph.deliverables.map(function(d, dIdx) {
+                const done = d.status === 'done';
+                const check = '<div class="deliv-check '+(done?'done':'')+'" onclick="toggleDeliverable('+phIdx+','+dIdx+')">'+(done?'<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':'')+'</div>';
+                return '<div class="deliv-row">' +
+                  check +
+                  '<input type="text" placeholder="Deliverable description" value="'+esc(d.name)+'" oninput="updateDeliverable('+phIdx+','+dIdx+',\'name\',this.value)">' +
+                  '<input type="text" placeholder="Owner" value="'+esc(d.owner||'')+'" oninput="updateDeliverable('+phIdx+','+dIdx+',\'owner\',this.value)">' +
+                  '<select onchange="updateDeliverable('+phIdx+','+dIdx+',\'status\',this.value)">' +
+                    ['pending','in-progress','done','blocked'].map(function(s){ return '<option '+(d.status===s?'selected':'')+' value="'+s+'">'+s+'</option>'; }).join('') +
+                  '</select>' +
+                  '<button class="btn-icon danger" onclick="removeDeliverable('+phIdx+','+dIdx+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+                '</div>';
+              }).join('') +
+            '</div>' +
+            '<button class="add-row-btn" onclick="addDeliverable('+phIdx+')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add deliverable</button>' +
+            '<div class="phase-meta">' +
+              '<div class="phase-meta-item"><div class="phase-meta-label">Start</div><div class="phase-meta-val"><input type="date" value="'+esc(ph.start||'')+'" onchange="updatePhaseMeta('+phIdx+',\'start\',this.value)"></div></div>' +
+              '<div class="phase-meta-item"><div class="phase-meta-label">End</div><div class="phase-meta-val"><input type="date" value="'+esc(ph.end||'')+'" onchange="updatePhaseMeta('+phIdx+',\'end\',this.value)"></div></div>' +
+              '<div class="phase-meta-item" style="grid-column:span 2;"><div class="phase-meta-label">Exit criteria</div><div class="phase-meta-val"><input type="text" placeholder="What must be true to close this phase" value="'+esc(ph.exit||'')+'" oninput="updatePhaseMeta('+phIdx+',\'exit\',this.value)"></div></div>' +
+            '</div>' +
+            '<div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%;background:'+phaseColor(ph.id)+';"></div></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function phaseColor(id, alpha) {
+      const map = { planning:'#0AC0E9', inputs:'#304F6B', outputs:'#f97316', verification:'#6366f1', validation:'#9333ea', transfer:'#10B981', postmarket:'#10B981' };
+      const hex = map[id] || '#0AC0E9';
+      if (alpha == null) return hex;
+      // Convert hex to rgba with alpha
+      const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+      return 'rgba('+r+','+g+','+b+','+alpha+')';
+    }
+
+    function addDeliverable(phIdx) { state.phases[phIdx].deliverables.push({ name:'', owner:'', status:'pending' }); save(); renderPhases(); renderKPIs(); }
+    function removeDeliverable(phIdx, dIdx) { state.phases[phIdx].deliverables.splice(dIdx,1); save(); renderPhases(); renderKPIs(); }
+    function updateDeliverable(phIdx, dIdx, field, val) { state.phases[phIdx].deliverables[dIdx][field] = val; save(); if (field==='status') { renderPhases(); } renderKPIs(); }
+    function toggleDeliverable(phIdx, dIdx) { const d = state.phases[phIdx].deliverables[dIdx]; d.status = d.status === 'done' ? 'pending' : 'done'; save(); renderPhases(); renderKPIs(); }
+    function updatePhaseMeta(phIdx, field, val) { state.phases[phIdx][field] = val; save(); renderKPIs(); }
+
+    function renderRoles() {
+      const host = document.getElementById('resp-tbody');
+      host.innerHTML = state.roles.map(function(r, i) {
+        return '<tr>' +
+          '<td><input type="text" value="'+esc(r.role||'')+'" oninput="updateRole('+i+',\'role\',this.value)" placeholder="Role"></td>' +
+          '<td><input type="text" value="'+esc(r.name||'')+'" oninput="updateRole('+i+',\'name\',this.value)" placeholder="Name"></td>' +
+          '<td><input type="text" value="'+esc(r.scope||'')+'" oninput="updateRole('+i+',\'scope\',this.value)" placeholder="Scope of responsibility"></td>' +
+          '<td><button class="btn-icon danger" onclick="removeRole('+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></td>' +
+        '</tr>';
+      }).join('');
+    }
+    function updateRole(i, field, val) { state.roles[i][field] = val; save(); renderKPIs(); }
+    function addResp() { state.roles.push({ role:'', name:'', scope:'' }); save(); renderRoles(); }
+    function removeRole(i) { state.roles.splice(i,1); save(); renderRoles(); renderKPIs(); }
+
+    function renderKPIs() {
+      let totalD = 0, doneD = 0, firstIncomplete = null, lastEnd = '';
+      state.phases.forEach(function(ph) {
+        ph.deliverables.forEach(function(d){ totalD++; if (d.status === 'done') doneD++; });
+        if (!firstIncomplete && ph.deliverables.some(function(d){ return d.status !== 'done'; })) firstIncomplete = ph.label;
+        if (ph.end && ph.end > lastEnd) lastEnd = ph.end;
+      });
+      const pct = totalD ? Math.round(100 * doneD / totalD) : 0;
+      document.getElementById('kpi-completion').textContent = pct + '%';
+      document.getElementById('kpi-completion-sub').textContent = doneD + ' of ' + totalD + ' deliverables';
+      document.getElementById('kpi-phase').textContent = firstIncomplete || 'All complete';
+      document.getElementById('kpi-launch').textContent = lastEnd || '—';
+      const teamCount = state.roles.filter(function(r){ return r.name; }).length;
+      document.getElementById('kpi-team').textContent = teamCount;
+    }
+
+    function renderHints() {
+      if (!LearnMode.isGuided()) return;
+      document.getElementById('hint-scope').innerHTML = LearnMode.hint('A development plan is a deliverable in its own right. FDA expects to see it signed and version-controlled. Keep the objective short — think of the 2-sentence pitch you\'d give an investor.');
+      document.getElementById('hint-phases').innerHTML = LearnMode.hint('FDA 820.30(b) doesn\'t prescribe specific phase names — it just requires that development activities and responsibilities be planned. The waterfall shown here is the most commonly audited pattern; you can adapt.');
+      document.getElementById('hint-resp').innerHTML = LearnMode.hint('Auditors will ask "who owns this?" for every deliverable. The matrix keeps that answer in one place. If one person holds three conflicting roles (e.g. developer, tester, QA approver), flag it.');
+      document.getElementById('hint-reviews').innerHTML = LearnMode.hint('Design reviews are a required output per 820.30(e). You must document attendees, the independent reviewer, and outcomes. Phase-gate reviews usually satisfy this.');
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'dev-plan',
+        tag: 'Planning · FDA 21 CFR 820.30(b), ISO 13485 §7.3.2',
+        title: 'Your design & development plan',
+        what: 'A written plan that describes the design work, responsibilities, interfaces, and review points. This is usually the first "real" quality record a medtech startup produces — and one auditors look for early.',
+        why: 'Without a plan, you can\'t show that design activities were controlled. A missing or outdated dev plan is a common FDA 483 observation. Keeping this up-to-date also anchors every downstream gate review.',
+        facts: [
+          { label: 'Updated', value: 'Each phase transition + after significant changes' },
+          { label: 'Signed by', value: 'Project Manager + QA (minimum)' },
+          { label: 'Referenced by', value: 'Design History File, Management Review' },
+        ],
+        checklist: [
+          'State project name, PM, and plan version',
+          'Define phases with deliverables and owners',
+          'Set entry/exit criteria per phase',
+          'List roles + named individuals (responsibility matrix)',
+          'Describe review cadence and gate criteria',
+          'Route for approval via e-signature'
+        ],
+        standards: ['FDA 21 CFR 820.30(b)', 'ISO 13485:2016 §7.3.2', 'ISO 14971 §4 (risk planning)']
+      });
+    }
+
+    function populate() {
+      document.getElementById('f-project').value = state.project || '';
+      document.getElementById('f-pm').value = state.pm || '';
+      document.getElementById('f-version').value = state.version || '';
+      document.getElementById('f-objective').value = state.objective || '';
+      document.getElementById('f-success').value = state.success || '';
+      document.getElementById('f-cadence').value = state.cadence || 'Phase-gate (review at end of each phase)';
+      document.getElementById('f-review-notes').value = state.reviewNotes || '';
+      ['f-project','f-pm','f-version','f-objective','f-success','f-cadence','f-review-notes'].forEach(function(id){
+        const el = document.getElementById(id);
+        el.addEventListener('input', sync);
+        el.addEventListener('change', sync);
+      });
+      renderPhases();
+      renderRoles();
+      renderKPIs();
+      renderApproval();
+    }
+
+    function renderApproval() {
+      const body = document.getElementById('approval-body');
+      if (state.signature) {
+        const ts = state.signature.timestamp ? new Date(state.signature.timestamp).toLocaleString() : '—';
+        body.innerHTML = '<div class="banner success"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><div><div style="font-weight:600;">Plan signed &amp; approved.</div><div style="font-size:0.72rem;color:rgba(11,39,64,0.55);margin-top:0.15rem;">'+esc(state.signature.signerName||'')+' · '+esc(state.signature.signerRole||'')+' · '+esc(ts)+'</div></div></div>' +
+          '<button class="btn-secondary" style="margin-top:0.6rem;" onclick="reopenPlan()"><svg viewBox="0 0 24 24"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 105 5.7L3 8"/></svg>Re-open for revision</button>';
+      } else {
+        body.innerHTML = '<div class="subtle">Once the plan is drafted, route it for signature via the e-sign flow (same module used for SOPs).</div>' +
+          '<button class="btn-primary" style="margin-top:0.8rem;" onclick="signPlan()"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Sign &amp; approve plan</button>';
+      }
+    }
+
+    function signPlan() {
+      if (typeof ESign === 'undefined' || !ESign.open) { alert('E-signature module not loaded.'); return; }
+      ESign.open({
+        recordType: 'DevPlan',
+        recordId: 'dev-plan-' + (state.version || '1.0'),
+        recordTitle: 'Design & Development Plan — ' + (state.project || 'Unnamed project'),
+        meaning: 'Approval',
+        onSign: function(sig) {
+          state.signature = sig;
+          save();
+          renderApproval();
+          toast('Plan signed');
+        }
+      });
+    }
+    function reopenPlan() {
+      if (!confirm('Re-opening the plan for revision will invalidate the current signature. Proceed?')) return;
+      state.signature = null;
+      save();
+      renderApproval();
+    }
+
+    document.addEventListener('qms-learn-mode-changed', renderHints);
+
+    initSidebar({ activePage: 'dev-plan' });
+    renderIntro();
+    populate();
+    renderHints();
+  </script>
+</body>
+</html>

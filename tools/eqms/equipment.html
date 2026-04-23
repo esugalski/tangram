@@ -1,0 +1,276 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equipment &amp; Calibration — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .eq-status { display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.1rem 0.4rem; border-radius: 3px; text-transform: uppercase; }
+    .eq-status.current { background: rgba(16,185,129,0.12); color: #047857; }
+    .eq-status.upcoming { background: rgba(245,158,11,0.14); color: #b45309; }
+    .eq-status.overdue { background: rgba(239,68,68,0.14); color: #dc2626; }
+    .eq-status.oot { background: rgba(239,68,68,0.22); color: #991b1b; }
+    .eq-status.retired { background: rgba(11,39,64,0.08); color: rgba(11,39,64,0.55); }
+
+    .eq-row { cursor: pointer; }
+    .expandable { padding: 0 !important; background: rgba(11,39,64,0.02); }
+    .expanded-body { padding: 1rem 1.2rem; border-top: 1px solid rgba(11,39,64,0.07); border-bottom: 1px solid rgba(11,39,64,0.07); }
+
+    .cal-log-row { display: grid; grid-template-columns: 110px 1fr 110px 100px 100px 30px; gap: 0.5rem; align-items: center; padding: 0.4rem 0.5rem; border-radius: 6px; background: rgba(11,39,64,0.025); margin-bottom: 0.3rem; }
+    .cal-log-row input, .cal-log-row select { font-family: inherit; font-size: 0.72rem; padding: 0.3rem 0.4rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; background: white; outline: none; min-width: 0; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Quality System</span>
+        <span class="topbar-sep">/</span>
+        Equipment &amp; Calibration
+      </div>
+      <div class="topbar-right">
+        <button class="btn-primary" onclick="addItem()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add equipment</button>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+      <div id="intro-slot"></div>
+
+      <div class="kpi-row">
+        <div class="kpi-tile"><div class="kpi-tile-label">Total equipment</div><div class="kpi-tile-value" id="kpi-total">0</div><div class="kpi-tile-sub">In registry</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">Current</div><div class="kpi-tile-value" id="kpi-current" style="color:#047857;">0</div><div class="kpi-tile-sub">Calibration up to date</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">Due soon (30d)</div><div class="kpi-tile-value" id="kpi-due">0</div><div class="kpi-tile-sub">Schedule calibration</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">Overdue / OOT</div><div class="kpi-tile-value" id="kpi-overdue" style="color:#dc2626;">0</div><div class="kpi-tile-sub">Immediate action</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Equipment registry</div></div>
+        <div class="card-body" style="padding:0;">
+          <table class="data-table">
+            <thead><tr><th>Asset</th><th>Type</th><th>Location</th><th>Interval</th><th>Last cal</th><th>Next cal</th><th>Status</th><th style="width:30px;"></th></tr></thead>
+            <tbody id="eq-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_equipment';
+    let DATA = load();
+    let expandedId = null;
+
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    function save() { localStorage.setItem(KEY, JSON.stringify(DATA)); }
+    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function newId() {
+      let n = 1;
+      Object.keys(DATA).forEach(function(id){ const m = id.match(/^EQ-(\d+)$/); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
+      return 'EQ-' + String(n).padStart(3,'0');
+    }
+
+    function addItem() {
+      const id = newId();
+      DATA[id] = {
+        id: id, asset: 'New equipment', type: 'Measuring', location: '',
+        mfr: '', model: '', serial: '',
+        intervalMonths: 12,
+        lastCalibration: '', nextCalibration: '',
+        lastCalibratedBy: '',
+        status: 'current',
+        traceability: 'NIST',
+        acceptanceCriteria: '',
+        log: [],
+        notes: ''
+      };
+      save();
+      expandedId = id;
+      render();
+    }
+
+    function toggleExpand(id) { expandedId = expandedId === id ? null : id; render(); }
+
+    function u(id, field, val) {
+      if (field === 'intervalMonths') val = parseInt(val, 10) || 0;
+      DATA[id][field] = val;
+      // Recompute next cal if lastCalibration or interval changed
+      if ((field === 'lastCalibration' || field === 'intervalMonths') && DATA[id].lastCalibration && DATA[id].intervalMonths) {
+        const d = new Date(DATA[id].lastCalibration); d.setMonth(d.getMonth() + DATA[id].intervalMonths);
+        DATA[id].nextCalibration = d.toISOString().slice(0,10);
+      }
+      save();
+      render();
+    }
+
+    function remove(id) { if (!confirm('Delete ' + id + '?')) return; delete DATA[id]; save(); render(); }
+
+    function computeStatus(e) {
+      if (e.status === 'retired' || e.status === 'oot') return e.status;
+      if (!e.nextCalibration) return 'current';
+      const now = new Date().toISOString().slice(0,10);
+      if (e.nextCalibration < now) return 'overdue';
+      const soon = new Date(); soon.setDate(soon.getDate() + 30);
+      if (e.nextCalibration < soon.toISOString().slice(0,10)) return 'upcoming';
+      return 'current';
+    }
+
+    function addCalEntry(id) {
+      DATA[id].log.push({ date: new Date().toISOString().slice(0,10), by: '', result: 'pass', certRef: '', asFound: '' });
+      save();
+      render();
+    }
+    function uLog(id, i, field, val) { DATA[id].log[i][field] = val; save(); }
+    function rmLog(id, i) { DATA[id].log.splice(i,1); save(); render(); }
+
+    function recordCalibration(id) {
+      const today = new Date().toISOString().slice(0,10);
+      DATA[id].lastCalibration = today;
+      const d = new Date(today); d.setMonth(d.getMonth() + (DATA[id].intervalMonths || 12));
+      DATA[id].nextCalibration = d.toISOString().slice(0,10);
+      DATA[id].status = 'current';
+      DATA[id].log.push({ date: today, by: '', result: 'pass', certRef: '', asFound: '' });
+      save();
+      render();
+    }
+
+    function render() {
+      const body = document.getElementById('eq-body');
+      const list = Object.values(DATA);
+      list.sort(function(a,b){ return (a.asset||'') < (b.asset||'') ? -1 : 1; });
+
+      if (!list.length) {
+        body.innerHTML = '<tr><td colspan="8"><div class="list-empty" style="padding:2.5rem 1rem;"><div class="list-empty-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82"/></svg></div><div class="list-empty-title">No equipment registered</div><div class="list-empty-body">Start with measuring &amp; test equipment: calipers, balances, pipettes, oscilloscopes — anything whose reading could affect a product-accept decision.</div></div></td></tr>';
+        renderKPI();
+        return;
+      }
+
+      body.innerHTML = list.map(function(e) {
+        const status = computeStatus(e);
+        const expanded = expandedId === e.id;
+        const main = '<tr class="eq-row" onclick="toggleExpand(\''+e.id+'\')">' +
+          '<td><div style="display:flex;align-items:center;gap:0.5rem;"><span class="item-card-id">'+esc(e.id)+'</span><span style="font-weight:600;">'+esc(e.asset||'')+'</span></div></td>' +
+          '<td><span class="subtle">'+esc(e.type||'')+'</span></td>' +
+          '<td><span class="subtle">'+esc(e.location||'—')+'</span></td>' +
+          '<td>'+esc(String(e.intervalMonths||'—'))+' mo</td>' +
+          '<td>'+esc(e.lastCalibration||'—')+'</td>' +
+          '<td>'+ dateCell(e.nextCalibration, status) +'</td>' +
+          '<td><span class="eq-status '+status+'">'+status+'</span></td>' +
+          '<td><button class="btn-icon danger" onclick="event.stopPropagation();remove(\''+e.id+'\')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></td>' +
+        '</tr>';
+        if (!expanded) return main;
+        return main + '<tr><td colspan="8" class="expandable"><div class="expanded-body">'+renderExpanded(e)+'</div></td></tr>';
+      }).join('');
+
+      renderKPI();
+    }
+
+    function dateCell(d, status) {
+      if (!d) return '—';
+      if (status === 'overdue') return '<span style="color:#dc2626;font-weight:700;">'+esc(d)+'</span>';
+      if (status === 'upcoming') return '<span style="color:#b45309;font-weight:600;">'+esc(d)+'</span>';
+      return esc(d);
+    }
+
+    function renderExpanded(e) {
+      return '<div class="form-row-3" style="margin-bottom:0.7rem;">' +
+        '<div class="form-field"><label class="form-label">Asset name</label><input class="form-input" value="'+esc(e.asset)+'" oninput="u(\''+e.id+'\',\'asset\',this.value)"></div>' +
+        '<div class="form-field"><label class="form-label">Type</label><select class="form-select" onchange="u(\''+e.id+'\',\'type\',this.value)">' +
+          ['Measuring','Test','Production','Environmental','Software tool','Other'].map(function(t){ return '<option value="'+t+'" '+(e.type===t?'selected':'')+'>'+t+'</option>'; }).join('') +
+        '</select></div>' +
+        '<div class="form-field"><label class="form-label">Location</label><input class="form-input" value="'+esc(e.location||'')+'" oninput="u(\''+e.id+'\',\'location\',this.value)"></div>' +
+      '</div>' +
+      '<div class="form-row-3" style="margin-bottom:0.7rem;">' +
+        '<div class="form-field"><label class="form-label">Manufacturer</label><input class="form-input" value="'+esc(e.mfr||'')+'" oninput="u(\''+e.id+'\',\'mfr\',this.value)"></div>' +
+        '<div class="form-field"><label class="form-label">Model</label><input class="form-input" value="'+esc(e.model||'')+'" oninput="u(\''+e.id+'\',\'model\',this.value)"></div>' +
+        '<div class="form-field"><label class="form-label">Serial #</label><input class="form-input" value="'+esc(e.serial||'')+'" oninput="u(\''+e.id+'\',\'serial\',this.value)"></div>' +
+      '</div>' +
+      '<div class="form-row-3" style="margin-bottom:0.7rem;">' +
+        '<div class="form-field"><label class="form-label">Interval (months)</label><input class="form-input" type="number" min="1" value="'+esc(e.intervalMonths||12)+'" oninput="u(\''+e.id+'\',\'intervalMonths\',this.value)"></div>' +
+        '<div class="form-field"><label class="form-label">Last calibration</label><input class="form-input" type="date" value="'+esc(e.lastCalibration||'')+'" onchange="u(\''+e.id+'\',\'lastCalibration\',this.value)"></div>' +
+        '<div class="form-field"><label class="form-label">Next calibration</label><input class="form-input" type="date" value="'+esc(e.nextCalibration||'')+'" onchange="u(\''+e.id+'\',\'nextCalibration\',this.value)"></div>' +
+      '</div>' +
+      '<div class="form-row-3" style="margin-bottom:0.7rem;">' +
+        '<div class="form-field"><label class="form-label">Traceability</label><select class="form-select" onchange="u(\''+e.id+'\',\'traceability\',this.value)">' +
+          ['NIST','NPL','PTB','SI (national equivalent)','Internal reference','N/A — documented'].map(function(t){ return '<option value="'+t+'" '+(e.traceability===t?'selected':'')+'>'+t+'</option>'; }).join('') +
+        '</select></div>' +
+        '<div class="form-field"><label class="form-label">Status override</label><select class="form-select" onchange="u(\''+e.id+'\',\'status\',this.value)">' +
+          ['current','oot','retired'].map(function(s){ return '<option value="'+s+'" '+(e.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+        '</select></div>' +
+        '<div class="form-field"><button class="btn-secondary" onclick="recordCalibration(\''+e.id+'\')" style="margin-top:1.3rem;"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Record calibration today</button></div>' +
+      '</div>' +
+      '<div class="form-field" style="margin-bottom:0.7rem;"><label class="form-label">Acceptance criteria / ranges</label><input class="form-input" value="'+esc(e.acceptanceCriteria||'')+'" oninput="u(\''+e.id+'\',\'acceptanceCriteria\',this.value)" placeholder="e.g. ±0.5g across 0–200g"></div>' +
+      '<div class="form-field" style="margin-bottom:0.7rem;"><label class="form-label">Notes</label><textarea class="form-textarea" rows="2" oninput="u(\''+e.id+'\',\'notes\',this.value)">'+esc(e.notes||'')+'</textarea></div>' +
+
+      '<div style="display:flex;align-items:center;gap:0.5rem;margin:0.85rem 0 0.5rem;"><div style="font-size:0.72rem;font-weight:700;letter-spacing:0.04em;color:rgba(11,39,64,0.5);text-transform:uppercase;">Calibration log</div><button class="add-row-btn" style="margin-left:auto;" onclick="addCalEntry(\''+e.id+'\')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add entry</button></div>' +
+      renderCalLog(e) +
+      '<div class="banner warning learn-only" style="margin-top:0.9rem;"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg><div><strong>Out of tolerance (OOT)?</strong> When equipment is found OOT, you must assess impact on product measured since the last known-good calibration. Open an NC/CAPA and quarantine affected product.</div></div>';
+    }
+
+    function renderCalLog(e) {
+      if (!e.log.length) return '<div class="subtle">No calibration entries yet.</div>';
+      return e.log.map(function(l, i) {
+        return '<div class="cal-log-row">' +
+          '<input type="date" value="'+esc(l.date||'')+'" onchange="uLog(\''+e.id+'\','+i+',\'date\',this.value)">' +
+          '<input placeholder="Calibration lab / technician" value="'+esc(l.by||'')+'" oninput="uLog(\''+e.id+'\','+i+',\'by\',this.value)">' +
+          '<input placeholder="Cert reference" value="'+esc(l.certRef||'')+'" oninput="uLog(\''+e.id+'\','+i+',\'certRef\',this.value)">' +
+          '<input placeholder="As-found" value="'+esc(l.asFound||'')+'" oninput="uLog(\''+e.id+'\','+i+',\'asFound\',this.value)">' +
+          '<select onchange="uLog(\''+e.id+'\','+i+',\'result\',this.value)">' +
+            ['pass','adjust','fail-oot'].map(function(r){ return '<option value="'+r+'" '+(l.result===r?'selected':'')+'>'+r+'</option>'; }).join('') +
+          '</select>' +
+          '<button class="btn-icon danger" onclick="rmLog(\''+e.id+'\','+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderKPI() {
+      const list = Object.values(DATA);
+      const counts = { current:0, upcoming:0, overdue:0, oot:0, retired:0 };
+      list.forEach(function(e){ counts[computeStatus(e)]++; });
+      document.getElementById('kpi-total').textContent = list.length;
+      document.getElementById('kpi-current').textContent = counts.current;
+      document.getElementById('kpi-due').textContent = counts.upcoming;
+      document.getElementById('kpi-overdue').textContent = counts.overdue + counts.oot;
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'equipment-intro',
+        tag: 'Equipment · FDA 21 CFR 820.72, ISO 13485 §7.6',
+        title: 'Calibration &amp; equipment control',
+        what: 'Any equipment used to measure, monitor, or produce things that affect device quality must be uniquely identified, calibrated against traceable standards at defined intervals, and have records of every calibration event.',
+        why: 'If a scale drifts out of spec and you don\'t notice, every batch measured on it is suspect. FDA 820.72(b) requires traceability to national standards and records that identify the equipment and show next-due dates. This module gives you that plus an OOT alert path.',
+        facts: [
+          { label: 'Traceability', value: 'NIST / NPL / PTB / national SI' },
+          { label: 'Typical interval', value: '6–12 months for measuring; per-mfr for production' },
+          { label: 'OOT response', value: 'Quarantine + impact assessment on product since last good cal' },
+        ],
+        checklist: [
+          'Register every piece of measuring / test / production equipment',
+          'Set interval; record last + next calibration',
+          'Attach traceable certificate of calibration',
+          'Track OOT events — they usually need an NC + CAPA',
+          'Remove retired equipment from the registry (don\'t delete — archive)',
+        ],
+        standards: ['FDA 21 CFR 820.72', 'ISO 13485:2016 §7.6', 'ISO/IEC 17025 (calibration lab accreditation)']
+      });
+    }
+
+    document.addEventListener('qms-learn-mode-changed', render);
+    initSidebar({ activePage: 'equipment' });
+    renderIntro();
+    render();
+  </script>
+</body>
+</html>

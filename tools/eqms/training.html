@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training Procedure — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .proc-approval-bar { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1.25rem; background: white; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .proc-status-pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.68rem; font-weight: 700; padding: 0.22rem 0.65rem; border-radius: 4px; }
+    .proc-status-pill.draft    { background: rgba(245,158,11,0.1); color: #b45309; }
+    .proc-status-pill.approved { background: rgba(16,185,129,0.1); color: #047857; }
+    .proc-status-pill svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .proc-meta-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.85rem; margin-bottom: 1.25rem; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Quality System</span>
+        <span class="topbar-sep">/</span>
+        Training Procedure
+      </div>
+      <div class="topbar-right">
+        <button class="btn-secondary" onclick="window.location.href='process-library.html'">All procedures</button>
+        <button class="btn-secondary" onclick="window.location.href='team-training.html'">Training records</button>
+      </div>
+    </header>
+
+    <div class="proc-approval-bar">
+      <div>
+        <div style="font-size:0.72rem;font-weight:700;color:var(--primary);margin-bottom:0.05rem;">SOP-TR-001 Training and Competency</div>
+        <div style="font-size:0.63rem;color:rgba(11,39,64,0.4);">21 CFR 820.25 · ISO 13485 §6.2 · Personnel competency and training records</div>
+      </div>
+      <div id="proc-status-pill" class="proc-status-pill draft" style="margin-left:auto;">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft
+      </div>
+      <button id="approve-btn" class="btn-secondary" onclick="toggleApproval()">Mark as approved</button>
+    </div>
+
+    <div class="page-scroll">
+      <div id="intro-slot"></div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Document metadata</div></div>
+        <div class="card-body">
+          <div class="proc-meta-row">
+            <div class="form-field"><label class="form-label">Document number</label><input class="form-input" id="f-doc-num" placeholder="e.g. SOP-TR-001"></div>
+            <div class="form-field"><label class="form-label">Version</label><input class="form-input" id="f-version" placeholder="e.g. Rev A"></div>
+            <div class="form-field"><label class="form-label">Effective date</label><input class="form-input" id="f-eff-date" placeholder="YYYY-MM-DD"></div>
+          </div>
+          <div class="proc-meta-row">
+            <div class="form-field"><label class="form-label">Author</label><input class="form-input" id="f-author" placeholder="Name and title"></div>
+            <div class="form-field"><label class="form-label">Reviewer</label><input class="form-input" id="f-reviewer" placeholder="Name and title"></div>
+            <div class="form-field"><label class="form-label">Approver</label><input class="form-input" id="f-approver" placeholder="Name and title"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">1 · Purpose and scope</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Purpose</label>
+            <textarea class="form-textarea" id="f-purpose" rows="2" placeholder="This procedure establishes requirements for identifying training needs, delivering training, documenting completion, and verifying competency for all personnel performing QMS-affecting activities."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Scope</label>
+            <textarea class="form-textarea" id="f-scope" rows="2" placeholder="Applies to all employees, contractors, and consultants whose activities affect product quality or QMS compliance, including design, manufacturing, quality, regulatory, and service personnel."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">2 · Competency requirements by role</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Role-based training matrix framework</label>
+            <textarea class="form-textarea" id="f-role-matrix" rows="4" placeholder="Define training requirements by role category:&#10;Quality / QA: All SOPs; ISO 13485 awareness; CAPA; audit readiness&#10;Engineering / Design: Design controls SOP; risk management SOP; V&V protocols&#10;Regulatory: 21 CFR 820; EU MDR basics; submission procedures&#10;Management: QMS overview; management review; quality policy"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Minimum experience and education requirements</label>
+            <textarea class="form-textarea" id="f-education" rows="2" placeholder="e.g. Quality Manager: B.S. in engineering or life sciences + 5 years medical device quality experience, or equivalent. Training requirements supplement, not substitute for, minimum qualification standards."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">3 · Training delivery</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Acceptable training methods</label>
+            <textarea class="form-textarea" id="f-methods" rows="3" placeholder="e.g.&#10;Read-and-acknowledge: employee reads document and signs completion form&#10;Classroom / live session: instructor-led with attendance record&#10;On-the-job training (OJT): supervised practice with mentor sign-off&#10;External training: certificate or attendance record acceptable&#10;e-learning: system-generated completion record with quiz score ≥ 80%"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Training on new or revised documents</label>
+            <textarea class="form-textarea" id="f-new-docs" rows="2" placeholder="e.g. All affected personnel must complete training within [30] calendar days of a new or revised SOP's effective date. QA tracks completion and sends reminders. Incomplete training blocks access to controlled document in [system]."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">4 · Training records and documentation</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Required record fields</label>
+            <textarea class="form-textarea" id="f-record-fields" rows="3" placeholder="Each training record must capture:&#10;• Employee name and role&#10;• Document(s) or topic trained on (with version numbers)&#10;• Training method used&#10;• Date of completion&#10;• Trainer name and signature (if applicable)&#10;• Competency assessment result (if applicable)"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Record storage and retention</label>
+            <textarea class="form-textarea" id="f-record-storage" rows="2" placeholder="e.g. Training records stored in [Team Training tool / eQMS / SharePoint]. Retained for duration of employment + 5 years, or the useful life of the device, whichever is longer. Records must be available for audit on request."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">5 · Retraining triggers</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Events requiring retraining</label>
+            <textarea class="form-textarea" id="f-retrain-triggers" rows="4" placeholder="Retraining is required when:&#10;• A document is revised (all personnel on that document's training matrix)&#10;• An employee changes roles or responsibilities&#10;• A CAPA or audit finding identifies a training gap&#10;• An employee has not performed an activity in [12] months&#10;• A regulatory change affects current practices&#10;• Management determines competency needs re-assessment"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">6 · Competency verification and effectiveness</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Competency assessment methods</label>
+            <textarea class="form-textarea" id="f-assessment" rows="3" placeholder="e.g.&#10;Written test (score ≥ 80% required): used for SOPs and regulatory topics&#10;Practical demonstration: trainer observes and signs off on specific skills&#10;Supervisor attestation: manager confirms ongoing competency annually&#10;Post-training observation: reviewer verifies correct application in first 30 days"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Training effectiveness evaluation</label>
+            <textarea class="form-textarea" id="f-effectiveness" rows="2" placeholder="e.g. Training effectiveness is evaluated during management review via: nonconformance trend analysis; audit findings related to human error; CAPA sources; employee performance reviews. Training program reviewed annually."></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_proc_training';
+
+    var DATA = load();
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(DATA)); } catch(e) {} }
+
+    var FIELDS = ['doc-num','version','eff-date','author','reviewer','approver','purpose','scope','role-matrix','education','methods','new-docs','record-fields','record-storage','retrain-triggers','assessment','effectiveness'];
+
+    function fill() {
+      FIELDS.forEach(function(f) { var el = document.getElementById('f-' + f); if (el && DATA[f]) el.value = DATA[f]; });
+      updateStatus();
+    }
+
+    function wire() {
+      FIELDS.forEach(function(f) {
+        var el = document.getElementById('f-' + f); if (!el) return;
+        el.addEventListener('input', function() { DATA[f] = el.value; if (DATA.approved) { DATA.approved = false; updateStatus(); } save(); });
+      });
+    }
+
+    function updateStatus() {
+      var pill = document.getElementById('proc-status-pill');
+      var btn = document.getElementById('approve-btn');
+      if (!pill) return;
+      if (DATA.approved) {
+        pill.className = 'proc-status-pill approved';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved';
+        if (btn) btn.textContent = 'Revise';
+      } else {
+        pill.className = 'proc-status-pill draft';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft';
+        if (btn) btn.textContent = 'Mark as approved';
+      }
+    }
+
+    function toggleApproval() {
+      DATA.approved = !DATA.approved;
+      if (DATA.approved) DATA.approvedDate = new Date().toISOString();
+      save(); updateStatus();
+      if (DATA.approved && typeof LearnMode !== 'undefined') { try { LearnMode.markStepComplete('training-sop'); } catch(e) {} }
+    }
+
+    function renderIntro() {
+      var slot = document.getElementById('intro-slot'); if (!slot) return;
+      slot.innerHTML = LearnMode.introCard({
+        id: 'training-proc',
+        tag: '21 CFR 820.25 · ISO 13485 §6.2',
+        title: 'Training procedure: the authority behind your training records',
+        what: 'This procedure defines how you identify what training is required for each role, how training is delivered and documented, and how you verify that it actually worked. Training records are only meaningful if they\'re authorized by an approved procedure.',
+        why: 'FDA auditors routinely cite training failures — not because companies don\'t train, but because the training isn\'t traceable to an approved procedure and defined competency criteria. This SOP provides that traceability.',
+        standards: ['21 CFR 820.25', 'ISO 13485:2016 §6.2', '21 CFR 820.30(a) (trained personnel for design control)']
+      });
+    }
+
+    initSidebar({ activePage: 'training' });
+    fill(); wire(); renderIntro();
+  </script>
+</body>
+</html>

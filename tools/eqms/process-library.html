@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -355,6 +355,12 @@
       </div>
     </div>
 
+    <!-- CORE PROCEDURES HUB -->
+    <div id="core-procs-section" style="background:white;border-bottom:1px solid rgba(11,39,64,0.08);padding:0.8rem 1.25rem;flex-shrink:0;">
+      <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(11,39,64,0.35);margin-bottom:0.55rem;">Core QMS Procedures</div>
+      <div id="core-procs-list" style="display:flex;flex-wrap:wrap;gap:0.45rem;"></div>
+    </div>
+
     <div class="board-wrap">
       <!-- KANBAN BOARD -->
       <div class="board" id="board">
@@ -466,12 +472,40 @@
     </div>
   </div>
 
-  <script src="sidebar.js"></script>
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
   <script src="esign.js"></script>
   <script src="versions.js"></script>
   <script src="export.js"></script>
   <script>
     initSidebar({ activePage: 'process-library' });
+
+    // Core procedures hub
+    (function renderCoreProcs() {
+      var CORE = [
+        { key: 'qms_quality_manual',      label: 'Quality Manual',              href: 'quality-manual.html',              id: 'QM-001' },
+        { key: 'qms_proc_doc_control',    label: 'Document Control',            href: 'document-control.html',            id: 'SOP-DC-001' },
+        { key: 'qms_proc_training',       label: 'Training &amp; Competency',   href: 'training.html',                    id: 'SOP-TR-001' },
+        { key: 'qms_proc_design_control', label: 'Design Controls',             href: 'design-control.html',              id: 'SOP-DC-002' },
+        { key: 'qms_proc_risk_mgmt',      label: 'Risk Management',             href: 'risk-management-procedure.html',   id: 'SOP-RM-001' },
+      ];
+      var host = document.getElementById('core-procs-list');
+      if (!host) return;
+      host.innerHTML = CORE.map(function(p) {
+        var data = {}; try { data = JSON.parse(localStorage.getItem(p.key)) || {}; } catch(e) {}
+        var approved = !!data.approved;
+        var pill = approved
+          ? '<span style="font-size:0.58rem;font-weight:700;background:rgba(16,185,129,0.1);color:#047857;padding:0.1rem 0.45rem;border-radius:3px;">Approved</span>'
+          : '<span style="font-size:0.58rem;font-weight:700;background:rgba(245,158,11,0.1);color:#b45309;padding:0.1rem 0.45rem;border-radius:3px;">Draft</span>';
+        return '<a href="' + p.href + '" style="display:flex;align-items:center;gap:0.5rem;background:rgba(11,39,64,0.03);border:1.5px solid rgba(11,39,64,0.09);border-radius:8px;padding:0.45rem 0.75rem;text-decoration:none;transition:border-color 0.12s,background 0.12s;" onmouseover="this.style.borderColor=\'rgba(10,192,233,0.35)\';this.style.background=\'rgba(10,192,233,0.04)\'" onmouseout="this.style.borderColor=\'rgba(11,39,64,0.09)\';this.style.background=\'rgba(11,39,64,0.03)\'">' +
+          '<div><div style="font-size:0.76rem;font-weight:700;color:#0B2740;line-height:1.2;">' + p.label + '</div><div style="font-size:0.6rem;color:rgba(11,39,64,0.4);margin-top:0.06rem;">' + p.id + '</div></div>' +
+          pill +
+          '<svg style="width:11px;height:11px;stroke:rgba(11,39,64,0.3);fill:none;stroke-width:2;margin-left:0.2rem;" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>' +
+        '</a>';
+      }).join('');
+    })();
 
     // ── CONSTANTS ─────────────────────────────────────────────────────────
     const LS_KEY = 'qms_procedures';

@@ -1,0 +1,609 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regulatory Assessment — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    /* Page-specific */
+    .ra-layout { display: grid; grid-template-columns: 1fr 300px; gap: 1.25rem; align-items: start; }
+    .ra-summary { position: sticky; top: 0; background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; padding: 1rem; }
+    .ra-summary h3 { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.45); margin-bottom: 0.8rem; }
+    .ra-summary-row { display: flex; justify-content: space-between; align-items: center; padding: 0.42rem 0; border-bottom: 1px dashed rgba(11,39,64,0.08); font-size: 0.76rem; }
+    .ra-summary-row:last-child { border-bottom: none; }
+    .ra-summary-label { color: rgba(11,39,64,0.55); }
+    .ra-summary-value { font-weight: 700; color: var(--primary); text-align: right; }
+    .ra-summary-value.muted { color: rgba(11,39,64,0.28); font-weight: 500; font-style: italic; }
+
+    .pathway-choice { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.65rem; }
+    .pathway-card { padding: 0.85rem; border: 1.5px solid rgba(11,39,64,0.1); border-radius: 10px; cursor: pointer; background: white; transition: all 0.15s; }
+    .pathway-card:hover { border-color: rgba(10,192,233,0.4); }
+    .pathway-card.selected { border-color: var(--aqua); background: rgba(10,192,233,0.04); }
+    .pathway-card-title { font-size: 0.82rem; font-weight: 700; color: var(--primary); margin-bottom: 0.2rem; }
+    .pathway-card-desc { font-size: 0.7rem; color: rgba(11,39,64,0.55); line-height: 1.45; }
+
+    .class-choice { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.55rem; }
+    .class-card { padding: 0.7rem 0.5rem; border: 1.5px solid rgba(11,39,64,0.1); border-radius: 9px; cursor: pointer; text-align: center; background: white; transition: all 0.15s; }
+    .class-card:hover { border-color: rgba(10,192,233,0.4); }
+    .class-card.selected { border-color: var(--aqua); background: rgba(10,192,233,0.05); }
+    .class-card-name { font-size: 0.82rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; }
+    .class-card-risk { font-size: 0.65rem; color: rgba(11,39,64,0.55); margin-top: 0.12rem; }
+
+    .predicate-row { display: grid; grid-template-columns: 110px 1fr 1fr 90px 32px; gap: 0.5rem; margin-bottom: 0.45rem; align-items: center; }
+    .predicate-row input { font-family: 'Inter', sans-serif; font-size: 0.76rem; padding: 0.38rem 0.55rem; border: 1.5px solid rgba(11,39,64,0.1); border-radius: 6px; outline: none; width: 100%; }
+    .predicate-row input:focus { border-color: var(--aqua); }
+    .add-row-btn { display: inline-flex; align-items: center; gap: 0.3rem; background: transparent; border: 1.5px dashed rgba(11,39,64,0.22); color: rgba(11,39,64,0.6); font-family: inherit; font-weight: 600; font-size: 0.72rem; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; }
+    .add-row-btn:hover { background: rgba(10,192,233,0.04); border-color: rgba(10,192,233,0.35); color: var(--aqua-dark); }
+    .add-row-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .std-chip { display: inline-flex; align-items: center; gap: 0.35rem; background: rgba(11,39,64,0.05); border: 1px solid rgba(11,39,64,0.1); padding: 0.3rem 0.55rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600; color: var(--primary); margin: 0.15rem 0.2rem 0.15rem 0; cursor: default; }
+    .std-chip button { border: none; background: transparent; color: rgba(11,39,64,0.4); font-size: 0.85rem; cursor: pointer; padding: 0 0.15rem; line-height: 1; }
+    .std-chip button:hover { color: #EF4444; }
+
+    .market-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.38rem 0.7rem; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 6px; font-size: 0.72rem; font-weight: 600; color: var(--primary); cursor: pointer; background: white; margin: 0.15rem 0.25rem 0.15rem 0; transition: all 0.15s; }
+    .market-chip:hover { border-color: rgba(10,192,233,0.4); }
+    .market-chip.active { background: rgba(10,192,233,0.06); border-color: var(--aqua); color: var(--aqua-dark); }
+
+    /* Classification wizard (guided mode) */
+    .wizard-question { padding: 0.85rem 1rem; background: rgba(10,192,233,0.04); border: 1px solid rgba(10,192,233,0.18); border-radius: 9px; margin-bottom: 0.65rem; }
+    .wizard-question-label { font-size: 0.78rem; color: var(--primary); font-weight: 600; margin-bottom: 0.5rem; }
+    .wizard-options { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+    .wizard-options button { font-family: inherit; font-size: 0.72rem; padding: 0.35rem 0.75rem; border: 1.5px solid rgba(11,39,64,0.12); background: white; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    .wizard-options button:hover { border-color: rgba(10,192,233,0.45); }
+    .wizard-options button.selected { background: var(--aqua); color: white; border-color: var(--aqua); }
+
+    .wizard-outcome {
+      padding: 0.85rem 1rem; border-radius: 9px; margin-top: 0.75rem;
+      background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.25);
+      font-size: 0.78rem; color: #065f46;
+    }
+    .wizard-outcome strong { display: block; font-size: 0.82rem; color: #047857; margin-bottom: 0.2rem; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Planning</span>
+        <span class="topbar-sep">/</span>
+        Regulatory Assessment
+      </div>
+      <div class="topbar-right">
+        <button class="btn-secondary" onclick="exportAssessment()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export</button>
+        <button class="btn-primary" onclick="saveAssessment()"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save</button>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+      <div id="intro-slot"></div>
+
+      <div class="ra-layout">
+        <div>
+          <!-- Device Description -->
+          <div class="card">
+            <div class="card-head"><div class="card-title">1 · Device description</div></div>
+            <div class="card-body">
+              <div id="hint-device" class="learn-only" style="margin-bottom:0.6rem;"></div>
+              <div class="form-field" style="margin-bottom:0.85rem;">
+                <label class="form-label">Device name</label>
+                <input class="form-input" id="f-name" placeholder="e.g. CardioSync Pro">
+              </div>
+              <div class="form-row" style="margin-bottom:0.85rem;">
+                <div class="form-field">
+                  <label class="form-label">Product type</label>
+                  <select class="form-select" id="f-type">
+                    <option value="">Select…</option>
+                    <option>Implantable device</option>
+                    <option>Wearable / body-worn</option>
+                    <option>Bedside / clinical instrument</option>
+                    <option>In-vitro diagnostic (IVD)</option>
+                    <option>Software as a Medical Device (SaMD)</option>
+                    <option>Accessory</option>
+                    <option>Imaging device</option>
+                    <option>Surgical instrument</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Clinical use</label>
+                  <select class="form-select" id="f-use">
+                    <option value="">Select…</option>
+                    <option>Diagnosis</option>
+                    <option>Treatment / therapy</option>
+                    <option>Monitoring</option>
+                    <option>Life support / life sustaining</option>
+                    <option>Prevention / screening</option>
+                    <option>Surgical</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-label">Intended use statement</label>
+                <textarea class="form-textarea" id="f-intended-use" rows="3" placeholder="State who uses the device, on whom, for what condition, and in what setting."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Classification Wizard (guided) -->
+          <div class="card learn-only">
+            <div class="card-head"><div class="card-title">Classification helper</div><span class="card-title-sub">Not sure? Answer 3 questions.</span></div>
+            <div class="card-body">
+              <div id="wizard-slot"></div>
+            </div>
+          </div>
+
+          <!-- FDA Classification -->
+          <div class="card">
+            <div class="card-head"><div class="card-title">2 · FDA classification (US)</div></div>
+            <div class="card-body">
+              <div id="hint-fda" class="learn-only" style="margin-bottom:0.7rem;"></div>
+              <div class="class-choice" id="fda-class-choice">
+                <div class="class-card" data-class="I" onclick="selectFdaClass('I')"><div class="class-card-name">Class I</div><div class="class-card-risk">Low risk</div></div>
+                <div class="class-card" data-class="II" onclick="selectFdaClass('II')"><div class="class-card-name">Class II</div><div class="class-card-risk">Moderate risk</div></div>
+                <div class="class-card" data-class="III" onclick="selectFdaClass('III')"><div class="class-card-name">Class III</div><div class="class-card-risk">High risk</div></div>
+                <div class="class-card" data-class="unknown" onclick="selectFdaClass('unknown')"><div class="class-card-name">?</div><div class="class-card-risk">Not yet determined</div></div>
+              </div>
+              <div class="form-row" style="margin-top:0.85rem;">
+                <div class="form-field">
+                  <label class="form-label">FDA product code <span class="learn-only" id="teach-product-code"></span></label>
+                  <input class="form-input" id="f-product-code" placeholder="e.g. DQK (three-letter code)">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">CFR regulation citation</label>
+                  <input class="form-input" id="f-cfr" placeholder="e.g. 21 CFR 870.2300">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pathway -->
+          <div class="card">
+            <div class="card-head"><div class="card-title">3 · FDA submission pathway</div></div>
+            <div class="card-body">
+              <div id="hint-pathway" class="learn-only" style="margin-bottom:0.7rem;"></div>
+              <div class="pathway-choice" id="pathway-choice">
+                <div class="pathway-card" data-pathway="exempt" onclick="selectPathway('exempt')">
+                  <div class="pathway-card-title">510(k) Exempt</div>
+                  <div class="pathway-card-desc">Most Class I devices. Register &amp; list only — no premarket submission.</div>
+                </div>
+                <div class="pathway-card" data-pathway="510k" onclick="selectPathway('510k')">
+                  <div class="pathway-card-title">510(k) Premarket</div>
+                  <div class="pathway-card-desc">Most Class II. Substantial equivalence to a predicate device.</div>
+                </div>
+                <div class="pathway-card" data-pathway="denovo" onclick="selectPathway('denovo')">
+                  <div class="pathway-card-title">De Novo</div>
+                  <div class="pathway-card-desc">Low–moderate risk, novel device with no predicate.</div>
+                </div>
+                <div class="pathway-card" data-pathway="pma" onclick="selectPathway('pma')">
+                  <div class="pathway-card-title">PMA</div>
+                  <div class="pathway-card-desc">Class III. Full premarket approval — safety &amp; effectiveness evidence.</div>
+                </div>
+                <div class="pathway-card" data-pathway="hde" onclick="selectPathway('hde')">
+                  <div class="pathway-card-title">HDE</div>
+                  <div class="pathway-card-desc">Humanitarian Device Exemption for rare disease populations.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Predicates -->
+          <div class="card" id="predicates-card" style="display:none;">
+            <div class="card-head">
+              <div class="card-title">4 · Predicate device(s)</div>
+              <span class="card-title-sub">For 510(k): at least one predicate is required.</span>
+            </div>
+            <div class="card-body">
+              <div id="hint-predicates" class="learn-only" style="margin-bottom:0.7rem;"></div>
+              <div id="predicate-rows"></div>
+              <button class="add-row-btn" onclick="addPredicate()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add predicate</button>
+            </div>
+          </div>
+
+          <!-- EU/MDR -->
+          <div class="card">
+            <div class="card-head"><div class="card-title">5 · EU / MDR classification</div></div>
+            <div class="card-body">
+              <div id="hint-eu" class="learn-only" style="margin-bottom:0.7rem;"></div>
+              <div class="form-row-3" style="margin-bottom:0.85rem;">
+                <div class="form-field">
+                  <label class="form-label">MDR class</label>
+                  <select class="form-select" id="f-eu-class">
+                    <option value="">Select…</option>
+                    <option>Class I</option>
+                    <option>Class I (sterile / measuring / reusable surgical)</option>
+                    <option>Class IIa</option>
+                    <option>Class IIb</option>
+                    <option>Class III</option>
+                    <option>Not marketing in EU</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">MDR rule(s)</label>
+                  <input class="form-input" id="f-eu-rule" placeholder="e.g. Rule 11, Rule 22">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Notified body</label>
+                  <input class="form-input" id="f-eu-nb" placeholder="e.g. BSI (2797)">
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="form-label">CE mark route</label>
+                <select class="form-select" id="f-eu-route">
+                  <option value="">Select…</option>
+                  <option>Self-declaration (Class I, non-sterile/measuring)</option>
+                  <option>Annex IX — Full quality + technical file review</option>
+                  <option>Annex X — Type examination + Annex XI</option>
+                  <option>Annex XI — Part A (production quality)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Standards -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">6 · Applicable consensus standards</div>
+              <button class="add-row-btn" onclick="addStandard()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add standard</button>
+            </div>
+            <div class="card-body">
+              <div id="hint-standards" class="learn-only" style="margin-bottom:0.7rem;"></div>
+              <div class="learn-only" style="margin-bottom:0.7rem;">
+                <div style="font-size:0.72rem;color:var(--mid-blue);margin-bottom:0.4rem;">Quick add — common medtech standards:</div>
+                <div id="common-standards"></div>
+              </div>
+              <div id="standards-list" style="min-height:1.5rem;"></div>
+            </div>
+          </div>
+
+          <!-- Markets -->
+          <div class="card">
+            <div class="card-head"><div class="card-title">7 · Target markets</div></div>
+            <div class="card-body">
+              <div id="markets-chips"></div>
+            </div>
+          </div>
+
+          <!-- Narrative -->
+          <div class="card">
+            <div class="card-head"><div class="card-title">8 · Strategy narrative</div></div>
+            <div class="card-body">
+              <div id="hint-narrative" class="learn-only" style="margin-bottom:0.5rem;"></div>
+              <textarea class="form-textarea" id="f-narrative" rows="6" placeholder="Summarize classification rationale, pathway decision, predicates chosen, and any open risks or assumptions."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sticky summary -->
+        <div>
+          <div class="ra-summary" id="summary">
+            <h3>Regulatory summary</h3>
+            <div id="summary-body"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_regulatory_assessment';
+    const MARKETS = ['United States','European Union','United Kingdom','Canada','Australia','Japan','China','Brazil','South Korea'];
+    const COMMON_STANDARDS = [
+      { name: 'ISO 13485:2016', desc: 'QMS — Medical devices' },
+      { name: 'ISO 14971:2019', desc: 'Risk management' },
+      { name: 'IEC 62304', desc: 'Medical device software lifecycle' },
+      { name: 'IEC 60601-1', desc: 'Electrical safety — medical equipment' },
+      { name: 'IEC 62366-1', desc: 'Usability engineering' },
+      { name: 'ISO 10993-1', desc: 'Biocompatibility evaluation' },
+      { name: 'ISO 11607', desc: 'Packaging — terminally sterilized' },
+      { name: 'ISO 15223-1', desc: 'Symbols for labelling' },
+      { name: 'IEC 62133', desc: 'Battery safety' },
+      { name: 'IEC 60601-1-2', desc: 'EMC for medical equipment' },
+    ];
+
+    let state = load();
+
+    function load() {
+      try { return JSON.parse(localStorage.getItem(KEY)) || defaults(); }
+      catch (e) { return defaults(); }
+    }
+    function defaults() {
+      return {
+        deviceName: '', productType: '', clinicalUse: '', intendedUse: '',
+        fdaClass: '', productCode: '', cfr: '',
+        pathway: '',
+        predicates: [],
+        euClass: '', euRule: '', euNb: '', euRoute: '',
+        standards: [],
+        markets: [],
+        narrative: '',
+        wizardAnswers: {}
+      };
+    }
+    function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+    function saveAssessment() { sync(); save(); toast('Saved'); }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+    function toast(msg) {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#0B2740;color:white;padding:0.6rem 1rem;border-radius:8px;font-size:0.78rem;font-weight:600;z-index:3000;opacity:0;transition:opacity 0.2s;box-shadow:0 4px 14px rgba(2,25,47,0.25);';
+      document.body.appendChild(t);
+      requestAnimationFrame(function(){ t.style.opacity = '1'; });
+      setTimeout(function(){ t.style.opacity = '0'; setTimeout(function(){ t.remove(); }, 250); }, 1500);
+    }
+
+    function sync() {
+      state.deviceName = document.getElementById('f-name').value;
+      state.productType = document.getElementById('f-type').value;
+      state.clinicalUse = document.getElementById('f-use').value;
+      state.intendedUse = document.getElementById('f-intended-use').value;
+      state.productCode = document.getElementById('f-product-code').value;
+      state.cfr = document.getElementById('f-cfr').value;
+      state.euClass = document.getElementById('f-eu-class').value;
+      state.euRule = document.getElementById('f-eu-rule').value;
+      state.euNb = document.getElementById('f-eu-nb').value;
+      state.euRoute = document.getElementById('f-eu-route').value;
+      state.narrative = document.getElementById('f-narrative').value;
+      renderSummary();
+      save();  // auto-persist on every edit so Journey detects progress
+    }
+
+    function selectFdaClass(cls) {
+      state.fdaClass = cls;
+      document.querySelectorAll('#fda-class-choice .class-card').forEach(function(el){
+        el.classList.toggle('selected', el.getAttribute('data-class') === cls);
+      });
+      // Auto-suggest pathway
+      if (cls === 'I' && !state.pathway) selectPathway('exempt');
+      if (cls === 'II' && !state.pathway) selectPathway('510k');
+      if (cls === 'III' && !state.pathway) selectPathway('pma');
+      renderSummary();
+      save();
+    }
+
+    function selectPathway(p) {
+      state.pathway = p;
+      document.querySelectorAll('#pathway-choice .pathway-card').forEach(function(el){
+        el.classList.toggle('selected', el.getAttribute('data-pathway') === p);
+      });
+      document.getElementById('predicates-card').style.display = (p === '510k' || p === 'denovo') ? 'block' : 'none';
+      renderSummary();
+      save();
+    }
+
+    function addPredicate(p) {
+      state.predicates.push(p || { k: '', mfr: '', name: '', year: '' });
+      renderPredicates();
+      save();
+    }
+    function removePredicate(i) { state.predicates.splice(i, 1); renderPredicates(); save(); }
+    function updatePredicate(i, field, val) { state.predicates[i][field] = val; save(); }
+
+    function renderPredicates() {
+      const host = document.getElementById('predicate-rows');
+      if (!state.predicates.length) { host.innerHTML = '<div class="subtle" style="margin-bottom:0.5rem;">No predicates added yet.</div>'; return; }
+      host.innerHTML = state.predicates.map(function(p, i){
+        return '<div class="predicate-row">' +
+          '<input placeholder="K-number" value="'+esc(p.k)+'" oninput="updatePredicate('+i+',\'k\',this.value)">' +
+          '<input placeholder="Manufacturer" value="'+esc(p.mfr)+'" oninput="updatePredicate('+i+',\'mfr\',this.value)">' +
+          '<input placeholder="Device name" value="'+esc(p.name)+'" oninput="updatePredicate('+i+',\'name\',this.value)">' +
+          '<input placeholder="Year" value="'+esc(p.year)+'" oninput="updatePredicate('+i+',\'year\',this.value)">' +
+          '<button class="btn-icon danger" onclick="removePredicate('+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function addStandard(name) {
+      const n = name || prompt('Standard designation (e.g. "ISO 14971:2019")');
+      if (!n) return;
+      if (state.standards.some(function(s){ return s.name === n; })) return;
+      state.standards.push({ name: n });
+      renderStandards();
+      save();
+    }
+    function removeStandard(i) { state.standards.splice(i, 1); renderStandards(); save(); }
+
+    function renderStandards() {
+      const host = document.getElementById('standards-list');
+      if (!state.standards.length) {
+        host.innerHTML = '<div class="subtle">No standards added yet. Add the ones you will claim conformance to.</div>';
+      } else {
+        host.innerHTML = state.standards.map(function(s, i){
+          return '<span class="std-chip">'+esc(s.name)+'<button onclick="removeStandard('+i+')">×</button></span>';
+        }).join('');
+      }
+
+      // Common standards quick-add
+      const quick = document.getElementById('common-standards');
+      if (quick) {
+        quick.innerHTML = COMMON_STANDARDS.map(function(s){
+          const already = state.standards.some(function(st){ return st.name === s.name; });
+          if (already) return '';
+          return '<button class="market-chip" onclick="addStandard(\''+s.name+'\');" title="'+esc(s.desc)+'">'+esc(s.name)+'</button>';
+        }).join('');
+      }
+      renderSummary();
+    }
+
+    function toggleMarket(m) {
+      const i = state.markets.indexOf(m);
+      if (i === -1) state.markets.push(m); else state.markets.splice(i, 1);
+      renderMarkets();
+      save();
+    }
+    function renderMarkets() {
+      const host = document.getElementById('markets-chips');
+      host.innerHTML = MARKETS.map(function(m){
+        const active = state.markets.indexOf(m) !== -1;
+        return '<button class="market-chip '+(active?'active':'')+'" onclick="toggleMarket(\''+m+'\')">'+esc(m)+'</button>';
+      }).join('');
+      renderSummary();
+    }
+
+    function renderSummary() {
+      const pathwayLabels = { exempt:'510(k) Exempt', '510k':'510(k)', denovo:'De Novo', pma:'PMA', hde:'HDE' };
+      const rows = [
+        ['Device', state.deviceName],
+        ['Product type', state.productType],
+        ['FDA class', state.fdaClass && state.fdaClass !== 'unknown' ? 'Class ' + state.fdaClass : ''],
+        ['Product code', state.productCode],
+        ['Pathway (US)', pathwayLabels[state.pathway] || ''],
+        ['Predicates', state.predicates.filter(function(p){return p.k||p.name;}).length || 0],
+        ['EU class', state.euClass],
+        ['Standards claimed', state.standards.length],
+        ['Target markets', state.markets.length],
+      ];
+      document.getElementById('summary-body').innerHTML = rows.map(function(r){
+        const val = r[1] === '' || r[1] == null ? '<span class="muted">Not set</span>' : esc(String(r[1]));
+        return '<div class="ra-summary-row"><div class="ra-summary-label">'+esc(r[0])+'</div><div class="ra-summary-value">'+val+'</div></div>';
+      }).join('');
+    }
+
+    // ── Classification wizard ──
+    function renderWizard() {
+      const host = document.getElementById('wizard-slot');
+      if (!host) return;
+      const answers = state.wizardAnswers || (state.wizardAnswers = {});
+      const qs = [
+        { id: 'contact', q: 'Does the device contact the patient\u2019s body?', opts: ['No','Skin only','Mucous membrane / short-term','Blood or implanted (long-term)'] },
+        { id: 'energy', q: 'Does the device deliver energy, drugs, or automated therapy?', opts: ['No','Measures only','Delivers therapy','Life-supporting'] },
+        { id: 'software', q: 'Is the device software-driven, or is it software only (SaMD)?', opts: ['No software','Software-driven hardware','Software only (SaMD)'] },
+      ];
+
+      let html = qs.map(function(q){
+        return '<div class="wizard-question"><div class="wizard-question-label">'+esc(q.q)+'</div><div class="wizard-options">'+
+          q.opts.map(function(o){
+            const sel = answers[q.id] === o ? ' selected' : '';
+            return '<button class="'+sel.trim()+'" onclick="answerWizard(\''+q.id+'\',\''+o.replace(/'/g, "\\'")+'\')">'+esc(o)+'</button>';
+          }).join('') +
+        '</div></div>';
+      }).join('');
+
+      // Compute recommendation
+      const suggestion = classifyFromAnswers(answers);
+      if (suggestion) {
+        html += '<div class="wizard-outcome"><strong>Suggested: ' + esc(suggestion.label) + '</strong>' + esc(suggestion.reason) + '</div>';
+      }
+      host.innerHTML = html;
+    }
+
+    function answerWizard(id, val) {
+      state.wizardAnswers = state.wizardAnswers || {};
+      state.wizardAnswers[id] = val;
+      renderWizard();
+      save();
+    }
+
+    function classifyFromAnswers(a) {
+      if (!a || Object.keys(a).length < 3) return null;
+      // Very rough heuristic — for education only. Real classification requires product-code review.
+      if (a.energy === 'Life-supporting' || a.contact === 'Blood or implanted (long-term)') {
+        return { label: 'Likely Class III (FDA) / Class III (EU)', reason: ' Implantable or life-supporting devices are typically highest risk. Confirm with product code and consult a regulatory expert before concluding.' };
+      }
+      if (a.energy === 'Delivers therapy' || a.contact === 'Mucous membrane / short-term') {
+        return { label: 'Likely Class II (FDA) / IIa or IIb (EU)', reason: ' Therapy-delivering or invasive non-implantable devices are commonly Class II. Search FDA Product Classification DB for your product code.' };
+      }
+      if (a.software === 'Software only (SaMD)') {
+        return { label: 'SaMD — class by function + risk', reason: ' SaMD class depends on significance of information provided (inform / drive / diagnose) and state of healthcare situation (serious / critical). IMDRF framework applies.' };
+      }
+      return { label: 'Likely Class I (FDA) / Class I (EU)', reason: ' Low-risk, non-contact or skin-contact devices. Most are 510(k) exempt but still need registration, listing, and QMS.' };
+    }
+
+    // ── Hints ──
+    function renderHints() {
+      if (!LearnMode.isGuided()) return;
+      document.getElementById('hint-device').innerHTML = LearnMode.hint('Describe what the device does in one sentence. This becomes the "Intended Use" statement on your 510(k) or technical file. Keep it specific — scope creep here inflates your validation burden.');
+      document.getElementById('hint-fda').innerHTML = LearnMode.hint('FDA assigns a three-tier risk class. Class I = low risk (thermometers), Class II = moderate (most devices — infusion pumps, diagnostic software), Class III = high (pacemakers, implanted neuro).');
+      document.getElementById('hint-pathway').innerHTML = LearnMode.hint('Your class + whether a similar device already exists (predicate) determines which FDA pathway applies. 510(k) is fastest; PMA takes years and clinical studies.');
+      document.getElementById('hint-predicates').innerHTML = LearnMode.hint('A predicate is a legally marketed device substantially equivalent to yours. Search FDA\'s 510(k) database. Your submission compares your device to predicate across intended use, technology, and performance.');
+      document.getElementById('hint-eu').innerHTML = LearnMode.hint('The EU MDR uses a rules-based classification (Annex VIII). Most software is Class IIa or higher under Rule 11. Class I requires no notified body; IIa+ does.');
+      document.getElementById('hint-standards').innerHTML = LearnMode.hint('Claiming conformance to a recognized consensus standard shortcuts acceptance. ISO 13485 (QMS), ISO 14971 (risk), IEC 62304 (software) are the core three for most medtech.');
+      document.getElementById('hint-narrative').innerHTML = LearnMode.hint('Auditors and reviewers read this section first. Explain why you chose this pathway, why your predicate is appropriate, and what you\'re deferring until later.');
+
+      const tpc = document.getElementById('teach-product-code');
+      if (tpc) tpc.innerHTML = LearnMode.teach('A 3-letter FDA product code (e.g. "DQK") ties your device to a specific regulation. Search FDA\'s Product Classification database.');
+    }
+
+    // ── Init ──
+    function populateForm() {
+      document.getElementById('f-name').value = state.deviceName || '';
+      document.getElementById('f-type').value = state.productType || '';
+      document.getElementById('f-use').value = state.clinicalUse || '';
+      document.getElementById('f-intended-use').value = state.intendedUse || '';
+      document.getElementById('f-product-code').value = state.productCode || '';
+      document.getElementById('f-cfr').value = state.cfr || '';
+      document.getElementById('f-eu-class').value = state.euClass || '';
+      document.getElementById('f-eu-rule').value = state.euRule || '';
+      document.getElementById('f-eu-nb').value = state.euNb || '';
+      document.getElementById('f-eu-route').value = state.euRoute || '';
+      document.getElementById('f-narrative').value = state.narrative || '';
+      if (state.fdaClass) selectFdaClass(state.fdaClass);
+      if (state.pathway) selectPathway(state.pathway);
+
+      // Wire up auto-sync on change
+      ['f-name','f-type','f-use','f-intended-use','f-product-code','f-cfr','f-eu-class','f-eu-rule','f-eu-nb','f-eu-route','f-narrative'].forEach(function(id){
+        document.getElementById(id).addEventListener('input', sync);
+        document.getElementById(id).addEventListener('change', sync);
+      });
+
+      renderPredicates();
+      if (!state.predicates.length && state.pathway === '510k') addPredicate();
+      renderStandards();
+      renderMarkets();
+      renderWizard();
+      renderSummary();
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'regulatory-assessment',
+        tag: 'Planning · FDA 21 CFR 820.30(b), ISO 13485 §7.1',
+        title: 'Your regulatory assessment',
+        what: 'This is where you decide what kind of medical device you\'re building in the eyes of a regulator — and how you\'ll get it to market. Every downstream design control decision flows from these answers.',
+        why: 'If you pick the wrong class or pathway, you\'ll either over-spend on testing you didn\'t need, or discover gaps during submission that cost you months. Regulators will also expect the rationale to be written down (that\'s this page).',
+        facts: [
+          { label: 'Typical timeline', value: '510(k): 3–9 months · PMA: 1–3 years' },
+          { label: 'Who signs off', value: 'Regulatory Affairs Lead' },
+          { label: 'Updated', value: 'Every time intended use changes' },
+        ],
+        checklist: [
+          'Write a one-sentence intended use statement',
+          'Determine FDA class (I / II / III) and product code',
+          'Pick a submission pathway (Exempt / 510(k) / De Novo / PMA)',
+          'Identify predicate devices if 510(k)',
+          'Classify under EU MDR if targeting Europe',
+          'List consensus standards you\'ll claim conformance to'
+        ],
+        standards: ['FDA 21 CFR 807 / 814', 'ISO 13485:2016 §7.1', 'EU MDR 2017/745 Annex VIII', 'IMDRF SaMD Framework']
+      });
+    }
+
+    function exportAssessment() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'regulatory-assessment.json';
+      a.click();
+    }
+
+    document.addEventListener('qms-learn-mode-changed', function(){ renderHints(); renderWizard(); });
+
+    // Bootstrap
+    initSidebar({ activePage: 'regulatory-assessment' });
+    renderIntro();
+    populateForm();
+    renderHints();
+  </script>
+</body>
+</html>

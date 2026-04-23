@@ -1,0 +1,256 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validation Hub — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .phase-pill { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.14rem 0.4rem; border-radius: 3px; text-transform: uppercase; }
+    .phase-pill.na { background: rgba(11,39,64,0.05); color: rgba(11,39,64,0.4); }
+    .phase-pill.planned { background: rgba(11,39,64,0.08); color: rgba(11,39,64,0.6); }
+    .phase-pill.in-progress { background: rgba(245,158,11,0.14); color: #b45309; }
+    .phase-pill.complete { background: rgba(16,185,129,0.12); color: #047857; }
+    .phase-pill.fail { background: rgba(239,68,68,0.14); color: #dc2626; }
+
+    .proc-table th, .proc-table td { font-size: 0.76rem; }
+    .proc-row { cursor: pointer; }
+    .expandable { padding: 0 !important; background: rgba(11,39,64,0.02); }
+    .expanded-body { padding: 1rem 1.2rem; border-top: 1px solid rgba(11,39,64,0.07); border-bottom: 1px solid rgba(11,39,64,0.07); }
+
+    .iqoqpq-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-top: 0.8rem; }
+    .iqoqpq-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 9px; padding: 0.85rem; }
+    .iqoqpq-card-head { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.45rem; font-size: 0.84rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; }
+    .iqoqpq-card-sub { font-size: 0.68rem; color: rgba(11,39,64,0.5); font-weight: 500; line-height: 1.4; margin-bottom: 0.55rem; }
+    .iqoqpq-card-field { margin-bottom: 0.45rem; }
+    .iqoqpq-card-field .form-label { font-size: 0.62rem; margin-bottom: 0.2rem; }
+    .iqoqpq-card-field input, .iqoqpq-card-field select, .iqoqpq-card-field textarea { font-family: inherit; font-size: 0.72rem; padding: 0.3rem 0.45rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; background: white; outline: none; width: 100%; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Validation</span>
+        <span class="topbar-sep">/</span>
+        Process Validation Hub
+      </div>
+      <div class="topbar-right">
+        <button class="btn-primary" onclick="addProcess()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add process</button>
+      </div>
+    </header>
+
+    <div class="page-scroll">
+      <div id="intro-slot"></div>
+
+      <div class="kpi-row">
+        <div class="kpi-tile"><div class="kpi-tile-label">Validated processes</div><div class="kpi-tile-value" id="kpi-valid">0</div><div class="kpi-tile-sub" id="kpi-valid-sub">IQ+OQ+PQ complete</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">In progress</div><div class="kpi-tile-value" id="kpi-wip">0</div><div class="kpi-tile-sub">Not yet complete</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">Overdue re-val</div><div class="kpi-tile-value" id="kpi-overdue" style="color:#dc2626;">0</div><div class="kpi-tile-sub">Re-validation past due</div></div>
+        <div class="kpi-tile"><div class="kpi-tile-label">Next re-val</div><div class="kpi-tile-value" id="kpi-next" style="font-size:1.1rem;">—</div><div class="kpi-tile-sub">Earliest upcoming date</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Processes requiring validation</div></div>
+        <div class="card-body" style="padding:0;">
+          <table class="data-table proc-table" id="proc-table">
+            <thead><tr><th>Process</th><th>Scope</th><th>IQ</th><th>OQ</th><th>PQ</th><th>Last</th><th>Next re-val</th><th style="width:30px;"></th></tr></thead>
+            <tbody id="proc-body"></tbody>
+          </table>
+          <div id="empty-state"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_validations';
+    let DATA = load();
+    let expandedId = null;
+
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    function save() { localStorage.setItem(KEY, JSON.stringify(DATA)); }
+    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function newId() {
+      let n = 1;
+      Object.keys(DATA).forEach(function(id){ const m = id.match(/^VAL-(\d+)$/); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
+      return 'VAL-' + String(n).padStart(3,'0');
+    }
+
+    function addProcess() {
+      const id = newId();
+      DATA[id] = {
+        id: id, name: 'New process', scope: '', type: 'Manufacturing',
+        iq: { status: 'planned', protocol: '', report: '', executed: '', notes: '' },
+        oq: { status: 'planned', protocol: '', report: '', executed: '', notes: '' },
+        pq: { status: 'planned', protocol: '', report: '', executed: '', notes: '' },
+        lastValidated: '',
+        nextRevalidation: '',
+        rationale: '',
+      };
+      save();
+      expandedId = id;
+      render();
+    }
+
+    function updateItem(id, path, val) {
+      const parts = path.split('.');
+      let obj = DATA[id];
+      for (let i = 0; i < parts.length - 1; i++) obj = obj[parts[i]];
+      obj[parts[parts.length-1]] = val;
+      save();
+      renderKPI();
+      renderRow(id);
+    }
+
+    function remove(id) {
+      if (!confirm('Delete ' + id + '?')) return;
+      delete DATA[id]; save(); render();
+    }
+
+    function toggleExpand(id) { expandedId = (expandedId === id) ? null : id; render(); }
+
+    function computeStatus(p) {
+      const st = [p.iq.status, p.oq.status, p.pq.status];
+      if (st.every(function(s){ return s === 'complete'; })) return 'validated';
+      if (st.some(function(s){ return s === 'fail'; })) return 'fail';
+      if (st.some(function(s){ return s === 'in-progress' || s === 'complete'; })) return 'in-progress';
+      return 'planned';
+    }
+
+    function render() {
+      const body = document.getElementById('proc-body');
+      const list = Object.values(DATA);
+      list.sort(function(a,b){ return a.id < b.id ? -1 : 1; });
+
+      if (!list.length) {
+        body.innerHTML = '<tr><td colspan="8"><div class="list-empty" style="padding:2.5rem 1rem;"><div class="list-empty-icon"><svg viewBox="0 0 24 24"><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="list-empty-title">No validated processes yet</div><div class="list-empty-body">Start by listing manufacturing, sterilization, or software processes that can\'t be fully verified by inspection of the finished device.</div></div></td></tr>';
+        renderKPI();
+        return;
+      }
+
+      body.innerHTML = list.map(function(p) {
+        const expanded = expandedId === p.id;
+        const main = '<tr class="proc-row" onclick="toggleExpand(\''+p.id+'\')">' +
+          '<td><div style="display:flex;align-items:center;gap:0.5rem;"><span class="item-card-id">'+esc(p.id)+'</span><span style="font-weight:600;">'+esc(p.name||'')+'</span></div></td>' +
+          '<td><span class="subtle">'+esc(p.scope||'')+'</span></td>' +
+          '<td><span class="phase-pill '+p.iq.status+'">'+p.iq.status+'</span></td>' +
+          '<td><span class="phase-pill '+p.oq.status+'">'+p.oq.status+'</span></td>' +
+          '<td><span class="phase-pill '+p.pq.status+'">'+p.pq.status+'</span></td>' +
+          '<td>'+esc(p.lastValidated||'—')+'</td>' +
+          '<td>'+overdueCell(p.nextRevalidation)+'</td>' +
+          '<td><button class="btn-icon danger" onclick="event.stopPropagation();remove(\''+p.id+'\')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></td>' +
+        '</tr>';
+        if (!expanded) return main;
+        return main + '<tr><td colspan="8" class="expandable"><div class="expanded-body" id="row-body-'+p.id+'">'+ renderExpanded(p) +'</div></td></tr>';
+      }).join('');
+
+      renderKPI();
+    }
+    function renderRow(id) { /* cheap: full re-render */ render(); }
+
+    function overdueCell(d) {
+      if (!d) return '—';
+      const now = new Date().toISOString().slice(0,10);
+      if (d < now) return '<span style="color:#dc2626;font-weight:700;">'+esc(d)+'</span>';
+      return esc(d);
+    }
+
+    function renderExpanded(p) {
+      return '<div class="form-row" style="margin-bottom:0.75rem;">' +
+        '<div class="form-field"><label class="form-label">Process name</label><input class="form-input" value="'+esc(p.name)+'" oninput="updateItem(\''+p.id+'\',\'name\',this.value)"></div>' +
+        '<div class="form-field"><label class="form-label">Type</label><select class="form-select" onchange="updateItem(\''+p.id+'\',\'type\',this.value)">' +
+          ['Manufacturing','Sterilization','Cleaning','Software','Test method','Packaging','Environmental'].map(function(t){ return '<option value="'+t+'" '+(p.type===t?'selected':'')+'>'+t+'</option>'; }).join('') +
+        '</select></div>' +
+      '</div>' +
+      '<div class="form-row" style="margin-bottom:0.75rem;">' +
+        '<div class="form-field"><label class="form-label">Scope / what\'s being validated</label><textarea class="form-textarea" rows="2" oninput="updateItem(\''+p.id+'\',\'scope\',this.value)">'+esc(p.scope)+'</textarea></div>' +
+        '<div class="form-field"><label class="form-label">Rationale — why validation required</label><textarea class="form-textarea" rows="2" oninput="updateItem(\''+p.id+'\',\'rationale\',this.value)" placeholder="e.g. Cannot fully verify sterilization by test of each unit.">'+esc(p.rationale)+'</textarea></div>' +
+      '</div>' +
+      '<div class="form-row-3" style="margin-bottom:0.5rem;">' +
+        '<div class="form-field"><label class="form-label">Last validated</label><input class="form-input" type="date" value="'+esc(p.lastValidated||'')+'" onchange="updateItem(\''+p.id+'\',\'lastValidated\',this.value)"></div>' +
+        '<div class="form-field"><label class="form-label">Next re-validation</label><input class="form-input" type="date" value="'+esc(p.nextRevalidation||'')+'" onchange="updateItem(\''+p.id+'\',\'nextRevalidation\',this.value)"></div>' +
+        '<div class="form-field"><label class="form-label">Overall status</label><div class="field-locked">'+statusLabel(computeStatus(p))+'</div></div>' +
+      '</div>' +
+      '<div class="iqoqpq-grid">' +
+        iqoqpqCard(p, 'iq', 'IQ — Installation', 'Does the equipment/facility match the specification? Serial numbers, utilities, calibration, environment.') +
+        iqoqpqCard(p, 'oq', 'OQ — Operational', 'Does it perform within specified limits across the operating range? Worst-case challenges, upper/lower bounds.') +
+        iqoqpqCard(p, 'pq', 'PQ — Performance', 'Does it consistently produce product meeting specs under real production conditions? Three runs is typical.') +
+      '</div>';
+    }
+
+    function statusLabel(s) {
+      const map = { validated:'<span class="badge green">Validated</span>', 'in-progress':'<span class="badge amber">In progress</span>', fail:'<span class="badge red">Failed</span>', planned:'<span class="badge gray">Planned</span>' };
+      return map[s] || s;
+    }
+
+    function iqoqpqCard(p, key, label, sub) {
+      const sub_ = p[key];
+      return '<div class="iqoqpq-card">' +
+        '<div class="iqoqpq-card-head">'+label+'<span class="phase-pill '+sub_.status+'" style="margin-left:auto;">'+sub_.status+'</span></div>' +
+        '<div class="iqoqpq-card-sub">'+sub+'</div>' +
+        '<div class="iqoqpq-card-field"><label class="form-label">Protocol ref</label><input type="text" placeholder="e.g. IQ-042" value="'+esc(sub_.protocol||'')+'" oninput="updateItem(\''+p.id+'\',\''+key+'.protocol\',this.value)"></div>' +
+        '<div class="iqoqpq-card-field"><label class="form-label">Report ref</label><input type="text" value="'+esc(sub_.report||'')+'" oninput="updateItem(\''+p.id+'\',\''+key+'.report\',this.value)"></div>' +
+        '<div class="iqoqpq-card-field"><label class="form-label">Executed</label><input type="date" value="'+esc(sub_.executed||'')+'" onchange="updateItem(\''+p.id+'\',\''+key+'.executed\',this.value)"></div>' +
+        '<div class="iqoqpq-card-field"><label class="form-label">Status</label><select onchange="updateItem(\''+p.id+'\',\''+key+'.status\',this.value)">' +
+          ['planned','in-progress','complete','fail','na'].map(function(s){ return '<option value="'+s+'" '+(sub_.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+        '</select></div>' +
+        '<div class="iqoqpq-card-field"><label class="form-label">Notes / deviations</label><textarea rows="2" oninput="updateItem(\''+p.id+'\',\''+key+'.notes\',this.value)">'+esc(sub_.notes||'')+'</textarea></div>' +
+      '</div>';
+    }
+
+    function renderKPI() {
+      const list = Object.values(DATA);
+      const validated = list.filter(function(p){ return computeStatus(p) === 'validated'; }).length;
+      const wip = list.filter(function(p){ return computeStatus(p) === 'in-progress'; }).length;
+      const now = new Date().toISOString().slice(0,10);
+      const overdue = list.filter(function(p){ return p.nextRevalidation && p.nextRevalidation < now; }).length;
+      const upcoming = list.map(function(p){ return p.nextRevalidation; }).filter(function(d){ return d && d >= now; }).sort()[0];
+      document.getElementById('kpi-valid').textContent = validated;
+      document.getElementById('kpi-valid-sub').textContent = 'of ' + list.length + ' total';
+      document.getElementById('kpi-wip').textContent = wip;
+      document.getElementById('kpi-overdue').textContent = overdue;
+      document.getElementById('kpi-next').textContent = upcoming || '—';
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'validation-hub',
+        tag: 'Process validation · FDA 21 CFR 820.75',
+        title: 'Why IQ, OQ, PQ?',
+        what: 'Some processes produce results that can\'t be fully verified by inspecting the finished device (sterilization, injection molding, software). For those, regulators require proof that the process itself is reliable — that\'s validation.',
+        why: 'IQ confirms your equipment is installed correctly. OQ confirms it operates within specs across the full operating range. PQ confirms, under real production conditions, that it reliably produces good product. Miss any of the three and FDA will find it.',
+        facts: [
+          { label: 'IQ', value: 'Installation — is it set up right?' },
+          { label: 'OQ', value: 'Operational — does it run in spec?' },
+          { label: 'PQ', value: 'Performance — does it stay in spec consistently?' },
+        ],
+        checklist: [
+          'List every process that can\'t be fully verified',
+          'Write a Validation Master Plan (scope + criteria)',
+          'Run IQ → OQ → PQ in order (each protocol approved before execution)',
+          'Set a re-validation interval (typically annually, or on change)',
+          'Trigger re-validation on changes via Change Control',
+        ],
+        standards: ['FDA 21 CFR 820.75', 'ISO 13485 §7.5.6', 'GHTF SG3/N99-10 Process Validation Guidance', 'FDA Process Validation Guidance 2011']
+      });
+    }
+
+    document.addEventListener('qms-learn-mode-changed', render);
+    initSidebar({ activePage: 'validation-hub' });
+    renderIntro();
+    render();
+  </script>
+</body>
+</html>

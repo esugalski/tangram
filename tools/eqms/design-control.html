@@ -1,0 +1,211 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Control Procedure — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .proc-approval-bar { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1.25rem; background: white; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .proc-status-pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.68rem; font-weight: 700; padding: 0.22rem 0.65rem; border-radius: 4px; }
+    .proc-status-pill.draft    { background: rgba(245,158,11,0.1); color: #b45309; }
+    .proc-status-pill.approved { background: rgba(16,185,129,0.1); color: #047857; }
+    .proc-status-pill svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .proc-meta-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.85rem; margin-bottom: 1.25rem; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Quality System</span>
+        <span class="topbar-sep">/</span>
+        Design Control Procedure
+      </div>
+      <div class="topbar-right">
+        <button class="btn-secondary" onclick="window.location.href='process-library.html'">All procedures</button>
+      </div>
+    </header>
+
+    <div class="proc-approval-bar">
+      <div>
+        <div style="font-size:0.72rem;font-weight:700;color:var(--primary);margin-bottom:0.05rem;">SOP-DC-002 Design and Development Controls</div>
+        <div style="font-size:0.63rem;color:rgba(11,39,64,0.4);">21 CFR 820.30 · ISO 13485 §7.3 · Design phases, gates, deliverables, and approvals</div>
+      </div>
+      <div id="proc-status-pill" class="proc-status-pill draft" style="margin-left:auto;">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft
+      </div>
+      <button id="approve-btn" class="btn-secondary" onclick="toggleApproval()">Mark as approved</button>
+    </div>
+
+    <div class="page-scroll">
+      <div id="intro-slot"></div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Document metadata</div></div>
+        <div class="card-body">
+          <div class="proc-meta-row">
+            <div class="form-field"><label class="form-label">Document number</label><input class="form-input" id="f-doc-num" placeholder="e.g. SOP-DC-002"></div>
+            <div class="form-field"><label class="form-label">Version</label><input class="form-input" id="f-version" placeholder="e.g. Rev A"></div>
+            <div class="form-field"><label class="form-label">Effective date</label><input class="form-input" id="f-eff-date" placeholder="YYYY-MM-DD"></div>
+          </div>
+          <div class="proc-meta-row">
+            <div class="form-field"><label class="form-label">Author</label><input class="form-input" id="f-author" placeholder="Name and title"></div>
+            <div class="form-field"><label class="form-label">Reviewer</label><input class="form-input" id="f-reviewer" placeholder="Name and title"></div>
+            <div class="form-field"><label class="form-label">Approver</label><input class="form-input" id="f-approver" placeholder="Name and title"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">1 · Purpose and scope</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Purpose</label>
+            <textarea class="form-textarea" id="f-purpose" rows="2" placeholder="This procedure establishes the requirements and controls for managing the design and development of medical devices from concept through design transfer, ensuring that user needs, design inputs, outputs, verification, validation, and transfer activities are planned, documented, and reviewed."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Scope</label>
+            <textarea class="form-textarea" id="f-scope" rows="2" placeholder="Applies to all new device development projects and significant modifications to existing designs. Applies from initial concept through design transfer to production."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">2 · Design phases and gate criteria</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Design phases</label>
+            <textarea class="form-textarea" id="f-phases" rows="5" placeholder="Define your design phases and what each covers:&#10;Phase 1 — Concept: Market needs identified; initial design concept documented; feasibility assessed&#10;Phase 2 — Planning: Design inputs defined; development plan approved; risk management plan in place&#10;Phase 3 — Development: Prototype development; iterative design; initial risk analysis&#10;Phase 4 — Verification: Design outputs verified against inputs; all V&V protocols executed&#10;Phase 5 — Validation: Clinical validation / usability testing; design freeze; design review&#10;Phase 6 — Transfer: DHF complete; DMR established; production process qualified"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Phase gate criteria (required to advance)</label>
+            <textarea class="form-textarea" id="f-gates" rows="4" placeholder="Define the conditions that must be met before advancing each gate:&#10;Gate 1→2: Approved user needs; approved design plan; RM plan in place&#10;Gate 2→3: Design inputs approved; team trained on all applicable SOPs&#10;Gate 3→4: Design outputs documented and traceable to inputs&#10;Gate 4→5: All V&V protocols executed and passing; residual risks acceptable&#10;Gate 5→6: Design review conducted; design freeze declared; DHF complete"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">3 · Required deliverables per phase</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Design History File (DHF) required documents</label>
+            <textarea class="form-textarea" id="f-dhf-docs" rows="5" placeholder="The DHF must contain at minimum:&#10;□ Development Plan&#10;□ User Needs document&#10;□ Design Inputs specification&#10;□ Risk Management Plan and analysis&#10;□ Design Outputs (drawings, specs, software)&#10;□ Traceability Matrix (inputs ↔ outputs ↔ V&V)&#10;□ Verification protocols and reports&#10;□ Validation protocols and reports&#10;□ Design Review records (all phases)&#10;□ Device Master Record (DMR) index"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">4 · Design reviews</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Review frequency and triggers</label>
+            <textarea class="form-textarea" id="f-review-freq" rows="2" placeholder="e.g. Formal design reviews required at each phase gate. Additional reviews may be triggered by: significant design change, safety concern, audit finding, or customer complaint."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Independent reviewer requirement (21 CFR 820.30(e))</label>
+            <textarea class="form-textarea" id="f-independent-reviewer" rows="3" placeholder="21 CFR 820.30(e) requires at least one reviewer independent of the design activity. Define who qualifies:&#10;e.g. The independent reviewer may not have been directly involved in the design phase being reviewed. QA Manager is independent for most reviews. For small teams, a qualified external consultant or peer from a sister project satisfies this requirement."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Review record requirements</label>
+            <textarea class="form-textarea" id="f-review-records" rows="2" placeholder="e.g. Design review records must include: date, attendees (name, role), materials reviewed, action items with owners and due dates, reviewer signatures. Records retained in DHF."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">5 · Approval authorities</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Document approval authorities by type</label>
+            <textarea class="form-textarea" id="f-approval-auth" rows="4" placeholder="Define who approves each design record type:&#10;Development Plan: Engineering Lead + QA Manager&#10;User Needs: Product/Clinical Lead + QA&#10;Design Inputs: Engineering Lead + QA Manager&#10;Risk Management Plan: QA Manager + Engineering Lead&#10;V&V Protocols: Engineering Lead (author must differ from approver)&#10;Design Freeze: QA Manager + Regulatory Affairs + Engineering Lead"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">6 · Design freeze and change control</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Design freeze definition</label>
+            <textarea class="form-textarea" id="f-freeze-def" rows="2" placeholder="e.g. Design freeze is declared when all design inputs are fully verified and validated, residual risks are accepted, and the design is ready for transfer to production. Declared in writing by QA Manager with Engineering Lead concurrence."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Post-freeze change control</label>
+            <textarea class="form-textarea" id="f-post-freeze" rows="3" placeholder="e.g. All changes to frozen design documents require a formal Design Change Order (DCO) with: description of change, impact assessment (safety, performance, regulatory), risk re-evaluation, required re-verification/re-validation, and QA approval. Emergency changes may be documented retrospectively within [48] hours with QA sign-off."></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_proc_design_control';
+
+    var DATA = load();
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(DATA)); } catch(e) {} }
+
+    var FIELDS = ['doc-num','version','eff-date','author','reviewer','approver','purpose','scope','phases','gates','dhf-docs','review-freq','independent-reviewer','review-records','approval-auth','freeze-def','post-freeze'];
+
+    function fill() {
+      FIELDS.forEach(function(f) { var el = document.getElementById('f-' + f); if (el && DATA[f]) el.value = DATA[f]; });
+      updateStatus();
+    }
+
+    function wire() {
+      FIELDS.forEach(function(f) {
+        var el = document.getElementById('f-' + f); if (!el) return;
+        el.addEventListener('input', function() { DATA[f] = el.value; if (DATA.approved) { DATA.approved = false; updateStatus(); } save(); });
+      });
+    }
+
+    function updateStatus() {
+      var pill = document.getElementById('proc-status-pill');
+      var btn = document.getElementById('approve-btn');
+      if (!pill) return;
+      if (DATA.approved) {
+        pill.className = 'proc-status-pill approved';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved';
+        if (btn) btn.textContent = 'Revise';
+      } else {
+        pill.className = 'proc-status-pill draft';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft';
+        if (btn) btn.textContent = 'Mark as approved';
+      }
+    }
+
+    function toggleApproval() {
+      DATA.approved = !DATA.approved;
+      if (DATA.approved) DATA.approvedDate = new Date().toISOString();
+      save(); updateStatus();
+      if (DATA.approved && typeof LearnMode !== 'undefined') { try { LearnMode.markStepComplete('design-control-sop'); } catch(e) {} }
+    }
+
+    function renderIntro() {
+      var slot = document.getElementById('intro-slot'); if (!slot) return;
+      slot.innerHTML = LearnMode.introCard({
+        id: 'design-control-proc',
+        tag: '21 CFR 820.30 · ISO 13485 §7.3',
+        title: 'Design control procedure: your authority to build a device',
+        what: 'This procedure defines how design activities are planned, executed, reviewed, and approved. User needs, design inputs, outputs, and all downstream records derive their regulatory authority from this document.',
+        why: '21 CFR 820.30 is one of the most-cited QSR sections in FDA warning letters. The regulation requires a documented procedure before design activities begin — user needs created before this procedure exists lack the governing framework regulators expect to see. Approve this before generating any design records.',
+        standards: ['21 CFR 820.30', 'ISO 13485:2016 §7.3', 'IEC 62304 (if SaMD)', 'IEC 62366 (usability)']
+      });
+    }
+
+    initSidebar({ activePage: 'design-control' });
+    fill(); wire(); renderIntro();
+  </script>
+</body>
+</html>

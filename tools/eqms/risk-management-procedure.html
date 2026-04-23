@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Management Procedure — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .proc-approval-bar { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1.25rem; background: white; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .proc-status-pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.68rem; font-weight: 700; padding: 0.22rem 0.65rem; border-radius: 4px; }
+    .proc-status-pill.draft    { background: rgba(245,158,11,0.1); color: #b45309; }
+    .proc-status-pill.approved { background: rgba(16,185,129,0.1); color: #047857; }
+    .proc-status-pill svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .proc-meta-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.85rem; margin-bottom: 1.25rem; }
+    .scale-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 0.5rem; }
+    .scale-table th { text-align: left; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.4); padding: 0.4rem 0.6rem; border-bottom: 1.5px solid rgba(11,39,64,0.08); }
+    .scale-table td { padding: 0.4rem 0.6rem; border-bottom: 1px solid rgba(11,39,64,0.05); vertical-align: top; }
+    .scale-table input { font-family: inherit; font-size: 0.76rem; border: 1px solid transparent; background: transparent; outline: none; width: 100%; padding: 0.15rem 0.2rem; border-radius: 4px; }
+    .scale-table input:hover, .scale-table input:focus { background: white; border-color: rgba(11,39,64,0.12); }
+    .scale-num { font-weight: 700; color: rgba(11,39,64,0.55); width: 32px; text-align: center; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Quality System</span>
+        <span class="topbar-sep">/</span>
+        Risk Management Procedure
+      </div>
+      <div class="topbar-right">
+        <button class="btn-secondary" onclick="window.location.href='process-library.html'">All procedures</button>
+        <button class="btn-secondary" onclick="window.location.href='risk-management-plan.html'">RM Plan &amp; register</button>
+      </div>
+    </header>
+
+    <div class="proc-approval-bar">
+      <div>
+        <div style="font-size:0.72rem;font-weight:700;color:var(--primary);margin-bottom:0.05rem;">SOP-RM-001 Risk Management</div>
+        <div style="font-size:0.63rem;color:rgba(11,39,64,0.4);">ISO 14971:2019 · 21 CFR 820.30(g) · Risk management methodology, scales, and file structure</div>
+      </div>
+      <div id="proc-status-pill" class="proc-status-pill draft" style="margin-left:auto;">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft
+      </div>
+      <button id="approve-btn" class="btn-secondary" onclick="toggleApproval()">Mark as approved</button>
+    </div>
+
+    <div class="page-scroll">
+      <div id="intro-slot"></div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Document metadata</div></div>
+        <div class="card-body">
+          <div class="proc-meta-row">
+            <div class="form-field"><label class="form-label">Document number</label><input class="form-input" id="f-doc-num" placeholder="e.g. SOP-RM-001"></div>
+            <div class="form-field"><label class="form-label">Version</label><input class="form-input" id="f-version" placeholder="e.g. Rev A"></div>
+            <div class="form-field"><label class="form-label">Effective date</label><input class="form-input" id="f-eff-date" placeholder="YYYY-MM-DD"></div>
+          </div>
+          <div class="proc-meta-row">
+            <div class="form-field"><label class="form-label">Author</label><input class="form-input" id="f-author" placeholder="Name and title"></div>
+            <div class="form-field"><label class="form-label">Reviewer</label><input class="form-input" id="f-reviewer" placeholder="Name and title"></div>
+            <div class="form-field"><label class="form-label">Approver</label><input class="form-input" id="f-approver" placeholder="Name and title"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">1 · Purpose and scope</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Purpose</label>
+            <textarea class="form-textarea" id="f-purpose" rows="2" placeholder="This procedure establishes the risk management methodology applied across the organization's medical device portfolio, including the process for hazard identification, risk estimation, risk evaluation, risk control, and residual risk assessment per ISO 14971."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Scope</label>
+            <textarea class="form-textarea" id="f-scope" rows="2" placeholder="Applies to all medical device development projects and significant modifications. Covers the entire device lifecycle from concept through post-market. All personnel involved in risk management activities must be trained on this procedure."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">2 · Risk management team and responsibilities</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Risk management roles</label>
+            <textarea class="form-textarea" id="f-rm-roles" rows="4" placeholder="Define roles and responsibilities:&#10;Risk Manager: Accountable for the risk management file; coordinates team; approves risk acceptability decisions. Qualifications: [define].&#10;Risk Team Members: Clinical, engineering, QA, and manufacturing representatives as appropriate for the device. Conduct hazard identification sessions.&#10;Reviewer / Approver: Independent reviewer for each risk analysis; must not have been involved in the design being evaluated."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Qualifications for risk management personnel</label>
+            <textarea class="form-textarea" id="f-qualifications" rows="2" placeholder="e.g. Persons performing risk analysis must have completed ISO 14971 training and be familiar with the device type and its intended use environment. FMEA or hazard analysis methodology training preferred."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">3 · Probability and severity scales</div></div>
+        <div class="card-body">
+          <div style="margin-bottom:1rem;">
+            <label class="form-label">Severity scale (1 = negligible, 5 = catastrophic)</label>
+            <table class="scale-table" id="sev-table">
+              <thead><tr><th style="width:42px;">Level</th><th>Label</th><th>Definition for this organization</th></tr></thead>
+              <tbody id="sev-body"></tbody>
+            </table>
+          </div>
+          <div>
+            <label class="form-label">Probability scale (1 = improbable, 5 = frequent)</label>
+            <table class="scale-table" id="prob-table">
+              <thead><tr><th style="width:42px;">Level</th><th>Label</th><th>Definition / quantitative threshold</th></tr></thead>
+              <tbody id="prob-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">4 · Risk acceptability criteria</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Risk scoring matrix and thresholds</label>
+            <textarea class="form-textarea" id="f-thresholds" rows="4" placeholder="Risk score = Severity × Probability (range: 1–25)&#10;&#10;Low risk (score 1–4): Broadly acceptable. Document and monitor. No additional controls required.&#10;Medium risk (score 5–14): Reduce as far as practicable (ALARP). Additional controls required unless documented justification that further reduction is not practicable.&#10;High risk (score 15–25): Unacceptable. Controls mandatory. Residual high risk requires documented risk/benefit analysis demonstrating medical benefit outweighs residual risk."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">ALARP justification requirements</label>
+            <textarea class="form-textarea" id="f-alarp" rows="2" placeholder="e.g. For medium-risk items where no further reduction is practicable, document: (1) what additional controls were considered, (2) why they are not feasible or would introduce greater risk, and (3) that the risk/benefit ratio is favorable."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Overall residual risk evaluation</label>
+            <textarea class="form-textarea" id="f-overall-eval" rows="2" placeholder="e.g. After all individual risk controls are applied, the Risk Manager evaluates the overall residual risk per ISO 14971 §9. If any individual risk remains high, a documented overall benefit/risk analysis is required before the device proceeds to clinical use."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">5 · Risk management file structure</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Required components of the risk management file</label>
+            <textarea class="form-textarea" id="f-rm-file" rows="5" placeholder="Per ISO 14971 §4.4, the risk management file for each device must contain:&#10;□ Risk Management Plan (device-specific scope, team, and criteria)&#10;□ Hazard identification records (FMEA, fault tree, preliminary hazard analysis)&#10;□ Risk register (all hazards with initial and residual scores)&#10;□ Risk control measures documentation&#10;□ Verification evidence for each control measure&#10;□ Risk management report (overall evaluation per §9)&#10;□ Post-production information updates"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Risk analysis methods</label>
+            <textarea class="form-textarea" id="f-methods" rows="3" placeholder="Acceptable risk analysis methods include:&#10;FMEA (Failure Modes and Effects Analysis) — preferred for component-level analysis&#10;FTA (Fault Tree Analysis) — preferred for system-level or software hazards&#10;PHA (Preliminary Hazard Analysis) — used at early concept stage&#10;Use Error analysis — required per IEC 62366 for user-facing interfaces&#10;The selected method(s) and rationale must be documented in the Risk Management Plan."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">6 · Review cycle and post-market integration</div></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label class="form-label">Risk management review triggers</label>
+            <textarea class="form-textarea" id="f-review-triggers" rows="3" placeholder="The risk management file is reviewed and updated when:&#10;• A design change is made&#10;• A post-market complaint or MDR suggests a new or increased hazard&#10;• A CAPA identifies a systemic risk issue&#10;• A design review phase gate is reached&#10;• Annually during management review, or at minimum every 2 years"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Post-market information collection</label>
+            <textarea class="form-textarea" id="f-post-market" rows="2" placeholder="e.g. Complaints, MDRs, service records, and clinical literature are reviewed quarterly by the Risk Manager for new or changed hazard signals. Significant findings trigger a risk file update per this procedure within [30] days."></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_proc_risk_mgmt';
+
+    var DATA = load();
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(DATA)); } catch(e) {} }
+
+    var FIELDS = ['doc-num','version','eff-date','author','reviewer','approver','purpose','scope','rm-roles','qualifications','thresholds','alarp','overall-eval','rm-file','methods','review-triggers','post-market'];
+
+    var SEV_DEFAULTS = ['Negligible','Minor','Moderate','Serious','Catastrophic'];
+    var PROB_DEFAULTS = ['Improbable','Remote','Occasional','Probable','Frequent'];
+
+    function buildScaleTable(bodyId, prefix, defaults) {
+      var body = document.getElementById(bodyId);
+      if (!body) return;
+      body.innerHTML = '';
+      for (var i = 1; i <= 5; i++) {
+        var labelKey = prefix + '-label-' + i;
+        var defKey = prefix + '-def-' + i;
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td class="scale-num">' + i + '</td>' +
+          '<td><input id="f-' + labelKey + '" value="' + (DATA[labelKey] || defaults[i-1]) + '" placeholder="Label"></td>' +
+          '<td><input id="f-' + defKey + '" value="' + (DATA[defKey] || '') + '" placeholder="Definition or quantitative threshold"></td>';
+        body.appendChild(tr);
+        FIELDS.push(labelKey, defKey);
+      }
+    }
+
+    function fill() {
+      FIELDS.forEach(function(f) { var el = document.getElementById('f-' + f); if (el && DATA[f] !== undefined) el.value = DATA[f]; });
+      updateStatus();
+    }
+
+    function wire() {
+      document.querySelectorAll('.scale-table input').forEach(function(el) {
+        if (!el.id) return;
+        var f = el.id.replace('f-', '');
+        el.addEventListener('input', function() { DATA[f] = el.value; if (DATA.approved) { DATA.approved = false; updateStatus(); } save(); });
+      });
+      FIELDS.forEach(function(f) {
+        var el = document.getElementById('f-' + f); if (!el) return;
+        if (el._wired) return; el._wired = true;
+        el.addEventListener('input', function() { DATA[f] = el.value; if (DATA.approved) { DATA.approved = false; updateStatus(); } save(); });
+      });
+    }
+
+    function updateStatus() {
+      var pill = document.getElementById('proc-status-pill');
+      var btn = document.getElementById('approve-btn');
+      if (!pill) return;
+      if (DATA.approved) {
+        pill.className = 'proc-status-pill approved';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved';
+        if (btn) btn.textContent = 'Revise';
+      } else {
+        pill.className = 'proc-status-pill draft';
+        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft';
+        if (btn) btn.textContent = 'Mark as approved';
+      }
+    }
+
+    function toggleApproval() {
+      DATA.approved = !DATA.approved;
+      if (DATA.approved) DATA.approvedDate = new Date().toISOString();
+      save(); updateStatus();
+      if (DATA.approved && typeof LearnMode !== 'undefined') { try { LearnMode.markStepComplete('risk-mgmt-sop'); } catch(e) {} }
+    }
+
+    function renderIntro() {
+      var slot = document.getElementById('intro-slot'); if (!slot) return;
+      slot.innerHTML = LearnMode.introCard({
+        id: 'risk-mgmt-proc',
+        tag: 'ISO 14971:2019 · 21 CFR 820.30(g)',
+        title: 'Risk management procedure: defining "acceptable" before analyzing any risk',
+        what: 'This procedure establishes how your organization conducts risk management — the methodology, the people responsible, the probability and severity scales, and most importantly, the criteria that define when a risk is acceptable. These definitions must exist before you create a risk register entry, because without them you have no basis for saying a risk score of 8 is "medium" rather than "high."',
+        why: 'The Risk Management Plan for each device references this procedure. An auditor reviewing your risk file will check that your acceptability criteria are documented in an approved procedure before any risk analysis began — not defined retrospectively.',
+        standards: ['ISO 14971:2019', 'ISO/TR 24971 (Guidance)', '21 CFR 820.30(g)', 'EU MDR Annex I §3']
+      });
+    }
+
+    buildScaleTable('sev-body', 'sev', SEV_DEFAULTS);
+    buildScaleTable('prob-body', 'prob', PROB_DEFAULTS);
+    fill();
+    wire();
+    initSidebar({ activePage: 'risk-management-procedure' });
+    renderIntro();
+  </script>
+</body>
+</html>

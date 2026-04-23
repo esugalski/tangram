@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nonconformances — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .disp-pill { display: inline-flex; align-items: center; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.1rem 0.4rem; border-radius: 3px; text-transform: uppercase; }
+    .disp-pill.pending { background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.55); }
+    .disp-pill.rework { background: rgba(99,102,241,0.12); color: #4338ca; }
+    .disp-pill.repair { background: rgba(10,192,233,0.12); color: #089bbf; }
+    .disp-pill.uai { background: rgba(245,158,11,0.14); color: #b45309; }
+    .disp-pill.scrap { background: rgba(239,68,68,0.14); color: #dc2626; }
+    .disp-pill.rts { background: rgba(147,51,234,0.12); color: #7e22ce; }
+
+    .nc-card { padding: 0.7rem 0.85rem; border-radius: 8px; cursor: pointer; border: 1.5px solid transparent; margin-bottom: 0.28rem; }
+    .nc-card:hover { background: rgba(11,39,64,0.03); }
+    .nc-card.selected { background: rgba(10,192,233,0.06); border-color: rgba(10,192,233,0.25); }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Governance</span>
+        <span class="topbar-sep">/</span>
+        Nonconformances
+      </div>
+      <div class="topbar-right">
+        <button class="btn-primary" onclick="newNC()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New nonconformance</button>
+      </div>
+    </header>
+
+    <div class="content-cols">
+      <div class="list-col">
+        <div class="list-col-head"><input class="list-col-search" id="search" placeholder="Search NCs…" oninput="renderList()"></div>
+        <div class="list-col-body" id="list-body"></div>
+      </div>
+      <div class="detail-col">
+        <div class="detail-placeholder" id="placeholder">
+          <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <h2>Select a nonconformance</h2>
+          <p>Pick an NC on the left, or open a new one.</p>
+          <div id="intro-slot" style="max-width:640px;margin-top:1.4rem;"></div>
+        </div>
+        <div class="detail-pane" id="pane" style="display:none;"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_nonconformances';
+    let DATA = load();
+    let currentId = null;
+
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    function save() { localStorage.setItem(KEY, JSON.stringify(DATA)); }
+    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function newId() {
+      let n = 1;
+      Object.keys(DATA).forEach(function(id){ const m = id.match(/^NC-(\d+)$/); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
+      return 'NC-' + String(n).padStart(3,'0');
+    }
+
+    const DISP_LABEL = { pending:'Pending', rework:'Rework', repair:'Repair', uai:'Use as-is', scrap:'Scrap', rts:'Return to supplier' };
+
+    function newNC() {
+      const id = newId();
+      DATA[id] = {
+        id: id,
+        title: '',
+        foundDate: new Date().toISOString().slice(0,10),
+        foundBy: '',
+        stage: 'incoming',  // incoming / in-process / finished / field
+        productRef: '', lot: '', quantity: 1,
+        description: '',
+        segregationRef: '',
+        disposition: 'pending',
+        dispositionJustification: '',
+        approver: '',
+        closureDate: '',
+        status: 'open',   // open / closed
+        capaLink: '',
+      };
+      save();
+      renderList();
+      open(id);
+    }
+
+    function open(id) {
+      currentId = id;
+      document.getElementById('placeholder').style.display = 'none';
+      document.getElementById('pane').style.display = 'flex';
+      renderDetail();
+      renderList();
+    }
+
+    function renderList() {
+      const q = (document.getElementById('search').value || '').toLowerCase();
+      const host = document.getElementById('list-body');
+      const list = Object.values(DATA).filter(function(n){ return !q || (n.title+' '+n.id+' '+n.productRef).toLowerCase().indexOf(q) !== -1; });
+      list.sort(function(a,b){ return (b.foundDate||'') < (a.foundDate||'') ? -1 : 1; });
+
+      if (!list.length) { host.innerHTML = '<div class="list-empty"><div class="list-empty-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="list-empty-title">No NCs logged</div><div class="list-empty-body">Log nonconformances when incoming, in-process, or finished products don\'t meet specifications.</div></div>'; return; }
+
+      host.innerHTML = list.map(function(n){
+        const sel = n.id === currentId ? ' selected' : '';
+        const stBadge = n.status === 'closed' ? '<span class="badge green">Closed</span>' : '<span class="badge amber">Open</span>';
+        return '<div class="nc-card'+sel+'" onclick="open(\''+n.id+'\')">' +
+          '<div class="item-card-top"><span class="item-card-id">'+esc(n.id)+'</span>'+stBadge+'<span class="disp-pill '+n.disposition+'">'+esc(DISP_LABEL[n.disposition]||n.disposition)+'</span></div>' +
+          '<div class="item-card-title">'+esc(n.title || 'Untitled')+'</div>' +
+          '<div class="item-card-meta">'+esc(n.foundDate||'—')+' · '+esc(n.productRef||'—')+' · Qty '+esc(String(n.quantity||1))+'</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function renderDetail() {
+      const n = DATA[currentId]; if (!n) return;
+      const pane = document.getElementById('pane');
+      const closed = n.status === 'closed';
+      pane.innerHTML =
+        '<div style="display:flex;align-items:flex-start;gap:0.7rem;">' +
+          '<span class="item-card-id" style="font-size:0.72rem;padding:0.2rem 0.55rem;">'+esc(n.id)+'</span>' +
+          '<input class="form-input" value="'+esc(n.title)+'" oninput="u(\'title\',this.value);renderList()" placeholder="Short description" style="flex:1;font-weight:600;font-size:0.95rem;">' +
+          '<button class="btn-icon danger" onclick="del()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>' +
+
+        (closed ? '<div class="banner success"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Closed on '+esc(n.closureDate||'—')+' — disposition: '+esc(DISP_LABEL[n.disposition]||n.disposition)+'</div>' : '') +
+
+        '<div class="card"><div class="card-head"><div class="card-title">1 · Detection</div></div><div class="card-body">' +
+          '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('Capture when/where/who detected the NC. Lot/serial numbers matter — an auditor will want to trace every unit in that lot.') + '</div>' +
+          '<div class="form-row-3" style="margin-bottom:0.75rem;">' +
+            '<div class="form-field"><label class="form-label">Found date</label><input class="form-input" type="date" value="'+esc(n.foundDate||'')+'" onchange="u(\'foundDate\',this.value);renderList()"></div>' +
+            '<div class="form-field"><label class="form-label">Found by</label><input class="form-input" value="'+esc(n.foundBy||'')+'" oninput="u(\'foundBy\',this.value)"></div>' +
+            '<div class="form-field"><label class="form-label">Stage</label><select class="form-select" onchange="u(\'stage\',this.value)">' +
+              ['incoming','in-process','finished','field'].map(function(s){ return '<option value="'+s+'" '+(n.stage===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+            '</select></div>' +
+          '</div>' +
+          '<div class="form-row-3">' +
+            '<div class="form-field"><label class="form-label">Part / product ref</label><input class="form-input" value="'+esc(n.productRef||'')+'" oninput="u(\'productRef\',this.value);renderList()" placeholder="e.g. PN-1024"></div>' +
+            '<div class="form-field"><label class="form-label">Lot / batch</label><input class="form-input" value="'+esc(n.lot||'')+'" oninput="u(\'lot\',this.value)"></div>' +
+            '<div class="form-field"><label class="form-label">Quantity affected</label><input class="form-input" type="number" min="0" value="'+esc(n.quantity||1)+'" oninput="u(\'quantity\',parseInt(this.value,10)||0)"></div>' +
+          '</div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">2 · Description &amp; containment</div></div><div class="card-body">' +
+          '<div class="form-field" style="margin-bottom:0.75rem;"><label class="form-label">Description of nonconformity</label><textarea class="form-textarea" rows="3" oninput="u(\'description\',this.value)" placeholder="Exactly how the product/process failed to meet specification. Cite the spec where possible.">'+esc(n.description||'')+'</textarea></div>' +
+          '<div class="form-field"><label class="form-label">Segregation / hold reference</label><input class="form-input" value="'+esc(n.segregationRef||'')+'" oninput="u(\'segregationRef\',this.value)" placeholder="Hold tag ID, quarantine location, etc."></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">3 · Disposition</div></div><div class="card-body">' +
+          '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('Disposition = what happens to the nonconforming units. "Use as-is" requires documented justification and typically approval from the original design authority (not just QA).') + '</div>' +
+          '<div class="form-row" style="margin-bottom:0.75rem;">' +
+            '<div class="form-field"><label class="form-label">Disposition</label><select class="form-select" onchange="u(\'disposition\',this.value);renderList()">' +
+              ['pending','rework','repair','uai','scrap','rts'].map(function(d){ return '<option value="'+d+'" '+(n.disposition===d?'selected':'')+'>'+DISP_LABEL[d]+'</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="form-field"><label class="form-label">Approver</label><input class="form-input" value="'+esc(n.approver||'')+'" oninput="u(\'approver\',this.value)"></div>' +
+          '</div>' +
+          '<div class="form-field"><label class="form-label">Justification</label><textarea class="form-textarea" rows="3" oninput="u(\'dispositionJustification\',this.value)" placeholder="Why this disposition is appropriate. Mandatory for use-as-is.">'+esc(n.dispositionJustification||'')+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">4 · Closure &amp; escalation</div></div><div class="card-body">' +
+          '<div class="form-row-3" style="margin-bottom:0.7rem;">' +
+            '<div class="form-field"><label class="form-label">Status</label><select class="form-select" onchange="u(\'status\',this.value);renderDetail();renderList()">' +
+              ['open','closed'].map(function(s){ return '<option value="'+s+'" '+(n.status===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="form-field"><label class="form-label">Closure date</label><input class="form-input" type="date" value="'+esc(n.closureDate||'')+'" onchange="u(\'closureDate\',this.value)"></div>' +
+            '<div class="form-field"><label class="form-label">Linked CAPA</label><input class="form-input" value="'+esc(n.capaLink||'')+'" oninput="u(\'capaLink\',this.value)" placeholder="e.g. CAPA-007"></div>' +
+          '</div>' +
+          '<div class="banner info learn-only"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div>Escalate to CAPA if: the same NC has happened before, the impact is major, or the root cause isn\'t contained by disposition alone.</div></div>' +
+        '</div></div>';
+    }
+
+    function u(field, val) { if (!currentId) return; DATA[currentId][field] = val; save(); }
+    function del() {
+      if (!confirm('Delete ' + currentId + '?')) return;
+      delete DATA[currentId]; save(); currentId = null;
+      document.getElementById('pane').style.display = 'none';
+      document.getElementById('placeholder').style.display = 'flex';
+      renderList();
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'nc-intro',
+        tag: 'Nonconformance · FDA 21 CFR 820.90, ISO 13485 §8.3',
+        title: 'What is a nonconformance?',
+        what: 'Anything that doesn\'t meet its specified requirement — a part out of tolerance, a process step skipped, a test result failing. Separate from a complaint (which comes from a customer) and from a CAPA (which addresses the systemic cause).',
+        why: 'Nonconformance control is required by both FDA and ISO. Without it, bad product can reach patients; it\'s also the source data for CAPA trending.',
+        facts: [
+          { label: 'Key obligations', value: 'Identify, segregate, document, disposition' },
+          { label: 'Disposition options', value: 'Rework / repair / use-as-is / scrap / return' },
+          { label: 'Escalates to', value: 'CAPA when systemic' },
+        ],
+        checklist: [
+          'Capture lot/serial detail (traceability)',
+          'Segregate physical product before disposition',
+          'Justify "use-as-is" with design authority approval',
+          'Close with a decision + signature',
+          'Escalate trends or repeat NCs to CAPA',
+        ],
+        standards: ['FDA 21 CFR 820.90', 'ISO 13485:2016 §8.3 (Control of nonconforming product)']
+      });
+    }
+
+    document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) renderDetail(); });
+    initSidebar({ activePage: 'nonconformance' });
+    renderIntro();
+    renderList();
+  </script>
+</body>
+</html>

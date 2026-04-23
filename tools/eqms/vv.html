@@ -1,0 +1,264 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V&amp;V Hub — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    .kind-tabs { display: flex; gap: 0.3rem; padding: 0.6rem 0.6rem 0.5rem; border-bottom: 1px solid rgba(11,39,64,0.06); }
+    .kind-tab { border: none; background: transparent; font-family: inherit; font-size: 0.72rem; font-weight: 600; color: rgba(11,39,64,0.5); padding: 0.35rem 0.65rem; border-radius: 6px; cursor: pointer; }
+    .kind-tab:hover { color: var(--primary); background: rgba(11,39,64,0.04); }
+    .kind-tab.active { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+
+    .tc-row { display: grid; grid-template-columns: 90px 1fr 1fr 100px 30px; gap: 0.5rem; align-items: center; padding: 0.4rem 0.5rem; border-radius: 6px; background: rgba(11,39,64,0.025); margin-bottom: 0.3rem; }
+    .tc-row input, .tc-row select { font-family: inherit; font-size: 0.74rem; padding: 0.3rem 0.45rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; background: white; outline: none; min-width: 0; }
+    .tc-row input:focus, .tc-row select:focus { border-color: var(--aqua); }
+
+    .result-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; vertical-align: middle; margin-right: 0.3rem; }
+    .result-dot.pass { background: var(--green); }
+    .result-dot.fail { background: var(--red); }
+    .result-dot.pending { background: rgba(11,39,64,0.3); }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Verification</span>
+        <span class="topbar-sep">/</span>
+        V&amp;V Hub
+      </div>
+      <div class="topbar-right">
+        <button class="btn-primary" onclick="newItem('verification')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New protocol</button>
+      </div>
+    </header>
+
+    <div class="content-cols">
+      <div class="list-col">
+        <div class="list-col-head">
+          <input class="list-col-search" id="search" placeholder="Search…" oninput="renderList()">
+        </div>
+        <div class="kind-tabs">
+          <button class="kind-tab active" data-k="all" onclick="setKind('all')">All</button>
+          <button class="kind-tab" data-k="verification" onclick="setKind('verification')">Verification</button>
+          <button class="kind-tab" data-k="validation" onclick="setKind('validation')">Validation</button>
+        </div>
+        <div class="list-col-body" id="list-body"></div>
+      </div>
+
+      <div class="detail-col">
+        <div class="detail-placeholder" id="placeholder">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <h2>Select a V&amp;V item</h2>
+          <p>Pick a protocol or report on the left, or create a new one.</p>
+          <div id="intro-slot" style="margin-top:1.5rem;max-width:640px;"></div>
+        </div>
+        <div class="detail-pane" id="pane" style="display:none;"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    'use strict';
+    const KEY = 'qms_vv_items';
+    let ITEMS = load();
+    let currentKind = 'all';
+    let currentId = null;
+
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    function save() { localStorage.setItem(KEY, JSON.stringify(ITEMS)); }
+    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function newId(kind) {
+      const prefix = kind === 'validation' ? 'DV' : 'DVER';
+      let n = 1;
+      Object.keys(ITEMS).forEach(function(id){ const m = id.match(new RegExp('^'+prefix+'-(\\d+)$')); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
+      return prefix + '-' + String(n).padStart(3,'0');
+    }
+
+    function newItem(kind) {
+      const id = newId(kind);
+      ITEMS[id] = {
+        id: id, kind: kind || 'verification',
+        title: '', method: '', scope: '', acceptance: '',
+        testCases: [],
+        executionStatus: 'draft',
+        overallResult: 'pending',
+        tracesTo: '', // DI/DO/UN references
+        reportRef: '',
+        executor: '', approvedBy: '', executedDate: ''
+      };
+      save();
+      renderList();
+      open(id);
+    }
+
+    function setKind(k) {
+      currentKind = k;
+      document.querySelectorAll('.kind-tab').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-k') === k); });
+      renderList();
+    }
+
+    function renderList() {
+      const q = (document.getElementById('search').value || '').toLowerCase();
+      const host = document.getElementById('list-body');
+      let list = Object.values(ITEMS);
+      if (currentKind !== 'all') list = list.filter(function(i){ return i.kind === currentKind; });
+      if (q) list = list.filter(function(i){ return (i.title+' '+i.id+' '+i.scope).toLowerCase().indexOf(q) !== -1; });
+      list.sort(function(a,b){ return a.id < b.id ? -1 : 1; });
+
+      if (!list.length) {
+        host.innerHTML = '<div class="list-empty"><div class="list-empty-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div><div class="list-empty-title">No V&amp;V items</div><div class="list-empty-body">Create a protocol for design verification (testing against specs) or validation (testing against user needs).</div></div>';
+        return;
+      }
+      host.innerHTML = list.map(function(i) {
+        const sel = i.id === currentId ? ' selected' : '';
+        const kindBadge = '<span class="badge '+(i.kind==='validation'?'purple':'indigo')+'">'+(i.kind==='validation'?'Validation':'Verification')+'</span>';
+        const resultDot = '<span class="result-dot '+(i.overallResult||'pending')+'"></span>';
+        return '<div class="item-card'+sel+'" onclick="open(\''+i.id+'\')">' +
+          '<div class="item-card-top"><span class="item-card-id">'+esc(i.id)+'</span>'+kindBadge+'</div>' +
+          '<div class="item-card-title">'+esc(i.title || 'Untitled')+'</div>' +
+          '<div class="item-card-meta">'+resultDot+esc((i.overallResult||'pending').toUpperCase())+' · '+(i.testCases||[]).length+' test case(s)</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function open(id) {
+      currentId = id;
+      document.getElementById('placeholder').style.display = 'none';
+      document.getElementById('pane').style.display = 'flex';
+      renderDetail();
+      renderList();
+    }
+
+    function renderDetail() {
+      const i = ITEMS[currentId]; if (!i) return;
+      const host = document.getElementById('pane');
+      host.innerHTML =
+        '<div style="display:flex;align-items:flex-start;gap:0.7rem;">' +
+          '<span class="item-card-id" style="font-size:0.72rem;padding:0.2rem 0.55rem;">'+esc(i.id)+'</span>' +
+          '<input class="form-input" id="f-title" placeholder="Protocol title" value="'+esc(i.title)+'" oninput="u(\'title\',this.value)" style="flex:1;font-weight:600;font-size:0.95rem;">' +
+          '<select class="form-select" style="width:130px;" id="f-kind" onchange="u(\'kind\',this.value);renderList()">' +
+            '<option value="verification" '+(i.kind==='verification'?'selected':'')+'>Verification</option>' +
+            '<option value="validation" '+(i.kind==='validation'?'selected':'')+'>Validation</option>' +
+          '</select>' +
+          '<button class="btn-icon danger" onclick="del()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">Scope &amp; approach</div></div><div class="card-body">' +
+          '<div class="learn-only" style="margin-bottom:0.6rem;">' + LearnMode.hint(i.kind === 'validation' ? 'Validation answers: "does the finished device meet user needs under actual use conditions?" It typically involves human factors, clinical use simulations, or production-equivalent units.' : 'Verification answers: "do the design outputs match the design inputs?" Testing, inspection, or analysis on units built to spec. More objective than validation.') + '</div>' +
+          '<div class="form-field" style="margin-bottom:0.75rem;"><label class="form-label">Scope (what\'s being tested, which build/revision)</label><textarea class="form-textarea" id="f-scope" rows="2" oninput="u(\'scope\',this.value)">'+esc(i.scope)+'</textarea></div>' +
+          '<div class="form-row">' +
+            '<div class="form-field"><label class="form-label">Method (test, inspection, analysis, review)</label><input class="form-input" id="f-method" value="'+esc(i.method)+'" oninput="u(\'method\',this.value)"></div>' +
+            '<div class="form-field"><label class="form-label">Traces to (DI / DO / UN references)</label><input class="form-input" id="f-traces" value="'+esc(i.tracesTo)+'" oninput="u(\'tracesTo\',this.value)" placeholder="e.g. DI-012, DI-014, UN-003"></div>' +
+          '</div>' +
+          '<div class="form-field" style="margin-top:0.75rem;"><label class="form-label">Overall acceptance criteria</label><textarea class="form-textarea" id="f-acc" rows="2" oninput="u(\'acceptance\',this.value)">'+esc(i.acceptance)+'</textarea></div>' +
+        '</div></div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">Test cases</div><button class="add-row-btn" onclick="addTC()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add test case</button></div>' +
+          '<div class="card-body" id="tc-host"></div>' +
+        '</div>' +
+
+        '<div class="card"><div class="card-head"><div class="card-title">Execution</div></div><div class="card-body">' +
+          '<div class="form-row-3" style="margin-bottom:0.85rem;">' +
+            '<div class="form-field"><label class="form-label">Status</label><select class="form-select" id="f-exec" onchange="u(\'executionStatus\',this.value)">' +
+              ['draft','in-progress','executed','approved'].map(function(s){ return '<option value="'+s+'" '+(i.executionStatus===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="form-field"><label class="form-label">Overall result</label><select class="form-select" id="f-res" onchange="u(\'overallResult\',this.value);renderList()">' +
+              ['pending','pass','fail'].map(function(s){ return '<option value="'+s+'" '+(i.overallResult===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+            '</select></div>' +
+            '<div class="form-field"><label class="form-label">Executed date</label><input class="form-input" type="date" id="f-date" value="'+esc(i.executedDate||'')+'" onchange="u(\'executedDate\',this.value)"></div>' +
+          '</div>' +
+          '<div class="form-row">' +
+            '<div class="form-field"><label class="form-label">Executor</label><input class="form-input" id="f-exec-by" value="'+esc(i.executor)+'" oninput="u(\'executor\',this.value)"></div>' +
+            '<div class="form-field"><label class="form-label">Approved by</label><input class="form-input" id="f-appr" value="'+esc(i.approvedBy)+'" oninput="u(\'approvedBy\',this.value)"></div>' +
+          '</div>' +
+          '<div class="form-field" style="margin-top:0.75rem;"><label class="form-label">Report reference</label><input class="form-input" id="f-rep" value="'+esc(i.reportRef)+'" oninput="u(\'reportRef\',this.value)" placeholder="e.g. TR-045 Rev B"></div>' +
+        '</div></div>';
+
+      renderTCs();
+    }
+
+    function renderTCs() {
+      const host = document.getElementById('tc-host');
+      const tcs = ITEMS[currentId].testCases || [];
+      if (!tcs.length) { host.innerHTML = '<div class="subtle">No test cases yet. Each one should link to a specific acceptance criterion.</div>'; return; }
+      host.innerHTML = tcs.map(function(tc, idx) {
+        return '<div class="tc-row">' +
+          '<input type="text" placeholder="TC-'+(idx+1).toString().padStart(2,'0')+'" value="'+esc(tc.id||'')+'" oninput="uTC('+idx+',\'id\',this.value)">' +
+          '<input type="text" placeholder="Criterion / requirement" value="'+esc(tc.criterion||'')+'" oninput="uTC('+idx+',\'criterion\',this.value)">' +
+          '<input type="text" placeholder="Method / expected" value="'+esc(tc.expected||'')+'" oninput="uTC('+idx+',\'expected\',this.value)">' +
+          '<select onchange="uTC('+idx+',\'result\',this.value)">' +
+            ['pending','pass','fail'].map(function(s){ return '<option value="'+s+'" '+(tc.result===s?'selected':'')+'>'+s+'</option>'; }).join('') +
+          '</select>' +
+          '<button class="btn-icon danger" onclick="rmTC('+idx+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+        '</div>';
+      }).join('');
+    }
+
+    function u(field, val) { ITEMS[currentId][field] = val; save(); }
+    function addTC() { ITEMS[currentId].testCases.push({ id:'', criterion:'', expected:'', result:'pending' }); save(); renderTCs(); }
+    function rmTC(i) { ITEMS[currentId].testCases.splice(i,1); save(); renderTCs(); }
+    function uTC(i, field, val) {
+      ITEMS[currentId].testCases[i][field] = val;
+      save();
+      if (field === 'result') {
+        const tcs = ITEMS[currentId].testCases;
+        const fails = tcs.filter(function(t){ return t.result === 'fail'; }).length;
+        const pending = tcs.filter(function(t){ return t.result === 'pending'; }).length;
+        const overall = fails ? 'fail' : (pending ? 'pending' : 'pass');
+        ITEMS[currentId].overallResult = overall;
+        save();
+        const res = document.getElementById('f-res');
+        if (res) res.value = overall;
+        renderList();
+      }
+    }
+    function del() {
+      if (!confirm('Delete ' + currentId + '?')) return;
+      delete ITEMS[currentId]; save(); currentId = null;
+      document.getElementById('pane').style.display = 'none';
+      document.getElementById('placeholder').style.display = 'flex';
+      renderList();
+    }
+
+    function renderIntro() {
+      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
+        id: 'vv',
+        tag: 'Verification & Validation · FDA 21 CFR 820.30(f)(g)',
+        title: 'Verification vs Validation',
+        what: 'Verification = "did we build the device right?" (outputs meet inputs). Validation = "did we build the right device?" (user needs met in real use).',
+        why: 'Regulators separate these deliberately. Verification is technical proof of spec conformance; validation requires production-equivalent units and the intended use environment (or a valid simulation). A common failure: running bench tests and calling it validation.',
+        facts: [
+          { label: 'Verification', value: 'Per design input / output' },
+          { label: 'Validation', value: 'Per user need / intended use' },
+          { label: 'Evidence', value: 'Approved protocol + executed report' },
+        ],
+        checklist: [
+          'Write protocol BEFORE executing (auditor will check)',
+          'State pass/fail criteria objectively',
+          'Trace every test back to a DI, DO, or UN',
+          'Record who executed, who witnessed, and deviations',
+          'Attach test report; lock once approved',
+        ],
+        standards: ['FDA 21 CFR 820.30(f) Verification', 'FDA 21 CFR 820.30(g) Validation', 'ISO 13485 §7.3.6 / §7.3.7', 'IEC 62366-1 (usability)']
+      });
+    }
+
+    document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) renderDetail(); });
+    initSidebar({ activePage: 'vv' });
+    renderIntro();
+    renderList();
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -69,13 +69,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2.5rem 1.5rem 4rem;
+      padding: 2.5rem 1.5rem;
       position: relative;
     }
 
     /* ── PROGRESS ── */
     .progress-wrap {
-      display: flex; align-items: center; gap: 0; margin-bottom: 2.5rem; width: 100%; max-width: 560px;
+      display: flex; align-items: center; gap: 0; margin-top: auto; margin-bottom: 2.5rem; width: 100%; max-width: 560px;
     }
     .progress-step {
       display: flex; flex-direction: column; align-items: center; gap: 0.35rem; flex: 1;
@@ -234,6 +234,7 @@
         <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         <span>QMS Setup</span>
       </div>
+      <div class="topbar-right"></div>
     </div>
 
     <div class="content-area">
@@ -254,8 +255,7 @@
       { label: 'Company' },
       { label: 'Device' },
       { label: 'Scope' },
-      { label: 'QMS Docs' },
-      { label: 'DHF Docs' },
+      { label: 'Your Role' },
     ];
 
     let current = 0;
@@ -295,6 +295,7 @@
       if (current === 0) card.innerHTML = buildStep1();
       else if (current === 1) card.innerHTML = buildStep2();
       else if (current === 2) card.innerHTML = buildStep3();
+      else if (current === 3) card.innerHTML = buildStep4();
       else card.innerHTML = buildComplete();
       wireCardSelects();
       wireCheckItems();
@@ -337,7 +338,7 @@
           '</div>' +
         '</div>' +
       '</div>' +
-      footer(false, 'Company Details', 1);
+      footer(false, 'Next: Device', 1);
     }
 
     // ── STEP 2: DEVICE ────────────────────────────────────────────────────
@@ -376,7 +377,7 @@
           '<input class="field-input" id="f_population" type="text" value="' + esc(ctx.patientPopulation||'') + '" placeholder="e.g. Adult patients with chronic heart failure">' +
         '</div>' +
       '</div>' +
-      footer(true, 'Device Details', 2);
+      footer(true, 'Next: Scope', 2);
     }
 
     // ── STEP 3: SCOPE ─────────────────────────────────────────────────────
@@ -409,7 +410,42 @@
       '<div class="card-footer">' +
         '<button class="btn-back" onclick="goBack()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back</button>' +
         '<div style="display:flex;align-items:center;gap:0.75rem;">' +
-          '<span class="step-counter">Step 3 of 5</span>' +
+          '<span class="step-counter">Step 3 of 4</span>' +
+          '<button class="btn-next" onclick="goNext()">' +
+            'Next: Your Role' +
+            '<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    // ── STEP 4: YOUR ROLE ────────────────────────────────────────────────
+    function buildStep4() {
+      const roles = ctx.roles || [];
+      return '<div class="card-head">' +
+        '<div class="card-step-label">Step 4 of 4</div>' +
+        '<div class="card-title">What is your role on this project?</div>' +
+        '<div class="card-desc">Your guided journey will be tailored to the steps most relevant to your role. You can change this any time in settings.</div>' +
+      '</div>' +
+      '<div class="card-body">' +
+        '<div class="field-row">' +
+          '<label class="field-label">Select all that apply</label>' +
+          '<div class="check-grid">' +
+            checkItem('role_quality',     'Quality Lead / QA',     '21 CFR 820, ISO 13485, SOPs', roles.indexOf('quality')     !== -1) +
+            checkItem('role_design',      'Design / Engineering',  'User needs, design controls', roles.indexOf('design')      !== -1) +
+            checkItem('role_regulatory',  'Regulatory Affairs',    'FDA pathway, classifications', roles.indexOf('regulatory')  !== -1) +
+            checkItem('role_all',         'Solo Founder',          'I\'m wearing all the hats',   roles.indexOf('all') !== -1 || roles.length === 0) +
+          '</div>' +
+        '</div>' +
+        '<div style="background:rgba(10,192,233,0.06);border:1px solid rgba(10,192,233,0.18);border-radius:8px;padding:0.75rem 1rem;margin-top:0.5rem;">' +
+          '<div style="font-size:0.7rem;color:#089bbf;font-weight:700;margin-bottom:0.25rem;">How this works</div>' +
+          '<div style="font-size:0.74rem;color:#304F6B;line-height:1.55;">Your guided journey will show only the steps relevant to your role(s). The full picture is always available in the Journey Map. Quality leads see SOP authoring steps; engineers see design control records; RA sees classification.</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card-footer">' +
+        '<button class="btn-back" onclick="goBack()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back</button>' +
+        '<div style="display:flex;align-items:center;gap:0.75rem;">' +
+          '<span class="step-counter">Step 4 of 4</span>' +
           '<button class="btn-next finish" onclick="goNext()">' +
             'Complete Setup' +
             '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' +
@@ -423,25 +459,37 @@
       const markets = (ctx.regulatoryMarkets||[]).join(', ').toUpperCase() || '—';
       const classLabels = { i:'Class I', ii:'Class II', iii:'Class III', ivd:'IVD' };
       const typeLabels  = { hardware:'Hardware', samd:'SaMD', combination:'Combination', ivd:'IVD' };
+      const roleLabels  = { quality:'Quality / QA', design:'Design / Eng', regulatory:'Regulatory', all:'Solo Founder' };
+      const rolesDisplay = (ctx.roles||[]).map(function(r){ return roleLabels[r]||r; }).join(', ') || '—';
       return '<div class="complete-screen">' +
         '<div class="complete-icon"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>' +
-        '<div class="complete-title">Setup Complete — Step 3 of 5</div>' +
-        '<div class="complete-desc">Your QMS context is saved. Next, import your existing QMS documents so Tangram can analyze and organize them.</div>' +
+        '<div class="complete-title">Setup complete</div>' +
+        '<div class="complete-desc">Your project is saved. Your guided journey has been tailored to your role.</div>' +
         '<div class="summary-grid">' +
           summaryItem('Company', ctx.companyName || '—') +
           summaryItem('Device', ctx.deviceName || '—') +
           summaryItem('Classification', classLabels[ctx.deviceClass] || '—') +
           summaryItem('Type', typeLabels[ctx.deviceType] || '—') +
           summaryItem('Markets', markets) +
+          summaryItem('Role(s)', rolesDisplay) +
         '</div>' +
-        '<button class="btn-launch" onclick="goToImportQMS()">' +
-          'Import QMS Documents' +
+        '<button class="btn-launch" onclick="goToNextJourneyStep()">' +
+          'Start your journey' +
           '<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>' +
         '</button>' +
-        '<div style="margin-top:0.75rem;">' +
-          '<span class="skip-link" onclick="skipToImportDHF()">Skip QMS import →</span>' +
+        '<div style="margin-top:0.85rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">' +
+          '<span class="skip-link" onclick="goToImportQMS()">Import existing QMS docs</span>' +
+          '<span class="skip-link" onclick="window.location.href=\'dashboard.html\'">Go to dashboard</span>' +
         '</div>' +
       '</div>';
+    }
+
+    function goToNextJourneyStep() {
+      if (typeof LearnMode !== 'undefined') {
+        var next = LearnMode.currentStep();
+        if (next && next.file) { window.location.href = next.file; return; }
+      }
+      window.location.href = 'dashboard.html';
     }
 
     // ── HELPERS ───────────────────────────────────────────────────────────
@@ -449,7 +497,7 @@
 
     function head(step, title, desc) {
       return '<div class="card-head">' +
-        '<div class="card-step-label">Step ' + step + ' of 5</div>' +
+        '<div class="card-step-label">Step ' + step + ' of 4</div>' +
         '<div class="card-title">' + title + '</div>' +
         '<div class="card-desc">' + desc + '</div>' +
       '</div>';
@@ -459,7 +507,7 @@
       return '<div class="card-footer">' +
         (showBack ? '<button class="btn-back" onclick="goBack()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>Back</button>' : '<div></div>') +
         '<div style="display:flex;align-items:center;gap:0.75rem;">' +
-          '<span class="step-counter">Step ' + step + ' of 5</span>' +
+          '<span class="step-counter">Step ' + step + ' of 4</span>' +
           '<button class="btn-next" onclick="goNext()">' + label + ' <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>' +
         '</div>' +
       '</div>';
@@ -500,6 +548,21 @@
         if (!cb) return;
         cb.addEventListener('change', function() {
           item.classList.toggle('checked', cb.checked);
+          // Solo Founder: toggle all three individual roles
+          if (cb.id === 'role_all') {
+            ['role_quality', 'role_design', 'role_regulatory'].forEach(function(id) {
+              var el = document.getElementById(id);
+              if (el) { el.checked = cb.checked; el.closest('.check-item').classList.toggle('checked', cb.checked); }
+            });
+          }
+          // If any individual role changes, sync Solo Founder state
+          if (['role_quality', 'role_design', 'role_regulatory'].indexOf(cb.id) !== -1) {
+            var allChecked = ['role_quality', 'role_design', 'role_regulatory'].every(function(id) {
+              var el = document.getElementById(id); return el && el.checked;
+            });
+            var allEl = document.getElementById('role_all');
+            if (allEl) { allEl.checked = allChecked; allEl.closest('.check-item').classList.toggle('checked', allChecked); }
+          }
         });
       });
     }
@@ -536,16 +599,32 @@
       ctx.regulatoryBasis  = (document.getElementById('f_reg_basis')||{value:''}).value.trim() || 'ISO 13485:2016; 21 CFR Part 820';
     }
 
+    function collectStep4() {
+      var allEl = document.getElementById('role_all');
+      if (allEl && allEl.checked) {
+        ctx.roles = ['quality', 'design', 'regulatory'];
+      } else {
+        ctx.roles = [];
+        ['quality', 'design', 'regulatory'].forEach(function(r) {
+          var el = document.getElementById('role_' + r);
+          if (el && el.checked) ctx.roles.push(r);
+        });
+        if (!ctx.roles.length) ctx.roles = ['quality', 'design', 'regulatory'];
+      }
+    }
+
     function getSelected(group) {
       var el = document.querySelector('.cs-option.selected[data-group="' + group + '"]');
       return el ? el.dataset.value : null;
     }
 
     // ── NAVIGATION ────────────────────────────────────────────────────────
+    function saveCtx() { try { localStorage.setItem('qms_context', JSON.stringify(ctx)); } catch(e) {} }
     function goNext() {
-      if (current === 0) { collectStep1(); if (!ctx.companyName) { alert('Please enter your company name.'); return; } }
-      if (current === 1) { collectStep2(); if (!ctx.deviceName)  { alert('Please enter your device name.');  return; } }
-      if (current === 2) { collectStep3(); saveAndComplete(); return; }
+      if (current === 0) { collectStep1(); if (!ctx.companyName) { alert('Please enter your company name.'); return; } saveCtx(); }
+      if (current === 1) { collectStep2(); if (!ctx.deviceName)  { alert('Please enter your device name.');  return; } saveCtx(); }
+      if (current === 2) { collectStep3(); saveCtx(); }
+      if (current === 3) { collectStep4(); saveAndComplete(); return; }
       current++;
       renderStep();
       var ca = document.querySelector('.content-area'); if (ca) ca.scrollTo({ top: 0, behavior: 'smooth' });
@@ -559,7 +638,8 @@
       ctx.setupComplete = true;
       ctx.setupDate = new Date().toISOString();
       try { localStorage.setItem('qms_context', JSON.stringify(ctx)); } catch(e) {}
-      current = 3; // complete screen
+      try { if (typeof LearnMode !== 'undefined') LearnMode.markStepComplete('setup'); } catch(e) {}
+      current = 4; // complete screen (past the 4 steps)
       renderProgress();
       document.getElementById('setupCard').innerHTML = buildComplete();
     }
@@ -576,7 +656,9 @@
     // ── INIT ──────────────────────────────────────────────────────────────
     renderStep();
   </script>
-  <script src="sidebar.js"></script>
+  <script src="seed-demo.js?v=1776901546755"></script>
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
   <script>initSidebar({ activePage: 'dashboard' });</script>
 </body>
 </html>
