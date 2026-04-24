@@ -61,9 +61,7 @@
 
     .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
     .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 60px; display: flex; align-items: center; flex-shrink: 0; z-index: 10; }
-    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; padding: 0 1.25rem; display: flex; align-items: center; border-right: 1px solid rgba(11,39,64,0.06); height: 100%; }
-    .topbar-brand-name { font-size: 0.9rem; font-weight: 700; color: var(--primary); letter-spacing: -0.02em; }
-    .topbar-brand-sub { font-size: 0.6rem; color: rgba(11,39,64,0.35); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; height: 100%; }
     .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 1.5rem; }
     .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; width: min(400px, 100%); }
     .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; flex-shrink: 0; }
@@ -195,7 +193,7 @@
 
   <div class="app-main">
     <div class="topbar">
-      <div class="topbar-brand-area"><div><div class="topbar-brand-name">Tangram eQMS</div><div class="topbar-brand-sub">Quality Platform</div></div></div>
+      <div class="topbar-brand-area"></div>
       <div class="topbar-center">
         <div class="topbar-search">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
