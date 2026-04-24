@@ -472,7 +472,7 @@
         html += '<td><span class="status-badge" style="background:' + st.bg + ';color:' + st.color + '">' + esc(t.status) + '</span></td>';
         html += '<td class="doc-date">' + dueStr + '</td>';
         html += '<td><div class="progress-cell"><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:' + pct + '%;background:' + color + '"></div></div><span class="progress-pct">' + pct + '%</span></div></td>';
-        html += '<td><a class="doc-action-link" href="#">' + esc(getNextAction(t)) + '</a></td>';
+        html += '<td><a class="doc-action-link" href="team-training.html?id=' + encodeURIComponent(t.id) + '">' + esc(getNextAction(t)) + '</a></td>';
         html += '</tr>';
       });
       html += '</tbody></table></div>';

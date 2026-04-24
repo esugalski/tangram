@@ -346,7 +346,7 @@
         html += '<td class="doc-date">'+(s.lastAudit?fmtDate(s.lastAudit):'—')+'</td>';
         html += '<td class="doc-date" style="color:'+(overdue?'#ef4444':'')+'">'+fmtDate(s.nextReview)+'</td>';
         html += '<td><div class="risk-badge" style="background:'+rk.bg+';color:'+rk.color+'"><span class="risk-dot" style="background:'+rk.dot+'"></span>'+esc(s.risk)+'</div></td>';
-        html += '<td><div class="action-links"><a class="doc-action-link" href="#">View Profile</a> <span style="color:rgba(11,39,64,0.2)">·</span> <a class="doc-action-link" href="#">Schedule Audit</a></div></td>';
+        html += '<td><div class="action-links"><a class="doc-action-link" href="#">View Profile</a> <span style="color:rgba(11,39,64,0.2)">·</span> <a class="doc-action-link" href="audits.html?supplier=' + encodeURIComponent(s.id) + '">Schedule Audit</a></div></td>';
         html += '</tr>';
       });
       html += '</tbody></table></div>';

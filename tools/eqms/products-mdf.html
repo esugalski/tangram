@@ -470,6 +470,31 @@
       return allDocs.filter(function(d){ return d.category === 'Project'; }).slice(0,10);
     }
 
+    function hrefForDoc(doc) {
+      var id = encodeURIComponent(doc.id || '');
+      var byType = {
+        'dmr':            'dmr.html',
+        'risk-item':      'risk-hub.html',
+        'vv-protocol':    'vv-hub.html',
+        'design-review':  'design-review.html',
+        'change-request': 'change-control.html',
+      };
+      if (byType[doc.typeKey]) return byType[doc.typeKey] + '?id=' + id;
+      var byModule = {
+        'Dev Plan':       'dev-plan.html',
+        'Risk Mgmt Plan': 'risk-management-plan.html',
+        'User Needs':     'user-needs.html',
+        'Design Inputs':  'design-inputs.html',
+        'Design Outputs': 'design-outputs.html',
+        'Design Reviews': 'design-review.html',
+        'Risk':           'risk-hub.html',
+        'V&V':            'vv-hub.html',
+        'Change Control': 'change-control.html',
+      };
+      var base = byModule[doc.moduleLabel] || '#';
+      return base === '#' ? '#' : base + '?id=' + id;
+    }
+
     function renderTable() {
       var rows = getTabDocs();
       var tableArea = document.getElementById('tableArea');
@@ -487,12 +512,12 @@
         var st = getStatus(doc.status);
         html += '<tr>';
         html += '<td><input type="checkbox" class="doc-cb"></td>';
-        html += '<td><span class="file-title" title="' + esc(doc.title) + '">' + esc(doc.title) + '</span><div class="file-id">' + esc(doc.id) + ' · ' + esc(doc.moduleLabel) + '</div></td>';
+        html += '<td><a class="file-title" href="' + hrefForDoc(doc) + '" title="' + esc(doc.title) + '">' + esc(doc.title) + '</a><div class="file-id">' + esc(doc.id) + ' · ' + esc(doc.moduleLabel) + '</div></td>';
         html += '<td><span class="cat-chip">' + esc(doc.category) + '</span></td>';
         html += '<td><span class="status-badge" style="background:' + st.bg + ';color:' + st.color + '">' + esc(st.label) + '</span></td>';
         html += '<td class="doc-date">' + fmtDate(doc.date) + '</td>';
         html += '<td class="doc-owner">Sarah Johnson</td>';
-        html += '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="action-icon-btn" title="Edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td>';
+        html += '<td><div class="action-icons"><a class="action-icon-btn" href="' + hrefForDoc(doc) + '" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></a><button class="action-icon-btn" title="Edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td>';
         html += '</tr>';
       });
       html += '</tbody></table></div>';

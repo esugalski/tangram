@@ -411,7 +411,7 @@
                 </div>
               </td>
               <td rowspan="2" class="td-val">
-                <a class="add-val-btn" href="validation.html?newVLD=1&amp;linkDI=DI-003">
+                <a class="add-val-btn" href="validation-hub.html?newVLD=1&amp;linkDI=DI-003">
                   <span class="add-val-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Validation Ref</span>
                   <span class="add-val-sub">linked to DI-003 / DI-004</span>
                 </a>
@@ -433,7 +433,7 @@
                 </div>
               </td>
               <td class="td-ver">
-                <a class="add-ver-btn" href="verification.html?newVV=1&amp;linkDI=DI-004">
+                <a class="add-ver-btn" href="vv-hub.html?newVV=1&amp;linkDI=DI-004">
                   <span class="add-ver-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Verification Ref</span>
                   <span class="add-ver-sub">linked to DI-004</span>
                 </a>
@@ -491,7 +491,7 @@
                 </div>
               </td>
               <td class="td-ver">
-                <a class="add-ver-btn" href="verification.html?newVV=1&amp;linkDI=DI-006">
+                <a class="add-ver-btn" href="vv-hub.html?newVV=1&amp;linkDI=DI-006">
                   <span class="add-ver-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Verification Ref</span>
                   <span class="add-ver-sub">linked to DI-006</span>
                 </a>
@@ -520,7 +520,7 @@
                 </a>
               </td>
               <td class="td-ver">
-                <a class="add-ver-btn" href="verification.html?newVV=1&amp;linkDI=DI-007">
+                <a class="add-ver-btn" href="vv-hub.html?newVV=1&amp;linkDI=DI-007">
                   <span class="add-ver-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Verification Ref</span>
                   <span class="add-ver-sub">linked to DI-007</span>
                 </a>
@@ -824,13 +824,13 @@
         '</a></td>';
 
       var verCellHtml = '<td class="td-ver">' +
-        '<a class="add-ver-btn" href="verification.html?newVV=1&linkDI=' + encodeURIComponent(item.id) + '">' +
+        '<a class="add-ver-btn" href="vv-hub.html?newVV=1&linkDI=' + encodeURIComponent(item.id) + '">' +
           '<span class="add-ver-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Verification Ref</span>' +
           '<span class="add-ver-sub">linked to ' + escHtml(item.id) + '</span>' +
         '</a></td>';
 
       var valCellHtml = '<td class="td-val">' +
-        '<a class="add-val-btn" href="validation.html?newVLD=1&linkDI=' + encodeURIComponent(item.id) + '">' +
+        '<a class="add-val-btn" href="validation-hub.html?newVLD=1&linkDI=' + encodeURIComponent(item.id) + '">' +
           '<span class="add-val-label"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Validation Ref</span>' +
           '<span class="add-val-sub">linked to ' + escHtml(item.id) + '</span>' +
         '</a></td>';

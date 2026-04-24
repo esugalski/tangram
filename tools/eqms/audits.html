@@ -460,7 +460,7 @@
         html += '<td class="doc-date">' + fmtDate(audit.date) + '</td>';
         html += '<td class="doc-owner">' + esc(audit.owner||'Sarah Johnson') + '</td>';
         html += '<td><div class="shared-docs-cell"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' + (audit.sharedDocs||0) + '</div></td>';
-        html += '<td><a class="doc-action-link" href="#">' + esc(getNextAction(audit)) + '</a></td>';
+        html += '<td><a class="doc-action-link" href="audit-ready.html?id=' + encodeURIComponent(audit.id) + '">' + esc(getNextAction(audit)) + '</a></td>';
         html += '</tr>';
       });
       html += '</tbody></table></div>';
