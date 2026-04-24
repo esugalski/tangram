@@ -511,12 +511,17 @@
           'SOP-CAPA-001': 'capa-procedure.html',
           'SOP-NC-001':   'nonconformance-procedure.html',
           'SOP-SUP-001':  'supplier-control-procedure.html',
-          'SOP-AUD-001':  'internal-audit-procedure.html'
+          'SOP-AUD-001':  'internal-audit-procedure.html',
+          'SOP-001': 'document-control.html',
+          'SOP-002': 'design-control.html',
+          'SOP-003': 'risk-management-procedure.html',
+          'SOP-004': 'process-library.html',
+          'SOP-005': 'capa-procedure.html'
         };
         return Object.values(raw).map(function(p) {
           var tl = p.type==='work-instruction'?'Work Instruction':p.type==='form'?'Form':'Procedure';
           var dt = (p.approvalSignature&&p.approvalSignature.timestamp)?p.approvalSignature.timestamp:(p.createdAt||'');
-          var href = PROC_HREF[p.id] || 'doc-library.html';
+          var href = PROC_HREF[p.id] || 'process-library.html';
           return { id:p.id||'?', title:p.title||'Untitled Procedure', category:'Quality System', type:tl, typeKey:'procedure', status:p.status||'draft', version:p.revision?'Rev '+p.revision:null, date:dt, href:href, moduleLabel:'Procedure', sourceKey:'qms_procedures' };
         });
       }},

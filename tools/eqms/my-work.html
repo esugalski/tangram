@@ -455,7 +455,7 @@
             type: typeLabel, typeKey:'procedure', status: p.status || 'draft',
             version: p.revision ? 'Rev ' + p.revision : null,
             date: date, dateLabel: fmtDate(date),
-            href: (function(){ var PH={'SOP-DC-001':'document-control.html','SOP-DC-002':'design-control.html','SOP-RM-001':'risk-management-procedure.html','SOP-TR-001':'training.html','SOP-CH-001':'complaint-handling-procedure.html','SOP-CAPA-001':'capa-procedure.html','SOP-NC-001':'nonconformance-procedure.html','SOP-SUP-001':'supplier-control-procedure.html','SOP-AUD-001':'internal-audit-procedure.html'}; return PH[p.id]||'doc-library.html'; })(),
+            href: (function(){ var PH={'SOP-DC-001':'document-control.html','SOP-DC-002':'design-control.html','SOP-RM-001':'risk-management-procedure.html','SOP-TR-001':'training.html','SOP-CH-001':'complaint-handling-procedure.html','SOP-CAPA-001':'capa-procedure.html','SOP-NC-001':'nonconformance-procedure.html','SOP-SUP-001':'supplier-control-procedure.html','SOP-AUD-001':'internal-audit-procedure.html','SOP-001':'document-control.html','SOP-002':'design-control.html','SOP-003':'risk-management-procedure.html','SOP-004':'process-library.html','SOP-005':'capa-procedure.html'}; return PH[p.id]||'process-library.html'; })(),
             moduleLabel:'Procedure', sourceKey:'qms_procedures' };
         });
       }},
