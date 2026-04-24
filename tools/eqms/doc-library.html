@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -16,9 +16,7 @@
       --sidebar-bg: #071e31;
       --aqua:       #0AC0E9;
       --aqua-dark:  #089bbf;
-      --gray:       #D2D2D2;
       --light-gray: #F7F8FA;
-      --white:      #FFFFFF;
       --sidebar-w:  232px;
       --green:      #10B981;
       --amber:      #F59E0B;
@@ -84,69 +82,57 @@
     .content-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
 
     /* ─── STATS BAR ─── */
-    .stats-bar { display: flex; gap: 1rem; margin-bottom: 1.75rem; }
+    .stats-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
     .stat-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; padding: 0.9rem 1.1rem; flex: 1; min-width: 0; }
     .stat-value { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.04em; line-height: 1; }
     .stat-label { font-size: 0.68rem; font-weight: 600; color: rgba(11,39,64,0.38); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 0.25rem; }
     .stat-card.green .stat-value { color: var(--green); }
     .stat-card.amber .stat-value { color: var(--amber); }
     .stat-card.indigo .stat-value { color: var(--indigo); }
+    .stat-card.red .stat-value { color: var(--red); }
 
-    /* ─── SECTION HEADER ─── */
-    .section-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem; }
+    /* ─── FILTER BAR ─── */
+    .filter-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; padding: 0.85rem 1.1rem; margin-bottom: 1.25rem; }
+    .filter-bar { display: flex; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; }
+    .filter-search { font-family: 'Inter', sans-serif; font-size: 0.78rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.36rem 0.7rem; outline: none; transition: border-color 0.15s; background: white; width: 190px; flex-shrink: 0; }
+    .filter-search:focus { border-color: var(--aqua); }
+    .filter-search::placeholder { color: rgba(11,39,64,0.3); }
+    .filter-divider { width: 1px; height: 28px; background: rgba(11,39,64,0.08); flex-shrink: 0; align-self: center; }
+    .filter-group { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; }
+    .filter-group-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.35); white-space: nowrap; margin-right: 0.1rem; }
+    .filter-btn { font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 500; padding: 0.26rem 0.65rem; border-radius: 20px; border: 1.5px solid rgba(11,39,64,0.1); background: transparent; color: rgba(11,39,64,0.5); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .filter-btn:hover { border-color: rgba(10,192,233,0.4); color: var(--aqua-dark); }
+    .filter-btn.active { background: rgba(10,192,233,0.1); border-color: rgba(10,192,233,0.35); color: var(--aqua-dark); font-weight: 700; }
+    .filter-bar-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.55rem; padding-top: 0.55rem; border-top: 1px solid rgba(11,39,64,0.06); }
+    .filter-result-count { font-size: 0.7rem; color: rgba(11,39,64,0.38); font-weight: 500; }
+    .clear-filters-btn { font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 600; color: rgba(11,39,64,0.4); background: transparent; border: none; cursor: pointer; padding: 0.2rem 0.4rem; border-radius: 5px; transition: color 0.12s, background 0.12s; }
+    .clear-filters-btn:hover { color: var(--aqua-dark); background: rgba(10,192,233,0.06); }
+
+    /* ─── SECTION GROUP ─── */
+    .section-group { margin-bottom: 1.5rem; }
+    .section-group-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 0.1rem 0; margin-bottom: 0.6rem; user-select: none; }
+    .section-group-header:hover .section-header-title { color: rgba(11,39,64,0.65); }
+    .section-header-left { display: flex; align-items: center; gap: 0.6rem; }
     .section-header-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .section-header-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.5); }
-    .section-header-count { font-size: 0.65rem; font-weight: 700; background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.4); padding: 0.1rem 0.5rem; border-radius: 20px; margin-left: 0.25rem; }
-    .section-group { margin-bottom: 2rem; }
+    .section-header-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.5); transition: color 0.12s; }
+    .section-header-count { font-size: 0.65rem; font-weight: 700; background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.4); padding: 0.1rem 0.5rem; border-radius: 20px; }
+    .section-group-chevron { width: 14px; height: 14px; stroke: rgba(11,39,64,0.28); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; flex-shrink: 0; }
 
-    /* ─── DOCUMENT ROW ─── */
-    .doc-list { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; margin-bottom: 0.5rem; }
-    .doc-row { display: grid; grid-template-columns: 36px 1fr auto auto auto; align-items: center; gap: 0.75rem; padding: 0.9rem 1.1rem; border-bottom: 1px solid rgba(11,39,64,0.06); transition: background 0.1s; cursor: default; }
+    /* ─── DOC LIST & ROW ─── */
+    .doc-list { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; }
+    .doc-row { display: grid; grid-template-columns: 34px 1fr auto auto auto 28px; align-items: center; gap: 0.75rem; padding: 0.78rem 1.1rem; border-bottom: 1px solid rgba(11,39,64,0.06); transition: background 0.1s; cursor: pointer; text-decoration: none; color: inherit; }
     .doc-row:last-child { border-bottom: none; }
-    .doc-row:hover { background: rgba(10,192,233,0.02); }
+    .doc-row:hover { background: rgba(10,192,233,0.025); }
     .doc-icon-wrap { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .doc-icon-wrap svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .doc-icon-wrap.un   { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
-    .doc-icon-wrap.di   { background: rgba(48,79,107,0.1); color: var(--mid-blue); }
-    .doc-icon-wrap.do   { background: rgba(249,115,22,0.1); color: #ea580c; }
-    .doc-icon-wrap.design-review { background: rgba(16,185,129,0.1); color: #059669; }
+    .doc-icon-wrap svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .doc-main { min-width: 0; }
-    .doc-name { font-size: 0.85rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .doc-meta { font-size: 0.7rem; color: rgba(11,39,64,0.45); margin-top: 0.15rem; }
-    .doc-ver-badge { display: inline-flex; align-items: center; background: rgba(11,39,64,0.06); border: 1px solid rgba(11,39,64,0.1); color: var(--mid-blue); font-size: 0.68rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
-    .doc-status-approved { display: inline-flex; align-items: center; gap: 0.3rem; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #059669; font-size: 0.68rem; font-weight: 700; padding: 0.18rem 0.6rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
-    .doc-status-approved::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
-    .doc-expand-btn { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; background: transparent; border: 1px solid rgba(11,39,64,0.12); cursor: pointer; transition: background 0.12s, border-color 0.12s; flex-shrink: 0; }
-    .doc-expand-btn:hover { background: rgba(11,39,64,0.05); border-color: rgba(11,39,64,0.2); }
-    .doc-expand-btn svg { width: 11px; height: 11px; stroke: rgba(11,39,64,0.4); fill: none; stroke-width: 2.5; transition: transform 0.2s; }
-    .doc-expand-btn.open svg { transform: rotate(180deg); }
-
-    /* ─── HISTORY PANEL ─── */
-    .doc-history { display: none; border-top: 1px solid rgba(11,39,64,0.07); background: #FAFBFC; }
-    .doc-history.open { display: block; }
-    .history-inner { padding: 1rem 1.1rem; }
-    .history-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.65rem; }
-    .history-entry { display: flex; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid rgba(11,39,64,0.06); }
-    .history-entry:last-child { border-bottom: none; }
-    .history-entry-ver { width: 32px; flex-shrink: 0; }
-    .history-ver-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 800; }
-    .history-ver-dot.current { background: rgba(16,185,129,0.15); color: #059669; border: 1.5px solid rgba(16,185,129,0.3); }
-    .history-ver-dot.past { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.4); border: 1.5px solid rgba(11,39,64,0.12); }
-    .history-entry-body { flex: 1; min-width: 0; }
-    .history-entry-head { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
-    .history-entry-title { font-size: 0.78rem; font-weight: 600; color: var(--primary); }
-    .history-entry-date { font-size: 0.7rem; color: rgba(11,39,64,0.4); }
-    .history-entry-sig { font-size: 0.71rem; color: rgba(11,39,64,0.5); margin-top: 0.1rem; }
-    .history-entry-cr { display: inline-flex; align-items: center; background: rgba(245,158,11,0.1); color: #b45309; font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.45rem; border-radius: 4px; margin-top: 0.2rem; }
-    .history-snapshot-toggle { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.66rem; color: rgba(11,39,64,0.4); cursor: pointer; margin-top: 0.25rem; user-select: none; }
-    .history-snapshot-toggle:hover { color: var(--aqua-dark); }
-    .history-snapshot { display: none; background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 7px; padding: 0.75rem; margin-top: 0.4rem; }
-    .history-snapshot.open { display: block; }
-    .snapshot-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.3); margin-bottom: 0.5rem; }
-    .snapshot-table { width: 100%; border-collapse: collapse; }
-    .snapshot-table td { padding: 0.3rem 0.5rem; font-size: 0.72rem; color: var(--primary); border-bottom: 1px solid rgba(11,39,64,0.05); vertical-align: top; }
-    .snapshot-table td:first-child { font-weight: 600; color: rgba(11,39,64,0.5); width: 80px; white-space: nowrap; }
-    .snapshot-table tr:last-child td { border-bottom: none; }
+    .doc-name { font-size: 0.83rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .doc-meta { font-size: 0.68rem; color: rgba(11,39,64,0.42); margin-top: 0.12rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .doc-module-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(11,39,64,0.35); background: rgba(11,39,64,0.05); padding: 0.12rem 0.45rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; }
+    .doc-ver-badge { display: inline-flex; align-items: center; background: rgba(11,39,64,0.05); border: 1px solid rgba(11,39,64,0.1); color: var(--mid-blue); font-size: 0.66rem; font-weight: 700; padding: 0.16rem 0.52rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
+    .doc-status-badge { display: inline-flex; align-items: center; font-size: 0.66rem; font-weight: 700; padding: 0.16rem 0.55rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.02em; }
+    .doc-nav-arrow { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 5px; color: rgba(11,39,64,0.2); font-size: 0.85rem; text-decoration: none; transition: background 0.12s, color 0.12s; flex-shrink: 0; }
+    .doc-row:hover .doc-nav-arrow { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
 
     /* ─── EMPTY STATE ─── */
     .empty-state { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; padding: 3rem 2rem; text-align: center; }
@@ -154,30 +140,8 @@
     .empty-state-icon svg { width: 24px; height: 24px; stroke: rgba(11,39,64,0.25); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
     .empty-state-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.4rem; }
     .empty-state-desc { font-size: 0.78rem; color: rgba(11,39,64,0.45); line-height: 1.6; max-width: 380px; margin: 0 auto; }
-    .empty-state-link { display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 1rem; font-size: 0.77rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; padding: 0.45rem 0.9rem; border: 1.5px solid rgba(10,192,233,0.3); border-radius: 7px; transition: background 0.15s; }
+    .empty-state-link { display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 1rem; font-size: 0.77rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; padding: 0.45rem 0.9rem; border: 1.5px solid rgba(10,192,233,0.3); border-radius: 7px; transition: background 0.15s; cursor: pointer; background: transparent; font-family: inherit; }
     .empty-state-link:hover { background: rgba(10,192,233,0.06); }
-
-    /* ─── AUDIT LOG MODAL ─── */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(2,25,47,0.55); z-index: 9000; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-    .modal-overlay.open { display: flex; }
-    .modal-box { background: white; border-radius: 14px; box-shadow: 0 24px 80px rgba(2,25,47,0.22); width: 680px; max-width: calc(100vw - 2rem); max-height: 80vh; display: flex; flex-direction: column; }
-    .modal-head { padding: 1.1rem 1.35rem; border-bottom: 1px solid rgba(11,39,64,0.08); display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
-    .modal-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); flex: 1; }
-    .modal-close { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 7px; border: 1px solid rgba(11,39,64,0.12); background: transparent; cursor: pointer; color: rgba(11,39,64,0.4); font-size: 1rem; transition: background 0.12s; }
-    .modal-close:hover { background: rgba(11,39,64,0.06); }
-    .modal-body { flex: 1; overflow-y: auto; padding: 1rem 1.35rem; }
-    .modal-body::-webkit-scrollbar { width: 4px; }
-    .modal-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
-    .audit-entry { padding: 0.75rem 0; border-bottom: 1px solid rgba(11,39,64,0.06); }
-    .audit-entry:last-child { border-bottom: none; }
-    .audit-entry-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; }
-    .audit-signer { font-size: 0.82rem; font-weight: 600; color: var(--primary); }
-    .audit-role { font-size: 0.72rem; color: rgba(11,39,64,0.45); }
-    .audit-ts { font-size: 0.7rem; color: rgba(11,39,64,0.4); white-space: nowrap; }
-    .audit-meaning { font-size: 0.74rem; color: var(--mid-blue); margin-top: 0.2rem; font-style: italic; }
-    .audit-record { font-size: 0.68rem; color: rgba(11,39,64,0.38); margin-top: 0.15rem; }
-    .audit-hash { font-size: 0.65rem; color: rgba(11,39,64,0.28); margin-top: 0.1rem; font-family: monospace; word-break: break-all; }
-    .audit-empty { text-align: center; padding: 2rem; font-size: 0.8rem; color: rgba(11,39,64,0.35); }
   </style>
 </head>
 <body>
@@ -188,293 +152,559 @@
     <div class="topbar">
       <div class="topbar-left">
         <div class="topbar-icon">
-          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
         </div>
         <div>
-          <div class="topbar-title">DHF Document Library</div>
-          <div class="topbar-subtitle">Approved documents and records for the Design History File</div>
+          <div class="topbar-title">Document Library</div>
+          <div class="topbar-subtitle">Central registry — all QMS modules</div>
         </div>
       </div>
       <div class="topbar-right">
-        <button class="btn-action" onclick="openAuditLog()">
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Audit Log
-        </button>
-        <button class="btn-action" onclick="renderAll()">
+        <button class="btn-action" onclick="refresh()">
           <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
           Refresh
         </button>
       </div>
     </div>
 
-    <div class="content-area" id="contentArea">
-      <!-- rendered by JS -->
-    </div>
-  </div>
+    <div class="content-area">
+      <div id="statsBar" class="stats-bar"></div>
 
-  <!-- Audit Log Modal -->
-  <div class="modal-overlay" id="auditModalOverlay">
-    <div class="modal-box">
-      <div class="modal-head">
-        <div class="modal-title">Electronic Signature Audit Log</div>
-        <button class="modal-close" onclick="closeAuditLog()">✕</button>
+      <div class="filter-wrap">
+        <div class="filter-bar">
+          <input type="text" class="filter-search" id="searchInput" placeholder="Search documents…" oninput="handleSearch(this.value)">
+          <div class="filter-divider"></div>
+          <div class="filter-group">
+            <span class="filter-group-label">Category</span>
+            <button class="filter-btn active" data-filter="category" onclick="setFilter(this,'category','all')">All</button>
+            <button class="filter-btn" data-filter="category" onclick="setFilter(this,'category','Quality System')">Quality System</button>
+            <button class="filter-btn" data-filter="category" onclick="setFilter(this,'category','Project')">Project</button>
+            <button class="filter-btn" data-filter="category" onclick="setFilter(this,'category','Quality Records')">Quality Records</button>
+          </div>
+          <div class="filter-divider"></div>
+          <div class="filter-group">
+            <span class="filter-group-label">Status</span>
+            <button class="filter-btn active" data-filter="status" onclick="setFilter(this,'status','all')">All</button>
+            <button class="filter-btn" data-filter="status" onclick="setFilter(this,'status','approved')">Approved</button>
+            <button class="filter-btn" data-filter="status" onclick="setFilter(this,'status','draft')">Draft</button>
+            <button class="filter-btn" data-filter="status" onclick="setFilter(this,'status','in-progress')">In Progress</button>
+            <button class="filter-btn" data-filter="status" onclick="setFilter(this,'status','open')">Open</button>
+          </div>
+          <div class="filter-divider"></div>
+          <div class="filter-group" id="typeFilterGroup">
+            <span class="filter-group-label">Type</span>
+            <!-- filled by buildTypeFilterChips() -->
+          </div>
+        </div>
+        <div class="filter-bar-footer">
+          <span class="filter-result-count" id="filterResultCount"></span>
+          <button class="clear-filters-btn" id="clearFiltersBtn" style="display:none" onclick="clearFilters()">✕ Clear filters</button>
+        </div>
       </div>
-      <div class="modal-body" id="auditModalBody"></div>
+
+      <div id="docListArea"></div>
     </div>
   </div>
 
   <script src="seed-demo.js?v=1776901546755"></script>
-
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
-  <script src="esign.js"></script>
-  <script src="versions.js"></script>
   <script>
     initSidebar({ activePage: 'doc-library' });
 
     // ── HELPERS ───────────────────────────────────────────────────────────
     function esc(s) {
-      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     }
     function fmtDate(iso) {
       if (!iso) return '—';
-      try { return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); } catch(e) { return iso.slice(0,10); }
+      try { return new Date(iso).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }); }
+      catch(e) { return String(iso).slice(0,10); }
     }
-    function fmtDateTime(iso) {
-      if (!iso) return '—';
-      try { return new Date(iso).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch(e) { return iso; }
+    function slugify(s) {
+      return String(s).toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
     }
 
-    const TYPE_META = {
-      un:            { label: 'User Needs Specification',    color: '#0AC0E9',  group: 'Design Specifications' },
-      di:            { label: 'Design Inputs Specification', color: '#304F6B',  group: 'Design Specifications' },
-      do:            { label: 'Design Outputs Specification',color: '#ea580c',  group: 'Design Specifications' },
-      'design-review':{ label: 'Design Review Record',       color: '#10B981',  group: 'Governance Records' },
+    // ── TYPE METADATA (icon SVG paths + colors) ───────────────────────────
+    var TYPE_META = {
+      'quality-manual': { bg:'rgba(11,39,64,0.1)',   color:'#0B2740',  icon:'<path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>' },
+      'procedure':      { bg:'rgba(48,79,107,0.1)',  color:'#304F6B',  icon:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+      'plan':           { bg:'rgba(2,132,199,0.1)',  color:'#0284c7',  icon:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
+      'specification':  { bg:'rgba(10,192,233,0.1)', color:'#089bbf',  icon:'<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>' },
+      'design-review':  { bg:'rgba(16,185,129,0.1)', color:'#059669',  icon:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+      'dmr':            { bg:'rgba(99,102,241,0.1)', color:'#4338ca',  icon:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>' },
+      'risk-item':      { bg:'rgba(239,68,68,0.1)',  color:'#dc2626',  icon:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>' },
+      'vv-protocol':    { bg:'rgba(147,51,234,0.1)', color:'#7c3aed',  icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+      'change-request': { bg:'rgba(249,115,22,0.1)', color:'#c2410c',  icon:'<circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 012 2v7"/><path d="M11 18H8a2 2 0 01-2-2V9"/>' },
+      'nonconformance': { bg:'rgba(245,158,11,0.1)', color:'#b45309',  icon:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>' },
+      'capa':           { bg:'rgba(5,150,105,0.1)',  color:'#047857',  icon:'<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>' },
+      'complaint':      { bg:'rgba(220,38,38,0.1)',  color:'#b91c1c',  icon:'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>' },
+      'audit':          { bg:'rgba(3,105,161,0.1)',  color:'#0369a1',  icon:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13l2 2 4-4"/>' },
+      'mgmt-review':    { bg:'rgba(124,58,237,0.1)', color:'#6d28d9',  icon:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>' },
     };
-
-    const TYPE_ICONS = {
-      un:  '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>',
-      di:  '<svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
-      do:  '<svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>',
-      'design-review': '<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>',
+    var TYPE_LABEL = {
+      'quality-manual':'Quality Manual', 'procedure':'Procedure', 'plan':'Plan',
+      'specification':'Specification', 'design-review':'Design Review', 'dmr':'DMR',
+      'risk-item':'Risk Item', 'vv-protocol':'V&V Protocol', 'change-request':'Change Request',
+      'nonconformance':'Nonconformance', 'capa':'CAPA', 'complaint':'Complaint',
+      'audit':'Audit', 'mgmt-review':'Mgmt Review',
     };
+    var DEFAULT_TYPE_META = { bg:'rgba(48,79,107,0.1)', color:'#304F6B', icon:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>' };
 
-    // ── RENDER ────────────────────────────────────────────────────────────
-    function loadDocuments() {
-      try { return JSON.parse(localStorage.getItem('qms_documents') || '{}'); } catch(e) { return {}; }
+    // ── STATUS DISPLAY ────────────────────────────────────────────────────
+    var STATUS_DISPLAY = {
+      approved:          { label:'Approved',       bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+      closed:            { label:'Closed',         bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+      complete:          { label:'Complete',       bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+      implemented:       { label:'Implemented',    bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+      executed:          { label:'Executed',       bg:'rgba(10,192,233,0.12)', color:'#089bbf' },
+      draft:             { label:'Draft',          bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      planned:           { label:'Planned',        bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      scheduled:         { label:'Scheduled',      bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      'in-progress':     { label:'In Progress',    bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      'under-review':    { label:'Under Review',   bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      investigation:     { label:'Investigation',  bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      action:            { label:'Action',         bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      verification:      { label:'Verification',   bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      effectiveness:     { label:'Effectiveness',  bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      'in-investigation':{ label:'Investigating',  bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      open:              { label:'Open',           bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      opened:            { label:'Opened',         bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      rejected:          { label:'Rejected',       bg:'rgba(239,68,68,0.12)',  color:'#dc2626' },
+      superseded:        { label:'Superseded',     bg:'rgba(11,39,64,0.07)',   color:'rgba(11,39,64,0.38)' },
+      high:              { label:'High Risk',      bg:'rgba(239,68,68,0.12)',  color:'#dc2626' },
+      medium:            { label:'Medium Risk',    bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      low:               { label:'Low Risk',       bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+    };
+    function getStatus(raw) {
+      return STATUS_DISPLAY[raw] || { label: raw || '—', bg:'rgba(11,39,64,0.07)', color:'rgba(11,39,64,0.38)' };
+    }
+    function normalizeStatusForFilter(raw) {
+      var m = {
+        approved:'approved', closed:'approved', complete:'approved', implemented:'approved',
+        draft:'draft', planned:'draft', scheduled:'draft',
+        'in-progress':'in-progress', 'under-review':'in-progress', investigation:'in-progress',
+        action:'in-progress', verification:'in-progress', effectiveness:'in-progress',
+        'in-investigation':'in-progress',
+        open:'open', opened:'open',
+      };
+      return m[raw] || 'other';
     }
 
-    function renderDocRow(key, doc) {
-      const meta = TYPE_META[doc.type] || { label: doc.type, color: '#304F6B', group: 'Other' };
-      const icon = TYPE_ICONS[doc.type] || TYPE_ICONS['di'];
-      const typeClass = doc.type.replace(/[^a-z0-9-]/g, '-');
-      const sigName = doc.approvalSignature ? doc.approvalSignature.signerName : '—';
-      const sigRole = doc.approvalSignature ? doc.approvalSignature.signerRole : '';
-      const historyCount = (doc.history || []).length;
+    // ── CATEGORIES ────────────────────────────────────────────────────────
+    var CATEGORIES = [
+      { id:'Quality System',  label:'Quality System',  color:'#304F6B' },
+      { id:'Project',         label:'Project',         color:'#0AC0E9' },
+      { id:'Quality Records', label:'Quality Records', color:'#10B981' },
+    ];
 
-      let html = '<div class="doc-list" id="doccard-' + esc(key) + '">';
-      html += '<div class="doc-row">';
-      html += '<div class="doc-icon-wrap ' + esc(typeClass) + '">' + icon + '</div>';
-      html += '<div class="doc-main">';
-      html += '<div class="doc-name">' + esc(doc.name) + '</div>';
-      html += '<div class="doc-meta">Approved by ' + esc(sigName) + (sigRole ? ' · ' + esc(sigRole) : '') + ' · ' + fmtDate(doc.approvedAt) + (doc.changeRef ? ' · via ' + esc(doc.changeRef) : '') + '</div>';
-      html += '</div>';
-      html += '<span class="doc-ver-badge">v' + (doc.version || 1) + '</span>';
-      html += '<span class="doc-status-approved">Approved</span>';
-      if (historyCount > 0) {
-        html += '<button class="doc-expand-btn" id="expand-' + esc(key) + '" onclick="toggleHistory(\'' + esc(key) + '\')" title="Version history"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>';
-      } else {
-        html += '<div style="width:26px;"></div>';
-      }
-      html += '</div>';
-
-      // History panel
-      if (historyCount > 0) {
-        html += '<div class="doc-history" id="hist-' + esc(key) + '">';
-        html += '<div class="history-inner">';
-        html += '<div class="history-label">Version History</div>';
-
-        // Current version first
-        html += buildHistoryEntry(doc, doc.version, doc.approvedAt, doc.changeRef, doc.approvalSignature, null, true);
-
-        // Prior versions (reverse order)
-        const prior = (doc.history || []).slice().reverse();
-        prior.forEach(function(h, i) {
-          html += buildHistoryEntry(doc, h.version, h.frozenAt, h.changeRef, h.approvalSignature, h.itemSnapshot, false);
+    // ── DOCUMENT SOURCES ──────────────────────────────────────────────────
+    var DOCUMENT_SOURCES = [
+      // Quality System
+      { key:'qms_quality_manual', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'QM-001', title:'Quality Manual', category:'Quality System',
+          type:'Quality Manual', typeKey:'quality-manual',
+          status: raw.status || 'draft',
+          version: raw.version ? 'v' + raw.version : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'quality-manual.html', moduleLabel:'Quality Manual', sourceKey:'qms_quality_manual' }];
+      }},
+      { key:'qms_procedures', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(p) {
+          var typeLabel = p.type === 'work-instruction' ? 'Work Instruction' : p.type === 'form' ? 'Form' : 'Procedure';
+          var date = (p.approvalSignature && p.approvalSignature.timestamp) ? p.approvalSignature.timestamp : (p.createdAt || '');
+          return { id: p.id || '?', title: p.title || 'Untitled Procedure', category:'Quality System',
+            type: typeLabel, typeKey:'procedure', status: p.status || 'draft',
+            version: p.revision ? 'Rev ' + p.revision : null,
+            date: date, dateLabel: fmtDate(date),
+            href:'process-library.html', moduleLabel:'Process Library', sourceKey:'qms_procedures' };
         });
+      }},
+      { key:'qms_proc_doc_control', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'SOP-DC-001', title:'Document Control Procedure', category:'Quality System',
+          type:'Procedure', typeKey:'procedure',
+          status: raw.approved ? 'approved' : 'draft',
+          version: raw.revision ? 'Rev ' + raw.revision : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'document-control.html', moduleLabel:'Document Control', sourceKey:'qms_proc_doc_control' }];
+      }},
+      { key:'qms_proc_training', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'SOP-TR-001', title:'Training Procedure', category:'Quality System',
+          type:'Procedure', typeKey:'procedure',
+          status: raw.approved ? 'approved' : 'draft',
+          version: raw.revision ? 'Rev ' + raw.revision : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'training.html', moduleLabel:'Training', sourceKey:'qms_proc_training' }];
+      }},
+      { key:'qms_proc_risk_mgmt', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'SOP-RM-001', title:'Risk Management Procedure', category:'Quality System',
+          type:'Procedure', typeKey:'procedure',
+          status: raw.approved ? 'approved' : 'draft',
+          version: raw.revision ? 'Rev ' + raw.revision : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'risk-management-procedure.html', moduleLabel:'Risk Mgmt Proc.', sourceKey:'qms_proc_risk_mgmt' }];
+      }},
+      // Project
+      { key:'qms_dev_plan', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        var ver = raw.revision ? 'Rev ' + raw.revision : (raw.version ? 'v' + raw.version : null);
+        return [{ id:'DP-001', title: 'Development Plan' + (raw.project ? ' — ' + raw.project : ''),
+          category:'Project', type:'Plan', typeKey:'plan',
+          status: raw.approved ? 'approved' : 'draft',
+          version: ver, date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'dev-plan.html', moduleLabel:'Dev Plan', sourceKey:'qms_dev_plan' }];
+      }},
+      { key:'qms_risk_mgmt_plan', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'RMP-001', title:'Risk Management Plan', category:'Project',
+          type:'Plan', typeKey:'plan',
+          status: raw.approved ? 'approved' : 'draft',
+          version: raw.revision ? 'Rev ' + raw.revision : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'risk-management-plan.html', moduleLabel:'Risk Mgmt Plan', sourceKey:'qms_risk_mgmt_plan' }];
+      }},
+      { key:'qms_dmr', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'DMR-001', title:'Device Master Record' + (raw.name ? ' — ' + raw.name : ''),
+          category:'Project', type:'DMR', typeKey:'dmr',
+          status: raw.approved ? 'approved' : 'draft',
+          version: raw.revision ? 'Rev ' + raw.revision : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'dmr.html', moduleLabel:'DMR', sourceKey:'qms_dmr' }];
+      }},
+      { key:'qms_documents', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        var hrefMap   = { un:'user-needs.html', di:'design-inputs.html', 'do':'design-outputs.html', 'design-review':'design-review.html' };
+        var typeMap   = { un:'User Needs Specification', di:'Design Inputs Specification', 'do':'Design Outputs Specification', 'design-review':'Design Review Record' };
+        var typeKeyMap= { un:'specification', di:'specification', 'do':'specification', 'design-review':'design-review' };
+        var modMap    = { un:'User Needs', di:'Design Inputs', 'do':'Design Outputs', 'design-review':'Design Reviews' };
+        return Object.entries(raw)
+          .filter(function(kv){ return kv[1].type !== 'quality-manual'; }) // deduplicate with qms_quality_manual
+          .map(function(kv) {
+            var k = kv[0], d = kv[1];
+            return { id: k, title: d.name || 'Untitled', category:'Project',
+              type: typeMap[d.type] || d.type, typeKey: typeKeyMap[d.type] || 'specification',
+              status: d.status || 'approved',
+              version: d.version ? 'v' + d.version : null,
+              date: d.approvedAt || '', dateLabel: fmtDate(d.approvedAt),
+              href: hrefMap[d.type] || 'doc-library.html',
+              moduleLabel: modMap[d.type] || 'DHF', sourceKey:'qms_documents' };
+          });
+      }},
+      { key:'qms_vv_items', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(item) {
+          return { id: item.id || '?', title: item.title || 'Untitled V&V Item', category:'Project',
+            type: item.kind === 'validation' ? 'Validation Protocol' : 'Verification Protocol',
+            typeKey:'vv-protocol', status: item.executionStatus || 'draft',
+            version: null, date:'', dateLabel:'—',
+            href:'vv.html', moduleLabel:'V&V', sourceKey:'qms_vv_items' };
+        });
+      }},
+      { key:'qms_risks', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(r) {
+          var rn = (r.residualSeverity || 1) * (r.residualProbability || 1);
+          var pseudo = rn >= 9 ? 'high' : rn >= 4 ? 'medium' : 'low';
+          return { id: r.id || '?',
+            title: (r.hazard || 'Risk Item') + (r.harm ? ' → ' + r.harm : ''),
+            category:'Project', type:'Risk Item', typeKey:'risk-item',
+            status: pseudo, version: null, date:'', dateLabel:'—',
+            href:'risk-management-plan.html', moduleLabel:'Risk Register', sourceKey:'qms_risks' };
+        });
+      }},
+      // Quality Records
+      { key:'qms_change_requests', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(cr) {
+          var title = cr.changeDescription ? cr.changeDescription.slice(0,70) : ('Change Request ' + (cr.id||''));
+          return { id: cr.id||'?', title: title, category:'Quality Records',
+            type:'Change Request', typeKey:'change-request', status: cr.status || 'open',
+            version: null, date: cr.createdAt||'', dateLabel: fmtDate(cr.createdAt),
+            href:'change-control.html', moduleLabel:'Change Control', sourceKey:'qms_change_requests' };
+        });
+      }},
+      { key:'qms_nonconformances', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(nc) {
+          return { id: nc.id||'?', title: nc.title || nc.description || 'Nonconformance',
+            category:'Quality Records', type:'Nonconformance', typeKey:'nonconformance',
+            status: nc.status || 'open', version: null,
+            date: nc.foundDate||'', dateLabel: fmtDate(nc.foundDate),
+            href:'nonconformance.html', moduleLabel:'Nonconformance', sourceKey:'qms_nonconformances' };
+        });
+      }},
+      { key:'qms_capas', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(c) {
+          return { id: c.id||'?', title: c.title || 'CAPA', category:'Quality Records',
+            type:'CAPA', typeKey:'capa', status: c.stage || 'opened',
+            version: null, date: c.opened||'', dateLabel: fmtDate(c.opened),
+            href:'capa.html', moduleLabel:'CAPA', sourceKey:'qms_capas' };
+        });
+      }},
+      { key:'qms_complaints', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(c) {
+          return { id: c.id||'?', title: c.title || c.description || 'Complaint',
+            category:'Quality Records', type:'Complaint', typeKey:'complaint',
+            status: c.status || 'open', version: null,
+            date: c.dateReceived||'', dateLabel: fmtDate(c.dateReceived),
+            href:'complaints.html', moduleLabel:'Complaints', sourceKey:'qms_complaints' };
+        });
+      }},
+      { key:'qms_internal_audits', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(a) {
+          return { id: a.id||'?', title: a.title || 'Internal Audit', category:'Quality Records',
+            type:'Internal Audit', typeKey:'audit', status: a.status || 'scheduled',
+            version: null, date: a.date||'', dateLabel: fmtDate(a.date),
+            href:'audit.html', moduleLabel:'Audits', sourceKey:'qms_internal_audits' };
+        });
+      }},
+      { key:'qms_management_reviews', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(mr) {
+          return { id: mr.id||'?', title: mr.title || 'Management Review', category:'Quality Records',
+            type:'Management Review', typeKey:'mgmt-review', status: mr.status || 'scheduled',
+            version: null, date: mr.date||'', dateLabel: fmtDate(mr.date),
+            href:'management-review.html', moduleLabel:'Mgmt Review', sourceKey:'qms_management_reviews' };
+        });
+      }},
+    ];
 
-        html += '</div></div>';
-      }
+    // ── GLOBAL STATE ──────────────────────────────────────────────────────
+    var ALL_DOCS = [];
+    var filterState = { category:'all', status:'all', typeKey:'all', search:'' };
+    var COLLAPSE_KEY = 'qms_doclibrary_collapsed';
+    var searchTimer = null;
 
-      html += '</div>';
-      return html;
+    // ── DATA LOADING ──────────────────────────────────────────────────────
+    function loadAllSources() {
+      ALL_DOCS = [];
+      DOCUMENT_SOURCES.forEach(function(src) {
+        var raw = null;
+        try { raw = JSON.parse(localStorage.getItem(src.key) || 'null') || {}; } catch(e) {}
+        try {
+          var docs = src.normalize(raw || {});
+          ALL_DOCS = ALL_DOCS.concat(docs);
+        } catch(e) { console.warn('DocLibrary: failed to normalize ' + src.key, e); }
+      });
     }
 
-    function buildHistoryEntry(doc, version, dateIso, changeRef, sig, snapshot, isCurrent) {
-      const dotClass = isCurrent ? 'current' : 'past';
-      const sigName = sig ? sig.signerName : '—';
-      const sigRole = sig ? (sig.signerRole || '') : '';
-      const sigTs   = sig ? fmtDateTime(sig.timestamp) : '—';
-
-      let html = '<div class="history-entry">';
-      html += '<div class="history-entry-ver"><div class="history-ver-dot ' + dotClass + '">v' + version + '</div></div>';
-      html += '<div class="history-entry-body">';
-      html += '<div class="history-entry-head"><span class="history-entry-title">' + esc(isCurrent ? 'Current (v' + version + ')' : 'v' + version) + '</span><span class="history-entry-date">' + fmtDate(dateIso) + '</span></div>';
-      html += '<div class="history-entry-sig">Approved by: ' + esc(sigName) + (sigRole ? ' · ' + esc(sigRole) : '') + ' · ' + esc(sigTs) + '</div>';
-      if (changeRef) {
-        html += '<div><span class="history-entry-cr">via ' + esc(changeRef) + '</span></div>';
-      }
-      if (!isCurrent && snapshot) {
-        const snapId = 'snap-' + encodeURIComponent(doc.name || '') + '-v' + version;
-        html += '<div class="history-snapshot-toggle" onclick="toggleSnapshot(\'' + esc(snapId) + '\', this)">';
-        html += '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg> View v' + version + ' snapshot</div>';
-        html += '<div class="history-snapshot" id="' + esc(snapId) + '">';
-        html += buildSnapshotTable(snapshot, doc.type);
-        html += '</div>';
-      }
-      html += '</div></div>';
-      return html;
+    // ── STATS ─────────────────────────────────────────────────────────────
+    function renderStats() {
+      var total = ALL_DOCS.length;
+      var approved = ALL_DOCS.filter(function(d){ return normalizeStatusForFilter(d.status) === 'approved'; }).length;
+      var inFlight = ALL_DOCS.filter(function(d){ var n = normalizeStatusForFilter(d.status); return n === 'draft' || n === 'in-progress'; }).length;
+      var openRecs = ALL_DOCS.filter(function(d){ return d.category === 'Quality Records' && normalizeStatusForFilter(d.status) === 'open'; }).length;
+      document.getElementById('statsBar').innerHTML =
+        '<div class="stat-card"><div class="stat-value">' + total + '</div><div class="stat-label">Total Documents</div></div>' +
+        '<div class="stat-card green"><div class="stat-value">' + approved + '</div><div class="stat-label">Approved</div></div>' +
+        '<div class="stat-card amber"><div class="stat-value">' + inFlight + '</div><div class="stat-label">Draft / In Progress</div></div>' +
+        '<div class="stat-card indigo"><div class="stat-value">' + openRecs + '</div><div class="stat-label">Open Records</div></div>';
     }
 
-    function buildSnapshotTable(snapshot, type) {
-      if (type === 'design-review') {
-        // snapshot is the review record itself
-        const r = snapshot;
-        return '<div class="snapshot-label">Review Record Snapshot</div>' +
-          '<table class="snapshot-table"><tbody>' +
-          '<tr><td>Title</td><td>' + esc(r.title||'—') + '</td></tr>' +
-          '<tr><td>Phase</td><td>' + esc(r.phase||'—') + '</td></tr>' +
-          '<tr><td>Date</td><td>' + esc(r.date||'—') + '</td></tr>' +
-          '<tr><td>Outcome</td><td>' + esc(r.outcome||'—') + '</td></tr>' +
-          '<tr><td>Participants</td><td>' + esc((r.participants||[]).map(function(p){ return p.name + (p.independent?' (Ind.)':''); }).join(', ') || '—') + '</td></tr>' +
-          '</tbody></table>';
-      }
+    // ── TYPE FILTER CHIPS (dynamic) ───────────────────────────────────────
+    function buildTypeFilterChips() {
+      var counts = {};
+      ALL_DOCS.forEach(function(d) {
+        counts[d.typeKey] = (counts[d.typeKey] || 0) + 1;
+      });
+      var container = document.getElementById('typeFilterGroup');
+      while (container.children.length > 1) container.removeChild(container.lastChild); // keep label
 
-      // snapshot is a map of items
-      const items = Object.values(snapshot || {});
-      if (!items.length) return '<div class="snapshot-label">No items in this snapshot.</div>';
-      let rows = items.map(function(item) {
-        return '<tr><td>' + esc(item.id||'—') + '</td><td>' + esc((item.statement||item.description||'—').slice(0,80)) + '</td><td>' + esc(item.status||'—') + '</td></tr>';
-      }).join('');
-      return '<div class="snapshot-label">Item Snapshot (' + items.length + ' items)</div>' +
-        '<table class="snapshot-table"><thead><tr><td>ID</td><td>Statement</td><td>Status</td></tr></thead><tbody>' + rows + '</tbody></table>';
+      var allBtn = document.createElement('button');
+      allBtn.className = 'filter-btn' + (filterState.typeKey === 'all' ? ' active' : '');
+      allBtn.setAttribute('data-filter', 'typeKey');
+      allBtn.textContent = 'All';
+      allBtn.onclick = function(){ setFilter(this, 'typeKey', 'all'); };
+      container.appendChild(allBtn);
+
+      Object.keys(counts).sort(function(a,b){ return (TYPE_LABEL[a]||a).localeCompare(TYPE_LABEL[b]||b); }).forEach(function(tk) {
+        var btn = document.createElement('button');
+        btn.className = 'filter-btn' + (filterState.typeKey === tk ? ' active' : '');
+        btn.setAttribute('data-filter', 'typeKey');
+        btn.textContent = TYPE_LABEL[tk] || tk;
+        btn.onclick = function(){ setFilter(this, 'typeKey', tk); };
+        container.appendChild(btn);
+      });
     }
 
-    function toggleHistory(key) {
-      const hist = document.getElementById('hist-' + key);
-      const btn  = document.getElementById('expand-' + key);
-      if (!hist || !btn) return;
-      const isOpen = hist.classList.contains('open');
-      hist.classList.toggle('open', !isOpen);
-      btn.classList.toggle('open', !isOpen);
+    // ── FILTERING ─────────────────────────────────────────────────────────
+    function applyFilters(docs) {
+      return docs.filter(function(d) {
+        if (filterState.category !== 'all' && d.category !== filterState.category) return false;
+        if (filterState.status !== 'all' && normalizeStatusForFilter(d.status) !== filterState.status) return false;
+        if (filterState.typeKey !== 'all' && d.typeKey !== filterState.typeKey) return false;
+        if (filterState.search) {
+          var q = filterState.search.toLowerCase();
+          var hay = (d.title + ' ' + d.id + ' ' + d.type + ' ' + d.moduleLabel).toLowerCase();
+          if (hay.indexOf(q) === -1) return false;
+        }
+        return true;
+      });
+    }
+    function isFilterActive() {
+      return filterState.category !== 'all' || filterState.status !== 'all' || filterState.typeKey !== 'all' || filterState.search !== '';
     }
 
-    function toggleSnapshot(snapId, triggerEl) {
-      const snap = document.getElementById(snapId);
-      if (!snap) return;
-      const isOpen = snap.classList.contains('open');
-      snap.classList.toggle('open', !isOpen);
-      if (triggerEl) {
-        triggerEl.querySelector('svg').style.transform = isOpen ? '' : 'rotate(180deg)';
-      }
+    // ── RENDER DOC ROW ────────────────────────────────────────────────────
+    function renderDocRow(doc) {
+      var tm = TYPE_META[doc.typeKey] || DEFAULT_TYPE_META;
+      var st = getStatus(doc.status);
+      return '<div class="doc-row" onclick="window.location.href=\'' + esc(doc.href) + '\'">' +
+        '<div class="doc-icon-wrap" style="background:' + tm.bg + ';color:' + tm.color + '">' +
+          '<svg viewBox="0 0 24 24">' + tm.icon + '</svg>' +
+        '</div>' +
+        '<div class="doc-main">' +
+          '<div class="doc-name">' + esc(doc.title) + '</div>' +
+          '<div class="doc-meta">' + esc(doc.id) + ' · ' + esc(doc.moduleLabel) + (doc.dateLabel && doc.dateLabel !== '—' ? ' · ' + esc(doc.dateLabel) : '') + '</div>' +
+        '</div>' +
+        '<span class="doc-module-label">' + esc(doc.moduleLabel) + '</span>' +
+        (doc.version ? '<span class="doc-ver-badge">' + esc(doc.version) + '</span>' : '<span></span>') +
+        '<span class="doc-status-badge" style="background:' + st.bg + ';color:' + st.color + '">' + esc(st.label) + '</span>' +
+        '<a class="doc-nav-arrow" href="' + esc(doc.href) + '" onclick="event.stopPropagation()" title="Open">→</a>' +
+      '</div>';
     }
 
-    function renderAll() {
-      const docs = loadDocuments();
-      const content = document.getElementById('contentArea');
-      const keys = Object.keys(docs);
+    // ── RENDER DOC LIST ───────────────────────────────────────────────────
+    function renderDocList() {
+      var area = document.getElementById('docListArea');
+      var clearBtn = document.getElementById('clearFiltersBtn');
+      var countEl  = document.getElementById('filterResultCount');
 
-      if (!keys.length) {
-        content.innerHTML =
+      if (clearBtn) clearBtn.style.display = isFilterActive() ? '' : 'none';
+
+      if (ALL_DOCS.length === 0) {
+        if (countEl) countEl.textContent = '';
+        area.innerHTML =
           '<div class="empty-state">' +
-            '<div class="empty-state-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>' +
-            '<div class="empty-state-title">No approved documents yet</div>' +
-            '<div class="empty-state-desc">Documents appear here once you finalize and e-sign them. Start by approving your User Needs Specification from the User Needs tool.</div>' +
-            '<a class="empty-state-link" href="user-needs.html"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg> Go to User Needs</a>' +
+            '<div class="empty-state-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>' +
+            '<div class="empty-state-title">No documents yet</div>' +
+            '<div class="empty-state-desc">Documents appear here as you work through the QMS modules. Start by setting up your Quality Manual.</div>' +
+            '<a class="empty-state-link" href="quality-manual.html">Go to Quality Manual →</a>' +
           '</div>';
         return;
       }
 
-      // Compute stats
-      const totalDocs = keys.length;
-      const specTypes = ['un','di','do'];
-      const specDocs = keys.filter(function(k){ return specTypes.indexOf(docs[k].type) !== -1; }).length;
-      const reviewDocs = keys.filter(function(k){ return docs[k].type === 'design-review'; }).length;
-      const totalVersions = keys.reduce(function(acc, k){ return acc + (docs[k].version || 1); }, 0);
+      var filtered = applyFilters(ALL_DOCS);
+      if (countEl) countEl.textContent = filtered.length + ' of ' + ALL_DOCS.length + ' document' + (ALL_DOCS.length !== 1 ? 's' : '');
 
-      let statsHtml =
-        '<div class="stats-bar">' +
-          '<div class="stat-card green"><div class="stat-value">' + totalDocs + '</div><div class="stat-label">Approved Documents</div></div>' +
-          '<div class="stat-card"><div class="stat-value">' + specDocs + '</div><div class="stat-label">Specifications</div></div>' +
-          '<div class="stat-card indigo"><div class="stat-value">' + reviewDocs + '</div><div class="stat-label">Design Review Records</div></div>' +
-          '<div class="stat-card amber"><div class="stat-value">' + totalVersions + '</div><div class="stat-label">Total Versions on File</div></div>' +
-        '</div>';
-
-      // Group by type group
-      const groups = {};
-      keys.forEach(function(k) {
-        const doc = docs[k];
-        const meta = TYPE_META[doc.type] || { group: 'Other', color: '#304F6B' };
-        if (!groups[meta.group]) groups[meta.group] = { color: meta.color, docs: [] };
-        groups[meta.group].docs.push({ key: k, doc: doc });
-      });
-
-      // Sort within each group by approvedAt desc
-      Object.keys(groups).forEach(function(g) {
-        groups[g].docs.sort(function(a, b) { return (b.doc.approvedAt||'') > (a.doc.approvedAt||'') ? 1 : -1; });
-      });
-
-      let groupsHtml = '';
-      const groupOrder = ['Design Specifications', 'Governance Records', 'Other'];
-      groupOrder.concat(Object.keys(groups).filter(function(g){ return groupOrder.indexOf(g) === -1; })).forEach(function(groupName) {
-        if (!groups[groupName]) return;
-        const grp = groups[groupName];
-        groupsHtml += '<div class="section-group">';
-        groupsHtml += '<div class="section-header">';
-        groupsHtml += '<div class="section-header-dot" style="background:' + esc(grp.color) + '"></div>';
-        groupsHtml += '<div class="section-header-title">' + esc(groupName) + '</div>';
-        groupsHtml += '<span class="section-header-count">' + grp.docs.length + '</span>';
-        groupsHtml += '</div>';
-        grp.docs.forEach(function(entry) {
-          groupsHtml += renderDocRow(entry.key, entry.doc);
-        });
-        groupsHtml += '</div>';
-      });
-
-      content.innerHTML = statsHtml + groupsHtml;
-    }
-
-    // ── AUDIT LOG ─────────────────────────────────────────────────────────
-    function openAuditLog() {
-      const log = ESign.getAuditLog ? ESign.getAuditLog() : [];
-      const body = document.getElementById('auditModalBody');
-      if (!log.length) {
-        body.innerHTML = '<div class="audit-empty">No signature events recorded yet.</div>';
-      } else {
-        // Most recent first
-        const sorted = log.slice().sort(function(a,b){ return (b.timestamp||'') > (a.timestamp||'') ? 1 : -1; });
-        body.innerHTML = sorted.map(function(entry) {
-          return '<div class="audit-entry">' +
-            '<div class="audit-entry-head">' +
-              '<div><span class="audit-signer">' + esc(entry.signerName||'—') + '</span>' +
-              (entry.signerRole ? ' <span class="audit-role">· ' + esc(entry.signerRole) + '</span>' : '') + '</div>' +
-              '<span class="audit-ts">' + esc(fmtDateTime(entry.timestamp)) + '</span>' +
-            '</div>' +
-            '<div class="audit-meaning">"' + esc(entry.meaning||'') + '"</div>' +
-            '<div class="audit-record">Record: ' + esc(entry.recordType||'') + ' / ' + esc(entry.recordId||'') + '</div>' +
-            (entry.contentHash ? '<div class="audit-hash">SHA-256: ' + esc(entry.contentHash) + '</div>' : '') +
+      if (filtered.length === 0) {
+        area.innerHTML =
+          '<div class="empty-state">' +
+            '<div class="empty-state-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>' +
+            '<div class="empty-state-title">No documents match your filters</div>' +
+            '<div class="empty-state-desc">Try broadening your search or changing the active filters.</div>' +
+            '<button class="empty-state-link" onclick="clearFilters()">Clear filters</button>' +
           '</div>';
-        }).join('');
+        return;
       }
-      document.getElementById('auditModalOverlay').classList.add('open');
+
+      var html = '';
+      CATEGORIES.forEach(function(cat) {
+        var catDocs = filtered.filter(function(d){ return d.category === cat.id; });
+        if (!catDocs.length) return;
+        catDocs.sort(function(a,b){ return (b.date||'') > (a.date||'') ? 1 : -1; });
+        var slug = slugify(cat.id);
+        html += '<div class="section-group">' +
+          '<div class="section-group-header" onclick="toggleGroup(\'' + esc(cat.id) + '\')">' +
+            '<div class="section-header-left">' +
+              '<div class="section-header-dot" style="background:' + cat.color + '"></div>' +
+              '<div class="section-header-title">' + esc(cat.label) + '</div>' +
+              '<span class="section-header-count">' + catDocs.length + '</span>' +
+            '</div>' +
+            '<svg id="grp-chevron-' + slug + '" class="section-group-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>' +
+          '</div>' +
+          '<div class="doc-list" id="grp-body-' + slug + '">';
+        catDocs.forEach(function(doc){ html += renderDocRow(doc); });
+        html += '</div></div>';
+      });
+
+      area.innerHTML = html;
+      applyCollapseState();
     }
 
-    function closeAuditLog() {
-      document.getElementById('auditModalOverlay').classList.remove('open');
+    // ── GROUP COLLAPSE ────────────────────────────────────────────────────
+    function loadCollapsedGroups() {
+      try { return new Set(JSON.parse(localStorage.getItem(COLLAPSE_KEY) || '[]')); } catch(e) { return new Set(); }
+    }
+    function saveCollapsedGroups(s) {
+      localStorage.setItem(COLLAPSE_KEY, JSON.stringify(Array.from(s)));
+    }
+    function applyCollapseState() {
+      var collapsed = loadCollapsedGroups();
+      CATEGORIES.forEach(function(cat) {
+        var slug = slugify(cat.id);
+        var body = document.getElementById('grp-body-' + slug);
+        var chev = document.getElementById('grp-chevron-' + slug);
+        if (!body) return;
+        var isCollapsed = collapsed.has(cat.id);
+        body.style.display = isCollapsed ? 'none' : '';
+        if (chev) chev.style.transform = isCollapsed ? 'rotate(-90deg)' : '';
+      });
+    }
+    function toggleGroup(categoryId) {
+      var slug = slugify(categoryId);
+      var body = document.getElementById('grp-body-' + slug);
+      var chev = document.getElementById('grp-chevron-' + slug);
+      if (!body) return;
+      var isNowCollapsed = body.style.display !== 'none';
+      var collapsed = loadCollapsedGroups();
+      if (isNowCollapsed) { collapsed.add(categoryId); } else { collapsed.delete(categoryId); }
+      saveCollapsedGroups(collapsed);
+      body.style.display = isNowCollapsed ? 'none' : '';
+      if (chev) chev.style.transform = isNowCollapsed ? 'rotate(-90deg)' : '';
     }
 
-    // ── INIT ──────────────────────────────────────────────────────────────
-    renderAll();
+    // ── FILTER CONTROLS ───────────────────────────────────────────────────
+    function setFilter(btn, dimension, value) {
+      filterState[dimension] = value;
+      document.querySelectorAll('[data-filter="' + dimension + '"]').forEach(function(b) {
+        b.classList.toggle('active', b === btn);
+      });
+      renderDocList();
+    }
+    function handleSearch(val) {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function() {
+        filterState.search = val.trim();
+        renderDocList();
+      }, 80);
+    }
+    function clearFilters() {
+      filterState = { category:'all', status:'all', typeKey:'all', search:'' };
+      var searchEl = document.getElementById('searchInput');
+      if (searchEl) searchEl.value = '';
+      document.querySelectorAll('.filter-btn').forEach(function(b) {
+        var val = b.getAttribute('data-value') || b.textContent;
+        b.classList.toggle('active', val === 'all' || b.textContent === 'All');
+      });
+      // Reset active state properly per group
+      ['category','status','typeKey'].forEach(function(dim) {
+        var btns = document.querySelectorAll('[data-filter="' + dim + '"]');
+        btns.forEach(function(b, i) { b.classList.toggle('active', i === 0); });
+      });
+      renderDocList();
+    }
+
+    // ── REFRESH & INIT ────────────────────────────────────────────────────
+    function refresh() {
+      loadAllSources();
+      renderStats();
+      buildTypeFilterChips();
+      renderDocList();
+    }
+
+    refresh();
   </script>
 </body>
 </html>
