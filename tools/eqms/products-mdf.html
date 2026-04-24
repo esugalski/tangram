@@ -61,7 +61,8 @@
 
     .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
     .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 60px; display: flex; align-items: center; flex-shrink: 0; z-index: 10; }
-    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; height: 100%; }
+    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; height: 100%; overflow: hidden; }
+    .topbar-brand-name, .topbar-brand-sub { display: none !important; }
     .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 1.5rem; }
     .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; width: min(400px, 100%); }
     .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; flex-shrink: 0; }
