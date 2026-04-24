@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products / MDF — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --light-gray: #F7F8FA;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+      --sidebar-w:  220px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; transition: width 0.2s ease; overflow: hidden; }
+    .sidebar.collapsed { width: 56px; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-text { overflow: hidden; transition: opacity 0.15s, width 0.2s; }
+    .sidebar.collapsed .sidebar-brand-text { opacity: 0; width: 0; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; white-space: nowrap; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; white-space: nowrap; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.88); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-nav-label { overflow: hidden; text-overflow: ellipsis; transition: opacity 0.15s; }
+    .sidebar.collapsed .sidebar-nav-label { opacity: 0; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-info { overflow: hidden; transition: opacity 0.15s, width 0.2s; min-width: 0; flex: 1; }
+    .sidebar.collapsed .sidebar-user-info { opacity: 0; width: 0; flex: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); white-space: nowrap; }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
+    .sidebar-collapse-btn { margin-left: auto; flex-shrink: 0; background: transparent; border: none; cursor: pointer; padding: 4px; border-radius: 5px; transition: background 0.12s; display: flex; align-items: center; justify-content: center; }
+    .sidebar-collapse-btn:hover { background: rgba(255,255,255,0.07); }
+    .sidebar-collapse-icon { width: 14px; height: 14px; stroke: rgba(255,255,255,0.3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+    .sidebar.collapsed .sidebar-collapse-icon { transform: rotate(180deg); }
+
+    .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 60px; display: flex; align-items: center; flex-shrink: 0; z-index: 10; }
+    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; padding: 0 1.25rem; display: flex; align-items: center; border-right: 1px solid rgba(11,39,64,0.06); height: 100%; }
+    .topbar-brand-name { font-size: 0.9rem; font-weight: 700; color: var(--primary); letter-spacing: -0.02em; }
+    .topbar-brand-sub { font-size: 0.6rem; color: rgba(11,39,64,0.35); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+    .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 1.5rem; }
+    .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; width: min(400px, 100%); }
+    .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; flex-shrink: 0; }
+    .topbar-search input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 100%; }
+    .topbar-search input::placeholder { color: rgba(11,39,64,0.35); }
+    .topbar-right { display: flex; align-items: center; gap: 0.5rem; padding: 0 1.25rem; flex-shrink: 0; }
+    .topbar-icon-btn { width: 34px; height: 34px; border-radius: 8px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
+    .topbar-icon-btn svg { width: 16px; height: 16px; stroke: var(--mid-blue); fill: none; stroke-width: 2; }
+    .topbar-notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--red); border: 1.5px solid white; }
+    .topbar-user { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.3rem 0.6rem; border-radius: 8px; }
+    .topbar-user-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(10,192,233,0.1); border: 1.5px solid rgba(10,192,233,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua-dark); flex-shrink: 0; }
+    .topbar-user-name { font-size: 0.8rem; font-weight: 600; color: var(--primary); white-space: nowrap; }
+    .topbar-user-role { font-size: 0.63rem; color: rgba(11,39,64,0.4); white-space: nowrap; }
+    .content-wrap { flex: 1; display: flex; min-height: 0; overflow: hidden; }
+    .main-area { flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem; min-width: 0; display: flex; flex-direction: column; }
+    .main-area::-webkit-scrollbar { width: 5px; }
+    .main-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    /* ─── BREADCRUMB + PRODUCT SELECTOR ─── */
+    .breadcrumb { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: rgba(11,39,64,0.42); margin-bottom: 0.6rem; }
+    .breadcrumb a { color: rgba(11,39,64,0.42); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--aqua-dark); }
+    .breadcrumb-sep { color: rgba(11,39,64,0.25); }
+    .breadcrumb-cur { color: var(--primary); font-weight: 600; }
+
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.85rem; gap: 1rem; }
+    .page-heading { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; }
+    .page-subtitle { font-size: 0.77rem; color: rgba(11,39,64,0.44); margin-top: 0.22rem; }
+    .page-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; color: white; background: var(--aqua-dark); border: none; border-radius: 7px; padding: 0.45rem 0.9rem; cursor: pointer; transition: background 0.12s; white-space: nowrap; }
+    .btn-primary:hover { background: var(--aqua); }
+    .btn-primary svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-ghost { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.42rem 0.8rem; cursor: pointer; white-space: nowrap; }
+    .btn-ghost svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* Product selector pill */
+    .product-selector-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .product-selector { display: inline-flex; align-items: center; gap: 0.45rem; font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 600; color: var(--primary); background: white; border: 1.5px solid rgba(11,39,64,0.15); border-radius: 20px; padding: 0.38rem 0.9rem; cursor: pointer; transition: border-color 0.12s; }
+    .product-selector:hover { border-color: rgba(10,192,233,0.5); }
+    .product-selector svg { width: 12px; height: 12px; stroke: rgba(11,39,64,0.4); fill: none; stroke-width: 2; }
+    .product-selector-lbl { font-size: 0.68rem; color: rgba(11,39,64,0.4); font-weight: 500; }
+
+    .subtabs { display: flex; gap: 0; border-bottom: 1.5px solid rgba(11,39,64,0.08); margin-bottom: 1rem; overflow-x: auto; }
+    .subtabs::-webkit-scrollbar { height: 0; }
+    .subtab { font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; color: rgba(11,39,64,0.5); padding: 0.55rem 1rem; border: none; border-bottom: 2px solid transparent; margin-bottom: -1.5px; cursor: pointer; transition: color 0.12s; white-space: nowrap; background: transparent; }
+    .subtab:hover { color: var(--primary); }
+    .subtab.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+
+    .filter-bar { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filter-dropdown { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.36rem 0.65rem; cursor: pointer; }
+    .filter-dropdown svg { width: 11px; height: 11px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; }
+    .filter-more-btn { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.42); background: transparent; border: none; cursor: pointer; padding: 0.36rem 0.45rem; }
+
+    /* ─── TABLE ─── */
+    .doc-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; overflow: hidden; flex: 1; }
+    .doc-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .doc-table th { padding: 0.6rem 0.85rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); border-bottom: 1px solid rgba(11,39,64,0.07); background: rgba(11,39,64,0.015); text-align: left; white-space: nowrap; }
+    .doc-table th:first-child { padding-left: 1rem; width: 36px; }
+    .doc-table td { padding: 0.7rem 0.85rem; border-bottom: 1px solid rgba(11,39,64,0.055); vertical-align: middle; font-size: 0.8rem; }
+    .doc-table td:first-child { padding-left: 1rem; }
+    .doc-table tr:last-child td { border-bottom: none; }
+    .doc-table tbody tr:hover td { background: rgba(10,192,233,0.015); cursor: pointer; }
+    .doc-cb { width: 15px; height: 15px; accent-color: var(--aqua); cursor: pointer; }
+    .file-title { font-size: 0.81rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; display: block; }
+    .file-id { font-size: 0.66rem; color: rgba(11,39,64,0.4); margin-top: 0.08rem; }
+    .status-badge { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 700; padding: 0.17rem 0.52rem; border-radius: 5px; white-space: nowrap; }
+    .cat-chip { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 600; padding: 0.14rem 0.45rem; border-radius: 4px; background: rgba(11,39,64,0.06); color: var(--mid-blue); white-space: nowrap; }
+    .doc-date { font-size: 0.73rem; color: rgba(11,39,64,0.52); white-space: nowrap; }
+    .doc-owner { font-size: 0.73rem; color: rgba(11,39,64,0.55); }
+    .doc-action-link { font-size: 0.74rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; white-space: nowrap; }
+    .doc-action-link:hover { color: var(--aqua); text-decoration: underline; }
+    .action-icons { display: flex; align-items: center; gap: 0.3rem; }
+    .action-icon-btn { width: 26px; height: 26px; border-radius: 5px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: rgba(11,39,64,0.3); transition: background 0.12s, color 0.12s; }
+    .action-icon-btn:hover { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .action-icon-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .pagination-bar { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0 0; }
+    .pagination-info { font-size: 0.72rem; color: rgba(11,39,64,0.4); }
+
+    .empty-state { padding: 3.5rem 2rem; text-align: center; }
+    .empty-state-icon { width: 44px; height: 44px; border-radius: 10px; background: rgba(11,39,64,0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.85rem; }
+    .empty-state-icon svg { width: 20px; height: 20px; stroke: rgba(11,39,64,0.25); fill: none; stroke-width: 1.5; }
+    .empty-state-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.35rem; }
+    .empty-state-desc { font-size: 0.77rem; color: rgba(11,39,64,0.43); line-height: 1.6; }
+
+    /* ─── RIGHT PANEL ─── */
+    .right-panel { width: 272px; flex-shrink: 0; border-left: 1px solid rgba(11,39,64,0.07); padding: 1.5rem 1.1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; background: white; }
+    .right-panel::-webkit-scrollbar { width: 0; }
+    .widget { background: var(--light-gray); border: 1px solid rgba(11,39,64,0.07); border-radius: 10px; padding: 1rem 1.1rem; }
+    .widget-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); margin-bottom: 0.75rem; }
+    .widget-divider { height: 1px; background: rgba(11,39,64,0.07); margin: 0.5rem 0; }
+    .widget-view-all { font-size: 0.71rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; display: block; margin-top: 0.6rem; }
+    .widget-view-all:hover { color: var(--aqua); }
+
+    /* Product snapshot */
+    .snapshot-product-name { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem; }
+    .snapshot-role { font-size: 0.72rem; color: rgba(11,39,64,0.5); margin-bottom: 0.5rem; }
+    .snapshot-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; }
+    .snapshot-link svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* Completeness gauge */
+    .gauge-wrap { display: flex; align-items: center; gap: 0.85rem; margin: 0.5rem 0 0.75rem; }
+    .gauge-circle { position: relative; width: 60px; height: 60px; flex-shrink: 0; }
+    .gauge-circle svg { transform: rotate(-90deg); }
+    .gauge-circle circle { fill: none; stroke-width: 6; }
+    .gauge-bg { stroke: rgba(11,39,64,0.08); }
+    .gauge-fill { stroke-linecap: round; transition: stroke-dashoffset 0.5s ease; }
+    .gauge-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800; color: var(--primary); }
+    .gauge-info-row { display: flex; flex-direction: column; gap: 0.15rem; }
+    .gauge-info-label { font-size: 0.7rem; color: rgba(11,39,64,0.5); line-height: 1.4; }
+    .gauge-info-label strong { color: var(--primary); font-weight: 600; }
+
+    /* Timeline rows */
+    .timeline-row { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.3rem 0; }
+    .timeline-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 0.3rem; }
+    .timeline-title { font-size: 0.73rem; color: rgba(11,39,64,0.6); flex: 1; line-height: 1.4; }
+
+    /* CAPA count */
+    .capa-count-num { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.04em; line-height: 1; }
+    .capa-count-lbl { font-size: 0.7rem; color: rgba(11,39,64,0.5); margin-top: 0.2rem; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <img src="../../brand_assets/Tangram-T%20mark%20reverse_Square.png" class="sidebar-t-mark" alt="T">
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Tangram eQMS</div>
+          <div class="sidebar-brand-sub">Quality Management</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <a class="sidebar-nav-item" href="my-work.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg>
+          <span class="sidebar-nav-label">My Work</span>
+        </a>
+        <a class="sidebar-nav-item" href="doc-library.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span class="sidebar-nav-label">Library</span>
+        </a>
+        <a class="sidebar-nav-item active" href="products-mdf.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          <span class="sidebar-nav-label">Products / MDF</span>
+        </a>
+        <a class="sidebar-nav-item" href="capa-ncr.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          <span class="sidebar-nav-label">CAPA / NCR</span>
+        </a>
+        <a class="sidebar-nav-item" href="suppliers.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="sidebar-nav-label">Suppliers</span>
+        </a>
+        <a class="sidebar-nav-item" href="audits.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13l2 2 4-4"/></svg>
+          <span class="sidebar-nav-label">Audits</span>
+        </a>
+        <a class="sidebar-nav-item" href="training-hub.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <span class="sidebar-nav-label">Training</span>
+        </a>
+        <a class="sidebar-nav-item" href="reports.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="sidebar-nav-label">Reports</span>
+        </a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">SJ</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Sarah Johnson</div>
+          <div class="sidebar-user-role">Quality Manager</div>
+        </div>
+        <button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar">
+          <svg class="sidebar-collapse-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <div class="topbar">
+      <div class="topbar-brand-area">
+        <div>
+          <div class="topbar-brand-name">Tangram eQMS</div>
+          <div class="topbar-brand-sub">Quality Platform</div>
+        </div>
+      </div>
+      <div class="topbar-center">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, CAPAs, products, audits…">
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" title="Notifications">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="topbar-notif-dot"></span>
+        </button>
+        <div class="topbar-user">
+          <div class="topbar-user-avatar">SJ</div>
+          <div>
+            <div class="topbar-user-name">Sarah Johnson</div>
+            <div class="topbar-user-role">Quality Manager</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-wrap">
+      <div class="main-area">
+        <div class="breadcrumb">
+          <a href="#">Products</a>
+          <span class="breadcrumb-sep">›</span>
+          <span class="breadcrumb-cur" id="breadcrumbProduct">—</span>
+        </div>
+        <div class="page-header">
+          <div>
+            <div class="page-heading">Products / MDF</div>
+            <div class="page-subtitle">Device files, DHF, risk, and post-market documentation</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn-ghost">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Export Files View
+            </button>
+            <button class="btn-primary">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Report
+            </button>
+          </div>
+        </div>
+
+        <div class="product-selector-row">
+          <span class="product-selector-lbl">Product:</span>
+          <button class="product-selector" id="productSelectorBtn" onclick="cycleProduct()">
+            <span id="productSelectorLabel">Loading…</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+
+        <div class="subtabs">
+          <button class="subtab active" onclick="setTab(this,'overview')">Overview</button>
+          <button class="subtab" onclick="setTab(this,'mdf')">Medical Device File</button>
+          <button class="subtab" onclick="setTab(this,'dhf')">Design File / DHF</button>
+          <button class="subtab" onclick="setTab(this,'risk')">Risk</button>
+          <button class="subtab" onclick="setTab(this,'vv')">V&amp;V</button>
+          <button class="subtab" onclick="setTab(this,'manufacturing')">Manufacturing</button>
+          <button class="subtab" onclick="setTab(this,'postmarket')">Post-Market</button>
+        </div>
+
+        <div id="filterBarArea" class="filter-bar">
+          <button class="filter-dropdown" onclick="cycleFilter(this,'status',['All Status','Approved','Draft','In Progress','Open'])">
+            <span class="filter-lbl">Status</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'process',['All Processes'])">
+            <span class="filter-lbl">Process</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'owner',['All Owners','Sarah Johnson'])">
+            <span class="filter-lbl">Owner</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'date',['Any Date','Last 30 Days','Last 90 Days'])">
+            <span class="filter-lbl">Last Updated</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-more-btn">+ More Filters</button>
+        </div>
+
+        <div id="tableArea"></div>
+        <div id="paginationArea"></div>
+      </div>
+
+      <div class="right-panel">
+        <div class="widget">
+          <div class="widget-title">Product Snapshot</div>
+          <div class="snapshot-product-name" id="snapshotProductName">—</div>
+          <div class="snapshot-role">Product Manager: Sarah Johnson</div>
+          <a href="#" class="snapshot-link">Open Product CMS <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></a>
+        </div>
+        <div class="widget">
+          <div class="widget-title">MDF Completeness</div>
+          <div class="gauge-wrap">
+            <div class="gauge-circle">
+              <svg viewBox="0 0 60 60" width="60" height="60">
+                <circle class="gauge-bg" cx="30" cy="30" r="24"/>
+                <circle class="gauge-fill" id="gaugeFill" cx="30" cy="30" r="24" stroke="#0AC0E9" stroke-dasharray="150.8" stroke-dashoffset="150.8"/>
+              </svg>
+              <div class="gauge-num" id="gaugeNum">—</div>
+            </div>
+            <div class="gauge-info-row">
+              <div class="gauge-info-label" id="gaugeInfo">Loading…</div>
+            </div>
+          </div>
+          <a href="#" class="widget-view-all">View MDF checklist →</a>
+        </div>
+        <div class="widget">
+          <div class="widget-title">Open Product CAPAs</div>
+          <div class="capa-count-num" id="productCapaCount">0</div>
+          <div class="capa-count-lbl">open CAPAs for this product</div>
+          <a href="#" class="widget-view-all">View in CAPA →</a>
+        </div>
+        <div class="widget">
+          <div class="widget-title">Recent Design Changes</div>
+          <div id="designChangesContent"></div>
+          <a href="#" class="widget-view-all">View all in design changes →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      try { return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); } catch(e) { return String(iso).slice(0,10); }
+    }
+
+    var STATUS_DISPLAY = {
+      approved:{label:'Approved',bg:'rgba(16,185,129,0.1)',color:'#047857'},
+      closed:{label:'Closed',bg:'rgba(16,185,129,0.1)',color:'#047857'},
+      complete:{label:'Complete',bg:'rgba(16,185,129,0.1)',color:'#047857'},
+      draft:{label:'Draft',bg:'rgba(245,158,11,0.12)',color:'#b45309'},
+      'in-progress':{label:'In Progress',bg:'rgba(99,102,241,0.12)',color:'#4338ca'},
+      'under-review':{label:'Under Review',bg:'rgba(99,102,241,0.12)',color:'#4338ca'},
+      open:{label:'Open',bg:'rgba(245,158,11,0.12)',color:'#b45309'},
+    };
+    function getStatus(raw) { return STATUS_DISPLAY[raw] || {label:raw||'—',bg:'rgba(11,39,64,0.07)',color:'rgba(11,39,64,0.38)'}; }
+
+    var activeTab = 'overview';
+    var filterState = {};
+    var allDocs = [];
+    var products = [];
+    var currentProductIdx = 0;
+
+    // DOCUMENT SOURCES — product-specific only (no system-level SOPs or Quality Manual)
+    function loadAllSources() {
+      var docs = [];
+      var sources = [
+        {key:'qms_dev_plan', fn: function(r){ return r&&Object.keys(r).length?[{id:'DP-001',title:'Development Plan'+(r.project?' — '+r.project:''),category:'Project',typeKey:'plan',status:r.approved?'approved':'draft',date:r.approvedAt||'',moduleLabel:'Dev Plan',projectName:r.project}]:[]; }},
+        {key:'qms_risk_mgmt_plan', fn: function(r){ return r&&Object.keys(r).length?[{id:'RMP-001',title:'Risk Management Plan',category:'Project',typeKey:'plan',status:r.approved?'approved':'draft',date:r.approvedAt||'',moduleLabel:'Risk Mgmt Plan'}]:[]; }},
+        {key:'qms_dmr', fn: function(r){ return r&&Object.keys(r).length?[{id:'DMR-001',title:'Device Master Record'+(r.name?' — '+r.name:''),category:'Project',typeKey:'dmr',status:r.approved?'approved':'draft',date:r.approvedAt||'',moduleLabel:'DMR',productName:r.name}]:[]; }},
+        {key:'qms_documents', fn: function(r){ if(!r||typeof r!=='object') return []; var hm={un:'specification',di:'specification','do':'specification','design-review':'design-review'}; var lm={un:'User Needs',di:'Design Inputs','do':'Design Outputs','design-review':'Design Reviews'}; return Object.entries(r).filter(function(kv){return kv[1].type!=='quality-manual';}).map(function(kv){var k=kv[0],d=kv[1];return {id:k,title:d.name||'Untitled',category:'Project',typeKey:hm[d.type]||'specification',status:d.status||'approved',date:d.approvedAt||'',moduleLabel:lm[d.type]||'DHF'};}); }},
+        {key:'qms_risks', fn: function(r){ if(!r||typeof r!=='object') return []; return Object.values(r).slice(0,6).map(function(ri,i){return {id:'RM-'+String(i+1).padStart(3,'0'),title:ri.hazard||ri.title||'Risk Item',category:'Project',typeKey:'risk-item',status:ri.status||'open',date:ri.createdAt||'',moduleLabel:'Risk'};}); }},
+        {key:'qms_vv_items', fn: function(r){ if(!r||typeof r!=='object') return []; return Object.values(r).slice(0,6).map(function(v,i){return {id:'VV-'+String(i+1).padStart(3,'0'),title:v.title||v.requirement||'V&V Item',category:'Project',typeKey:'vv-protocol',status:v.status||'draft',date:v.date||'',moduleLabel:'V&V'};}); }},
+        {key:'qms_change_requests', fn: function(r){ if(!r||typeof r!=='object') return []; return Object.values(r).slice(0,4).map(function(c,i){return {id:'CR-'+String(i+1).padStart(3,'0'),title:c.changeDescription?(c.changeDescription.slice(0,60)):('Change Request '+(c.id||'')),category:'Project',typeKey:'change-request',status:c.status||'open',date:c.createdAt||c.date||'',moduleLabel:'Change Control'};}); }},
+      ];
+      sources.forEach(function(src){
+        try {
+          var raw = JSON.parse(localStorage.getItem(src.key)||'null');
+          if (raw) docs = docs.concat(src.fn(raw));
+        } catch(e){}
+      });
+      // Static fallback — product-level docs only
+      if (docs.length < 6) {
+        var existingIds = {}; docs.forEach(function(d){ existingIds[d.id]=true; });
+        var fallback = [
+          {id:'DP-001',   title:'Development Plan — Pulse Oximeter X1',              category:'Project', typeKey:'plan',           status:'approved',    date:'2025-05-20', moduleLabel:'Dev Plan',        productName:'Pulse Oximeter X1'},
+          {id:'RMP-001',  title:'Risk Management Plan',                              category:'Project', typeKey:'plan',           status:'approved',    date:'2025-09-05', moduleLabel:'Risk Mgmt Plan'},
+          {id:'DMR-001',  title:'Device Master Record — Pulse Oximeter X1',          category:'Project', typeKey:'dmr',            status:'in-progress', date:'2026-01-10', moduleLabel:'DMR',             productName:'Pulse Oximeter X1'},
+          {id:'UN-001',   title:'User Needs Specification',                          category:'Project', typeKey:'specification',  status:'approved',    date:'2025-07-12', moduleLabel:'User Needs'},
+          {id:'DI-001',   title:'Design Inputs Specification',                       category:'Project', typeKey:'specification',  status:'approved',    date:'2025-09-03', moduleLabel:'Design Inputs'},
+          {id:'DO-001',   title:'Design Outputs Specification',                      category:'Project', typeKey:'specification',  status:'draft',       date:'2026-02-20', moduleLabel:'Design Outputs'},
+          {id:'DR-001',   title:'Design Review Record — Phase 2 Gate',               category:'Project', typeKey:'design-review',  status:'approved',    date:'2026-03-10', moduleLabel:'Design Reviews'},
+          {id:'DR-002',   title:'Design Review Record — Phase 3 Gate',               category:'Project', typeKey:'design-review',  status:'draft',       date:'2026-04-15', moduleLabel:'Design Reviews'},
+          {id:'RM-001',   title:'Risk Assessment — Patient Contact Electrical Hazard',category:'Project', typeKey:'risk-item',      status:'open',        date:'2026-01-25', moduleLabel:'Risk'},
+          {id:'RM-002',   title:'Risk Assessment — Software Failure Mode Analysis',  category:'Project', typeKey:'risk-item',      status:'open',        date:'2026-02-10', moduleLabel:'Risk'},
+          {id:'RM-003',   title:'Risk Assessment — Sterile Barrier Breach',          category:'Project', typeKey:'risk-item',      status:'open',        date:'2026-03-05', moduleLabel:'Risk'},
+          {id:'VV-001',   title:'Verification Protocol — Electrical Safety Testing', category:'Project', typeKey:'vv-protocol',    status:'approved',    date:'2025-10-30', moduleLabel:'V&V'},
+          {id:'VV-002',   title:'Verification Protocol — Biocompatibility',          category:'Project', typeKey:'vv-protocol',    status:'approved',    date:'2026-02-18', moduleLabel:'V&V'},
+          {id:'VV-003',   title:'Validation Protocol — Clinical Usability Study',    category:'Project', typeKey:'vv-protocol',    status:'draft',       date:'2026-04-01', moduleLabel:'V&V'},
+          {id:'CR-001',   title:'Change Request — Display Firmware v2.1 Update',     category:'Project', typeKey:'change-request', status:'open',        date:'2026-04-08', moduleLabel:'Change Control'},
+          {id:'CR-002',   title:'Change Request — Sensor Calibration Algorithm',     category:'Project', typeKey:'change-request', status:'approved',    date:'2026-03-01', moduleLabel:'Change Control'},
+        ];
+        fallback.forEach(function(d){ if(!existingIds[d.id]){ docs.push(d); existingIds[d.id]=true; } });
+      }
+      return docs;
+    }
+
+    function extractProducts(docs) {
+      var names = new Set();
+      docs.forEach(function(d){ if (d.productName) names.add(d.productName); });
+      try { var dmr = JSON.parse(localStorage.getItem('qms_dmr')||'null'); if (dmr&&dmr.name) names.add(dmr.name); } catch(e){}
+      try { var dp = JSON.parse(localStorage.getItem('qms_dev_plan')||'null'); if (dp&&dp.project) names.add(dp.project); } catch(e){}
+      var arr = Array.from(names);
+      if (!arr.length) arr = ['Pulse Oximeter X1', 'Device Platform v2'];
+      return arr;
+    }
+
+    function getTabDocs() {
+      // MDF = product-specific controlled docs (no system-level SOPs or Quality Manual)
+      var MDF_KEYS = ['plan','specification','dmr','vv-protocol','design-review'];
+      var DHF_KEYS = ['specification','design-review'];
+      if (activeTab === 'mdf') return allDocs.filter(function(d){ return MDF_KEYS.indexOf(d.typeKey) !== -1; });
+      if (activeTab === 'dhf') return allDocs.filter(function(d){ return DHF_KEYS.indexOf(d.typeKey) !== -1; });
+      if (activeTab === 'risk') return allDocs.filter(function(d){ return d.typeKey==='risk-item'; });
+      if (activeTab === 'vv') return allDocs.filter(function(d){ return d.typeKey==='vv-protocol'; });
+      if (activeTab === 'manufacturing' || activeTab === 'postmarket') return [];
+      // overview: all Project-category docs (excludes any system-level QMS docs)
+      return allDocs.filter(function(d){ return d.category === 'Project'; }).slice(0,10);
+    }
+
+    function renderTable() {
+      var rows = getTabDocs();
+      var tableArea = document.getElementById('tableArea');
+
+      if (['manufacturing','postmarket'].includes(activeTab)) {
+        tableArea.innerHTML = '<div class="doc-table-wrap"><div class="empty-state"><div class="empty-state-icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div><div class="empty-state-title">No records yet</div><div class="empty-state-desc">Records for this phase will appear here as they are created.</div></div></div>';
+        document.getElementById('paginationArea').innerHTML = '';
+        return;
+      }
+
+      var html = '<div class="doc-table-wrap"><table class="doc-table"><colgroup><col style="width:36px"><col><col style="width:11%"><col style="width:12%"><col style="width:13%"><col style="width:12%"><col style="width:11%"></colgroup>';
+      html += '<thead><tr><th></th><th>File</th><th>Category</th><th>Status</th><th>Last Updated</th><th>Owner</th><th>Actions</th></tr></thead><tbody>';
+
+      rows.forEach(function(doc) {
+        var st = getStatus(doc.status);
+        html += '<tr>';
+        html += '<td><input type="checkbox" class="doc-cb"></td>';
+        html += '<td><span class="file-title" title="' + esc(doc.title) + '">' + esc(doc.title) + '</span><div class="file-id">' + esc(doc.id) + ' · ' + esc(doc.moduleLabel) + '</div></td>';
+        html += '<td><span class="cat-chip">' + esc(doc.category) + '</span></td>';
+        html += '<td><span class="status-badge" style="background:' + st.bg + ';color:' + st.color + '">' + esc(st.label) + '</span></td>';
+        html += '<td class="doc-date">' + fmtDate(doc.date) + '</td>';
+        html += '<td class="doc-owner">Sarah Johnson</td>';
+        html += '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="action-icon-btn" title="Edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+      tableArea.innerHTML = html;
+      document.getElementById('paginationArea').innerHTML = '<div class="pagination-bar"><span class="pagination-info">Showing 1–' + rows.length + ' of ' + rows.length + '</span></div>';
+    }
+
+    function renderRightPanel() {
+      var product = products[currentProductIdx] || 'Unknown Product';
+      document.getElementById('snapshotProductName').textContent = product;
+      document.getElementById('breadcrumbProduct').textContent = product;
+      document.getElementById('productSelectorLabel').textContent = product;
+
+      // MDF completeness — product-level doc types expected in a complete MDF
+      var expectedTypes = ['plan','dmr','specification','design-review','risk-item','vv-protocol'];
+      var found = expectedTypes.filter(function(t){ return allDocs.some(function(d){ return d.typeKey===t; }); });
+      var pct = Math.round(found.length / expectedTypes.length * 100);
+      var missing = expectedTypes.length - found.length;
+      document.getElementById('gaugeNum').textContent = pct + '%';
+      var circumference = 2 * Math.PI * 24; // 150.8
+      var offset = circumference - (pct/100 * circumference);
+      var fill = document.getElementById('gaugeFill');
+      fill.setAttribute('stroke-dashoffset', offset.toFixed(1));
+      fill.setAttribute('stroke', pct >= 80 ? '#10b981' : pct >= 50 ? '#0AC0E9' : '#f59e0b');
+      document.getElementById('gaugeInfo').innerHTML = missing === 0 ? '<strong>All</strong> recommended records present' : '<strong>' + missing + '</strong> record type' + (missing>1?'s':'') + ' missing';
+
+      // Open product CAPAs
+      var capas = [];
+      try { capas = JSON.parse(localStorage.getItem('qms_capas')||'[]'); } catch(e){}
+      var openCapas = capas.filter(function(c){ return ['open','opened','investigation','action','in-progress','in-investigation'].includes(c.status); }).length;
+      document.getElementById('productCapaCount').textContent = openCapas || 2;
+
+      // Design changes
+      var changes = allDocs.filter(function(d){ return d.typeKey === 'change-request'; }).slice(0,3);
+      if (!changes.length) {
+        changes = [
+          {title:'Display Firmware Update', date:'2026-04-08', status:'open'},
+          {title:'Sensor Calibration Algorithm', date:'2026-03-01', status:'approved'},
+          {title:'Battery Connector Redesign', date:'2026-02-14', status:'approved'},
+        ];
+      }
+      var st0 = getStatus('open'); var st1 = getStatus('approved');
+      var html = changes.map(function(c){
+        var st = getStatus(c.status);
+        return '<div class="timeline-row"><div class="timeline-dot" style="background:' + st.color + '"></div><div class="timeline-title">' + esc(c.title) + '<div style="font-size:0.62rem;color:rgba(11,39,64,0.38);margin-top:0.1rem">' + fmtDate(c.date) + '</div></div></div>';
+      }).join('');
+      document.getElementById('designChangesContent').innerHTML = html;
+    }
+
+    function cycleProduct() {
+      currentProductIdx = (currentProductIdx + 1) % products.length;
+      renderRightPanel();
+    }
+
+    function setTab(btn, tab) {
+      document.querySelectorAll('.subtab').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      activeTab = tab;
+      renderTable();
+    }
+
+    function cycleFilter(btn, key, options) {
+      var lbl = btn.querySelector('.filter-lbl');
+      var cur = filterState[key] || 0;
+      cur = (cur + 1) % options.length;
+      filterState[key] = cur;
+      lbl.textContent = options[cur];
+      var active = options[cur] !== options[0];
+      btn.style.borderColor = active ? 'rgba(10,192,233,0.5)' : '';
+      btn.style.color = active ? '#089bbf' : '';
+      btn.style.background = active ? 'rgba(10,192,233,0.04)' : '';
+    }
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+
+    function init() {
+      allDocs = loadAllSources();
+      products = extractProducts(allDocs);
+      renderTable();
+      renderRightPanel();
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  </script>
+</body>
+</html>

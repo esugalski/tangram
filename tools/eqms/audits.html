@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audits — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --light-gray: #F7F8FA;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+      --sidebar-w:  220px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; transition: width 0.2s ease; overflow: hidden; }
+    .sidebar.collapsed { width: 56px; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-text { overflow: hidden; transition: opacity 0.15s, width 0.2s; }
+    .sidebar.collapsed .sidebar-brand-text { opacity: 0; width: 0; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; white-space: nowrap; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; white-space: nowrap; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.88); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-nav-label { overflow: hidden; text-overflow: ellipsis; transition: opacity 0.15s; }
+    .sidebar.collapsed .sidebar-nav-label { opacity: 0; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-info { overflow: hidden; transition: opacity 0.15s, width 0.2s; min-width: 0; flex: 1; }
+    .sidebar.collapsed .sidebar-user-info { opacity: 0; width: 0; flex: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); white-space: nowrap; }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
+    .sidebar-collapse-btn { margin-left: auto; flex-shrink: 0; background: transparent; border: none; cursor: pointer; padding: 4px; border-radius: 5px; transition: background 0.12s; display: flex; align-items: center; justify-content: center; }
+    .sidebar-collapse-btn:hover { background: rgba(255,255,255,0.07); }
+    .sidebar-collapse-icon { width: 14px; height: 14px; stroke: rgba(255,255,255,0.3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+    .sidebar.collapsed .sidebar-collapse-icon { transform: rotate(180deg); }
+
+    .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 60px; display: flex; align-items: center; flex-shrink: 0; z-index: 10; }
+    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; padding: 0 1.25rem; display: flex; align-items: center; border-right: 1px solid rgba(11,39,64,0.06); height: 100%; }
+    .topbar-brand-name { font-size: 0.9rem; font-weight: 700; color: var(--primary); letter-spacing: -0.02em; }
+    .topbar-brand-sub { font-size: 0.6rem; color: rgba(11,39,64,0.35); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+    .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 1.5rem; }
+    .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; width: min(400px, 100%); transition: border-color 0.15s; }
+    .topbar-search:focus-within { border-color: rgba(10,192,233,0.4); }
+    .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .topbar-search input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 100%; }
+    .topbar-search input::placeholder { color: rgba(11,39,64,0.35); }
+    .topbar-right { display: flex; align-items: center; gap: 0.5rem; padding: 0 1.25rem; flex-shrink: 0; }
+    .topbar-icon-btn { width: 34px; height: 34px; border-radius: 8px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.12s; position: relative; }
+    .topbar-icon-btn:hover { background: var(--light-gray); }
+    .topbar-icon-btn svg { width: 16px; height: 16px; stroke: var(--mid-blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .topbar-notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--red); border: 1.5px solid white; }
+    .topbar-user { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.3rem 0.6rem; border-radius: 8px; transition: background 0.12s; }
+    .topbar-user:hover { background: var(--light-gray); }
+    .topbar-user-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(10,192,233,0.1); border: 1.5px solid rgba(10,192,233,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua-dark); flex-shrink: 0; }
+    .topbar-user-name { font-size: 0.8rem; font-weight: 600; color: var(--primary); white-space: nowrap; }
+    .topbar-user-role { font-size: 0.63rem; color: rgba(11,39,64,0.4); white-space: nowrap; }
+    .content-wrap { flex: 1; display: flex; min-height: 0; overflow: hidden; }
+    .main-area { flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem; min-width: 0; display: flex; flex-direction: column; }
+    .main-area::-webkit-scrollbar { width: 5px; }
+    .main-area::-webkit-scrollbar-track { background: transparent; }
+    .main-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.1rem; gap: 1rem; }
+    .page-heading { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; line-height: 1.2; }
+    .page-subtitle { font-size: 0.77rem; color: rgba(11,39,64,0.44); margin-top: 0.22rem; }
+    .page-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; color: white; background: var(--aqua-dark); border: none; border-radius: 7px; padding: 0.45rem 0.9rem; cursor: pointer; transition: background 0.12s; white-space: nowrap; }
+    .btn-primary:hover { background: var(--aqua); }
+    .btn-primary svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .subtabs { display: flex; gap: 0; border-bottom: 1.5px solid rgba(11,39,64,0.08); margin-bottom: 1rem; }
+    .subtab { font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; color: rgba(11,39,64,0.5); padding: 0.55rem 1rem; border: none; border-bottom: 2px solid transparent; margin-bottom: -1.5px; cursor: pointer; transition: color 0.12s; white-space: nowrap; background: transparent; }
+    .subtab:hover { color: var(--primary); }
+    .subtab.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+    .subtab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 17px; height: 15px; background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); font-size: 0.59rem; font-weight: 700; padding: 0 0.32rem; border-radius: 10px; margin-left: 0.3rem; }
+    .subtab.active .subtab-count { background: rgba(10,192,233,0.12); color: var(--aqua-dark); }
+
+    .filter-bar { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filter-dropdown { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.36rem 0.65rem; cursor: pointer; transition: border-color 0.12s, background 0.12s; white-space: nowrap; }
+    .filter-dropdown:hover { border-color: rgba(10,192,233,0.4); }
+    .filter-dropdown svg { width: 11px; height: 11px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .filter-more-btn { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.42); background: transparent; border: none; cursor: pointer; padding: 0.36rem 0.45rem; }
+    .filter-right { display: flex; align-items: center; gap: 0.4rem; margin-left: auto; }
+    .filter-action-btn { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.34rem 0.65rem; cursor: pointer; transition: border-color 0.12s; }
+    .filter-action-btn:hover { border-color: rgba(10,192,233,0.35); }
+    .filter-action-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* ─── AUDIT TABLE ─── */
+    .doc-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; overflow: hidden; flex: 1; }
+    .doc-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .doc-table th { padding: 0.6rem 0.85rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); border-bottom: 1px solid rgba(11,39,64,0.07); background: rgba(11,39,64,0.015); text-align: left; white-space: nowrap; cursor: pointer; user-select: none; }
+    .doc-table th:first-child { padding-left: 1rem; cursor: default; width: 36px; }
+    .doc-table td { padding: 0.7rem 0.85rem; border-bottom: 1px solid rgba(11,39,64,0.055); vertical-align: middle; font-size: 0.8rem; color: var(--primary); }
+    .doc-table td:first-child { padding-left: 1rem; }
+    .doc-table tr:last-child td { border-bottom: none; }
+    .doc-table tbody tr:hover td { background: rgba(10,192,233,0.015); cursor: pointer; }
+    .doc-cb { width: 15px; height: 15px; accent-color: var(--aqua); cursor: pointer; }
+    .audit-title { font-size: 0.81rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; display: block; }
+    .audit-id { font-size: 0.66rem; color: rgba(11,39,64,0.4); margin-top: 0.1rem; }
+    .status-badge { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 700; padding: 0.17rem 0.52rem; border-radius: 5px; white-space: nowrap; }
+    .type-chip { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 600; padding: 0.14rem 0.45rem; border-radius: 4px; white-space: nowrap; }
+    .type-internal { background: rgba(3,105,161,0.1); color: #0369a1; }
+    .type-supplier { background: rgba(249,115,22,0.1); color: #c2410c; }
+    .type-regulatory { background: rgba(124,58,237,0.1); color: #6d28d9; }
+    .type-external { background: rgba(16,185,129,0.1); color: #047857; }
+    .shared-docs-cell { display: flex; align-items: center; gap: 0.3rem; font-size: 0.73rem; color: rgba(11,39,64,0.52); }
+    .shared-docs-cell svg { width: 11px; height: 11px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; }
+    .doc-date { font-size: 0.73rem; color: rgba(11,39,64,0.52); white-space: nowrap; }
+    .doc-owner { font-size: 0.73rem; color: rgba(11,39,64,0.55); }
+    .doc-action-link { font-size: 0.74rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; white-space: nowrap; }
+    .doc-action-link:hover { color: var(--aqua); text-decoration: underline; }
+
+    .pagination-bar { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0 0; }
+    .pagination-info { font-size: 0.72rem; color: rgba(11,39,64,0.4); }
+
+    .empty-state { padding: 3.5rem 2rem; text-align: center; }
+    .empty-state-icon { width: 44px; height: 44px; border-radius: 10px; background: rgba(11,39,64,0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.85rem; }
+    .empty-state-icon svg { width: 20px; height: 20px; stroke: rgba(11,39,64,0.25); fill: none; stroke-width: 1.5; }
+    .empty-state-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.35rem; }
+    .empty-state-desc { font-size: 0.77rem; color: rgba(11,39,64,0.43); line-height: 1.6; }
+
+    /* ─── RIGHT PANEL ─── */
+    .right-panel { width: 272px; flex-shrink: 0; border-left: 1px solid rgba(11,39,64,0.07); padding: 1.5rem 1.1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; background: white; }
+    .right-panel::-webkit-scrollbar { width: 0; }
+    .widget { background: var(--light-gray); border: 1px solid rgba(11,39,64,0.07); border-radius: 10px; padding: 1rem 1.1rem; }
+    .widget-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); margin-bottom: 0.75rem; }
+    .widget-divider { height: 1px; background: rgba(11,39,64,0.07); margin: 0.5rem 0; }
+    .widget-view-all { font-size: 0.71rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; display: block; margin-top: 0.6rem; }
+    .widget-view-all:hover { color: var(--aqua); }
+
+    /* Package checklist */
+    .package-stat { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.65rem; }
+    .package-pct { font-size: 1.4rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; }
+    .package-pct-lbl { font-size: 0.63rem; color: rgba(11,39,64,0.42); font-weight: 500; }
+    .package-bar-bg { height: 5px; background: rgba(11,39,64,0.08); border-radius: 3px; margin-bottom: 0.75rem; overflow: hidden; }
+    .package-bar-fill { height: 100%; background: var(--aqua); border-radius: 3px; transition: width 0.4s ease; }
+    .checklist-row { display: flex; align-items: center; gap: 0.45rem; padding: 0.25rem 0; }
+    .check-icon { width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .check-icon.done { background: rgba(16,185,129,0.15); }
+    .check-icon.done svg { stroke: #059669; }
+    .check-icon.pending { background: rgba(245,158,11,0.12); }
+    .check-icon.pending svg { stroke: #b45309; }
+    .check-icon svg { width: 8px; height: 8px; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .checklist-label { font-size: 0.73rem; color: rgba(11,39,64,0.6); flex: 1; }
+    .checklist-label.done-lbl { color: rgba(11,39,64,0.4); text-decoration: line-through; }
+
+    /* Timeline */
+    .timeline-row { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.35rem 0; }
+    .timeline-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 0.25rem; }
+    .timeline-dot.scheduled { background: var(--amber); }
+    .timeline-dot.planned { background: var(--indigo); }
+    .timeline-dot.in-progress { background: var(--aqua); }
+    .timeline-dot.complete { background: var(--green); }
+    .timeline-info { flex: 1; min-width: 0; }
+    .timeline-title { font-size: 0.73rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .timeline-date { font-size: 0.63rem; color: rgba(11,39,64,0.42); margin-top: 0.08rem; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <img src="../../brand_assets/Tangram-T%20mark%20reverse_Square.png" class="sidebar-t-mark" alt="T">
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Tangram eQMS</div>
+          <div class="sidebar-brand-sub">Quality Management</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <a class="sidebar-nav-item" href="my-work.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg>
+          <span class="sidebar-nav-label">My Work</span>
+        </a>
+        <a class="sidebar-nav-item" href="doc-library.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span class="sidebar-nav-label">Library</span>
+        </a>
+        <a class="sidebar-nav-item" href="products-mdf.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          <span class="sidebar-nav-label">Products / MDF</span>
+        </a>
+        <a class="sidebar-nav-item" href="capa-ncr.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          <span class="sidebar-nav-label">CAPA / NCR</span>
+        </a>
+        <a class="sidebar-nav-item" href="suppliers.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="sidebar-nav-label">Suppliers</span>
+        </a>
+        <a class="sidebar-nav-item active" href="audits.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13l2 2 4-4"/></svg>
+          <span class="sidebar-nav-label">Audits</span>
+        </a>
+        <a class="sidebar-nav-item" href="training-hub.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <span class="sidebar-nav-label">Training</span>
+        </a>
+        <a class="sidebar-nav-item" href="reports.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="sidebar-nav-label">Reports</span>
+        </a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">SJ</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Sarah Johnson</div>
+          <div class="sidebar-user-role">Quality Manager</div>
+        </div>
+        <button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar">
+          <svg class="sidebar-collapse-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <div class="topbar">
+      <div class="topbar-brand-area">
+        <div>
+          <div class="topbar-brand-name">Tangram eQMS</div>
+          <div class="topbar-brand-sub">Quality Platform</div>
+        </div>
+      </div>
+      <div class="topbar-center">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, CAPAs, products, audits…">
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" title="Notifications">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="topbar-notif-dot"></span>
+        </button>
+        <div class="topbar-user">
+          <div class="topbar-user-avatar">SJ</div>
+          <div>
+            <div class="topbar-user-name">Sarah Johnson</div>
+            <div class="topbar-user-role">Quality Manager</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-wrap">
+      <div class="main-area">
+        <div class="page-header">
+          <div>
+            <div class="page-heading">Audits</div>
+            <div class="page-subtitle">Manage active audits, repeats, and audit history</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn-primary">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Create Audit Room
+            </button>
+          </div>
+        </div>
+
+        <div class="subtabs">
+          <button class="subtab active" onclick="setTab(this,'active')">Active Audits <span class="subtab-count" id="cnt-active">0</span></button>
+          <button class="subtab" onclick="setTab(this,'repeats')">Repeats <span class="subtab-count" id="cnt-repeats">0</span></button>
+          <button class="subtab" onclick="setTab(this,'shared')">Shared Documents <span class="subtab-count" id="cnt-shared">0</span></button>
+          <button class="subtab" onclick="setTab(this,'findings')">Findings</button>
+          <button class="subtab" onclick="setTab(this,'history')">History <span class="subtab-count" id="cnt-history">0</span></button>
+        </div>
+
+        <div class="filter-bar">
+          <button class="filter-dropdown" onclick="cycleFilter(this,'status',['All Status','Scheduled','Planned','In Progress'])">
+            <span class="filter-lbl">Status</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'type',['All Types','Internal','Supplier','Regulatory','External'])">
+            <span class="filter-lbl">Type</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'due',['All Dates','This Month','Next 90 Days'])">
+            <span class="filter-lbl">Due Date</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'product',['All Products'])">
+            <span class="filter-lbl">Product</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'owner',['All Owners','Sarah Johnson'])">
+            <span class="filter-lbl">Owner</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-more-btn">+ More Filters</button>
+          <div class="filter-right">
+            <button class="filter-action-btn">
+              <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              Review Selected
+            </button>
+            <button class="filter-action-btn">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Export
+            </button>
+          </div>
+        </div>
+
+        <div id="tableArea"></div>
+        <div id="paginationArea"></div>
+      </div>
+
+      <div class="right-panel">
+        <div class="widget">
+          <div class="widget-title">Active Audit Package</div>
+          <div class="package-stat">
+            <div>
+              <div class="package-pct" id="pkgPct">—</div>
+              <div class="package-pct-lbl">Compliance Rate</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:0.82rem;font-weight:700;color:var(--primary)" id="pkgDone">0 / 0</div>
+              <div style="font-size:0.63rem;color:rgba(11,39,64,0.42)">docs complete</div>
+            </div>
+          </div>
+          <div class="package-bar-bg"><div class="package-bar-fill" id="pkgBar" style="width:0%"></div></div>
+          <div id="checklistContent"></div>
+          <div class="widget-divider"></div>
+          <a href="#" class="widget-view-all">View full package →</a>
+        </div>
+        <div class="widget">
+          <div class="widget-title">Audit Timeline</div>
+          <div id="timelineContent"></div>
+          <div class="widget-divider"></div>
+          <a href="#" class="widget-view-all">Full audit timeline →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      try { return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); } catch(e) { return String(iso).slice(0,10); }
+    }
+
+    var STATUS_DISPLAY = {
+      approved:{label:'Complete',bg:'rgba(16,185,129,0.1)',color:'#047857'},
+      closed:{label:'Closed',bg:'rgba(16,185,129,0.1)',color:'#047857'},
+      complete:{label:'Complete',bg:'rgba(16,185,129,0.1)',color:'#047857'},
+      executed:{label:'Executed',bg:'rgba(16,185,129,0.1)',color:'#047857'},
+      draft:{label:'Draft',bg:'rgba(245,158,11,0.12)',color:'#b45309'},
+      planned:{label:'Planned',bg:'rgba(245,158,11,0.12)',color:'#b45309'},
+      scheduled:{label:'Scheduled',bg:'rgba(245,158,11,0.12)',color:'#b45309'},
+      'in-progress':{label:'In Progress',bg:'rgba(99,102,241,0.12)',color:'#4338ca'},
+    };
+    function getStatus(raw) { return STATUS_DISPLAY[raw] || {label:raw||'—',bg:'rgba(11,39,64,0.07)',color:'rgba(11,39,64,0.38)'}; }
+
+    var activeTab = 'active';
+    var filterState = {};
+    var allAudits = [];
+
+    var STATIC_AUDITS = [
+      {id:'AUD-2026-001',title:'Internal Audit — Design Controls',type:'Internal',status:'scheduled',date:'2026-05-15',owner:'Sarah Johnson',sharedDocs:5},
+      {id:'AUD-2026-002',title:'Supplier Audit — PCB Assembly Co',type:'Supplier',status:'planned',date:'2026-05-28',owner:'Michael Chen',sharedDocs:3},
+      {id:'AUD-2026-003',title:'FDA Pre-submission Surveillance',type:'Regulatory',status:'in-progress',date:'2026-04-30',owner:'Sarah Johnson',sharedDocs:12},
+      {id:'AUD-2026-004',title:'Notified Body Request',type:'External',status:'scheduled',date:'2026-06-10',owner:'James Wilson',sharedDocs:8},
+      {id:'AUD-2025-008',title:'Internal Audit — CAPA Effectiveness',type:'Internal',status:'complete',date:'2025-11-20',owner:'Sarah Johnson',sharedDocs:4},
+      {id:'AUD-2025-007',title:'Supplier Audit — Sterile Packaging Ltd',type:'Supplier',status:'complete',date:'2025-09-14',owner:'Michael Chen',sharedDocs:6},
+    ];
+
+    function loadData() {
+      try { allAudits = JSON.parse(localStorage.getItem('qms_internal_audits')||'[]'); } catch(e) { allAudits = []; }
+      if (!allAudits.length) allAudits = STATIC_AUDITS.map(function(a,i){ return Object.assign({},a); });
+      else {
+        // Enrich with sharedDocs count
+        allAudits = allAudits.map(function(a,i){ return Object.assign({sharedDocs: Math.floor(Math.random()*8)+2, type: a.type||'Internal'}, a); });
+        // Add static ones for completeness
+        STATIC_AUDITS.forEach(function(s){ if (!allAudits.find(function(a){return a.id===s.id;})) allAudits.push(s); });
+      }
+    }
+
+    var ACTIVE_STATUSES = ['scheduled','planned','in-progress'];
+    var DONE_STATUSES = ['complete','closed','executed','approved'];
+
+    function getTabData() {
+      if (activeTab === 'active') return allAudits.filter(function(a){ return ACTIVE_STATUSES.includes(a.status); });
+      if (activeTab === 'repeats') {
+        var titles = {}; var repeats = [];
+        allAudits.forEach(function(a){ var key = (a.title||'').replace(/\d{4}/g,'').trim(); if (titles[key]) repeats.push(a); else titles[key]=true; });
+        return repeats;
+      }
+      if (activeTab === 'shared') return allAudits.filter(function(a){ return ACTIVE_STATUSES.includes(a.status); });
+      if (activeTab === 'findings') return [];
+      if (activeTab === 'history') return allAudits.filter(function(a){ return DONE_STATUSES.includes(a.status); });
+      return [];
+    }
+
+    function getTypeClass(type) {
+      var t = (type||'').toLowerCase();
+      if (t.includes('supplier')) return 'type-supplier';
+      if (t.includes('regulat')) return 'type-regulatory';
+      if (t.includes('external')) return 'type-external';
+      return 'type-internal';
+    }
+
+    function getNextAction(audit) {
+      var map = { scheduled:'Prepare Package', planned:'Confirm Schedule', 'in-progress':'Continue Audit', complete:'View Report', closed:'View Report', executed:'View Report' };
+      return map[audit.status] || 'Review';
+    }
+
+    function renderTable() {
+      var rows = getTabData();
+      var tableArea = document.getElementById('tableArea');
+
+      if (activeTab === 'findings') {
+        tableArea.innerHTML = '<div class="doc-table-wrap"><div class="empty-state"><div class="empty-state-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13l2 2 4-4"/></svg></div><div class="empty-state-title">No findings recorded</div><div class="empty-state-desc">Audit findings will appear here as audits progress.</div></div></div>';
+        document.getElementById('paginationArea').innerHTML = '';
+        return;
+      }
+      if (!rows.length) {
+        tableArea.innerHTML = '<div class="doc-table-wrap"><div class="empty-state"><div class="empty-state-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13l2 2 4-4"/></svg></div><div class="empty-state-title">No audits found</div><div class="empty-state-desc">No audits match the current view.</div></div></div>';
+        document.getElementById('paginationArea').innerHTML = '';
+        return;
+      }
+
+      var html = '<div class="doc-table-wrap"><table class="doc-table"><colgroup><col style="width:36px"><col><col style="width:10%"><col style="width:11%"><col style="width:13%"><col style="width:12%"><col style="width:9%"><col style="width:13%"></colgroup>';
+      html += '<thead><tr><th></th><th>Audit / Request</th><th>Type</th><th>Status</th><th>Due Date</th><th>Owner</th><th>Shared Docs</th><th>Next Action</th></tr></thead><tbody>';
+
+      rows.forEach(function(audit) {
+        var st = getStatus(audit.status);
+        html += '<tr>';
+        html += '<td><input type="checkbox" class="doc-cb"></td>';
+        html += '<td><span class="audit-title" title="' + esc(audit.title) + '">' + esc(audit.title) + '</span><div class="audit-id">' + esc(audit.id) + '</div></td>';
+        html += '<td><span class="type-chip ' + getTypeClass(audit.type) + '">' + esc(audit.type||'Internal') + '</span></td>';
+        html += '<td><span class="status-badge" style="background:' + st.bg + ';color:' + st.color + '">' + esc(st.label) + '</span></td>';
+        html += '<td class="doc-date">' + fmtDate(audit.date) + '</td>';
+        html += '<td class="doc-owner">' + esc(audit.owner||'Sarah Johnson') + '</td>';
+        html += '<td><div class="shared-docs-cell"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' + (audit.sharedDocs||0) + '</div></td>';
+        html += '<td><a class="doc-action-link" href="#">' + esc(getNextAction(audit)) + '</a></td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+      tableArea.innerHTML = html;
+      document.getElementById('paginationArea').innerHTML = '<div class="pagination-bar"><span class="pagination-info">Showing 1–' + rows.length + ' of ' + rows.length + '</span></div>';
+    }
+
+    function updateCounts() {
+      var active = allAudits.filter(function(a){ return ACTIVE_STATUSES.includes(a.status); });
+      var history = allAudits.filter(function(a){ return DONE_STATUSES.includes(a.status); });
+      var titles = {}; var repeats = 0;
+      allAudits.forEach(function(a){ var key=(a.title||'').replace(/\d{4}/g,'').trim(); if(titles[key]) repeats++; else titles[key]=true; });
+      var el = function(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; };
+      el('cnt-active', active.length);
+      el('cnt-repeats', repeats);
+      el('cnt-shared', active.length);
+      el('cnt-history', history.length);
+    }
+
+    function renderRightPanel() {
+      // Package widget
+      var active = allAudits.filter(function(a){ return ACTIVE_STATUSES.includes(a.status); });
+      var totalDocs = active.reduce(function(sum,a){ return sum + (a.sharedDocs||0); }, 0);
+      var completedDocs = Math.floor(totalDocs * 0.72);
+      var pct = totalDocs > 0 ? Math.round(completedDocs/totalDocs*100) : 0;
+      document.getElementById('pkgPct').textContent = pct + '%';
+      document.getElementById('pkgDone').textContent = completedDocs + ' / ' + totalDocs;
+      document.getElementById('pkgBar').style.width = pct + '%';
+
+      var checklistItems = [
+        {label:'Quality Manual (current)', done: true},
+        {label:'Procedure Index', done: true},
+        {label:'Design Control Records', done: true},
+        {label:'Risk Management File', done: false},
+        {label:'V&V Summary Report', done: false},
+      ];
+      var clHtml = checklistItems.map(function(item){
+        return '<div class="checklist-row"><div class="check-icon ' + (item.done?'done':'pending') + '"><svg viewBox="0 0 24 24">' + (item.done?'<polyline points="20 6 9 17 4 12"/>':'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>') + '</svg></div><span class="checklist-label ' + (item.done?'done-lbl':'') + '">' + esc(item.label) + '</span></div>';
+      }).join('');
+      document.getElementById('checklistContent').innerHTML = clHtml;
+
+      // Timeline widget
+      var upcoming = allAudits.filter(function(a){ return !DONE_STATUSES.includes(a.status); }).sort(function(a,b){ return new Date(a.date)-new Date(b.date); }).slice(0,4);
+      var timelineHtml = upcoming.map(function(a){
+        var dotClass = a.status === 'in-progress' ? 'in-progress' : (a.status === 'planned' ? 'planned' : 'scheduled');
+        return '<div class="timeline-row"><div class="timeline-dot ' + dotClass + '"></div><div class="timeline-info"><div class="timeline-title">' + esc(a.title) + '</div><div class="timeline-date">' + fmtDate(a.date) + ' · ' + esc(a.status) + '</div></div></div>';
+      }).join('');
+      document.getElementById('timelineContent').innerHTML = timelineHtml || '<div style="font-size:0.73rem;color:rgba(11,39,64,0.38);font-style:italic">No upcoming audits</div>';
+    }
+
+    function setTab(btn, tab) {
+      document.querySelectorAll('.subtab').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      activeTab = tab;
+      renderTable();
+    }
+
+    function cycleFilter(btn, key, options) {
+      var lbl = btn.querySelector('.filter-lbl');
+      var cur = filterState[key] || 0;
+      cur = (cur + 1) % options.length;
+      filterState[key] = cur;
+      lbl.textContent = options[cur];
+      var active = options[cur] !== options[0];
+      btn.style.borderColor = active ? 'rgba(10,192,233,0.5)' : '';
+      btn.style.color = active ? '#089bbf' : '';
+      btn.style.background = active ? 'rgba(10,192,233,0.04)' : '';
+    }
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+
+    function init() {
+      loadData();
+      updateCounts();
+      renderTable();
+      renderRightPanel();
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,343 +8,390 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
   <style>
-    .sup-card { padding: 0.8rem 0.9rem; border-radius: 9px; cursor: pointer; border: 1.5px solid transparent; margin-bottom: 0.3rem; }
-    .sup-card:hover { background: rgba(11,39,64,0.03); }
-    .sup-card.selected { background: rgba(10,192,233,0.06); border-color: rgba(10,192,233,0.25); }
-    .sup-logo { width: 32px; height: 32px; border-radius: 8px; background: rgba(10,192,233,0.12); color: var(--aqua-dark); font-size: 0.76rem; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; margin-right: 0.55rem; flex-shrink: 0; vertical-align: middle; }
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --light-gray: #F7F8FA;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+      --sidebar-w:  220px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
 
-    .crit-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 0.35rem; vertical-align: middle; }
-    .crit-dot.critical { background: #dc2626; }
-    .crit-dot.significant { background: #f59e0b; }
-    .crit-dot.standard { background: #6b7280; }
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; transition: width 0.2s ease; overflow: hidden; }
+    .sidebar.collapsed { width: 56px; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-text { overflow: hidden; transition: opacity 0.15s, width 0.2s; }
+    .sidebar.collapsed .sidebar-brand-text { opacity: 0; width: 0; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; white-space: nowrap; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; white-space: nowrap; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.88); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-nav-label { overflow: hidden; text-overflow: ellipsis; transition: opacity 0.15s; }
+    .sidebar.collapsed .sidebar-nav-label { opacity: 0; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-info { overflow: hidden; transition: opacity 0.15s, width 0.2s; min-width: 0; flex: 1; }
+    .sidebar.collapsed .sidebar-user-info { opacity: 0; width: 0; flex: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); white-space: nowrap; }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
+    .sidebar-collapse-btn { margin-left: auto; flex-shrink: 0; background: transparent; border: none; cursor: pointer; padding: 4px; border-radius: 5px; transition: background 0.12s; display: flex; align-items: center; justify-content: center; }
+    .sidebar-collapse-btn:hover { background: rgba(255,255,255,0.07); }
+    .sidebar-collapse-icon { width: 14px; height: 14px; stroke: rgba(255,255,255,0.3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+    .sidebar.collapsed .sidebar-collapse-icon { transform: rotate(180deg); }
 
-    .status-pill { display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; padding: 0.12rem 0.4rem; border-radius: 3px; text-transform: uppercase; }
-    .status-pill.approved, .status-pill.qualified { background: rgba(16,185,129,0.12); color: #047857; }
-    .status-pill.conditional { background: rgba(245,158,11,0.14); color: #b45309; }
-    .status-pill.suspended { background: rgba(239,68,68,0.14); color: #dc2626; }
-    .status-pill.evaluation { background: rgba(99,102,241,0.12); color: #4338ca; }
-    .status-pill.pending { background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.55); }
+    .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 60px; display: flex; align-items: center; flex-shrink: 0; z-index: 10; }
+    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; padding: 0 1.25rem; display: flex; align-items: center; border-right: 1px solid rgba(11,39,64,0.06); height: 100%; }
+    .topbar-brand-name { font-size: 0.9rem; font-weight: 700; color: var(--primary); letter-spacing: -0.02em; }
+    .topbar-brand-sub { font-size: 0.6rem; color: rgba(11,39,64,0.35); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+    .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 1.5rem; }
+    .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; width: min(400px, 100%); }
+    .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; flex-shrink: 0; }
+    .topbar-search input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 100%; }
+    .topbar-search input::placeholder { color: rgba(11,39,64,0.35); }
+    .topbar-right { display: flex; align-items: center; gap: 0.5rem; padding: 0 1.25rem; flex-shrink: 0; }
+    .topbar-icon-btn { width: 34px; height: 34px; border-radius: 8px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; position: relative; }
+    .topbar-icon-btn svg { width: 16px; height: 16px; stroke: var(--mid-blue); fill: none; stroke-width: 2; }
+    .topbar-notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--red); border: 1.5px solid white; }
+    .topbar-user { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.3rem 0.6rem; border-radius: 8px; }
+    .topbar-user-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(10,192,233,0.1); border: 1.5px solid rgba(10,192,233,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua-dark); flex-shrink: 0; }
+    .topbar-user-name { font-size: 0.8rem; font-weight: 600; color: var(--primary); white-space: nowrap; }
+    .topbar-user-role { font-size: 0.63rem; color: rgba(11,39,64,0.4); white-space: nowrap; }
+    .content-wrap { flex: 1; display: flex; min-height: 0; overflow: hidden; }
+    .main-area { flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem; min-width: 0; display: flex; flex-direction: column; }
+    .main-area::-webkit-scrollbar { width: 5px; }
+    .main-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
 
-    .perf-bar { height: 5px; background: rgba(11,39,64,0.08); border-radius: 3px; overflow: hidden; }
-    .perf-fill { height: 100%; background: var(--green); }
-    .perf-fill.warn { background: var(--amber); }
-    .perf-fill.bad { background: var(--red); }
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.1rem; gap: 1rem; }
+    .page-heading { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; }
+    .page-subtitle { font-size: 0.77rem; color: rgba(11,39,64,0.44); margin-top: 0.22rem; }
+    .page-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; color: white; background: var(--aqua-dark); border: none; border-radius: 7px; padding: 0.45rem 0.9rem; cursor: pointer; transition: background 0.12s; white-space: nowrap; }
+    .btn-primary:hover { background: var(--aqua); }
+    .btn-primary svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-outline { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.42rem 0.8rem; cursor: pointer; white-space: nowrap; }
+    .btn-outline svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-    .qual-row { display: grid; grid-template-columns: 180px 1fr 110px 110px 30px; gap: 0.5rem; align-items: center; padding: 0.45rem 0.55rem; border-radius: 6px; background: rgba(11,39,64,0.025); margin-bottom: 0.3rem; }
-    .qual-row input, .qual-row select { font-family: inherit; font-size: 0.74rem; padding: 0.3rem 0.45rem; border: 1px solid rgba(11,39,64,0.1); border-radius: 5px; background: white; outline: none; min-width: 0; }
+    .subtabs { display: flex; gap: 0; border-bottom: 1.5px solid rgba(11,39,64,0.08); margin-bottom: 1rem; }
+    .subtab { font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; color: rgba(11,39,64,0.5); padding: 0.55rem 1rem; border: none; border-bottom: 2px solid transparent; margin-bottom: -1.5px; cursor: pointer; transition: color 0.12s; white-space: nowrap; background: transparent; }
+    .subtab:hover { color: var(--primary); }
+    .subtab.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+    .subtab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 17px; height: 15px; background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); font-size: 0.59rem; font-weight: 700; padding: 0 0.32rem; border-radius: 10px; margin-left: 0.3rem; }
+    .subtab.active .subtab-count { background: rgba(10,192,233,0.12); color: var(--aqua-dark); }
+
+    .filter-bar { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filter-dropdown { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.36rem 0.65rem; cursor: pointer; }
+    .filter-dropdown svg { width: 11px; height: 11px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; }
+    .filter-more-btn { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.42); background: transparent; border: none; cursor: pointer; padding: 0.36rem 0.45rem; }
+
+    .doc-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; overflow: hidden; flex: 1; }
+    .doc-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .doc-table th { padding: 0.6rem 0.75rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); border-bottom: 1px solid rgba(11,39,64,0.07); background: rgba(11,39,64,0.015); text-align: left; white-space: nowrap; }
+    .doc-table th:first-child { padding-left: 1rem; width: 36px; }
+    .doc-table th:nth-child(2) { width: 28px; }
+    .doc-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid rgba(11,39,64,0.055); vertical-align: middle; font-size: 0.79rem; color: var(--primary); }
+    .doc-table td:first-child { padding-left: 1rem; }
+    .doc-table tr:last-child td { border-bottom: none; }
+    .doc-table tbody tr:hover td { background: rgba(10,192,233,0.015); cursor: pointer; }
+    .doc-cb { width: 15px; height: 15px; accent-color: var(--aqua); cursor: pointer; }
+    .row-num { font-size: 0.7rem; color: rgba(11,39,64,0.35); font-weight: 600; }
+    .supplier-name { font-size: 0.81rem; font-weight: 600; color: var(--primary); }
+    .supplier-id { font-size: 0.66rem; color: rgba(11,39,64,0.42); margin-top: 0.08rem; }
+    .status-badge { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 5px; white-space: nowrap; }
+    .risk-badge { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.63rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 5px; white-space: nowrap; }
+    .risk-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .doc-date { font-size: 0.72rem; color: rgba(11,39,64,0.52); white-space: nowrap; }
+    .action-links { display: flex; align-items: center; gap: 0.5rem; }
+    .doc-action-link { font-size: 0.72rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; white-space: nowrap; }
+    .doc-action-link:hover { color: var(--aqua); text-decoration: underline; }
+
+    .pagination-bar { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0 0; }
+    .pagination-info { font-size: 0.72rem; color: rgba(11,39,64,0.4); }
+    .empty-state { padding: 3.5rem 2rem; text-align: center; }
+    .empty-state-icon { width: 44px; height: 44px; border-radius: 10px; background: rgba(11,39,64,0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.85rem; }
+    .empty-state-icon svg { width: 20px; height: 20px; stroke: rgba(11,39,64,0.25); fill: none; stroke-width: 1.5; }
+    .empty-state-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.35rem; }
+    .empty-state-desc { font-size: 0.77rem; color: rgba(11,39,64,0.43); line-height: 1.6; }
+
+    .right-panel { width: 272px; flex-shrink: 0; border-left: 1px solid rgba(11,39,64,0.07); padding: 1.5rem 1.1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; background: white; }
+    .right-panel::-webkit-scrollbar { width: 0; }
+    .widget { background: var(--light-gray); border: 1px solid rgba(11,39,64,0.07); border-radius: 10px; padding: 1rem 1.1rem; }
+    .widget-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); margin-bottom: 0.75rem; }
+    .widget-divider { height: 1px; background: rgba(11,39,64,0.07); margin: 0.5rem 0; }
+    .widget-view-all { font-size: 0.71rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; display: block; margin-top: 0.6rem; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 0.75rem; }
+    .summary-num { font-size: 1.35rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; line-height: 1; }
+    .summary-num.red { color: var(--red); }
+    .summary-num.amber { color: var(--amber); }
+    .summary-num.green { color: var(--green); }
+    .summary-lbl { font-size: 0.65rem; color: rgba(11,39,64,0.45); margin-top: 0.12rem; }
+    .audit-due-row { display: flex; align-items: flex-start; gap: 0.45rem; padding: 0.28rem 0; }
+    .audit-due-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); flex-shrink: 0; margin-top: 0.38rem; }
+    .audit-due-name { font-size: 0.73rem; font-weight: 600; color: var(--primary); line-height: 1.3; }
+    .audit-due-date { font-size: 0.63rem; color: rgba(11,39,64,0.42); }
+    .risk-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.28rem 0; }
+    .risk-row-name { font-size: 0.73rem; font-weight: 600; color: var(--primary); flex: 1; }
+    .capa-count-num { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.04em; line-height: 1; }
+    .capa-count-lbl { font-size: 0.7rem; color: rgba(11,39,64,0.5); margin-top: 0.15rem; }
   </style>
 </head>
 <body>
-  <aside class="sidebar" id="sidebar-root"></aside>
 
-  <main class="main">
-    <header class="topbar">
-      <div class="topbar-title">
-        <span class="topbar-crumb">Quality System</span>
-        <span class="topbar-sep">/</span>
-        Suppliers
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <img src="../../brand_assets/Tangram-T%20mark%20reverse_Square.png" class="sidebar-t-mark" alt="T">
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Tangram eQMS</div>
+          <div class="sidebar-brand-sub">Quality Management</div>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <a class="sidebar-nav-item" href="my-work.html"><svg class="sidebar-nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg><span class="sidebar-nav-label">My Work</span></a>
+        <a class="sidebar-nav-item" href="doc-library.html"><svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg><span class="sidebar-nav-label">Library</span></a>
+        <a class="sidebar-nav-item" href="products-mdf.html"><svg class="sidebar-nav-icon" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg><span class="sidebar-nav-label">Products / MDF</span></a>
+        <a class="sidebar-nav-item" href="capa-ncr.html"><svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg><span class="sidebar-nav-label">CAPA / NCR</span></a>
+        <a class="sidebar-nav-item active" href="suppliers.html"><svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="sidebar-nav-label">Suppliers</span></a>
+        <a class="sidebar-nav-item" href="audits.html"><svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13l2 2 4-4"/></svg><span class="sidebar-nav-label">Audits</span></a>
+        <a class="sidebar-nav-item" href="training-hub.html"><svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span class="sidebar-nav-label">Training</span></a>
+        <a class="sidebar-nav-item" href="reports.html"><svg class="sidebar-nav-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-nav-label">Reports</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">SJ</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Sarah Johnson</div>
+          <div class="sidebar-user-role">Quality Manager</div>
+        </div>
+        <button class="sidebar-collapse-btn" onclick="toggleSidebar()">
+          <svg class="sidebar-collapse-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <div class="topbar">
+      <div class="topbar-brand-area"><div><div class="topbar-brand-name">Tangram eQMS</div><div class="topbar-brand-sub">Quality Platform</div></div></div>
+      <div class="topbar-center">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, CAPAs, products, audits…">
+        </div>
       </div>
       <div class="topbar-right">
-        <button class="btn-primary" onclick="newSupplier()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add supplier</button>
+        <button class="topbar-icon-btn"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg><span class="topbar-notif-dot"></span></button>
+        <div class="topbar-user"><div class="topbar-user-avatar">SJ</div><div><div class="topbar-user-name">Sarah Johnson</div><div class="topbar-user-role">Quality Manager</div></div></div>
       </div>
-    </header>
-    <div class="doc-approval-bar">
-      <div class="proc-status-pill draft" id="proc-status-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev A</div>
-      <div style="flex:1;"></div>
-      <div id="approval-route-panel"></div>
-      <button class="btn-approve" id="approve-btn" onclick="initiateApproval()"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve list</button>
     </div>
-    <div class="doc-lock-banner" id="doc-lock" style="display:none;"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> This Approved Supplier List is approved. Existing records are locked. New suppliers can still be added.</div>
 
-    <div class="content-cols">
-      <div class="list-col">
-        <div class="list-col-head"><input class="list-col-search" id="search" placeholder="Search suppliers…" oninput="renderList()"></div>
-        <div class="list-col-body" id="list-body"></div>
-      </div>
-      <div class="detail-col">
-        <div class="detail-placeholder" id="placeholder">
-          <svg viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-          <h2>Select a supplier</h2>
-          <p>Pick a row on the left or add a new supplier.</p>
-          <div id="intro-slot" style="max-width:640px;margin-top:1.4rem;"></div>
+    <div class="content-wrap">
+      <div class="main-area">
+        <div class="page-header">
+          <div>
+            <div class="page-heading">Suppliers</div>
+            <div class="page-subtitle">Supplier qualifications, audits, and performance</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn-outline"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Supplier</button>
+            <button class="btn-primary"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Supplier Audit</button>
+          </div>
         </div>
-        <div class="detail-pane" id="pane" style="display:none;"></div>
+
+        <div class="subtabs">
+          <button class="subtab active" onclick="setTab(this,'approved')">Approved Suppliers <span class="subtab-count" id="cnt-approved">0</span></button>
+          <button class="subtab" onclick="setTab(this,'qualification')">Qualification <span class="subtab-count" id="cnt-qualification">0</span></button>
+          <button class="subtab" onclick="setTab(this,'audits')">Audits</button>
+          <button class="subtab" onclick="setTab(this,'scais')">SCAIs</button>
+          <button class="subtab" onclick="setTab(this,'performance')">Performance</button>
+        </div>
+
+        <div class="filter-bar">
+          <button class="filter-dropdown" onclick="cycleFilter(this,'status',['All Status','Approved','Conditional','In Progress'])"><span class="filter-lbl">Status</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'qual',['Qualification Status','Approved','Conditional','Pending'])"><span class="filter-lbl">Qualification Status</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'audit',['Last Audit','Last 90 Days','Last 6 Months','Last Year'])"><span class="filter-lbl">Last Audit</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'risk',['Risk Level','High','Medium','Low'])"><span class="filter-lbl">Risk Level</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'region',['Region','North America','Europe','Asia'])"><span class="filter-lbl">Region</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="filter-more-btn">+ More Filters</button>
+        </div>
+
+        <div id="tableArea"></div>
+        <div id="paginationArea"></div>
+      </div>
+
+      <div class="right-panel">
+        <div class="widget">
+          <div class="widget-title">Supplier Summary</div>
+          <div class="summary-grid" id="summaryGrid"></div>
+          <div class="widget-divider"></div>
+          <a href="#" class="widget-view-all">View all suppliers →</a>
+        </div>
+        <div class="widget">
+          <div class="widget-title">Audits Due</div>
+          <div id="auditsDueContent"></div>
+          <a href="#" class="widget-view-all">View all audits due →</a>
+        </div>
+        <div class="widget">
+          <div class="widget-title">High Risk Suppliers</div>
+          <div id="highRiskContent"></div>
+          <a href="#" class="widget-view-all">View all high risk →</a>
+        </div>
+        <div class="widget">
+          <div class="widget-title">Open CAPAs</div>
+          <div class="capa-count-num" id="supplierCapaCount">0</div>
+          <div class="capa-count-lbl">supplier-related open CAPAs</div>
+          <a href="#" class="widget-view-all">View all CAPAs →</a>
+        </div>
       </div>
     </div>
-  </main>
+  </div>
 
-  <script src="esign.js?v=1776901546755"></script>
-  <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
-
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
   <script>
-    'use strict';
-    const KEY = 'qms_suppliers';
-    let DATA = load();
-    let currentId = null;
+    function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      try { return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); } catch(e) { return String(iso).slice(0,10); }
+    }
+    function addDays(iso, n) { var d = iso ? new Date(iso) : new Date(); if(isNaN(d)) d=new Date(); d.setDate(d.getDate()+n); return d; }
 
-    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
-    function save() { localStorage.setItem(KEY, JSON.stringify(DATA)); }
-    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-    function initials(name) { return (name||'—').split(/\s+/).map(function(p){return p[0]||'';}).join('').slice(0,2).toUpperCase() || '—'; }
-    function newId() {
-      let n = 1;
-      Object.keys(DATA).forEach(function(id){ const m = id.match(/^SUP-(\d+)$/); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
-      return 'SUP-' + String(n).padStart(3,'0');
+    var activeTab = 'approved';
+    var filterState = {};
+    var allSuppliers = [];
+
+    var STATIC_SUPPLIERS = [
+      {id:'SUP-001',name:'PCB Assembly Co',category:'Electronics Manufacturing',qualStatus:'Approved',lastAudit:'2025-09-15',nextReview:'2026-09-15',risk:'High',region:'North America'},
+      {id:'SUP-002',name:'Injection Molding Inc',category:'Plastics / Enclosures',qualStatus:'Approved',lastAudit:'2025-11-02',nextReview:'2026-11-02',risk:'Low',region:'North America'},
+      {id:'SUP-003',name:'Sterile Packaging Ltd',category:'Sterile Packaging',qualStatus:'Conditional',lastAudit:'2025-07-20',nextReview:'2026-01-20',risk:'High',region:'Europe'},
+      {id:'SUP-004',name:'Regulatory Submissions LLC',category:'Regulatory Services',qualStatus:'Approved',lastAudit:'2026-01-10',nextReview:'2027-01-10',risk:'Medium',region:'North America'},
+      {id:'SUP-005',name:'Test Lab Partners',category:'Testing / Verification',qualStatus:'Approved',lastAudit:'2026-02-14',nextReview:'2027-02-14',risk:'Low',region:'North America'},
+      {id:'SUP-006',name:'OMO Manufacturing',category:'Contract Manufacturing',qualStatus:'Conditional',lastAudit:'2025-06-01',nextReview:'2025-12-01',risk:'Medium',region:'Asia'},
+    ];
+
+    var QUAL_STATUS = {
+      'Approved':    {bg:'rgba(16,185,129,0.1)',  color:'#047857'},
+      'Conditional': {bg:'rgba(245,158,11,0.12)', color:'#b45309'},
+      'Pending':     {bg:'rgba(99,102,241,0.12)', color:'#4338ca'},
+      'In Progress': {bg:'rgba(99,102,241,0.12)', color:'#4338ca'},
+    };
+    var RISK_COLORS = {
+      High:   {bg:'rgba(239,68,68,0.1)',  color:'#dc2626', dot:'#ef4444'},
+      Medium: {bg:'rgba(245,158,11,0.1)', color:'#b45309', dot:'#f59e0b'},
+      Low:    {bg:'rgba(16,185,129,0.1)', color:'#047857', dot:'#10b981'},
+    };
+
+    function loadData() {
+      try { var s = JSON.parse(localStorage.getItem('qms_suppliers')||'null'); if(s&&s.length){allSuppliers=s;return;} } catch(e){}
+      allSuppliers = STATIC_SUPPLIERS.slice();
+
+      // Enrich conditional from open CAPAs
+      try {
+        var capas = JSON.parse(localStorage.getItem('qms_capas')||'[]');
+        capas.filter(function(c){ return (c.title||'').toLowerCase().includes('supplier') && ['open','investigation','action'].includes(c.status); })
+          .forEach(function(c){ var s = allSuppliers.find(function(s){ return (c.title||'').toLowerCase().includes(s.name.toLowerCase().split(' ')[0]); }); if(s) s.qualStatus='Conditional'; });
+      } catch(e){}
     }
 
-    function newSupplier() {
-      const id = newId();
-      DATA[id] = {
-        id: id, name: 'New supplier', contact: '', website: '',
-        criticality: 'standard',  // critical / significant / standard
-        categories: '',            // goods/services
-        status: 'evaluation',     // approved / qualified / conditional / suspended / evaluation / pending
-        qualifiedOn: '', nextRequalification: '',
-        certifications: [], // [{name, expires}]
-        agreements: { qualityAgreement: false, confidentiality: false, gmpAgreement: false },
-        qualEvidence: [],  // [{type:'audit|cert|questionnaire|sample', ref, date, outcome}]
-        metrics: { otd: 100, dpm: 0, returns: 0 },  // on-time delivery %, defects per million
-        notes: ''
-      };
-      save();
-      renderList();
-      open(id);
+    function getTabData() {
+      if (activeTab==='approved') return allSuppliers.filter(function(s){ return s.qualStatus==='Approved'; });
+      if (activeTab==='qualification') return allSuppliers.filter(function(s){ return ['Conditional','Pending','In Progress'].includes(s.qualStatus); });
+      return [];
     }
 
-    function open(id) {
-      currentId = id;
-      document.getElementById('placeholder').style.display = 'none';
-      document.getElementById('pane').style.display = 'flex';
-      renderDetail();
-      renderList();
-      applyLockState();
-    }
-
-    function renderList() {
-      const q = (document.getElementById('search').value || '').toLowerCase();
-      const host = document.getElementById('list-body');
-      const list = Object.values(DATA).filter(function(s){ return !q || (s.name+' '+s.id+' '+s.categories).toLowerCase().indexOf(q) !== -1; });
-      list.sort(function(a,b){ return (a.name||'') < (b.name||'') ? -1 : 1; });
-
-      if (!list.length) { host.innerHTML = '<div class="list-empty"><div class="list-empty-icon"><svg viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div><div class="list-empty-title">No suppliers yet</div><div class="list-empty-body">Add every supplier whose product or service affects device quality — contract manufacturers, component vendors, sterilization services, calibration labs.</div></div>'; return; }
-
-      host.innerHTML = list.map(function(s){
-        const sel = s.id === currentId ? ' selected' : '';
-        return '<div class="sup-card'+sel+'" onclick="open(\''+s.id+'\')">' +
-          '<div class="item-card-top">' +
-            '<span class="sup-logo">'+esc(initials(s.name))+'</span>' +
-            '<span style="font-weight:700;font-size:0.82rem;">'+esc(s.name)+'</span>' +
-            '<span class="status-pill '+s.status+'" style="margin-left:auto;">'+esc(s.status)+'</span>' +
-          '</div>' +
-          '<div class="item-card-meta"><span class="crit-dot '+s.criticality+'"></span>'+esc(s.criticality||'')+' · '+esc(s.categories||'—')+'</div>' +
-        '</div>';
-      }).join('');
-    }
-
-    function renderDetail() {
-      const s = DATA[currentId]; if (!s) return;
-      const pane = document.getElementById('pane');
-      const otdClass = s.metrics.otd >= 95 ? '' : (s.metrics.otd >= 85 ? 'warn' : 'bad');
-      const dpmClass = s.metrics.dpm < 500 ? '' : (s.metrics.dpm < 3000 ? 'warn' : 'bad');
-
-      pane.innerHTML =
-        '<div style="display:flex;align-items:center;gap:0.7rem;">' +
-          '<span class="sup-logo" style="width:42px;height:42px;font-size:0.95rem;">'+esc(initials(s.name))+'</span>' +
-          '<div style="flex:1;">' +
-            '<input class="form-input" value="'+esc(s.name)+'" oninput="u(\'name\',this.value);renderList()" placeholder="Supplier name" style="font-size:0.95rem;font-weight:600;margin-bottom:0.25rem;">' +
-            '<input class="form-input" value="'+esc(s.categories||'')+'" oninput="u(\'categories\',this.value);renderList()" placeholder="Goods/services supplied" style="font-size:0.78rem;">' +
-          '</div>' +
-          '<button class="btn-icon danger" onclick="del()"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
-        '</div>' +
-
-        '<div class="card"><div class="card-head"><div class="card-title">Classification &amp; status</div></div><div class="card-body">' +
-          '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('ISO 13485 §7.4.1: the type and extent of controls you apply must be proportional to the supplier\'s effect on the device. "Critical" (direct patient contact, functional component) gets deepest scrutiny; "standard" (office supplies, non-impact) gets lightest.') + '</div>' +
-          '<div class="form-row-3" style="margin-bottom:0.7rem;">' +
-            '<div class="form-field"><label class="form-label">Criticality</label><select class="form-select" onchange="u(\'criticality\',this.value);renderList()">' +
-              ['critical','significant','standard'].map(function(t){ return '<option value="'+t+'" '+(s.criticality===t?'selected':'')+'>'+t+'</option>'; }).join('') +
-            '</select></div>' +
-            '<div class="form-field"><label class="form-label">Status</label><select class="form-select" onchange="u(\'status\',this.value);renderList()">' +
-              ['pending','evaluation','qualified','approved','conditional','suspended'].map(function(t){ return '<option value="'+t+'" '+(s.status===t?'selected':'')+'>'+t+'</option>'; }).join('') +
-            '</select></div>' +
-            '<div class="form-field"><label class="form-label">Next re-qual</label><input class="form-input" type="date" value="'+esc(s.nextRequalification||'')+'" onchange="u(\'nextRequalification\',this.value)"></div>' +
-          '</div>' +
-          '<div class="form-row">' +
-            '<div class="form-field"><label class="form-label">Contact</label><input class="form-input" value="'+esc(s.contact||'')+'" oninput="u(\'contact\',this.value)" placeholder="Primary contact name + email"></div>' +
-            '<div class="form-field"><label class="form-label">Website</label><input class="form-input" value="'+esc(s.website||'')+'" oninput="u(\'website\',this.value)"></div>' +
-          '</div>' +
-        '</div></div>' +
-
-        '<div class="card"><div class="card-head"><div class="card-title">Qualification evidence</div><button class="add-row-btn" onclick="addQual()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add record</button></div><div class="card-body">' +
-          '<div class="learn-only" style="margin-bottom:0.55rem;">' + LearnMode.hint('Qualification methods scale with criticality. Critical: on-site audit + quality agreement. Significant: questionnaire + ISO 13485 certificate copy. Standard: approved vendor list with periodic re-check.') + '</div>' +
-          '<div id="qual-host"></div>' +
-        '</div></div>' +
-
-        '<div class="card"><div class="card-head"><div class="card-title">Quality agreements</div></div><div class="card-body">' +
-          '<div style="display:flex;gap:1rem;flex-wrap:wrap;">' +
-            agreementCheck(s, 'qualityAgreement', 'Quality Agreement signed') +
-            agreementCheck(s, 'confidentiality', 'Confidentiality / NDA') +
-            agreementCheck(s, 'gmpAgreement', 'GMP / change notification clause') +
-          '</div>' +
-        '</div></div>' +
-
-        '<div class="card"><div class="card-head"><div class="card-title">Performance metrics</div></div><div class="card-body">' +
-          '<div class="form-row-3">' +
-            '<div><div class="form-label">On-time delivery</div><input class="form-input" type="number" min="0" max="100" step="any" value="'+esc(s.metrics.otd)+'" oninput="uMetric(\'otd\',this.value)" style="margin-bottom:0.35rem;"><div class="perf-bar"><div class="perf-fill '+otdClass+'" style="width:'+Math.min(100, s.metrics.otd)+'%;"></div></div><div class="subtle" style="margin-top:0.2rem;font-size:0.66rem;">%</div></div>' +
-            '<div><div class="form-label">Defects per million (DPM)</div><input class="form-input" type="number" min="0" value="'+esc(s.metrics.dpm)+'" oninput="uMetric(\'dpm\',this.value)" style="margin-bottom:0.35rem;"><div class="perf-bar"><div class="perf-fill '+dpmClass+'" style="width:'+Math.min(100, s.metrics.dpm/100)+'%;"></div></div></div>' +
-            '<div><div class="form-label">Returned shipments (YTD)</div><input class="form-input" type="number" min="0" value="'+esc(s.metrics.returns)+'" oninput="uMetric(\'returns\',this.value)"></div>' +
-          '</div>' +
-        '</div></div>' +
-
-        '<div class="card"><div class="card-head"><div class="card-title">Notes</div></div><div class="card-body">' +
-          '<textarea class="form-textarea" rows="3" oninput="u(\'notes\',this.value)">'+esc(s.notes||'')+'</textarea>' +
-        '</div></div>';
-
-      renderQuals();
-    }
-
-    function agreementCheck(s, field, label) {
-      const on = s.agreements[field];
-      return '<label style="display:inline-flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:0.78rem;color:'+(on?'#047857':'rgba(11,39,64,0.6)')+';">' +
-        '<span style="width:16px;height:16px;border-radius:4px;border:1.5px solid '+(on?'#10B981':'rgba(11,39,64,0.22)')+';background:'+(on?'#10B981':'white')+';display:inline-flex;align-items:center;justify-content:center;">' +
-          (on ? '<svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:white;fill:none;stroke-width:3;"><polyline points="20 6 9 17 4 12"/></svg>' : '') +
-        '</span>' +
-        '<input type="checkbox" style="display:none;" '+(on?'checked':'')+' onchange="toggleAgreement(\''+field+'\')">' +
-        esc(label) +
-      '</label>';
-    }
-
-    function renderQuals() {
-      const host = document.getElementById('qual-host');
-      const list = DATA[currentId].qualEvidence || [];
-      if (!list.length) { host.innerHTML = '<div class="subtle">No qualification evidence yet.</div>'; return; }
-      host.innerHTML = list.map(function(q, i) {
-        return '<div class="qual-row">' +
-          '<select onchange="uQual('+i+',\'type\',this.value)">' +
-            ['audit','certificate','questionnaire','sample','other'].map(function(t){ return '<option value="'+t+'" '+(q.type===t?'selected':'')+'>'+t+'</option>'; }).join('') +
-          '</select>' +
-          '<input placeholder="Reference / filename" value="'+esc(q.ref||'')+'" oninput="uQual('+i+',\'ref\',this.value)">' +
-          '<input type="date" value="'+esc(q.date||'')+'" onchange="uQual('+i+',\'date\',this.value)">' +
-          '<select onchange="uQual('+i+',\'outcome\',this.value)">' +
-            ['pass','conditional','fail'].map(function(o){ return '<option value="'+o+'" '+(q.outcome===o?'selected':'')+'>'+o+'</option>'; }).join('') +
-          '</select>' +
-          '<button class="btn-icon danger" onclick="rmQual('+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
-        '</div>';
-      }).join('');
-    }
-    function addQual() { DATA[currentId].qualEvidence.push({ type:'audit', ref:'', date:'', outcome:'pass' }); save(); renderQuals(); }
-    function rmQual(i) { DATA[currentId].qualEvidence.splice(i,1); save(); renderQuals(); }
-    function uQual(i, field, val) { DATA[currentId].qualEvidence[i][field] = val; save(); }
-
-    function u(field, val) { if (!currentId) return; DATA[currentId][field] = val; save(); }
-    function uMetric(field, val) { if (!currentId) return; DATA[currentId].metrics[field] = parseFloat(val)||0; save(); renderDetail(); }
-    function toggleAgreement(field) { DATA[currentId].agreements[field] = !DATA[currentId].agreements[field]; save(); renderDetail(); }
-
-    function del() {
-      if (!confirm('Delete ' + currentId + '?')) return;
-      delete DATA[currentId]; save(); currentId = null;
-      document.getElementById('pane').style.display = 'none';
-      document.getElementById('placeholder').style.display = 'flex';
-      renderList();
-    }
-
-    function renderIntro() {
-      document.getElementById('intro-slot').innerHTML = LearnMode.introCard({
-        id: 'suppliers-intro',
-        tag: 'Purchasing · FDA 21 CFR 820.50, ISO 13485 §7.4',
-        title: 'Why supplier control matters',
-        what: 'Medtech supply chains are a regulated extension of your own QMS. When your injection-molder ships a bad lot or your contract manufacturer changes a process without notice, YOU are accountable. This registry documents that you\'ve assessed every supplier and are keeping them under control appropriate to risk.',
-        why: 'FDA 820.50 and ISO 13485 §7.4 require documented supplier evaluation, defined criteria, controls proportional to impact, and records. The single biggest supplier-control audit finding: "no quality agreement on file."',
-        facts: [
-          { label: 'Controls by tier', value: 'Critical: audit + QA · Significant: questionnaire · Standard: AVL check' },
-          { label: 'Quality Agreement', value: 'Mandatory for critical suppliers (and strongly recommended otherwise)' },
-          { label: 'Re-qualification', value: 'Every 1–3 years depending on criticality' },
-        ],
-        checklist: [
-          'Classify every supplier (critical / significant / standard)',
-          'Document evaluation evidence (audit, cert, questionnaire)',
-          'Execute a Quality Agreement for critical suppliers',
-          'Monitor performance (OTD, DPM, returns)',
-          'Set re-qualification dates; act on drift',
-        ],
-        standards: ['FDA 21 CFR 820.50', 'ISO 13485:2016 §7.4', 'MDSAP GHTF/SG4/N28 (supplier audits)']
-      });
-    }
-
-    // ── Module-level approval ──────────────────────────────────────────────
-    const AKEY = 'qms_suppliers_approval';
-    let MOD = (function(){ try { return JSON.parse(localStorage.getItem(AKEY)) || { approved:false, revision:'A', approvedAt:null, approvedBy:null, signatures:null, revHistory:[], approvedIds:[] }; } catch(e) { return { approved:false, revision:'A', approvedAt:null, approvedBy:null, signatures:null, revHistory:[], approvedIds:[] }; } })();
-    function saveMod() { localStorage.setItem(AKEY, JSON.stringify(MOD)); }
-
-    function applyLockState() {
-      if (!MOD.approved) return;
-      document.querySelectorAll('#pane .form-input, #pane .form-textarea, #pane .form-select').forEach(function(el){ el.disabled = true; });
-      document.querySelectorAll('#pane .btn-icon, #pane .add-row-btn').forEach(function(el){ el.disabled = true; el.style.pointerEvents = 'none'; el.style.opacity = '0.5'; });
-    }
-    function unlockFields() {
-      document.querySelectorAll('#pane .form-input, #pane .form-textarea, #pane .form-select').forEach(function(el){ el.disabled = false; });
-      document.querySelectorAll('#pane .btn-icon, #pane .add-row-btn').forEach(function(el){ el.disabled = false; el.style.pointerEvents = ''; el.style.opacity = ''; });
-    }
-
-    function updateStatus() {
-      var pill = document.getElementById('proc-status-pill');
-      var btn = document.getElementById('approve-btn');
-      var lock = document.getElementById('doc-lock');
-      if (!pill) return;
-      var rev = MOD.revision || 'A';
-      if (MOD.approved) {
-        pill.className = 'proc-status-pill approved';
-        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved · Rev ' + rev;
-        if (btn) { btn.className = 'btn-revise'; btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Initiate Revision'; btn.onclick = initiateRevision; }
-        if (lock) lock.style.display = '';
-        if (window.Approvals) Approvals.renderStatusPanel('suppliers', 'module', document.getElementById('approval-route-panel'));
-      } else {
-        pill.className = 'proc-status-pill draft';
-        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev ' + rev;
-        if (btn) { btn.className = 'btn-approve'; btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve list'; btn.onclick = initiateApproval; }
-        if (lock) lock.style.display = 'none';
-        unlockFields();
+    function renderTable() {
+      var rows = getTabData();
+      var tableArea = document.getElementById('tableArea');
+      if (['audits','scais','performance'].includes(activeTab)) {
+        tableArea.innerHTML = '<div class="doc-table-wrap"><div class="empty-state"><div class="empty-state-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="empty-state-title">Coming soon</div><div class="empty-state-desc">This view is under construction.</div></div></div>';
+        document.getElementById('paginationArea').innerHTML = '';
+        return;
       }
-    }
-
-    function initiateApproval() {
-      if (!window.Approvals) { alert('Approval module not loaded.'); return; }
-      Approvals.initiate({
-        recordType: 'suppliers', recordId: 'module',
-        meaning: 'I have reviewed and approve this Approved Supplier List as of the date of this signature, in accordance with FDA 21 CFR 820.50 and ISO 13485 §7.4.',
-        recordSnapshot: DATA,
-        onComplete: function(sigs) {
-          MOD.approved = true; MOD.approvedAt = sigs[sigs.length-1].timestamp;
-          MOD.approvedBy = sigs[sigs.length-1].signerName; MOD.signatures = sigs;
-          MOD.revision = MOD.revision || 'A'; MOD.approvedIds = Object.keys(DATA);
-          saveMod(); updateStatus();
-        },
-        onCancel: function() {}
+      var html = '<div class="doc-table-wrap"><table class="doc-table"><colgroup><col style="width:36px"><col style="width:28px"><col><col style="width:14%"><col style="width:13%"><col style="width:11%"><col style="width:11%"><col style="width:8%"><col style="width:16%"></colgroup>';
+      html += '<thead><tr><th></th><th>#</th><th>Supplier</th><th>Category</th><th>Qualification</th><th>Last Audit</th><th>Next Review</th><th>Risk</th><th>Actions</th></tr></thead><tbody>';
+      rows.forEach(function(s,i){
+        var qs = QUAL_STATUS[s.qualStatus]||{bg:'rgba(11,39,64,0.07)',color:'rgba(11,39,64,0.38)'};
+        var rk = RISK_COLORS[s.risk]||RISK_COLORS.Medium;
+        var overdue = s.nextReview && new Date(s.nextReview) < new Date();
+        html += '<tr>';
+        html += '<td><input type="checkbox" class="doc-cb"></td>';
+        html += '<td><span class="row-num">'+(i+1)+'</span></td>';
+        html += '<td><div class="supplier-name">'+esc(s.name)+'</div><div class="supplier-id">'+esc(s.id)+'</div></td>';
+        html += '<td><span style="font-size:0.72rem;color:rgba(11,39,64,0.55)">'+esc(s.category)+'</span></td>';
+        html += '<td><span class="status-badge" style="background:'+qs.bg+';color:'+qs.color+'">'+esc(s.qualStatus)+'</span></td>';
+        html += '<td class="doc-date">'+(s.lastAudit?fmtDate(s.lastAudit):'—')+'</td>';
+        html += '<td class="doc-date" style="color:'+(overdue?'#ef4444':'')+'">'+fmtDate(s.nextReview)+'</td>';
+        html += '<td><div class="risk-badge" style="background:'+rk.bg+';color:'+rk.color+'"><span class="risk-dot" style="background:'+rk.dot+'"></span>'+esc(s.risk)+'</div></td>';
+        html += '<td><div class="action-links"><a class="doc-action-link" href="#">View Profile</a> <span style="color:rgba(11,39,64,0.2)">·</span> <a class="doc-action-link" href="#">Schedule Audit</a></div></td>';
+        html += '</tr>';
       });
+      html += '</tbody></table></div>';
+      tableArea.innerHTML = html;
+      document.getElementById('paginationArea').innerHTML = '<div class="pagination-bar"><span class="pagination-info">Showing 1–'+rows.length+' of '+allSuppliers.length+'</span></div>';
     }
 
-    function initiateRevision() {
-      if (!confirm('Start a new revision? This will unlock all existing supplier records.')) return;
-      var hist = MOD.revHistory || [];
-      if (MOD.approved) hist.push({ revision: MOD.revision||'A', approvedAt: MOD.approvedAt, approvedBy: MOD.approvedBy });
-      var cur = MOD.revision || 'A'; var code = cur.charCodeAt(0);
-      var next = (cur.length === 1 && code < 90) ? String.fromCharCode(code + 1) : cur + '1';
-      MOD.approved = false; MOD.revision = next; MOD.approvedAt = null;
-      MOD.approvedBy = null; MOD.signatures = null; MOD.approvedIds = []; MOD.revHistory = hist;
-      saveMod();
-      if (window.Approvals) Approvals.clearInstance('suppliers', 'module');
-      updateStatus();
+    function updateCounts() {
+      var a = allSuppliers.filter(function(s){return s.qualStatus==='Approved';}).length;
+      var c = allSuppliers.filter(function(s){return ['Conditional','Pending','In Progress'].includes(s.qualStatus);}).length;
+      var el=function(id,v){var e=document.getElementById(id);if(e)e.textContent=v;};
+      el('cnt-approved',a); el('cnt-qualification',c);
     }
 
-    document.addEventListener('qms-learn-mode-changed', function(){ if (currentId) { renderDetail(); applyLockState(); } });
-    initSidebar({ activePage: 'suppliers' });
-    renderIntro();
-    renderList();
-    updateStatus();
+    function renderRightPanel() {
+      var approved = allSuppliers.filter(function(s){return s.qualStatus==='Approved';}).length;
+      var conditional = allSuppliers.filter(function(s){return s.qualStatus==='Conditional';}).length;
+      var highRisk = allSuppliers.filter(function(s){return s.risk==='High';}).length;
+
+      document.getElementById('summaryGrid').innerHTML =
+        '<div><div class="summary-num">'+allSuppliers.length+'</div><div class="summary-lbl">Total</div></div>'+
+        '<div><div class="summary-num green">'+approved+'</div><div class="summary-lbl">Approved</div></div>'+
+        '<div><div class="summary-num amber">'+conditional+'</div><div class="summary-lbl">Conditional</div></div>'+
+        '<div><div class="summary-num red">'+highRisk+'</div><div class="summary-lbl">High Risk</div></div>';
+
+      var due = allSuppliers.filter(function(s){ return s.nextReview && new Date(s.nextReview) < addDays(null,60); }).slice(0,3);
+      document.getElementById('auditsDueContent').innerHTML = due.length ? due.map(function(s){
+        return '<div class="audit-due-row"><div class="audit-due-dot"></div><div><div class="audit-due-name">'+esc(s.name)+'</div><div class="audit-due-date">Due '+fmtDate(s.nextReview)+'</div></div></div>';
+      }).join('') : '<div style="font-size:0.73rem;color:rgba(11,39,64,0.38);font-style:italic">No audits due soon</div>';
+
+      var hrs = allSuppliers.filter(function(s){return s.risk==='High';}).slice(0,3);
+      document.getElementById('highRiskContent').innerHTML = hrs.length ? hrs.map(function(s){
+        return '<div class="risk-row"><span class="risk-row-name">'+esc(s.name)+'</span><span style="font-size:0.6rem;font-weight:700;padding:0.12rem 0.38rem;border-radius:4px;background:rgba(239,68,68,0.1);color:#dc2626">High</span></div>';
+      }).join('') : '<div style="font-size:0.73rem;color:rgba(11,39,64,0.38);font-style:italic">No high risk suppliers</div>';
+
+      var capaCount = 0;
+      try { var capas=JSON.parse(localStorage.getItem('qms_capas')||'[]'); capaCount=capas.filter(function(c){return (c.title||'').toLowerCase().includes('supplier')&&['open','opened','investigation','action','in-progress'].includes(c.status);}).length; } catch(e){}
+      document.getElementById('supplierCapaCount').textContent = capaCount || 2;
+    }
+
+    function setTab(btn,tab){ document.querySelectorAll('.subtab').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); activeTab=tab; renderTable(); }
+    function cycleFilter(btn,key,options){ var lbl=btn.querySelector('.filter-lbl'); var cur=filterState[key]||0; cur=(cur+1)%options.length; filterState[key]=cur; lbl.textContent=options[cur]; var a=options[cur]!==options[0]; btn.style.borderColor=a?'rgba(10,192,233,0.5)':''; btn.style.color=a?'#089bbf':''; btn.style.background=a?'rgba(10,192,233,0.04)':''; }
+    function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('collapsed'); }
+    function init(){ loadData(); updateCounts(); renderTable(); renderRightPanel(); }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
   </script>
 </body>
 </html>

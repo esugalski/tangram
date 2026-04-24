@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Work — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --light-gray: #F7F8FA;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+      --sidebar-w:  220px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; transition: width 0.2s ease; overflow: hidden; }
+    .sidebar.collapsed { width: 56px; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-text { overflow: hidden; transition: opacity 0.15s, width 0.2s; }
+    .sidebar.collapsed .sidebar-brand-text { opacity: 0; width: 0; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; white-space: nowrap; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-section { margin-bottom: 0.25rem; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; white-space: nowrap; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.88); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sidebar-nav-label { overflow: hidden; text-overflow: ellipsis; transition: opacity 0.15s; }
+    .sidebar.collapsed .sidebar-nav-label { opacity: 0; }
+    .sidebar-badge { margin-left: auto; font-size: 0.54rem; font-weight: 700; letter-spacing: 0.06em; background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.22); padding: 0.14rem 0.42rem; border-radius: 3px; text-transform: uppercase; flex-shrink: 0; transition: opacity 0.15s; }
+    .sidebar.collapsed .sidebar-badge { opacity: 0; }
+    .sidebar-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.5rem 0.75rem; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-info { overflow: hidden; transition: opacity 0.15s, width 0.2s; min-width: 0; flex: 1; }
+    .sidebar.collapsed .sidebar-user-info { opacity: 0; width: 0; flex: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); white-space: nowrap; }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
+    .sidebar-collapse-btn { margin-left: auto; flex-shrink: 0; background: transparent; border: none; cursor: pointer; padding: 4px; border-radius: 5px; transition: background 0.12s; display: flex; align-items: center; justify-content: center; }
+    .sidebar-collapse-btn:hover { background: rgba(255,255,255,0.07); }
+    .sidebar-collapse-icon { width: 14px; height: 14px; stroke: rgba(255,255,255,0.3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+    .sidebar.collapsed .sidebar-collapse-icon { transform: rotate(180deg); }
+
+    /* ─── APP MAIN ─── */
+    .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+
+    /* ─── TOPBAR ─── */
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 60px; display: flex; align-items: center; flex-shrink: 0; z-index: 10; }
+    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; padding: 0 1.25rem; display: flex; align-items: center; gap: 0.5rem; border-right: 1px solid rgba(11,39,64,0.06); height: 100%; }
+    .topbar-brand-name { font-size: 0.9rem; font-weight: 700; color: var(--primary); letter-spacing: -0.02em; }
+    .topbar-brand-sub { font-size: 0.6rem; color: rgba(11,39,64,0.35); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+    .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 1.5rem; }
+    .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; width: min(400px, 100%); transition: border-color 0.15s; }
+    .topbar-search:focus-within { border-color: rgba(10,192,233,0.4); }
+    .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .topbar-search input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 100%; }
+    .topbar-search input::placeholder { color: rgba(11,39,64,0.35); }
+    .topbar-right { display: flex; align-items: center; gap: 0.5rem; padding: 0 1.25rem; flex-shrink: 0; }
+    .topbar-icon-btn { width: 34px; height: 34px; border-radius: 8px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.12s; position: relative; }
+    .topbar-icon-btn:hover { background: var(--light-gray); }
+    .topbar-icon-btn svg { width: 16px; height: 16px; stroke: var(--mid-blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .topbar-notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--red); border: 1.5px solid white; }
+    .topbar-user { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.3rem 0.6rem; border-radius: 8px; transition: background 0.12s; }
+    .topbar-user:hover { background: var(--light-gray); }
+    .topbar-user-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(10,192,233,0.1); border: 1.5px solid rgba(10,192,233,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua-dark); flex-shrink: 0; }
+    .topbar-user-name { font-size: 0.8rem; font-weight: 600; color: var(--primary); white-space: nowrap; }
+    .topbar-user-role { font-size: 0.63rem; color: rgba(11,39,64,0.4); white-space: nowrap; }
+
+    /* ─── CONTENT WRAP ─── */
+    .content-wrap { flex: 1; display: flex; min-height: 0; overflow: hidden; }
+
+    /* ─── TASK AREA ─── */
+    .task-area { flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem 1.5rem 1.75rem; min-width: 0; }
+    .task-area::-webkit-scrollbar { width: 5px; }
+    .task-area::-webkit-scrollbar-track { background: transparent; }
+    .task-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    /* ─── PAGE HEADER ─── */
+    .page-header { margin-bottom: 1.2rem; }
+    .page-heading { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; line-height: 1.2; }
+    .page-subtitle { font-size: 0.77rem; color: rgba(11,39,64,0.44); margin-top: 0.22rem; }
+
+    /* ─── SUBTABS ─── */
+    .subtabs { display: flex; gap: 0; border-bottom: 1.5px solid rgba(11,39,64,0.08); margin-bottom: 1rem; }
+    .subtab { font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; color: rgba(11,39,64,0.5); padding: 0.55rem 1rem; border: none; border-bottom: 2px solid transparent; margin-bottom: -1.5px; cursor: pointer; transition: color 0.12s; white-space: nowrap; background: transparent; }
+    .subtab:hover { color: var(--primary); }
+    .subtab.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+    .subtab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 17px; height: 15px; background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); font-size: 0.59rem; font-weight: 700; padding: 0 0.32rem; border-radius: 10px; margin-left: 0.3rem; }
+    .subtab.active .subtab-count { background: rgba(10,192,233,0.12); color: var(--aqua-dark); }
+
+    /* ─── FILTER BAR ─── */
+    .filter-bar { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filter-dropdown { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.36rem 0.65rem; cursor: pointer; transition: border-color 0.12s, background 0.12s, color 0.12s; white-space: nowrap; }
+    .filter-dropdown:hover { border-color: rgba(10,192,233,0.4); background: rgba(10,192,233,0.02); }
+    .filter-dropdown svg { width: 11px; height: 11px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .filter-more-btn { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.42); background: transparent; border: none; cursor: pointer; padding: 0.36rem 0.45rem; transition: color 0.12s; }
+    .filter-more-btn:hover { color: var(--primary); }
+    .filter-bar-right { margin-left: auto; display: flex; align-items: center; gap: 0.45rem; }
+    .btn-review-selected { display: none; font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 600; color: var(--aqua-dark); background: rgba(10,192,233,0.08); border: 1.5px solid rgba(10,192,233,0.25); border-radius: 7px; padding: 0.36rem 0.75rem; cursor: pointer; transition: background 0.12s; align-items: center; gap: 0.3rem; }
+    .btn-review-selected:hover { background: rgba(10,192,233,0.14); }
+    .btn-review-selected.visible { display: inline-flex; }
+    .btn-review-selected svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-export { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; cursor: pointer; transition: border-color 0.12s; flex-shrink: 0; }
+    .btn-export:hover { border-color: rgba(10,192,233,0.4); }
+    .btn-export svg { width: 12px; height: 12px; stroke: rgba(11,39,64,0.4); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── TASK TABLE ─── */
+    .task-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; overflow: hidden; margin-bottom: 0.65rem; }
+    .task-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .task-table colgroup col:nth-child(1) { width: 36px; }
+    .task-table colgroup col:nth-child(2) { width: 28%; }
+    .task-table colgroup col:nth-child(3) { width: 10%; }
+    .task-table colgroup col:nth-child(4) { width: 12%; }
+    .task-table colgroup col:nth-child(5) { width: 11%; }
+    .task-table colgroup col:nth-child(6) { width: 11%; }
+    .task-table colgroup col:nth-child(7) { width: 9%; }
+    .task-table colgroup col:nth-child(8) { width: auto; }
+    .task-table th { padding: 0.6rem 0.85rem; font-size: 0.63rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); border-bottom: 1px solid rgba(11,39,64,0.07); background: rgba(11,39,64,0.015); text-align: left; white-space: nowrap; }
+    .task-table th:first-child { padding-left: 1rem; }
+    .task-table td { padding: 0.72rem 0.85rem; border-bottom: 1px solid rgba(11,39,64,0.055); vertical-align: middle; }
+    .task-table td:first-child { padding-left: 1rem; }
+    .task-table tr:last-child td { border-bottom: none; }
+    .task-table tbody tr:hover td { background: rgba(10,192,233,0.015); }
+    .task-cb { width: 15px; height: 15px; accent-color: var(--aqua); cursor: pointer; }
+    .task-type-label { display: inline-block; font-size: 0.57rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.11rem 0.4rem; border-radius: 3px; margin-bottom: 0.18rem; }
+    .task-title { font-size: 0.81rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .related-item { font-size: 0.74rem; font-weight: 500; color: var(--mid-blue); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .product-label { font-size: 0.72rem; color: rgba(11,39,64,0.52); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .status-badge { display: inline-flex; align-items: center; font-size: 0.64rem; font-weight: 700; padding: 0.17rem 0.52rem; border-radius: 5px; white-space: nowrap; letter-spacing: 0.02em; }
+    .due-date { font-size: 0.74rem; color: rgba(11,39,64,0.52); white-space: nowrap; }
+    .due-date.overdue { color: var(--red); font-weight: 600; }
+    .due-date.soon { color: var(--amber); font-weight: 600; }
+    .priority-badge { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.65rem; font-weight: 700; white-space: nowrap; }
+    .priority-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .next-action-link { font-size: 0.74rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; white-space: nowrap; transition: color 0.12s; }
+    .next-action-link:hover { color: var(--aqua); text-decoration: underline; }
+
+    /* ─── PAGINATION ─── */
+    .pagination { font-size: 0.71rem; color: rgba(11,39,64,0.4); padding: 0.3rem 0; }
+
+    /* ─── EMPTY STATE ─── */
+    .task-empty { padding: 3rem 2rem; text-align: center; background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; }
+    .task-empty-icon { width: 44px; height: 44px; border-radius: 10px; background: rgba(11,39,64,0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.85rem; }
+    .task-empty-icon svg { width: 20px; height: 20px; stroke: rgba(11,39,64,0.25); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .task-empty-title { font-size: 0.88rem; font-weight: 700; color: var(--primary); margin-bottom: 0.35rem; }
+    .task-empty-desc { font-size: 0.77rem; color: rgba(11,39,64,0.43); line-height: 1.6; }
+
+    /* ─── RIGHT PANEL ─── */
+    .right-panel { width: 272px; flex-shrink: 0; border-left: 1px solid rgba(11,39,64,0.07); padding: 1.5rem 1.1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; background: white; }
+    .right-panel::-webkit-scrollbar { width: 0; }
+
+    /* ─── WIDGETS ─── */
+    .widget { background: var(--light-gray); border: 1px solid rgba(11,39,64,0.07); border-radius: 10px; padding: 1rem 1.1rem; }
+    .widget-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); margin-bottom: 0.9rem; }
+
+    /* Workload Summary */
+    .workload-row { display: flex; align-items: center; justify-content: space-between; padding: 0.2rem 0; }
+    .workload-label { display: flex; align-items: center; gap: 0.45rem; font-size: 0.75rem; color: rgba(11,39,64,0.58); }
+    .workload-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .workload-count { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.035em; color: var(--primary); }
+    .workload-divider { height: 1px; background: rgba(11,39,64,0.07); margin: 0.5rem 0; }
+    .workload-view-all { display: flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; margin-top: 0.65rem; transition: color 0.12s; }
+    .workload-view-all:hover { color: var(--aqua); }
+
+    /* Manager Snapshot */
+    .quality-health-wrap { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.75rem; }
+    .quality-gauge { position: relative; width: 54px; height: 54px; flex-shrink: 0; }
+    .quality-gauge svg { transform: rotate(-90deg); }
+    .quality-gauge-track { fill: none; stroke: rgba(11,39,64,0.08); stroke-width: 5; }
+    .quality-gauge-fill { fill: none; stroke: var(--green); stroke-width: 5; stroke-linecap: round; }
+    .quality-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.88rem; font-weight: 800; color: var(--primary); letter-spacing: -0.04em; }
+    .quality-label { font-size: 0.78rem; font-weight: 600; color: var(--primary); }
+    .quality-sub { font-size: 0.64rem; color: rgba(11,39,64,0.4); margin-top: 0.15rem; line-height: 1.4; }
+    .quality-view-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.71rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; transition: color 0.12s; }
+    .quality-view-link:hover { color: var(--aqua); }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <img src="../../brand_assets/Tangram-T%20mark%20reverse_Square.png" class="sidebar-t-mark" alt="T">
+        <div class="sidebar-brand-text">
+          <div class="sidebar-brand-name">Tangram eQMS</div>
+          <div class="sidebar-brand-sub">Quality Management</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <a class="sidebar-nav-item active" href="my-work.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg>
+          <span class="sidebar-nav-label">My Work</span>
+          <span class="sidebar-badge" id="myWorkBadge">—</span>
+        </a>
+        <a class="sidebar-nav-item" href="doc-library.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          <span class="sidebar-nav-label">Library</span>
+        </a>
+        <a class="sidebar-nav-item" href="products-mdf.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          <span class="sidebar-nav-label">Products / MDF</span>
+        </a>
+        <a class="sidebar-nav-item" href="capa-ncr.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          <span class="sidebar-nav-label">CAPA / NCR</span>
+        </a>
+        <a class="sidebar-nav-item" href="suppliers.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="sidebar-nav-label">Suppliers</span>
+        </a>
+        <a class="sidebar-nav-item" href="audits.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13l2 2 4-4"/></svg>
+          <span class="sidebar-nav-label">Audits</span>
+        </a>
+        <a class="sidebar-nav-item" href="training-hub.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <span class="sidebar-nav-label">Training</span>
+        </a>
+        <a class="sidebar-nav-item" href="reports.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="sidebar-nav-label">Reports</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">SJ</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Sarah Johnson</div>
+          <div class="sidebar-user-role">Quality Manager</div>
+        </div>
+        <button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar">
+          <svg class="sidebar-collapse-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <div class="topbar">
+      <div class="topbar-brand-area">
+        <div>
+          <div class="topbar-brand-name">Tangram eQMS</div>
+          <div class="topbar-brand-sub">Quality Platform</div>
+        </div>
+      </div>
+      <div class="topbar-center">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, CAPAs, products, audits…">
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" title="Notifications">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="topbar-notif-dot"></span>
+        </button>
+        <div class="topbar-user">
+          <div class="topbar-user-avatar">SJ</div>
+          <div>
+            <div class="topbar-user-name">Sarah Johnson</div>
+            <div class="topbar-user-role">Quality Manager</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-wrap">
+      <div class="task-area">
+        <div class="page-header">
+          <div class="page-heading">My Work</div>
+          <div class="page-subtitle">Tasks and reviews assigned to you</div>
+        </div>
+
+        <div class="subtabs">
+          <button class="subtab active" data-tab="tasks" onclick="setTab(this,'tasks')">My Tasks <span class="subtab-count" id="cnt-tasks">0</span></button>
+          <button class="subtab" data-tab="approvals" onclick="setTab(this,'approvals')">Approvals <span class="subtab-count" id="cnt-approvals">0</span></button>
+          <button class="subtab" data-tab="reviews" onclick="setTab(this,'reviews')">Reviews <span class="subtab-count" id="cnt-reviews">0</span></button>
+          <button class="subtab" data-tab="training" onclick="setTab(this,'training')">Training <span class="subtab-count" id="cnt-training">0</span></button>
+          <button class="subtab" data-tab="audit" onclick="setTab(this,'audit')">Audit Requests <span class="subtab-count" id="cnt-audit">0</span></button>
+        </div>
+
+        <div class="filter-bar">
+          <button class="filter-dropdown" onclick="cycleFilter(this,'dueDate',['All Dates','This Week','This Month','Overdue'])">
+            <span class="filter-lbl">Due Date</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'taskType',['All Types','Pending Approval','Review Due','CAPA Task','Audit Request','Document Update','Periodic Review'])">
+            <span class="filter-lbl">Task Type</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-dropdown" id="productFilterBtn" onclick="cycleFilter(this,'product',['All Products'])">
+            <span class="filter-lbl">Product</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-dropdown" onclick="cycleFilter(this,'taskStatus',['All Status','Open','In Progress','Draft','Planned'])">
+            <span class="filter-lbl">Status</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <button class="filter-more-btn">+ More Filters</button>
+          <div class="filter-bar-right">
+            <button class="btn-review-selected" id="reviewSelectedBtn">
+              <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              Review Selected
+            </button>
+            <button class="btn-export" title="Export">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="taskTableArea"></div>
+        <div class="pagination" id="paginationInfo"></div>
+      </div>
+
+      <div class="right-panel">
+        <div class="widget workload-summary">
+          <div class="widget-title">Workload Summary</div>
+          <div id="workloadContent"></div>
+        </div>
+        <div class="widget manager-snapshot">
+          <div class="widget-title">Manager Snapshot</div>
+          <div id="snapshotContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    // ── HELPERS ────────────────────────────────────────────────────────────────
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      try { return new Date(iso).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }); }
+      catch(e) { return String(iso).slice(0,10); }
+    }
+    function slugify(s) {
+      return String(s).toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+    }
+    function addDays(isoOrDate, n) {
+      try {
+        var d = new Date(isoOrDate || new Date());
+        if (isNaN(d.getTime())) d = new Date();
+        d.setDate(d.getDate() + n);
+        return d.toISOString().slice(0,10);
+      } catch(e) { return ''; }
+    }
+    var TODAY = (function(){
+      var d = new Date(); return d.toISOString().slice(0,10);
+    })();
+
+    // ── TYPE METADATA ──────────────────────────────────────────────────────────
+    var TYPE_META = {
+      'quality-manual': { bg:'rgba(11,39,64,0.1)',   color:'#0B2740',  icon:'<path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>' },
+      'procedure':      { bg:'rgba(48,79,107,0.1)',  color:'#304F6B',  icon:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+      'plan':           { bg:'rgba(2,132,199,0.1)',  color:'#0284c7',  icon:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
+      'specification':  { bg:'rgba(10,192,233,0.1)', color:'#089bbf',  icon:'<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>' },
+      'design-review':  { bg:'rgba(16,185,129,0.1)', color:'#059669',  icon:'<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>' },
+      'dmr':            { bg:'rgba(99,102,241,0.1)', color:'#4338ca',  icon:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>' },
+      'risk-item':      { bg:'rgba(239,68,68,0.1)',  color:'#dc2626',  icon:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>' },
+      'vv-protocol':    { bg:'rgba(147,51,234,0.1)', color:'#7c3aed',  icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+      'change-request': { bg:'rgba(249,115,22,0.1)', color:'#c2410c',  icon:'<circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 012 2v7"/><path d="M11 18H8a2 2 0 01-2-2V9"/>' },
+      'nonconformance': { bg:'rgba(245,158,11,0.1)', color:'#b45309',  icon:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>' },
+      'capa':           { bg:'rgba(5,150,105,0.1)',  color:'#047857',  icon:'<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>' },
+      'complaint':      { bg:'rgba(220,38,38,0.1)',  color:'#b91c1c',  icon:'<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>' },
+      'audit':          { bg:'rgba(3,105,161,0.1)',  color:'#0369a1',  icon:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13l2 2 4-4"/>' },
+      'mgmt-review':    { bg:'rgba(124,58,237,0.1)', color:'#6d28d9',  icon:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>' },
+    };
+    var DEFAULT_TYPE_META = { bg:'rgba(48,79,107,0.1)', color:'#304F6B', icon:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>' };
+
+    // ── STATUS DISPLAY ─────────────────────────────────────────────────────────
+    var STATUS_DISPLAY = {
+      approved:          { label:'Approved',       bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+      closed:            { label:'Closed',         bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+      complete:          { label:'Complete',       bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+      implemented:       { label:'Implemented',    bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+      executed:          { label:'Executed',       bg:'rgba(10,192,233,0.12)', color:'#089bbf' },
+      draft:             { label:'Draft',          bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      planned:           { label:'Planned',        bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      scheduled:         { label:'Scheduled',      bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      'in-progress':     { label:'In Progress',    bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      'under-review':    { label:'Under Review',   bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      investigation:     { label:'Investigation',  bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      action:            { label:'Action',         bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      verification:      { label:'Verification',   bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      effectiveness:     { label:'Effectiveness',  bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      'in-investigation':{ label:'Investigating',  bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      open:              { label:'Open',           bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      opened:            { label:'Opened',         bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      rejected:          { label:'Rejected',       bg:'rgba(239,68,68,0.12)',  color:'#dc2626' },
+      superseded:        { label:'Superseded',     bg:'rgba(11,39,64,0.07)',   color:'rgba(11,39,64,0.38)' },
+      high:              { label:'High Risk',      bg:'rgba(239,68,68,0.12)',  color:'#dc2626' },
+      medium:            { label:'Medium Risk',    bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      low:               { label:'Low Risk',       bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+    };
+    function getStatus(raw) {
+      return STATUS_DISPLAY[raw] || { label: raw || '—', bg:'rgba(11,39,64,0.07)', color:'rgba(11,39,64,0.38)' };
+    }
+    function normalizeStatusForFilter(raw) {
+      var m = {
+        approved:'approved', closed:'approved', complete:'approved', implemented:'approved',
+        draft:'draft', planned:'draft', scheduled:'draft',
+        'in-progress':'in-progress', 'under-review':'in-progress', investigation:'in-progress',
+        action:'in-progress', verification:'in-progress', effectiveness:'in-progress',
+        'in-investigation':'in-progress',
+        open:'open', opened:'open',
+      };
+      return m[raw] || 'other';
+    }
+
+    // ── DOCUMENT SOURCES ───────────────────────────────────────────────────────
+    var DOCUMENT_SOURCES = [
+      { key:'qms_quality_manual', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'QM-001', title:'Quality Manual', category:'Quality System',
+          type:'Quality Manual', typeKey:'quality-manual',
+          status: raw.status || 'draft',
+          version: raw.version ? 'v' + raw.version : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'quality-manual.html', moduleLabel:'Quality Manual', sourceKey:'qms_quality_manual' }];
+      }},
+      { key:'qms_procedures', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(p) {
+          var typeLabel = p.type === 'work-instruction' ? 'Work Instruction' : p.type === 'form' ? 'Form' : 'Procedure';
+          var date = (p.approvalSignature && p.approvalSignature.timestamp) ? p.approvalSignature.timestamp : (p.createdAt || '');
+          return { id: p.id || '?', title: p.title || 'Untitled Procedure', category:'Quality System',
+            type: typeLabel, typeKey:'procedure', status: p.status || 'draft',
+            version: p.revision ? 'Rev ' + p.revision : null,
+            date: date, dateLabel: fmtDate(date),
+            href:'process-library.html', moduleLabel:'Process Library', sourceKey:'qms_procedures' };
+        });
+      }},
+      { key:'qms_proc_doc_control', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'SOP-DC-001', title:'Document Control Procedure', category:'Quality System',
+          type:'Procedure', typeKey:'procedure',
+          status: raw.approved ? 'approved' : 'draft',
+          version: raw.revision ? 'Rev ' + raw.revision : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'document-control.html', moduleLabel:'Document Control', sourceKey:'qms_proc_doc_control' }];
+      }},
+      { key:'qms_proc_training', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'SOP-TR-001', title:'Training Procedure', category:'Quality System',
+          type:'Procedure', typeKey:'procedure',
+          status: raw.approved ? 'approved' : 'draft',
+          version: raw.revision ? 'Rev ' + raw.revision : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'training.html', moduleLabel:'Training', sourceKey:'qms_proc_training' }];
+      }},
+      { key:'qms_proc_risk_mgmt', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'SOP-RM-001', title:'Risk Management Procedure', category:'Quality System',
+          type:'Procedure', typeKey:'procedure',
+          status: raw.approved ? 'approved' : 'draft',
+          version: raw.revision ? 'Rev ' + raw.revision : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'risk-management-procedure.html', moduleLabel:'Risk Mgmt Proc.', sourceKey:'qms_proc_risk_mgmt' }];
+      }},
+      { key:'qms_dev_plan', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        var ver = raw.revision ? 'Rev ' + raw.revision : (raw.version ? 'v' + raw.version : null);
+        return [{ id:'DP-001', title: 'Development Plan' + (raw.project ? ' — ' + raw.project : ''),
+          category:'Project', type:'Plan', typeKey:'plan',
+          status: raw.approved ? 'approved' : 'draft',
+          version: ver, date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'dev-plan.html', moduleLabel:'Dev Plan', sourceKey:'qms_dev_plan' }];
+      }},
+      { key:'qms_risk_mgmt_plan', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'RMP-001', title:'Risk Management Plan', category:'Project',
+          type:'Plan', typeKey:'plan',
+          status: raw.approved ? 'approved' : 'draft',
+          version: raw.revision ? 'Rev ' + raw.revision : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'risk-management-plan.html', moduleLabel:'Risk Mgmt Plan', sourceKey:'qms_risk_mgmt_plan' }];
+      }},
+      { key:'qms_dmr', normalize: function(raw) {
+        if (!raw || !Object.keys(raw).length) return [];
+        return [{ id:'DMR-001', title:'Device Master Record' + (raw.name ? ' — ' + raw.name : ''),
+          category:'Project', type:'DMR', typeKey:'dmr',
+          status: raw.approved ? 'approved' : 'draft',
+          version: raw.revision ? 'Rev ' + raw.revision : null,
+          date: raw.approvedAt || '', dateLabel: fmtDate(raw.approvedAt),
+          href:'dmr.html', moduleLabel:'DMR', sourceKey:'qms_dmr' }];
+      }},
+      { key:'qms_documents', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        var hrefMap   = { un:'user-needs.html', di:'design-inputs.html', 'do':'design-outputs.html', 'design-review':'design-review.html' };
+        var typeMap   = { un:'User Needs Specification', di:'Design Inputs Specification', 'do':'Design Outputs Specification', 'design-review':'Design Review Record' };
+        var typeKeyMap= { un:'specification', di:'specification', 'do':'specification', 'design-review':'design-review' };
+        var modMap    = { un:'User Needs', di:'Design Inputs', 'do':'Design Outputs', 'design-review':'Design Reviews' };
+        return Object.entries(raw)
+          .filter(function(kv){ return kv[1].type !== 'quality-manual'; })
+          .map(function(kv) {
+            var k = kv[0], d = kv[1];
+            return { id: k, title: d.name || 'Untitled', category:'Project',
+              type: typeMap[d.type] || d.type, typeKey: typeKeyMap[d.type] || 'specification',
+              status: d.status || 'approved',
+              version: d.version ? 'v' + d.version : null,
+              date: d.approvedAt || '', dateLabel: fmtDate(d.approvedAt),
+              href: hrefMap[d.type] || 'doc-library.html',
+              moduleLabel: modMap[d.type] || 'DHF', sourceKey:'qms_documents' };
+          });
+      }},
+      { key:'qms_vv_items', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(item) {
+          return { id: item.id || '?', title: item.title || 'Untitled V&V Item', category:'Project',
+            type: item.kind === 'validation' ? 'Validation Protocol' : 'Verification Protocol',
+            typeKey:'vv-protocol', status: item.executionStatus || 'draft',
+            version: null, date:'', dateLabel:'—',
+            href:'vv.html', moduleLabel:'V&V', sourceKey:'qms_vv_items' };
+        });
+      }},
+      { key:'qms_risks', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(r) {
+          var rn = (r.residualSeverity || 1) * (r.residualProbability || 1);
+          var pseudo = rn >= 9 ? 'high' : rn >= 4 ? 'medium' : 'low';
+          return { id: r.id || '?',
+            title: (r.hazard || 'Risk Item') + (r.harm ? ' → ' + r.harm : ''),
+            category:'Project', type:'Risk Item', typeKey:'risk-item',
+            status: pseudo, version: null, date:'', dateLabel:'—',
+            href:'risk-management-plan.html', moduleLabel:'Risk Register', sourceKey:'qms_risks' };
+        });
+      }},
+      { key:'qms_change_requests', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(cr) {
+          var title = cr.changeDescription ? cr.changeDescription.slice(0,70) : ('Change Request ' + (cr.id||''));
+          return { id: cr.id||'?', title: title, category:'Quality Records',
+            type:'Change Request', typeKey:'change-request', status: cr.status || 'open',
+            version: null, date: cr.createdAt||'', dateLabel: fmtDate(cr.createdAt),
+            href:'change-control.html', moduleLabel:'Change Control', sourceKey:'qms_change_requests' };
+        });
+      }},
+      { key:'qms_nonconformances', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(nc) {
+          return { id: nc.id||'?', title: nc.title || nc.description || 'Nonconformance',
+            category:'Quality Records', type:'Nonconformance', typeKey:'nonconformance',
+            status: nc.status || 'open', version: null,
+            date: nc.foundDate||'', dateLabel: fmtDate(nc.foundDate),
+            href:'nonconformance.html', moduleLabel:'Nonconformance', sourceKey:'qms_nonconformances' };
+        });
+      }},
+      { key:'qms_capas', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(c) {
+          return { id: c.id||'?', title: c.title || 'CAPA', category:'Quality Records',
+            type:'CAPA', typeKey:'capa', status: c.stage || 'opened',
+            version: null, date: c.opened||'', dateLabel: fmtDate(c.opened),
+            href:'capa.html', moduleLabel:'CAPA', sourceKey:'qms_capas' };
+        });
+      }},
+      { key:'qms_complaints', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(c) {
+          return { id: c.id||'?', title: c.title || c.description || 'Complaint',
+            category:'Quality Records', type:'Complaint', typeKey:'complaint',
+            status: c.status || 'open', version: null,
+            date: c.dateReceived||'', dateLabel: fmtDate(c.dateReceived),
+            href:'complaints.html', moduleLabel:'Complaints', sourceKey:'qms_complaints' };
+        });
+      }},
+      { key:'qms_internal_audits', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(a) {
+          return { id: a.id||'?', title: a.title || 'Internal Audit', category:'Quality Records',
+            type:'Internal Audit', typeKey:'audit', status: a.status || 'scheduled',
+            version: null, date: a.date||'', dateLabel: fmtDate(a.date),
+            href:'audit.html', moduleLabel:'Audits', sourceKey:'qms_internal_audits' };
+        });
+      }},
+      { key:'qms_management_reviews', normalize: function(raw) {
+        if (!raw || typeof raw !== 'object') return [];
+        return Object.values(raw).map(function(mr) {
+          return { id: mr.id||'?', title: mr.title || 'Management Review', category:'Quality Records',
+            type:'Management Review', typeKey:'mgmt-review', status: mr.status || 'scheduled',
+            version: null, date: mr.date||'', dateLabel: fmtDate(mr.date),
+            href:'management-review.html', moduleLabel:'Mgmt Review', sourceKey:'qms_management_reviews' };
+        });
+      }},
+    ];
+
+    // ── GLOBAL STATE ───────────────────────────────────────────────────────────
+    var ALL_DOCS = [];
+    var MY_TASKS = [];
+    var activeTab = 'tasks';
+    var filterState = { dueDate:'All Dates', taskType:'All Types', product:'All Products', taskStatus:'All Status' };
+
+    // ── LOAD SOURCES ───────────────────────────────────────────────────────────
+    function loadAllSources() {
+      ALL_DOCS = [];
+      DOCUMENT_SOURCES.forEach(function(src) {
+        var raw = null;
+        try { raw = JSON.parse(localStorage.getItem(src.key) || 'null') || {}; } catch(e) {}
+        try { ALL_DOCS = ALL_DOCS.concat(src.normalize(raw || {})); }
+        catch(e) { console.warn('MyWork: normalize failed for ' + src.key, e); }
+      });
+    }
+
+    // ── STATIC FALLBACK TASKS ─────────────────────────────────────────────────
+    function getStaticTasks() {
+      return [
+        // My Tasks
+        { taskType:'CAPA Task',       title:'Complete CAPA Investigation — Sterile Packaging Defect',     relatedItem:'CAPA-003',     product:'CAPA',           status:'investigation', dueDate:addDays(TODAY,14),  priority:'High',   nextAction:'Complete Task →',    href:'capa.html',                   tabGroup:'tasks' },
+        { taskType:'Review Due',      title:'Close NCR-012 — Battery cell thickness deviation',           relatedItem:'NCR-012',      product:'Nonconformance', status:'open',          dueDate:addDays(TODAY,-3),  priority:'High',   nextAction:'Start Review →',     href:'nonconformance.html',         tabGroup:'tasks' },
+        { taskType:'CAPA Task',       title:'Implement corrective action — Supplier labeling errors',     relatedItem:'CAPA-004',     product:'CAPA',           status:'action',        dueDate:addDays(TODAY,7),   priority:'High',   nextAction:'Complete Task →',    href:'capa.html',                   tabGroup:'tasks' },
+        { taskType:'Document Update', title:'Update Design Outputs Specification to Rev 2.1',             relatedItem:'DO-001',       product:'Design Outputs', status:'draft',         dueDate:addDays(TODAY,21),  priority:'Medium', nextAction:'Review Changes →',   href:'design-outputs.html',         tabGroup:'tasks' },
+        { taskType:'Document Update', title:'Complete Risk Management Plan Rev 4 — Post-Market update',   relatedItem:'RMP-001',      product:'Risk Mgmt Plan', status:'draft',         dueDate:addDays(TODAY,18),  priority:'Medium', nextAction:'Review Changes →',   href:'risk-management-plan.html',   tabGroup:'tasks' },
+        // Approvals
+        { taskType:'Pending Approval', title:'Approve Change Request — New Sterile Barrier System',       relatedItem:'CR-007',       product:'Change Control', status:'open',          dueDate:addDays(TODAY,3),   priority:'High',   nextAction:'Review & Approve →', href:'change-control.html',         tabGroup:'approvals' },
+        { taskType:'Pending Approval', title:'Approve SOP Revision — Complaint Handling Procedure v6',    relatedItem:'SOP-CH-001',   product:'Process Library',status:'open',          dueDate:addDays(TODAY,10),  priority:'Medium', nextAction:'Review & Approve →', href:'process-library.html',        tabGroup:'approvals' },
+        { taskType:'Pending Approval', title:'Approve Updated Device Master Record Rev 3.0',              relatedItem:'DMR-001',      product:'DMR',            status:'under-review',  dueDate:addDays(TODAY,5),   priority:'High',   nextAction:'Review & Approve →', href:'dmr.html',                    tabGroup:'approvals' },
+        { taskType:'Pending Approval', title:'Approve Verification Protocol — Electrical Safety v1.2',    relatedItem:'VV-001',       product:'V&V',            status:'open',          dueDate:addDays(TODAY,12),  priority:'Medium', nextAction:'Review & Approve →', href:'vv.html',                     tabGroup:'approvals' },
+        // Reviews
+        { taskType:'Review Due',      title:'Review NCR-008 — Out-of-spec electrode impedance values',   relatedItem:'NCR-008',      product:'Nonconformance', status:'open',          dueDate:addDays(TODAY,-6),  priority:'High',   nextAction:'Start Review →',     href:'nonconformance.html',         tabGroup:'reviews' },
+        { taskType:'Periodic Review', title:'Periodic Review — Document Control Procedure (SOP-DC-001)',  relatedItem:'SOP-DC-001',   product:'Document Control', status:'approved',    dueDate:addDays(TODAY,45),  priority:null,     nextAction:'Start Review →',     href:'document-control.html',       tabGroup:'reviews' },
+        { taskType:'Periodic Review', title:'Annual Review — Risk Management Plan',                       relatedItem:'RMP-001',      product:'Risk Mgmt Plan', status:'approved',      dueDate:addDays(TODAY,60),  priority:null,     nextAction:'Start Review →',     href:'risk-management-plan.html',   tabGroup:'reviews' },
+        { taskType:'Periodic Review', title:'Annual Management Review Preparation — Q2 2026',             relatedItem:'MR-2026-Q2',   product:'Mgmt Review',    status:'scheduled',     dueDate:addDays(TODAY,22),  priority:'Medium', nextAction:'Start Review →',     href:'management-review.html',      tabGroup:'reviews' },
+        // Training
+        { taskType:'Document Update', title:'Complete Training — Complaint Handling Procedure v2 Update', relatedItem:'TRN-CH-002',   product:'Training',       status:'draft',         dueDate:addDays(TODAY,14),  priority:'Medium', nextAction:'Complete Training →',href:'training-hub.html',           tabGroup:'training' },
+        { taskType:'Document Update', title:'CAPA Root Cause Analysis Training — Module 3',               relatedItem:'TRN-RCA-003',  product:'Training',       status:'in-progress',   dueDate:addDays(TODAY,7),   priority:'High',   nextAction:'Complete Training →',href:'training-hub.html',           tabGroup:'training' },
+        { taskType:'Document Update', title:'Annual Regulatory Training — EU MDR 2024 Requirements',      relatedItem:'TRN-REG-2024', product:'Training',       status:'draft',         dueDate:addDays(TODAY,30),  priority:null,     nextAction:'Complete Training →',href:'training-hub.html',           tabGroup:'training' },
+        { taskType:'Document Update', title:'Risk Management Awareness Training — New Hires Cohort 4',    relatedItem:'TRN-RM-2026',  product:'Training',       status:'draft',         dueDate:addDays(TODAY,21),  priority:null,     nextAction:'Complete Training →',href:'training-hub.html',           tabGroup:'training' },
+        // Audit Requests
+        { taskType:'Audit Request',   title:'Prepare Design Control Audit Evidence Package',              relatedItem:'AUD-2026-03',  product:'Audits',         status:'scheduled',     dueDate:addDays(TODAY,15),  priority:null,     nextAction:'Prepare Responses →',href:'audits.html',                 tabGroup:'audit' },
+        { taskType:'Audit Request',   title:'Respond to Notified Body Pre-Submission Information Request',relatedItem:'NB-2026-01',   product:'Audits',         status:'planned',       dueDate:addDays(TODAY,30),  priority:null,     nextAction:'Prepare Responses →',href:'audits.html',                 tabGroup:'audit' },
+        { taskType:'Audit Request',   title:'Complete Supplier Quality Questionnaire — Sterile Pack Ltd', relatedItem:'AUD-SUP-04',   product:'Audits',         status:'planned',       dueDate:addDays(TODAY,8),   priority:null,     nextAction:'Prepare Responses →',href:'audits.html',                 tabGroup:'audit' },
+      ];
+    }
+
+    // ── TASK SYNTHESIS ─────────────────────────────────────────────────────────
+    function buildMyTasks() {
+      MY_TASKS = [];
+      var today = new Date(TODAY);
+
+      ALL_DOCS.forEach(function(doc) {
+        var task = null;
+        var sf = normalizeStatusForFilter(doc.status);
+
+        if (doc.sourceKey === 'qms_change_requests') {
+          if (sf === 'open' || sf === 'in-progress') {
+            task = { taskType:'Pending Approval', title:doc.title, relatedItem:doc.id,
+              product:doc.moduleLabel, status:doc.status,
+              dueDate: doc.date ? addDays(doc.date, 7) : addDays(TODAY, 3),
+              priority:'High', nextAction:'Review & Approve →', href:doc.href, tabGroup:'approvals' };
+          }
+        } else if (doc.sourceKey === 'qms_nonconformances') {
+          if (sf === 'open') {
+            task = { taskType:'Review Due', title:doc.title, relatedItem:doc.id,
+              product:doc.moduleLabel, status:doc.status,
+              dueDate: doc.date ? addDays(doc.date, 14) : addDays(TODAY, 14),
+              priority:'High', nextAction:'Start Review →', href:doc.href, tabGroup:'reviews' };
+          }
+        } else if (doc.sourceKey === 'qms_capas') {
+          var openStages = ['action','investigation','verification','opened','open'];
+          if (sf === 'open' || sf === 'in-progress' || openStages.indexOf(doc.status) !== -1) {
+            task = { taskType:'CAPA Task', title:doc.title, relatedItem:doc.id,
+              product:doc.moduleLabel, status:doc.status,
+              dueDate: doc.date ? addDays(doc.date, 30) : addDays(TODAY, 21),
+              priority:'Medium', nextAction:'Complete Task →', href:doc.href, tabGroup:'tasks' };
+          }
+        } else if (doc.sourceKey === 'qms_internal_audits') {
+          if (doc.status === 'scheduled' || doc.status === 'planned') {
+            task = { taskType:'Audit Request', title:doc.title, relatedItem:doc.id,
+              product:doc.moduleLabel, status:doc.status,
+              dueDate: doc.date || addDays(TODAY, 10),
+              priority:null, nextAction:'Prepare Responses →', href:doc.href, tabGroup:'audit' };
+          }
+        } else if (doc.sourceKey === 'qms_procedures') {
+          if (doc.status === 'draft') {
+            task = { taskType:'Document Update', title:doc.title, relatedItem:doc.id,
+              product:doc.moduleLabel, status:doc.status,
+              dueDate: addDays(TODAY, 30),
+              priority:null, nextAction:'Review Changes →', href:doc.href, tabGroup:'tasks' };
+          } else if (doc.status === 'approved' && doc.date) {
+            var docDate = new Date(doc.date);
+            var daysSince = Math.round((today - docDate) / 86400000);
+            if (daysSince > 365) {
+              task = { taskType:'Periodic Review', title:doc.title, relatedItem:doc.id,
+                product:doc.moduleLabel, status:doc.status,
+                dueDate: addDays(TODAY, 60),
+                priority:null, nextAction:'Start Review →', href:doc.href, tabGroup:'reviews' };
+            }
+          }
+        }
+
+        if (task) MY_TASKS.push(task);
+      });
+
+      // Supplement with static fallback tasks for any tab with fewer than 3 items
+      var tabCounts = {};
+      MY_TASKS.forEach(function(t){ tabCounts[t.tabGroup] = (tabCounts[t.tabGroup]||0)+1; });
+      var existingKeys = {};
+      MY_TASKS.forEach(function(t){ existingKeys[t.relatedItem+':'+t.tabGroup] = true; });
+      getStaticTasks().forEach(function(t){
+        var key = t.relatedItem+':'+t.tabGroup;
+        if (!existingKeys[key] && (tabCounts[t.tabGroup]||0) < 3) {
+          MY_TASKS.push(t);
+          existingKeys[key] = true;
+          tabCounts[t.tabGroup] = (tabCounts[t.tabGroup]||0)+1;
+        }
+      });
+    }
+
+    // ── FILTER TASKS ───────────────────────────────────────────────────────────
+    function getFilteredTasks() {
+      return MY_TASKS.filter(function(t) {
+        if (t.tabGroup !== activeTab) return false;
+        if (filterState.taskType !== 'All Types' && t.taskType !== filterState.taskType) return false;
+        if (filterState.taskStatus !== 'All Status') {
+          var norm = normalizeStatusForFilter(t.status);
+          var fmap = { 'Open':'open', 'In Progress':'in-progress', 'Draft':'draft', 'Planned':'draft' };
+          if (norm !== (fmap[filterState.taskStatus] || filterState.taskStatus.toLowerCase())) return false;
+        }
+        if (filterState.product !== 'All Products' && t.product !== filterState.product) return false;
+        if (filterState.dueDate !== 'All Dates') {
+          var due = new Date(t.dueDate);
+          var now = new Date(TODAY);
+          if (filterState.dueDate === 'This Week') {
+            var w = new Date(TODAY); w.setDate(w.getDate() + 7);
+            if (due > w) return false;
+          } else if (filterState.dueDate === 'This Month') {
+            var m = new Date(TODAY); m.setDate(m.getDate() + 30);
+            if (due > m) return false;
+          } else if (filterState.dueDate === 'Overdue') {
+            if (due >= now) return false;
+          }
+        }
+        return true;
+      });
+    }
+
+    // ── DUE DATE DISPLAY ───────────────────────────────────────────────────────
+    function dueDateInfo(iso) {
+      if (!iso) return { label:'—', cls:'' };
+      var due = new Date(iso);
+      var now = new Date(TODAY);
+      var diff = Math.round((due - now) / 86400000);
+      return { label: fmtDate(iso), cls: diff < 0 ? 'overdue' : diff <= 7 ? 'soon' : '' };
+    }
+
+    // ── RENDER TASK TABLE ──────────────────────────────────────────────────────
+    var TYPE_COLORS = {
+      'Pending Approval': { bg:'rgba(249,115,22,0.1)',  color:'#c2410c' },
+      'Review Due':       { bg:'rgba(245,158,11,0.1)',  color:'#b45309' },
+      'CAPA Task':        { bg:'rgba(5,150,105,0.1)',   color:'#047857' },
+      'Audit Request':    { bg:'rgba(3,105,161,0.1)',   color:'#0369a1' },
+      'Document Update':  { bg:'rgba(48,79,107,0.1)',   color:'#304F6B' },
+      'Periodic Review':  { bg:'rgba(99,102,241,0.1)',  color:'#4338ca' },
+    };
+
+    function renderTaskTable(tasks) {
+      var area = document.getElementById('taskTableArea');
+      var pagEl = document.getElementById('paginationInfo');
+
+      if (tasks.length === 0) {
+        area.innerHTML = '<div class="task-empty">' +
+          '<div class="task-empty-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg></div>' +
+          '<div class="task-empty-title">No tasks in this view</div>' +
+          '<div class="task-empty-desc">Tasks appear here as QMS records are assigned to you.</div>' +
+          '</div>';
+        pagEl.textContent = '';
+        return;
+      }
+
+      var html = '<div class="task-table-wrap"><table class="task-table">' +
+        '<colgroup><col><col><col><col><col><col><col><col></colgroup>' +
+        '<thead><tr>' +
+        '<th></th><th>Task</th><th>Related Item</th><th>Product</th>' +
+        '<th>Status</th><th>Due Date</th><th>Priority</th><th>Next Action</th>' +
+        '</tr></thead><tbody>';
+
+      tasks.forEach(function(t) {
+        var st = getStatus(t.status);
+        var dd = dueDateInfo(t.dueDate);
+        var tc = TYPE_COLORS[t.taskType] || { bg:'rgba(11,39,64,0.07)', color:'rgba(11,39,64,0.4)' };
+        var priHtml = t.priority === 'High'
+          ? '<span class="priority-badge"><span class="priority-dot" style="background:var(--red)"></span><span style="color:var(--red);font-size:0.65rem;font-weight:700">' + esc(t.priority) + '</span></span>'
+          : t.priority === 'Medium'
+          ? '<span class="priority-badge"><span class="priority-dot" style="background:var(--amber)"></span><span style="color:var(--amber);font-size:0.65rem;font-weight:700">' + esc(t.priority) + '</span></span>'
+          : '<span style="color:rgba(11,39,64,0.22);font-size:0.72rem;">—</span>';
+
+        html += '<tr>' +
+          '<td><input type="checkbox" class="task-cb" onchange="updateReviewBtn()"></td>' +
+          '<td><div>' +
+            '<span class="task-type-label" style="background:' + tc.bg + ';color:' + tc.color + '">' + esc(t.taskType) + '</span>' +
+            '<div class="task-title" title="' + esc(t.title) + '">' + esc(t.title) + '</div>' +
+          '</div></td>' +
+          '<td><span class="related-item">' + esc(t.relatedItem) + '</span></td>' +
+          '<td><span class="product-label">' + esc(t.product) + '</span></td>' +
+          '<td><span class="status-badge" style="background:' + st.bg + ';color:' + st.color + '">' + esc(st.label) + '</span></td>' +
+          '<td><span class="due-date ' + dd.cls + '">' + esc(dd.label) + '</span></td>' +
+          '<td>' + priHtml + '</td>' +
+          '<td><a class="next-action-link" href="' + esc(t.href) + '">' + esc(t.nextAction) + '</a></td>' +
+          '</tr>';
+      });
+
+      html += '</tbody></table></div>';
+      area.innerHTML = html;
+      pagEl.textContent = 'Showing 1 to ' + tasks.length + ' of ' + tasks.length + ' task' + (tasks.length !== 1 ? 's' : '');
+    }
+
+    // ── RENDER RIGHT PANEL ─────────────────────────────────────────────────────
+    function renderRightPanel() {
+      var week  = new Date(TODAY); week.setDate(week.getDate() + 7);
+      var month = new Date(TODAY); month.setDate(month.getDate() + 30);
+      var dueWeek  = MY_TASKS.filter(function(t){ return t.dueDate && new Date(t.dueDate) <= week; }).length;
+      var dueMonth = MY_TASKS.filter(function(t){ return t.dueDate && new Date(t.dueDate) <= month; }).length;
+      var total = MY_TASKS.length;
+
+      document.getElementById('workloadContent').innerHTML =
+        '<div class="workload-row">' +
+          '<div class="workload-label"><span class="workload-dot" style="background:var(--amber)"></span>Due This Week</div>' +
+          '<span class="workload-count" style="color:var(--amber)">' + dueWeek + '</span>' +
+        '</div>' +
+        '<div class="workload-row" style="margin-top:0.3rem">' +
+          '<div class="workload-label"><span class="workload-dot" style="background:var(--indigo)"></span>Due This Month</div>' +
+          '<span class="workload-count" style="color:var(--indigo)">' + dueMonth + '</span>' +
+        '</div>' +
+        '<div class="workload-divider"></div>' +
+        '<div class="workload-row">' +
+          '<div class="workload-label">Total Open Tasks</div>' +
+          '<span class="workload-count">' + total + '</span>' +
+        '</div>' +
+        '<a href="#" class="workload-view-all">View all work →</a>';
+
+      var approved = ALL_DOCS.filter(function(d){ return normalizeStatusForFilter(d.status) === 'approved'; }).length;
+      var totalDocs = ALL_DOCS.length;
+      var pct = totalDocs > 0 ? Math.round(approved / totalDocs * 100) : 0;
+      var r = 20;
+      var circ = 2 * Math.PI * r;
+      var offset = circ * (1 - pct / 100);
+
+      document.getElementById('snapshotContent').innerHTML =
+        '<div class="quality-health-wrap">' +
+          '<div class="quality-gauge">' +
+            '<svg width="54" height="54" viewBox="0 0 54 54">' +
+              '<circle class="quality-gauge-track" cx="27" cy="27" r="' + r + '"/>' +
+              '<circle class="quality-gauge-fill" cx="27" cy="27" r="' + r + '"' +
+                ' stroke-dasharray="' + circ.toFixed(1) + '"' +
+                ' stroke-dashoffset="' + offset.toFixed(1) + '"/>' +
+            '</svg>' +
+            '<div class="quality-pct">' + pct + '%</div>' +
+          '</div>' +
+          '<div>' +
+            '<div class="quality-label">Quality Health</div>' +
+            '<div class="quality-sub">' + approved + ' of ' + totalDocs + '<br>docs approved</div>' +
+          '</div>' +
+        '</div>' +
+        '<a href="doc-library.html" class="quality-view-link">View quality dashboard →</a>';
+    }
+
+    // ── TAB COUNTS ─────────────────────────────────────────────────────────────
+    function updateTabCounts() {
+      ['tasks','approvals','reviews','training','audit'].forEach(function(g) {
+        var cnt = MY_TASKS.filter(function(t){ return t.tabGroup === g; }).length;
+        var el = document.getElementById('cnt-' + g);
+        if (el) el.textContent = cnt;
+      });
+      var badge = document.getElementById('myWorkBadge');
+      if (badge) badge.textContent = MY_TASKS.length;
+    }
+
+    // ── POPULATE PRODUCT FILTER ────────────────────────────────────────────────
+    function buildProductFilter() {
+      var products = {};
+      MY_TASKS.forEach(function(t){ if (t.product) products[t.product] = true; });
+      var opts = ['All Products'].concat(Object.keys(products).sort());
+      var btn = document.getElementById('productFilterBtn');
+      if (btn) btn.onclick = function(){ cycleFilter(btn, 'product', opts); };
+    }
+
+    // ── TAB SWITCHING ──────────────────────────────────────────────────────────
+    function setTab(btn, tab) {
+      activeTab = tab;
+      document.querySelectorAll('.subtab').forEach(function(b){
+        b.classList.toggle('active', b === btn);
+      });
+      renderTaskTable(getFilteredTasks());
+    }
+
+    // ── FILTER DROPDOWN ────────────────────────────────────────────────────────
+    var FILTER_KEY_NAMES = { dueDate:'Due Date', taskType:'Task Type', product:'Product', taskStatus:'Status' };
+    function cycleFilter(btn, key, options) {
+      var cur = filterState[key];
+      var idx = options.indexOf(cur);
+      var next = options[(idx + 1) % options.length];
+      filterState[key] = next;
+      var span = btn.querySelector('.filter-lbl');
+      var keyName = FILTER_KEY_NAMES[key] || key;
+      if (span) span.textContent = (next === options[0]) ? keyName : (keyName + ': ' + next);
+      if (next === options[0]) {
+        btn.style.borderColor = btn.style.color = btn.style.background = '';
+      } else {
+        btn.style.borderColor = 'rgba(10,192,233,0.4)';
+        btn.style.color = 'var(--aqua-dark)';
+        btn.style.background = 'rgba(10,192,233,0.03)';
+      }
+      renderTaskTable(getFilteredTasks());
+    }
+
+    // ── REVIEW SELECTED ────────────────────────────────────────────────────────
+    function updateReviewBtn() {
+      var checked = document.querySelectorAll('.task-cb:checked').length;
+      var btn = document.getElementById('reviewSelectedBtn');
+      if (btn) btn.classList.toggle('visible', checked > 0);
+    }
+
+    // ── SIDEBAR COLLAPSE ───────────────────────────────────────────────────────
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    // ── INIT ───────────────────────────────────────────────────────────────────
+    function init() {
+      loadAllSources();
+      buildMyTasks();
+      updateTabCounts();
+      buildProductFilter();
+      renderTaskTable(getFilteredTasks());
+      renderRightPanel();
+    }
+    init();
+  </script>
+</body>
+</html>
