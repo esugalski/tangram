@@ -306,19 +306,19 @@
         </div>
 
         <div class="filter-bar">
-          <button class="filter-dropdown" onclick="cycleFilter(this,'dueDate',['All Dates','This Week','This Month','Overdue'])">
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'dueDate',['All Dates','This Week','This Month','Overdue'])">
             <span class="filter-lbl">Due Date</span>
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <button class="filter-dropdown" onclick="cycleFilter(this,'taskType',['All Types','Pending Approval','Review Due','CAPA Task','Audit Request','Document Update','Periodic Review'])">
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'taskType',['All Types','Pending Approval','Review Due','CAPA Task','Audit Request','Document Update','Periodic Review'])">
             <span class="filter-lbl">Task Type</span>
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <button class="filter-dropdown" id="productFilterBtn" onclick="cycleFilter(this,'product',['All Products'])">
+          <button class="filter-dropdown" id="productFilterBtn" onclick="openDropdown(event,this,'product',['All Products'])">
             <span class="filter-lbl">Product</span>
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <button class="filter-dropdown" onclick="cycleFilter(this,'taskStatus',['All Status','Open','In Progress','Draft','Planned'])">
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'taskStatus',['All Status','Open','In Progress','Draft','Planned'])">
             <span class="filter-lbl">Status</span>
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -354,6 +354,7 @@
   <script src="seed-demo.js?v=1776901546755"></script>
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
+  <script src="filter-dropdown.js"></script>
   <script>
     // ── HELPERS ────────────────────────────────────────────────────────────────
     function esc(s) {
@@ -904,7 +905,7 @@
       MY_TASKS.forEach(function(t){ if (t.product) products[t.product] = true; });
       var opts = ['All Products'].concat(Object.keys(products).sort());
       var btn = document.getElementById('productFilterBtn');
-      if (btn) btn.onclick = function(){ cycleFilter(btn, 'product', opts); };
+      if (btn) btn.onclick = function(e){ openDropdown(e, btn, 'product', opts); };
     }
 
     // ── TAB SWITCHING ──────────────────────────────────────────────────────────
@@ -916,25 +917,11 @@
       renderTaskTable(getFilteredTasks());
     }
 
-    // ── FILTER DROPDOWN ────────────────────────────────────────────────────────
-    var FILTER_KEY_NAMES = { dueDate:'Due Date', taskType:'Task Type', product:'Product', taskStatus:'Status' };
-    function cycleFilter(btn, key, options) {
-      var cur = filterState[key];
-      var idx = options.indexOf(cur);
-      var next = options[(idx + 1) % options.length];
-      filterState[key] = next;
-      var span = btn.querySelector('.filter-lbl');
-      var keyName = FILTER_KEY_NAMES[key] || key;
-      if (span) span.textContent = (next === options[0]) ? keyName : (keyName + ': ' + next);
-      if (next === options[0]) {
-        btn.style.borderColor = btn.style.color = btn.style.background = '';
-      } else {
-        btn.style.borderColor = 'rgba(10,192,233,0.4)';
-        btn.style.color = 'var(--aqua-dark)';
-        btn.style.background = 'rgba(10,192,233,0.03)';
-      }
+    // ── FILTER CHANGE HANDLER (called by filter-dropdown.js) ──────────────────
+    window.onFilterChange = function(key, value) {
+      filterState[key] = value;
       renderTaskTable(getFilteredTasks());
-    }
+    };
 
     // ── REVIEW SELECTED ────────────────────────────────────────────────────────
     function updateReviewBtn() {

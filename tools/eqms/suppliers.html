@@ -230,11 +230,11 @@
         </div>
 
         <div class="filter-bar">
-          <button class="filter-dropdown" onclick="cycleFilter(this,'status',['All Status','Approved','Conditional','In Progress'])"><span class="filter-lbl">Status</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-          <button class="filter-dropdown" onclick="cycleFilter(this,'qual',['Qualification Status','Approved','Conditional','Pending'])"><span class="filter-lbl">Qualification Status</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-          <button class="filter-dropdown" onclick="cycleFilter(this,'audit',['Last Audit','Last 90 Days','Last 6 Months','Last Year'])"><span class="filter-lbl">Last Audit</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-          <button class="filter-dropdown" onclick="cycleFilter(this,'risk',['Risk Level','High','Medium','Low'])"><span class="filter-lbl">Risk Level</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
-          <button class="filter-dropdown" onclick="cycleFilter(this,'region',['Region','North America','Europe','Asia'])"><span class="filter-lbl">Region</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'status',['All Status','Approved','Conditional','In Progress'])"><span class="filter-lbl">Status</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'qual',['Qualification Status','Approved','Conditional','Pending'])"><span class="filter-lbl">Qualification Status</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'audit',['Last Audit','Last 90 Days','Last 6 Months','Last Year'])"><span class="filter-lbl">Last Audit</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'risk',['Risk Level','High','Medium','Low'])"><span class="filter-lbl">Risk Level</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'region',['All Regions','North America','Europe','Asia'])"><span class="filter-lbl">Region</span><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
           <button class="filter-more-btn">+ More Filters</button>
         </div>
 
@@ -272,6 +272,7 @@
   <script src="seed-demo.js?v=1776901546755"></script>
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
+  <script src="filter-dropdown.js"></script>
   <script>
     function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function fmtDate(iso) {
@@ -388,7 +389,7 @@
     }
 
     function setTab(btn,tab){ document.querySelectorAll('.subtab').forEach(function(b){b.classList.remove('active');}); btn.classList.add('active'); activeTab=tab; renderTable(); }
-    function cycleFilter(btn,key,options){ var lbl=btn.querySelector('.filter-lbl'); var cur=filterState[key]||0; cur=(cur+1)%options.length; filterState[key]=cur; lbl.textContent=options[cur]; var a=options[cur]!==options[0]; btn.style.borderColor=a?'rgba(10,192,233,0.5)':''; btn.style.color=a?'#089bbf':''; btn.style.background=a?'rgba(10,192,233,0.04)':''; }
+    window.onFilterChange = function(key, value) { filterState[key] = value; renderTable(); };
     function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('collapsed'); }
     function init(){ loadData(); updateCounts(); renderTable(); renderRightPanel(); }
     if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();

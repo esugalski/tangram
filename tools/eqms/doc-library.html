@@ -339,19 +339,19 @@
 
         <div id="filterBarArea">
           <div class="filter-bar">
-            <button class="filter-dropdown" onclick="cycleFilter(this,'docType',['All Types'])">
+            <button class="filter-dropdown" onclick="openDropdown(event,this,'docType',['All Types'])">
               <span class="filter-lbl">Document Type</span>
               <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <button class="filter-dropdown" onclick="cycleFilter(this,'status',['All Status','Approved','Draft','In Progress','Open'])">
+            <button class="filter-dropdown" onclick="openDropdown(event,this,'status',['All Status','Approved','Draft','In Progress','Open'])">
               <span class="filter-lbl">Status</span>
               <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <button class="filter-dropdown" onclick="cycleFilter(this,'process',['All Processes'])">
+            <button class="filter-dropdown" onclick="openDropdown(event,this,'process',['All Processes'])">
               <span class="filter-lbl">Process</span>
               <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <button class="filter-dropdown" onclick="cycleFilter(this,'owner',['All Owners','Sarah Johnson'])">
+            <button class="filter-dropdown" onclick="openDropdown(event,this,'owner',['All Owners','Sarah Johnson'])">
               <span class="filter-lbl">Owner</span>
               <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
@@ -387,6 +387,7 @@
   <script src="seed-demo.js?v=1776901546755"></script>
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
+  <script src="filter-dropdown.js"></script>
   <script>
     // ── HELPERS ────────────────────────────────────────────────────────────────
     function esc(s) {
@@ -636,8 +637,8 @@
       document.querySelectorAll('.filter-dropdown').forEach(function(btn) {
         var key = btn.getAttribute('onclick');
         if (!key) return;
-        if (key.indexOf("'docType'") !== -1) btn.onclick = function(){ cycleFilter(btn,'docType',types); };
-        if (key.indexOf("'process'") !== -1) btn.onclick = function(){ cycleFilter(btn,'process',processes); };
+        if (key.indexOf("'docType'") !== -1) btn.onclick = function(e){ openDropdown(e,btn,'docType',types); };
+        if (key.indexOf("'process'") !== -1) btn.onclick = function(e){ openDropdown(e,btn,'process',processes); };
       });
     }
 
@@ -908,19 +909,11 @@
       var el = document.getElementById('libSearch');
       if (el) { el.value = val; handleSearch(val); }
     }
-    function cycleFilter(btn, key, options) {
-      var cur = filterState[key];
-      var idx = options.indexOf(cur);
-      var next = options[(idx+1) % options.length];
-      filterState[key] = next;
-      var span = btn.querySelector('.filter-lbl');
-      var keyName = FILTER_KEY_NAMES[key] || key;
-      if (span) span.textContent = (next === options[0]) ? keyName : (keyName + ': ' + next);
-      if (next === options[0]) { btn.style.borderColor = btn.style.color = btn.style.background = ''; }
-      else { btn.style.borderColor='rgba(10,192,233,0.4)'; btn.style.color='var(--aqua-dark)'; btn.style.background='rgba(10,192,233,0.03)'; }
+    window.onFilterChange = function(key, value) {
+      filterState[key] = value;
       shownCount = PAGE_SIZE;
       renderTable();
-    }
+    };
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('collapsed');
     }

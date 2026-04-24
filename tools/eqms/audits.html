@@ -297,23 +297,23 @@
         </div>
 
         <div class="filter-bar">
-          <button class="filter-dropdown" onclick="cycleFilter(this,'status',['All Status','Scheduled','Planned','In Progress'])">
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'status',['All Status','Scheduled','Planned','In Progress'])">
             <span class="filter-lbl">Status</span>
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <button class="filter-dropdown" onclick="cycleFilter(this,'type',['All Types','Internal','Supplier','Regulatory','External'])">
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'type',['All Types','Internal','Supplier','Regulatory','External'])">
             <span class="filter-lbl">Type</span>
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <button class="filter-dropdown" onclick="cycleFilter(this,'due',['All Dates','This Month','Next 90 Days'])">
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'due',['All Dates','This Month','Next 90 Days'])">
             <span class="filter-lbl">Due Date</span>
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <button class="filter-dropdown" onclick="cycleFilter(this,'product',['All Products'])">
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'product',['All Products'])">
             <span class="filter-lbl">Product</span>
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
-          <button class="filter-dropdown" onclick="cycleFilter(this,'owner',['All Owners','Sarah Johnson'])">
+          <button class="filter-dropdown" onclick="openDropdown(event,this,'owner',['All Owners','Sarah Johnson'])">
             <span class="filter-lbl">Owner</span>
             <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -365,6 +365,7 @@
   <script src="seed-demo.js?v=1776901546755"></script>
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
+  <script src="filter-dropdown.js"></script>
   <script>
     function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function fmtDate(iso) {
@@ -523,17 +524,10 @@
       renderTable();
     }
 
-    function cycleFilter(btn, key, options) {
-      var lbl = btn.querySelector('.filter-lbl');
-      var cur = filterState[key] || 0;
-      cur = (cur + 1) % options.length;
-      filterState[key] = cur;
-      lbl.textContent = options[cur];
-      var active = options[cur] !== options[0];
-      btn.style.borderColor = active ? 'rgba(10,192,233,0.5)' : '';
-      btn.style.color = active ? '#089bbf' : '';
-      btn.style.background = active ? 'rgba(10,192,233,0.04)' : '';
-    }
+    window.onFilterChange = function(key, value) {
+      filterState[key] = value;
+      renderTable();
+    };
 
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 
