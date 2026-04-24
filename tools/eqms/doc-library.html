@@ -153,14 +153,16 @@
     .doc-table td { padding: 0.7rem 0.85rem; border-bottom: 1px solid rgba(11,39,64,0.055); vertical-align: middle; }
     .doc-table td:first-child { padding-left: 1rem; }
     .doc-table tr:last-child td { border-bottom: none; }
-    .doc-table tbody tr:hover td { background: rgba(10,192,233,0.015); cursor: pointer; }
+    .doc-table tbody tr { cursor: pointer; }
+    .doc-table tbody tr:hover td { background: rgba(10,192,233,0.015); }
 
     /* Table cell styles */
     .doc-cb { width: 15px; height: 15px; accent-color: var(--aqua); cursor: pointer; }
     .doc-icon-cell { display: flex; align-items: center; gap: 0.65rem; }
     .doc-type-icon { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .doc-type-icon svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .doc-title { font-size: 0.81rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .doc-title { font-size: 0.81rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; display: block; }
+    a.doc-title:hover { color: var(--aqua-dark); text-decoration: underline; }
     .doc-id { font-size: 0.66rem; color: rgba(11,39,64,0.4); margin-top: 0.1rem; white-space: nowrap; }
     .doc-type-badge { display: inline-flex; align-items: center; font-size: 0.62rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 4px; white-space: nowrap; letter-spacing: 0.02em; }
     .status-badge { display: inline-flex; align-items: center; font-size: 0.64rem; font-weight: 700; padding: 0.17rem 0.52rem; border-radius: 5px; white-space: nowrap; letter-spacing: 0.02em; }
@@ -773,7 +775,7 @@
           '<td><input type="checkbox" class="doc-cb" onclick="event.stopPropagation()"></td>' +
           '<td><div class="doc-icon-cell">' +
             '<div class="doc-type-icon" style="background:' + tm.bg + ';color:' + tm.color + '"><svg viewBox="0 0 24 24">' + tm.icon + '</svg></div>' +
-            '<div><div class="doc-title">' + esc(doc.title) + '</div><div class="doc-id">' + esc(doc.id) + '</div></div>' +
+            '<div><a class="doc-title" href="' + esc(doc.href) + '" onclick="event.stopPropagation()">' + esc(doc.title) + '</a><div class="doc-id">' + esc(doc.id) + '</div></div>' +
           '</div></td>' +
           '<td><span class="doc-type-badge" style="background:' + tm.bg + ';color:' + tm.color + '">' + esc(tl) + '</span></td>' +
           '<td><span class="status-badge" style="background:' + st.bg + ';color:' + st.color + '">' + esc(st.label) + '</span></td>' +
