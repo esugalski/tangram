@@ -70,10 +70,10 @@ const SIDEBAR_PHASES = [
 ];
 
 // Pages that belong to the System mode
-const SIDEBAR_SYSTEM_PAGES = ['standards-library', 'team-training', 'audit-ready', 'management-review', 'suppliers', 'equipment'];
+const SIDEBAR_SYSTEM_PAGES = ['standards-library', 'team-training', 'audit-ready', 'management-review', 'suppliers', 'equipment', 'change-control', 'capa', 'nonconformance'];
 
 // Pages that belong to the Governance section (Project mode)
-const SIDEBAR_GOVERNANCE_PAGES = ['design-review', 'change-control', 'capa', 'nonconformance'];
+const SIDEBAR_GOVERNANCE_PAGES = ['design-review'];
 
 function getSidebarMode(activePage) {
   // Auto-switch to system mode for system pages
@@ -313,6 +313,10 @@ function initSidebar(config) {
             '<svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>' +
             'Design Control Roadmap' +
           '</a>' +
+          '<a class="sidebar-nav-item' + (isDocLibraryActive ? ' active' : '') + '" href="doc-library.html" id="nav-doc-library">' +
+            '<svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>' +
+            'Document Library' +
+          '</a>' +
         '</div>' +
 
         '<div class="sidebar-section">' +
@@ -320,18 +324,6 @@ function initSidebar(config) {
           '<a class="sidebar-nav-item' + (isDesignReviewActive ? ' active' : '') + '" href="design-review.html" id="nav-design-review">' +
             '<svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>' +
             'Design Reviews' +
-          '</a>' +
-          '<a class="sidebar-nav-item' + (isChangeControlActive ? ' active' : '') + '" href="change-control.html" id="nav-change-control">' +
-            '<svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 012 2v7"/><path d="M11 18H8a2 2 0 01-2-2V9"/></svg>' +
-            'Change Control' +
-          '</a>' +
-          '<a class="sidebar-nav-item' + (isNCActive ? ' active' : '') + '" href="nonconformance.html" id="nav-nonconformance">' +
-            '<svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' +
-            'Nonconformances' +
-          '</a>' +
-          '<a class="sidebar-nav-item' + (isCAPAActive ? ' active' : '') + '" href="capa.html" id="nav-capa">' +
-            '<svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>' +
-            'CAPA' +
           '</a>' +
         '</div>' +
 
@@ -356,6 +348,22 @@ function initSidebar(config) {
           '<a class="sidebar-nav-item' + (isMgmtReviewActive ? ' active' : '') + '" href="management-review.html" id="nav-management-review">' +
             '<svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>' +
             'Management Review' +
+          '</a>' +
+        '</div>' +
+
+        '<div class="sidebar-section">' +
+          '<div class="sidebar-section-label">Quality Events</div>' +
+          '<a class="sidebar-nav-item' + (isChangeControlActive ? ' active' : '') + '" href="change-control.html" id="nav-change-control">' +
+            '<svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 012 2v7"/><path d="M11 18H8a2 2 0 01-2-2V9"/></svg>' +
+            'Change Control' +
+          '</a>' +
+          '<a class="sidebar-nav-item' + (isNCActive ? ' active' : '') + '" href="nonconformance.html" id="nav-nonconformance">' +
+            '<svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' +
+            'Nonconformances' +
+          '</a>' +
+          '<a class="sidebar-nav-item' + (isCAPAActive ? ' active' : '') + '" href="capa.html" id="nav-capa">' +
+            '<svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>' +
+            'CAPA' +
           '</a>' +
         '</div>' +
 
