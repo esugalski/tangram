@@ -455,7 +455,8 @@
             type: typeLabel, typeKey:'procedure', status: p.status || 'draft',
             version: p.revision ? 'Rev ' + p.revision : null,
             date: date, dateLabel: fmtDate(date),
-            href:'process-library.html', moduleLabel:'Process Library', sourceKey:'qms_procedures' };
+            href: (function(){ var PH={'SOP-CH-001':'complaint-handling-procedure.html','SOP-CAPA-001':'capa-procedure.html','SOP-NC-001':'nonconformance-procedure.html','SOP-SUP-001':'supplier-control-procedure.html','SOP-AUD-001':'internal-audit-procedure.html','SOP-DC-001':'document-control.html','SOP-TR-001':'training.html'}; return PH[p.id]||'doc-library.html'; })(),
+            moduleLabel:'Procedure', sourceKey:'qms_procedures' };
         });
       }},
       { key:'qms_proc_doc_control', normalize: function(raw) {
@@ -640,7 +641,7 @@
         { taskType:'Document Update', title:'Complete Risk Management Plan Rev 4 — Post-Market update',   relatedItem:'RMP-001',      product:'Risk Mgmt Plan', status:'draft',         dueDate:addDays(TODAY,18),  priority:'Medium', nextAction:'Review Changes →',   href:'risk-management-plan.html',   tabGroup:'tasks' },
         // Approvals
         { taskType:'Pending Approval', title:'Approve Change Request — New Sterile Barrier System',       relatedItem:'CR-007',       product:'Change Control', status:'open',          dueDate:addDays(TODAY,3),   priority:'High',   nextAction:'Review & Approve →', href:'change-control.html',         tabGroup:'approvals' },
-        { taskType:'Pending Approval', title:'Approve SOP Revision — Complaint Handling Procedure v6',    relatedItem:'SOP-CH-001',   product:'Process Library',status:'open',          dueDate:addDays(TODAY,10),  priority:'Medium', nextAction:'Review & Approve →', href:'process-library.html',        tabGroup:'approvals' },
+        { taskType:'Pending Approval', title:'Approve SOP Revision — Complaint Handling Procedure v6',    relatedItem:'SOP-CH-001',   product:'Complaint Handling',status:'open',         dueDate:addDays(TODAY,10),  priority:'Medium', nextAction:'Review & Approve →', href:'complaint-handling-procedure.html', tabGroup:'approvals' },
         { taskType:'Pending Approval', title:'Approve Updated Device Master Record Rev 3.0',              relatedItem:'DMR-001',      product:'DMR',            status:'under-review',  dueDate:addDays(TODAY,5),   priority:'High',   nextAction:'Review & Approve →', href:'dmr.html',                    tabGroup:'approvals' },
         { taskType:'Pending Approval', title:'Approve Verification Protocol — Electrical Safety v1.2',    relatedItem:'VV-001',       product:'V&V',            status:'open',          dueDate:addDays(TODAY,12),  priority:'Medium', nextAction:'Review & Approve →', href:'vv.html',                     tabGroup:'approvals' },
         // Reviews

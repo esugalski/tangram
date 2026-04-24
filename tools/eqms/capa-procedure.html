@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAPA Procedure — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css">
+  <style>
+    .proc-approval-bar { display:flex; align-items:center; gap:0.75rem; padding:0.7rem 1.25rem; background:white; border-bottom:1px solid rgba(11,39,64,0.08); flex-shrink:0; }
+    .proc-status-pill { display:inline-flex; align-items:center; gap:0.35rem; font-size:0.68rem; font-weight:700; padding:0.22rem 0.65rem; border-radius:4px; }
+    .proc-status-pill.draft    { background:rgba(245,158,11,0.1);  color:#b45309; }
+    .proc-status-pill.approved { background:rgba(16,185,129,0.1); color:#047857; }
+    .proc-status-pill svg { width:10px; height:10px; stroke:currentColor; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+    .proc-meta-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.85rem; margin-bottom:1.25rem; }
+    .proc-meta-row:last-child { margin-bottom:0; }
+    .doc-lock-banner { display:flex; align-items:center; gap:0.6rem; padding:0.6rem 1.25rem; background:rgba(16,185,129,0.06); border-bottom:1px solid rgba(16,185,129,0.15); font-size:0.75rem; color:#047857; font-weight:500; flex-shrink:0; }
+    .doc-lock-banner svg { width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:2; flex-shrink:0; }
+    .btn-approve svg, .btn-revise svg { width:13px; height:13px; stroke:currentColor; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+    .btn-revise { display:inline-flex; align-items:center; gap:0.4rem; background:transparent; color:var(--mid-blue); font-family:'Inter',sans-serif; font-weight:700; font-size:0.76rem; padding:0.42rem 1rem; border-radius:7px; border:1.5px solid rgba(11,39,64,0.2); cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+    .btn-revise:hover { border-color:var(--primary); background:rgba(11,39,64,0.04); }
+    .sections-table { width:100%; border-collapse:collapse; }
+    .sections-table thead th { text-align:left; font-size:0.64rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:rgba(11,39,64,0.52); padding:0.65rem 1rem; border-bottom:1.5px solid rgba(11,39,64,0.08); background:rgba(11,39,64,0.015); white-space:nowrap; }
+    .sections-table tbody td { padding:0.75rem 1rem; border-bottom:1px solid rgba(11,39,64,0.05); vertical-align:middle; }
+    .sections-table tbody tr:last-child td { border-bottom:none; }
+    .sections-table tbody tr.section-row { cursor:pointer; }
+    .sections-table tbody tr.section-row:hover td { background:rgba(11,39,64,0.02); }
+    .sec-num { font-size:0.7rem; font-weight:700; color:rgba(11,39,64,0.35); width:3rem; }
+    .sec-title-cell { font-size:0.82rem; font-weight:600; color:var(--primary); }
+    .sec-updated { font-size:0.72rem; color:rgba(11,39,64,0.42); white-space:nowrap; }
+    .sec-status-badge { display:inline-block; font-size:0.63rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; padding:0.15rem 0.55rem; border-radius:4px; white-space:nowrap; }
+    .sec-status-badge.draft    { background:rgba(245,158,11,0.1);  color:#b45309; }
+    .sec-status-badge.review   { background:rgba(10,192,233,0.1);  color:#089bbf; }
+    .sec-status-badge.approved { background:rgba(16,185,129,0.1); color:#047857; }
+    .btn-open-sec { background:rgba(11,39,64,0.04); border:1px solid rgba(11,39,64,0.1); color:rgba(11,39,64,0.55); font-family:'Inter',sans-serif; font-size:0.71rem; font-weight:600; padding:0.3rem 0.65rem; border-radius:5px; cursor:pointer; transition:all 0.12s; white-space:nowrap; }
+    .btn-open-sec:hover { background:rgba(10,192,233,0.08); border-color:rgba(10,192,233,0.3); color:var(--aqua-dark); }
+    .panel-overlay { position:fixed; inset:0; z-index:900; pointer-events:none; }
+    .panel-overlay.open { pointer-events:auto; }
+    .panel-backdrop { position:absolute; inset:0; background:rgba(2,25,47,0.3); opacity:0; transition:opacity 0.22s; }
+    .panel-overlay.open .panel-backdrop { opacity:1; }
+    .detail-panel { position:absolute; top:0; right:0; bottom:0; width:420px; background:white; display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.25s cubic-bezier(0.4,0,0.2,1); box-shadow:-8px 0 30px rgba(2,25,47,0.12); }
+    .panel-overlay.open .detail-panel { transform:none; }
+    .panel-head { padding:1rem 1.1rem 0.8rem; border-bottom:1px solid rgba(11,39,64,0.08); flex-shrink:0; }
+    .panel-head-row { display:flex; align-items:center; gap:0.6rem; }
+    .panel-sec-badge { font-size:0.65rem; font-weight:700; color:rgba(11,39,64,0.38); background:rgba(11,39,64,0.06); padding:0.15rem 0.5rem; border-radius:4px; letter-spacing:0.04em; }
+    .panel-close { margin-left:auto; border:none; background:rgba(11,39,64,0.06); width:28px; height:28px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .panel-close svg { width:12px; height:12px; stroke:var(--primary); fill:none; stroke-width:2.5; }
+    .panel-sec-title { font-size:0.92rem; font-weight:700; color:var(--primary); margin-top:0.4rem; line-height:1.3; }
+    .panel-body { flex:1; overflow-y:auto; padding:1rem 1.1rem; display:flex; flex-direction:column; gap:0.9rem; }
+    .panel-body::-webkit-scrollbar { width:4px; }
+    .panel-body::-webkit-scrollbar-thumb { background:rgba(11,39,64,0.1); border-radius:2px; }
+    .panel-field { display:flex; flex-direction:column; }
+    .panel-field-label { font-size:0.66rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:rgba(11,39,64,0.45); margin-bottom:0.3rem; }
+    .panel-field input, .panel-field textarea, .panel-field select { font-family:'Inter',sans-serif; font-size:0.82rem; color:var(--primary); border:1.5px solid rgba(11,39,64,0.12); border-radius:7px; padding:0.45rem 0.65rem; outline:none; transition:border-color 0.15s; background:white; width:100%; }
+    .panel-field input:focus, .panel-field textarea:focus, .panel-field select:focus { border-color:var(--aqua); }
+    .panel-field textarea { resize:vertical; line-height:1.55; }
+    .panel-field input:disabled, .panel-field textarea:disabled, .panel-field select:disabled { background:rgba(11,39,64,0.03); color:rgba(11,39,64,0.55); cursor:not-allowed; }
+    .panel-footer { padding:0.85rem 1.1rem; border-top:1px solid rgba(11,39,64,0.08); flex-shrink:0; display:flex; align-items:center; gap:0.6rem; }
+    .btn-save { background:var(--aqua); color:var(--primary); font-family:'Inter',sans-serif; font-weight:700; font-size:0.78rem; padding:0.5rem 1.1rem; border-radius:7px; border:none; cursor:pointer; transition:background 0.15s; }
+    .btn-save:hover { background:var(--aqua-dark); }
+    .btn-discard { background:transparent; color:rgba(11,39,64,0.5); font-family:'Inter',sans-serif; font-weight:600; font-size:0.78rem; padding:0.5rem 0.9rem; border-radius:7px; border:1.5px solid rgba(11,39,64,0.12); cursor:pointer; }
+    .btn-discard:hover { background:rgba(11,39,64,0.04); }
+    .save-flash { font-size:0.72rem; font-weight:600; color:#047857; opacity:0; transition:opacity 0.2s; margin-left:auto; }
+    .save-flash.show { opacity:1; }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+  <main class="main">
+
+    <header class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-crumb">Quality System</span>
+        <span class="topbar-sep">/</span>
+        CAPA Procedure
+      </div>
+      <div class="topbar-right">
+        <button class="btn-secondary" onclick="window.location.href='doc-library.html'">All procedures</button>
+      </div>
+    </header>
+
+    <div class="proc-approval-bar">
+      <div>
+        <div style="font-size:0.72rem;font-weight:700;color:var(--primary);margin-bottom:0.05rem;">SOP-CAPA-001 Corrective and Preventive Action</div>
+        <div style="font-size:0.63rem;color:rgba(11,39,64,0.4);">21 CFR 820.100 · ISO 13485 §8.5.2 / §8.5.3 · CAPA identification, root cause, and verification</div>
+      </div>
+      <div style="flex:1;"></div>
+      <div id="approval-route-panel"></div>
+      <span id="proc-status-pill" class="proc-status-pill draft">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev A
+      </span>
+      <button id="approve-btn" class="btn-approve" onclick="initiateApproval()">
+        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Approve
+      </button>
+    </div>
+    <div class="doc-lock-banner" id="doc-lock" style="display:none;">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      This document is approved and locked. Use "Initiate Revision" to make changes.
+    </div>
+
+    <div class="page-scroll">
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Document metadata</div></div>
+        <div class="card-body">
+          <div class="proc-meta-row">
+            <div class="form-field"><label class="form-label">Document number</label><input class="form-input" id="f-doc-num" placeholder="SOP-CAPA-001"></div>
+            <div class="form-field"><label class="form-label">Version</label><input class="form-input" id="f-version" placeholder="Rev A"></div>
+            <div class="form-field"><label class="form-label">Effective date</label><input class="form-input" id="f-eff-date" placeholder="YYYY-MM-DD"></div>
+          </div>
+          <div class="proc-meta-row">
+            <div class="form-field"><label class="form-label">Author</label><input class="form-input" id="f-author" placeholder="Name and title"></div>
+            <div class="form-field"><label class="form-label">Reviewer</label><input class="form-input" id="f-reviewer" placeholder="Name and title"></div>
+            <div class="form-field"><label class="form-label">Approver</label><input class="form-input" id="f-approver" placeholder="Name and title (QMS authority)"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Procedure sections <span class="card-title-sub" id="sections-summary"></span></div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="sections-table">
+            <thead>
+              <tr>
+                <th style="width:3rem;">§</th>
+                <th>Section Title</th>
+                <th style="width:9.5rem;">Status</th>
+                <th style="width:8.5rem;">Last Updated</th>
+                <th style="width:5rem;"></th>
+              </tr>
+            </thead>
+            <tbody id="sections-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="panel-overlay" id="panelOverlay">
+      <div class="panel-backdrop" onclick="closePanel()"></div>
+      <div class="detail-panel">
+        <div class="panel-head">
+          <div class="panel-head-row">
+            <span class="panel-sec-badge" id="panelSecBadge">§ 1</span>
+            <button class="panel-close" onclick="closePanel()">
+              <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <div class="panel-sec-title" id="panelSecTitle">Section Title</div>
+        </div>
+        <div class="panel-body">
+          <div class="panel-field">
+            <div class="panel-field-label">Procedural Content</div>
+            <textarea id="panelContent" rows="6" placeholder="Enter the procedural text for this section…"></textarea>
+          </div>
+          <div class="panel-field">
+            <div class="panel-field-label">Regulatory Reference</div>
+            <input type="text" id="panelRegRef" placeholder="e.g. 21 CFR 820.100(a), ISO 13485 §8.5.2">
+          </div>
+          <div class="panel-field">
+            <div class="panel-field-label">Notes / Open Questions</div>
+            <textarea id="panelNotes" rows="3" placeholder="Internal notes, gaps, or open questions…"></textarea>
+          </div>
+          <div class="panel-field">
+            <div class="panel-field-label">Section Status</div>
+            <select id="panelStatus">
+              <option value="draft">Draft</option>
+              <option value="review">Under Review</option>
+              <option value="approved">Approved</option>
+            </select>
+          </div>
+        </div>
+        <div class="panel-footer" id="panelFooter">
+          <button class="btn-save" onclick="savePanel()">Save changes</button>
+          <button class="btn-discard" onclick="closePanel()">Discard</button>
+          <span class="save-flash" id="saveFlash">Saved ✓</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="sidebar.js"></script>
+  <script src="esign.js"></script>
+  <script src="approvals.js"></script>
+  <script>
+    'use strict';
+    var KEY      = 'qms_proc_capa';
+    var SOP_NAME = 'capa';
+
+    var SECTIONS = [
+      { id:'s1', title:'Purpose & Scope' },
+      { id:'s2', title:'CAPA Initiation Triggers' },
+      { id:'s3', title:'Root Cause Analysis Methods' },
+      { id:'s4', title:'Action Plan Requirements' },
+      { id:'s5', title:'Implementation & Verification' },
+      { id:'s6', title:'Effectiveness Monitoring' },
+      { id:'s7', title:'Closure Criteria' },
+      { id:'s8', title:'Record Retention' }
+    ];
+
+    var META_FIELDS = ['doc-num','version','eff-date','author','reviewer','approver'];
+    var DATA = load();
+    var currentSectionId = null;
+
+    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(DATA)); } catch(e) {} }
+    function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function statusLabel(s) { return s==='approved'?'Approved':s==='review'?'Under Review':'Draft'; }
+
+    function fillMeta() {
+      META_FIELDS.forEach(function(f){ var el=document.getElementById('f-'+f); if(el&&DATA[f]) el.value=DATA[f]; });
+    }
+    function wireMeta() {
+      META_FIELDS.forEach(function(f){ var el=document.getElementById('f-'+f); if(!el)return; el.addEventListener('input',function(){ DATA[f]=el.value; save(); }); });
+    }
+
+    function renderSections() {
+      var tbody = document.getElementById('sections-tbody');
+      tbody.innerHTML = '';
+      SECTIONS.forEach(function(sec, idx) {
+        var d = (DATA.sections && DATA.sections[sec.id]) || {};
+        var st = d.status || 'draft';
+        var upd = d.updatedAt ? new Date(d.updatedAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+        var tr = document.createElement('tr');
+        tr.className = 'section-row';
+        tr.onclick = function(){ openPanel(sec.id); };
+        tr.innerHTML = '<td class="sec-num">'+(idx+1)+'</td>'+
+          '<td class="sec-title-cell">'+escHtml(sec.title)+'</td>'+
+          '<td><span class="sec-status-badge '+st+'">'+statusLabel(st)+'</span></td>'+
+          '<td class="sec-updated">'+escHtml(upd)+'</td>'+
+          '<td style="text-align:right;padding-right:1rem;"><button class="btn-open-sec" onclick="event.stopPropagation();openPanel(\''+sec.id+'\')">Open →</button></td>';
+        tbody.appendChild(tr);
+      });
+      var done = SECTIONS.filter(function(s){ var d=DATA.sections&&DATA.sections[s.id]; return d&&d.status==='approved'; }).length;
+      var el = document.getElementById('sections-summary');
+      if(el) el.textContent = done+' of '+SECTIONS.length+' approved';
+    }
+
+    function openPanel(secId) {
+      currentSectionId = secId;
+      var sec = SECTIONS.find(function(s){ return s.id===secId; });
+      if(!sec) return;
+      var idx = SECTIONS.indexOf(sec);
+      var d = (DATA.sections && DATA.sections[secId]) || {};
+      document.getElementById('panelSecBadge').textContent = '§ '+(idx+1);
+      document.getElementById('panelSecTitle').textContent = sec.title;
+      document.getElementById('panelContent').value = d.content || '';
+      document.getElementById('panelRegRef').value = d.regulatoryRef || '';
+      document.getElementById('panelNotes').value = d.notes || '';
+      document.getElementById('panelStatus').value = d.status || 'draft';
+      var locked = DATA.approved === true;
+      ['panelContent','panelRegRef','panelNotes','panelStatus'].forEach(function(id){ var el=document.getElementById(id); if(el) el.disabled=locked; });
+      document.getElementById('panelFooter').style.display = locked ? 'none' : '';
+      document.getElementById('panelOverlay').classList.add('open');
+    }
+    function closePanel() { document.getElementById('panelOverlay').classList.remove('open'); currentSectionId=null; }
+    function savePanel() {
+      if(!currentSectionId) return;
+      if(!DATA.sections) DATA.sections = {};
+      DATA.sections[currentSectionId] = {
+        content: document.getElementById('panelContent').value,
+        regulatoryRef: document.getElementById('panelRegRef').value,
+        notes: document.getElementById('panelNotes').value,
+        status: document.getElementById('panelStatus').value,
+        updatedAt: new Date().toISOString()
+      };
+      save(); renderSections();
+      var f=document.getElementById('saveFlash'); f.classList.add('show'); setTimeout(function(){ f.classList.remove('show'); },2000);
+    }
+
+    function updateStatus() {
+      var pill=document.getElementById('proc-status-pill'), btn=document.getElementById('approve-btn'), lock=document.getElementById('doc-lock');
+      if(!pill) return;
+      var rev = DATA.revision||'A';
+      if(DATA.approved) {
+        pill.className='proc-status-pill approved';
+        pill.innerHTML='<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved · Rev '+rev;
+        if(btn){ btn.className='btn-revise'; btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Initiate Revision'; btn.onclick=initiateRevision; }
+        if(lock) lock.style.display='';
+        META_FIELDS.forEach(function(f){ var el=document.getElementById('f-'+f); if(el) el.disabled=true; });
+        if(window.Approvals) Approvals.renderStatusPanel(SOP_NAME,'doc',document.getElementById('approval-route-panel'));
+      } else {
+        pill.className='proc-status-pill draft';
+        pill.innerHTML='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev '+rev;
+        if(btn){ btn.className='btn-approve'; btn.innerHTML='<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Approve'; btn.onclick=initiateApproval; }
+        if(lock) lock.style.display='none';
+        META_FIELDS.forEach(function(f){ var el=document.getElementById('f-'+f); if(el) el.disabled=false; });
+      }
+    }
+
+    function initiateApproval() {
+      if(!window.Approvals){ alert('Approval module not loaded.'); return; }
+      Approvals.initiate({
+        recordType:SOP_NAME, recordId:'doc',
+        meaning:'I have reviewed and approve this CAPA Procedure as meeting the requirements of 21 CFR 820.100 and ISO 13485 §8.5.2 / §8.5.3.',
+        recordSnapshot:DATA,
+        onComplete:function(sigs){ DATA.approved=true; DATA.approvedAt=sigs[sigs.length-1].timestamp; DATA.approvedBy=sigs[sigs.length-1].signerName; DATA.signatures=sigs; DATA.revision=DATA.revision||'A'; save(); updateStatus(); },
+        onCancel:function(){}
+      });
+    }
+    function initiateRevision() {
+      if(!confirm('Start a new revision? This will unlock all fields for editing. The current approval will be preserved in revision history.')) return;
+      var hist=DATA.revHistory||[]; if(DATA.approved) hist.push({revision:DATA.revision||'A',approvedAt:DATA.approvedAt,approvedBy:DATA.approvedBy});
+      var cur=DATA.revision||'A'; var code=cur.charCodeAt(0);
+      var next=(cur.length===1&&code<90)?String.fromCharCode(code+1):cur+'1';
+      DATA.approved=false; DATA.revision=next; DATA.approvedAt=null; DATA.approvedBy=null; DATA.revHistory=hist;
+      save(); if(window.Approvals) Approvals.clearInstance(SOP_NAME,'doc'); updateStatus();
+    }
+
+    initSidebar({ activePage:'capa' });
+    fillMeta(); wireMeta(); renderSections(); updateStatus();
+  </script>
+</body>
+</html>

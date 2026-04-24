@@ -456,7 +456,8 @@
             type: typeLabel, typeKey:'procedure', status: p.status || 'draft',
             version: p.revision ? 'Rev ' + p.revision : null,
             date: date, dateLabel: fmtDate(date),
-            href:'process-library.html', moduleLabel:'Process Library', sourceKey:'qms_procedures' };
+            href: (function(){ var PH={'SOP-CH-001':'complaint-handling-procedure.html','SOP-CAPA-001':'capa-procedure.html','SOP-NC-001':'nonconformance-procedure.html','SOP-SUP-001':'supplier-control-procedure.html','SOP-AUD-001':'internal-audit-procedure.html','SOP-DC-001':'document-control.html','SOP-TR-001':'training.html'}; return PH[p.id]||'doc-library.html'; })(),
+            moduleLabel:'Procedure', sourceKey:'qms_procedures' };
         });
       }},
       { key:'qms_proc_doc_control', normalize: function(raw) {

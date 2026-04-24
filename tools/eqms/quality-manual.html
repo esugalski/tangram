@@ -432,7 +432,7 @@
           '<td>' + esc(p.owner||'—') + '</td>' +
           '<td><span class="reg-status ' + esc(statusCls) + '">' + esc(STATUS_LABELS[statusCls]||statusCls) + '</span></td>' +
           '<td>' + esc(p.approvalSignature ? fmtDateTime(p.approvalSignature.timestamp).split(',')[0] : '—') + '</td>' +
-          '<td><a class="reg-link" href="process-library.html">View →</a></td>' +
+          '<td><a class="reg-link" href="doc-library.html">View →</a></td>' +
         '</tr>';
       }).join('') : '<tr><td colspan="6" style="text-align:center;padding:1.5rem;color:rgba(11,39,64,0.35);font-size:0.78rem;">No procedures in the Process Library yet.</td></tr>';
 
@@ -508,7 +508,7 @@
             '<div class="reg-stat"><div class="reg-stat-value">' + plannedCount + '</div><div class="reg-stat-label">Planned</div></div>' +
             '<div class="reg-stat"><div class="reg-stat-value">' + procKeys.length + '</div><div class="reg-stat-label">Total</div></div>' +
           '</div>' +
-          '<div style="font-size:0.72rem;color:rgba(11,39,64,0.4);margin-bottom:0.75rem;font-style:italic;">This table is automatically populated from the <a href="process-library.html" style="color:var(--aqua-dark);">Process Library</a>. Statuses reflect the current live state.</div>' +
+          '<div style="font-size:0.72rem;color:rgba(11,39,64,0.4);margin-bottom:0.75rem;font-style:italic;">This table is automatically populated from the <a href="doc-library.html" style="color:var(--aqua-dark);">Document Library</a>. Statuses reflect the current live state.</div>' +
           '<table class="registry-table">' +
             '<thead><tr><th>Doc No.</th><th>Title</th><th>Owner Role</th><th>Status</th><th>Approved</th><th></th></tr></thead>' +
             '<tbody>' + registryRows + '</tbody>' +
