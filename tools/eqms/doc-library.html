@@ -466,13 +466,15 @@
     // ── STATIC FALLBACK LIBRARY DOCS ─────────────────────────────────────────
     var STATIC_LIBRARY_DOCS = [
       { id:'QM-001',      title:'Quality Manual',                               category:'Quality System',  type:'Quality Manual',              typeKey:'quality-manual',  status:'approved',     version:'v4.2',  date:'2025-11-14', href:'quality-manual.html',           moduleLabel:'Quality Manual',   sourceKey:'static' },
-      { id:'SOP-DC-001',  title:'Document Control Procedure',                   category:'Quality System',  type:'Procedure',                   typeKey:'procedure',       status:'approved',     version:'Rev 6', date:'2025-09-22', href:'document-control.html',         moduleLabel:'Document Control', sourceKey:'static' },
-      { id:'SOP-TR-001',  title:'Training and Competency Procedure',            category:'Quality System',  type:'Procedure',                   typeKey:'procedure',       status:'draft',        version:'Rev 3', date:'2026-01-08', href:'training.html',                 moduleLabel:'Training',         sourceKey:'static' },
-      { id:'SOP-CH-001',  title:'Complaint Handling Procedure',                 category:'Quality System',  type:'Procedure',                   typeKey:'procedure',       status:'approved',     version:'Rev 5', date:'2025-08-30', href:'complaint-handling-procedure.html',   moduleLabel:'Complaint Handling', sourceKey:'static' },
-      { id:'SOP-CAPA-001',title:'Corrective & Preventive Action Procedure',     category:'Quality System',  type:'Procedure',                   typeKey:'procedure',       status:'approved',     version:'Rev 4', date:'2025-10-12', href:'capa-procedure.html',                moduleLabel:'CAPA',               sourceKey:'static' },
-      { id:'SOP-NC-001',  title:'Nonconformance Control Procedure',             category:'Quality System',  type:'Procedure',                   typeKey:'procedure',       status:'draft',        version:'Rev 2', date:'2026-02-14', href:'nonconformance-procedure.html',       moduleLabel:'Nonconformance',     sourceKey:'static' },
-      { id:'SOP-SUP-001', title:'Supplier Control Procedure',                   category:'Quality System',  type:'Procedure',                   typeKey:'procedure',       status:'approved',     version:'Rev 3', date:'2025-11-28', href:'supplier-control-procedure.html',    moduleLabel:'Supplier Control',   sourceKey:'static' },
-      { id:'SOP-AUD-001', title:'Internal Audit Procedure',                     category:'Quality System',  type:'Procedure',                   typeKey:'procedure',       status:'approved',     version:'Rev 2', date:'2025-07-10', href:'internal-audit-procedure.html',      moduleLabel:'Internal Audit',     sourceKey:'static' },
+      { id:'SOP-DC-001',  title:'Document Control Procedure',                   category:'Quality System',  type:'Procedure',  typeKey:'procedure',  status:'approved',  version:'Rev 6', date:'2025-09-22', href:'document-control.html',                moduleLabel:'Document Control',   sourceKey:'static' },
+      { id:'SOP-DC-002',  title:'Design and Development Control Procedure',     category:'Quality System',  type:'Procedure',  typeKey:'procedure',  status:'approved',  version:'Rev 3', date:'2025-10-05', href:'design-control.html',                  moduleLabel:'Design Control',     sourceKey:'static' },
+      { id:'SOP-RM-001',  title:'Risk Management Procedure',                    category:'Quality System',  type:'Procedure',  typeKey:'procedure',  status:'approved',  version:'Rev 2', date:'2025-10-18', href:'risk-management-procedure.html',        moduleLabel:'Risk Management',    sourceKey:'static' },
+      { id:'SOP-TR-001',  title:'Training and Competency Procedure',            category:'Quality System',  type:'Procedure',  typeKey:'procedure',  status:'draft',     version:'Rev 3', date:'2026-01-08', href:'training.html',                        moduleLabel:'Training',           sourceKey:'static' },
+      { id:'SOP-CH-001',  title:'Complaint Handling Procedure',                 category:'Quality System',  type:'Procedure',  typeKey:'procedure',  status:'approved',  version:'Rev 5', date:'2025-08-30', href:'complaint-handling-procedure.html',     moduleLabel:'Complaint Handling', sourceKey:'static' },
+      { id:'SOP-CAPA-001',title:'Corrective & Preventive Action Procedure',     category:'Quality System',  type:'Procedure',  typeKey:'procedure',  status:'approved',  version:'Rev 4', date:'2025-10-12', href:'capa-procedure.html',                  moduleLabel:'CAPA',               sourceKey:'static' },
+      { id:'SOP-NC-001',  title:'Nonconformance Control Procedure',             category:'Quality System',  type:'Procedure',  typeKey:'procedure',  status:'draft',     version:'Rev 2', date:'2026-02-14', href:'nonconformance-procedure.html',         moduleLabel:'Nonconformance',     sourceKey:'static' },
+      { id:'SOP-SUP-001', title:'Supplier Control Procedure',                   category:'Quality System',  type:'Procedure',  typeKey:'procedure',  status:'approved',  version:'Rev 3', date:'2025-11-28', href:'supplier-control-procedure.html',      moduleLabel:'Supplier Control',   sourceKey:'static' },
+      { id:'SOP-AUD-001', title:'Internal Audit Procedure',                     category:'Quality System',  type:'Procedure',  typeKey:'procedure',  status:'approved',  version:'Rev 2', date:'2025-07-10', href:'internal-audit-procedure.html',        moduleLabel:'Internal Audit',     sourceKey:'static' },
       { id:'DP-001',      title:'Development Plan — CardioSync Pro',            category:'Project',         type:'Plan',                        typeKey:'plan',            status:'approved',     version:'Rev 2', date:'2025-07-18', href:'dev-plan.html',                 moduleLabel:'Dev Plan',         sourceKey:'static' },
       { id:'RMP-001',     title:'Risk Management Plan',                         category:'Project',         type:'Plan',                        typeKey:'plan',            status:'approved',     version:'Rev 3', date:'2025-09-05', href:'risk-management-plan.html',     moduleLabel:'Risk Mgmt Plan',   sourceKey:'static' },
       { id:'UN-001',      title:'User Needs Specification',                     category:'Project',         type:'User Needs Specification',     typeKey:'specification',   status:'approved',     version:'v2.0',  date:'2025-06-20', href:'user-needs.html',               moduleLabel:'User Needs',       sourceKey:'static' },
@@ -499,13 +501,15 @@
       { key:'qms_procedures', normalize: function(raw) {
         if (!raw||typeof raw!=='object') return [];
         var PROC_HREF = {
+          'SOP-DC-001':   'document-control.html',
+          'SOP-DC-002':   'design-control.html',
+          'SOP-RM-001':   'risk-management-procedure.html',
+          'SOP-TR-001':   'training.html',
           'SOP-CH-001':   'complaint-handling-procedure.html',
           'SOP-CAPA-001': 'capa-procedure.html',
           'SOP-NC-001':   'nonconformance-procedure.html',
           'SOP-SUP-001':  'supplier-control-procedure.html',
-          'SOP-AUD-001':  'internal-audit-procedure.html',
-          'SOP-DC-001':   'document-control.html',
-          'SOP-TR-001':   'training.html'
+          'SOP-AUD-001':  'internal-audit-procedure.html'
         };
         return Object.values(raw).map(function(p) {
           var tl = p.type==='work-instruction'?'Work Instruction':p.type==='form'?'Form':'Procedure';
@@ -522,9 +526,33 @@
         if (!raw||!Object.keys(raw).length) return [];
         return [{ id:'SOP-TR-001', title:'Training Procedure', category:'Quality System', type:'Procedure', typeKey:'procedure', status:raw.approved?'approved':'draft', version:raw.revision?'Rev '+raw.revision:null, date:raw.approvedAt||'', href:'training.html', moduleLabel:'Training', sourceKey:'qms_proc_training' }];
       }},
+      { key:'qms_proc_design_control', normalize: function(raw) {
+        if (!raw||!Object.keys(raw).length) return [];
+        return [{ id:'SOP-DC-002', title:'Design and Development Control Procedure', category:'Quality System', type:'Procedure', typeKey:'procedure', status:raw.approved?'approved':'draft', version:raw.revision?'Rev '+raw.revision:null, date:raw.approvedAt||'', href:'design-control.html', moduleLabel:'Design Control', sourceKey:'qms_proc_design_control' }];
+      }},
       { key:'qms_proc_risk_mgmt', normalize: function(raw) {
         if (!raw||!Object.keys(raw).length) return [];
-        return [{ id:'SOP-RM-001', title:'Risk Management Procedure', category:'Quality System', type:'Procedure', typeKey:'procedure', status:raw.approved?'approved':'draft', version:raw.revision?'Rev '+raw.revision:null, date:raw.approvedAt||'', href:'risk-management-procedure.html', moduleLabel:'Risk Mgmt Proc.', sourceKey:'qms_proc_risk_mgmt' }];
+        return [{ id:'SOP-RM-001', title:'Risk Management Procedure', category:'Quality System', type:'Procedure', typeKey:'procedure', status:raw.approved?'approved':'draft', version:raw.revision?'Rev '+raw.revision:null, date:raw.approvedAt||'', href:'risk-management-procedure.html', moduleLabel:'Risk Management', sourceKey:'qms_proc_risk_mgmt' }];
+      }},
+      { key:'qms_proc_complaint', normalize: function(raw) {
+        if (!raw||!Object.keys(raw).length) return [];
+        return [{ id:'SOP-CH-001', title:'Complaint Handling Procedure', category:'Quality System', type:'Procedure', typeKey:'procedure', status:raw.approved?'approved':'draft', version:raw.revision?'Rev '+raw.revision:null, date:raw.approvedAt||'', href:'complaint-handling-procedure.html', moduleLabel:'Complaint Handling', sourceKey:'qms_proc_complaint' }];
+      }},
+      { key:'qms_proc_capa', normalize: function(raw) {
+        if (!raw||!Object.keys(raw).length) return [];
+        return [{ id:'SOP-CAPA-001', title:'Corrective & Preventive Action Procedure', category:'Quality System', type:'Procedure', typeKey:'procedure', status:raw.approved?'approved':'draft', version:raw.revision?'Rev '+raw.revision:null, date:raw.approvedAt||'', href:'capa-procedure.html', moduleLabel:'CAPA', sourceKey:'qms_proc_capa' }];
+      }},
+      { key:'qms_proc_ncr', normalize: function(raw) {
+        if (!raw||!Object.keys(raw).length) return [];
+        return [{ id:'SOP-NC-001', title:'Nonconformance Control Procedure', category:'Quality System', type:'Procedure', typeKey:'procedure', status:raw.approved?'approved':'draft', version:raw.revision?'Rev '+raw.revision:null, date:raw.approvedAt||'', href:'nonconformance-procedure.html', moduleLabel:'Nonconformance', sourceKey:'qms_proc_ncr' }];
+      }},
+      { key:'qms_proc_supplier', normalize: function(raw) {
+        if (!raw||!Object.keys(raw).length) return [];
+        return [{ id:'SOP-SUP-001', title:'Supplier Control Procedure', category:'Quality System', type:'Procedure', typeKey:'procedure', status:raw.approved?'approved':'draft', version:raw.revision?'Rev '+raw.revision:null, date:raw.approvedAt||'', href:'supplier-control-procedure.html', moduleLabel:'Supplier Control', sourceKey:'qms_proc_supplier' }];
+      }},
+      { key:'qms_proc_audit', normalize: function(raw) {
+        if (!raw||!Object.keys(raw).length) return [];
+        return [{ id:'SOP-AUD-001', title:'Internal Audit Procedure', category:'Quality System', type:'Procedure', typeKey:'procedure', status:raw.approved?'approved':'draft', version:raw.revision?'Rev '+raw.revision:null, date:raw.approvedAt||'', href:'internal-audit-procedure.html', moduleLabel:'Internal Audit', sourceKey:'qms_proc_audit' }];
       }},
       { key:'qms_dev_plan', normalize: function(raw) {
         if (!raw||!Object.keys(raw).length) return [];
