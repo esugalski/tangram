@@ -67,9 +67,11 @@
 
     /* ─── TOPBAR ─── */
     .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 1.5rem; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: relative; z-index: 10; }
-    .topbar-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
-    .topbar-crumb { color: rgba(11,39,64,0.35); font-weight: 400; font-size: 0.85rem; }
-    .topbar-sep { color: rgba(11,39,64,0.2); font-size: 0.85rem; }
+    .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; max-width: 360px; flex: 1; transition: border-color 0.15s; }
+    .topbar-search:focus-within { border-color: rgba(10,192,233,0.4); }
+    .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; flex-shrink: 0; }
+    .topbar-search input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 100%; }
+    .topbar-search input::placeholder { color: rgba(11,39,64,0.35); }
     .topbar-right { display: flex; align-items: center; gap: 0.65rem; }
 
     .btn-add-un { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; box-shadow: 0 2px 8px rgba(10,192,233,0.28); white-space: nowrap; }
@@ -342,10 +344,9 @@
     <!-- TOPBAR -->
     <header class="topbar">
       <div class="topbar-left">
-        <div class="topbar-title">
-          <span class="topbar-crumb">Design Controls</span>
-          <span class="topbar-sep">/</span>
-          <span>Design Inputs</span>
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, CAPAs, products, audits…">
         </div>
         <span class="ver-badge" id="docVerBadge">Rev A</span>
         <span class="status-pill draft" id="docStatusPill">Draft</span>

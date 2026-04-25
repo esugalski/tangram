@@ -70,6 +70,11 @@ body {
 .topbar-crumb { color: rgba(11,39,64,0.35); font-weight: 400; font-size: 0.85rem; white-space: nowrap; }
 .topbar-sep { color: rgba(11,39,64,0.2); }
 .topbar-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; max-width: 380px; flex: 1; transition: border-color 0.15s; }
+.topbar-search:focus-within { border-color: rgba(10,192,233,0.4); }
+.topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; flex-shrink: 0; }
+.topbar-search input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 100%; }
+.topbar-search input::placeholder { color: rgba(11,39,64,0.35); }
 
 /* Responsive topbar — keeps the title on one line on narrow viewports
    and trims secondary chrome so the page doesn't feel cramped on mobile. */
