@@ -14,5 +14,6 @@ node_modules/
 
 # eQMS — exclude markdown research docs and reference screenshots
 tools/eqms/*.md
+!tools/eqms/STYLE_GUIDE.md
 tools/eqms/guidelines/
 tools/eqms/screenshots/
