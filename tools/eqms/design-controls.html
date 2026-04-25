@@ -125,7 +125,8 @@
     .flow-strip::-webkit-scrollbar { height: 4px; }
     .flow-strip::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
     .flow-right-col { display: flex; flex-direction: column; gap: 0.65rem; flex: 1; min-width: 0; }
-    .flow-nodes-row { display: flex; align-items: center; flex-wrap: nowrap; }
+    .flow-nodes-row { display: flex; align-items: center; flex-wrap: nowrap; width: 100%; }
+    .flow-nodes-row .flow-node { flex: 1; min-width: 0; }
     .flow-tm-box { border: 1.5px solid rgba(10,192,233,0.25); border-left: 3px solid var(--aqua); border-radius: 9px; padding: 0.7rem 1rem; background: rgba(10,192,233,0.04); display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit; transition: background 0.12s, border-color 0.12s; }
     .flow-tm-box:hover { background: rgba(10,192,233,0.09); border-color: rgba(10,192,233,0.38); border-left-color: var(--aqua); }
     .flow-tm-icon { width: 30px; height: 30px; background: rgba(10,192,233,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -301,7 +302,7 @@
           <div class="section-label">Process Flow — click any stage to open it</div>
           <div class="flow-section-wrap">
             <div class="flow-strip" id="flowStrip">
-              <a href="dev-plan.html" class="flow-node">
+              <a href="dev-plan.html" class="flow-node" style="border-color:#10B981;background:rgba(16,185,129,0.05);">
                 <span class="flow-node-num">01</span>
                 <span class="flow-node-label">Dev Plan</span>
                 <span class="flow-node-status flow-status-complete" id="fs-devplan">Complete</span>
@@ -309,37 +310,37 @@
               <span class="flow-arrow">→</span>
               <div class="flow-right-col">
                 <div class="flow-nodes-row">
-                  <a href="user-needs.html" class="flow-node">
+                  <a href="user-needs.html" class="flow-node" style="border-color:#0AC0E9;background:rgba(10,192,233,0.05);">
                     <span class="flow-node-num">02</span>
                     <span class="flow-node-label">User Needs</span>
                     <span class="flow-node-status flow-status-progress" id="fs-usneeds">In Progress</span>
                   </a>
                   <span class="flow-arrow">→</span>
-                  <a href="design-inputs.html" class="flow-node">
+                  <a href="design-inputs.html" class="flow-node" style="border-color:#6366f1;background:rgba(99,102,241,0.05);">
                     <span class="flow-node-num">03</span>
                     <span class="flow-node-label">Design Inputs</span>
                     <span class="flow-node-status flow-status-progress" id="fs-dinputs">In Progress</span>
                   </a>
                   <span class="flow-arrow">→</span>
-                  <a href="design-outputs.html" class="flow-node">
+                  <a href="design-outputs.html" class="flow-node" style="border-color:#f97316;background:rgba(249,115,22,0.05);">
                     <span class="flow-node-num">04</span>
                     <span class="flow-node-label">Design Outputs</span>
                     <span class="flow-node-status flow-status-progress" id="fs-doutputs">In Progress</span>
                   </a>
                   <span class="flow-arrow">→</span>
-                  <a href="design-review.html" class="flow-node">
+                  <a href="design-review.html" class="flow-node" style="border-color:#8b5cf6;background:rgba(139,92,246,0.05);">
                     <span class="flow-node-num">05</span>
                     <span class="flow-node-label">Design Reviews</span>
                     <span class="flow-node-status flow-status-progress" id="fs-dreviews">In Progress</span>
                   </a>
                   <span class="flow-arrow">→</span>
-                  <a href="vv.html" class="flow-node">
+                  <a href="vv.html" class="flow-node" style="border-color:#10B981;background:rgba(16,185,129,0.05);">
                     <span class="flow-node-num">06</span>
                     <span class="flow-node-label">V&amp;V</span>
                     <span class="flow-node-status flow-status-gap" id="fs-vv">Gaps</span>
                   </a>
                 </div>
-                <a href="trace-matrix.html" class="flow-tm-box">
+                <a href="trace-matrix.html" class="flow-tm-box" style="border-color:rgba(11,39,64,0.2);border-left-color:#0B2740;background:rgba(11,39,64,0.03);">
                   <div class="flow-tm-icon">
                     <svg viewBox="0 0 24 24"><rect x="2" y="3" width="7" height="7" rx="1"/><rect x="9" y="3" width="7" height="7" rx="1"/><rect x="16" y="3" width="6" height="7" rx="1"/><line x1="5.5" y1="10" x2="5.5" y2="14"/><line x1="12.5" y1="10" x2="12.5" y2="14"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="2" y1="14" x2="22" y2="14"/></svg>
                   </div>
