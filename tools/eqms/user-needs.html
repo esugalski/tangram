@@ -439,6 +439,8 @@
       <button onclick="this.parentElement.style.display='none';sessionStorage.setItem('qms_gate_dismissed_user_needs','1');" style="margin-left:auto;font-size:0.7rem;font-weight:600;color:#b45309;background:none;border:none;cursor:pointer;flex-shrink:0;">Dismiss</button>
     </div>
 
+    <div id="lm-sidebar-widget" style="display:none"></div>
+
     <!-- CONTENT AREA -->
     <div class="content-area" id="mainContentArea">
       <div class="doc-wrap">
@@ -1299,6 +1301,31 @@
       if (revDisplay) revDisplay.textContent = rev;
     }
 
+    function renderSidebarWidget() {
+      var el = document.getElementById('lm-sidebar-widget');
+      if (!el) return;
+      var arr = Object.values(ITEMS).filter(function(x){return x.type==='un';});
+      var total = arr.length;
+      var approved = arr.filter(function(x){return x.status==='approved';}).length;
+      var inReview = arr.filter(function(x){return x.status==='review';}).length;
+      var draft = total - approved - inReview;
+      var noInputs = arr.filter(function(x){return !x.tracedBy||!x.tracedBy.length;}).length;
+      el.innerHTML = '<div class="lm-sw">' +
+        '<div class="lm-sw-gauge-wrap">' +
+          '<span class="lm-sw-big">' + total + '</span><span class="lm-sw-big-label">user needs</span>' +
+        '</div>' +
+        '<div class="lm-sw-section">' +
+          '<div class="lm-sw-section-title">Approval status</div>' +
+          '<div class="lm-sw-pills">' +
+            '<span class="lm-sw-pill lm-sw-pill-green">' + approved + ' Approved</span>' +
+            '<span class="lm-sw-pill lm-sw-pill-amber">' + inReview + ' In Review</span>' +
+            '<span class="lm-sw-pill lm-sw-pill-gray">' + draft + ' Draft</span>' +
+          '</div>' +
+        '</div>' +
+        (noInputs > 0 ? '<div class="lm-sw-section"><div class="lm-sw-warn"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' + noInputs + ' need' + (noInputs===1?'':'s') + ' with no linked design inputs</div></div>' : '') +
+      '</div>';
+    }
+
     // ── INIT ──────────────────────────────────────────────────────────────
     loadSettings();
     loadUserNeedsFromStorage();
@@ -1315,6 +1342,7 @@
   <script src="approvals.js"></script>
   <script>
     initSidebar({ activePage: 'user-needs' });
+    renderSidebarWidget();
     (function(){
       if (typeof LearnMode === 'undefined' || !LearnMode.isGuided()) return;
       if (sessionStorage.getItem('qms_gate_dismissed_user_needs')) return;

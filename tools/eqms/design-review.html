@@ -281,6 +281,8 @@
       <button onclick="this.parentElement.style.display='none';sessionStorage.setItem('qms_gate_dismissed_design_review','1');" style="margin-left:auto;font-size:0.7rem;font-weight:600;color:#b45309;background:none;border:none;cursor:pointer;flex-shrink:0;">Dismiss</button>
     </div>
 
+    <div id="lm-sidebar-widget" style="display:none"></div>
+
     <div id="intro-slot" style="padding:0 1.25rem;"></div>
 
     <div class="content-cols">
@@ -860,10 +862,41 @@
       });
     }
 
+    function renderSidebarWidget() {
+      var el = document.getElementById('lm-sidebar-widget');
+      if (!el) return;
+      var arr = Object.values(REVIEWS);
+      var total = arr.length;
+      var approved = arr.filter(function(x){return x.outcome==='approved';}).length;
+      var conditional = arr.filter(function(x){return x.outcome==='conditional';}).length;
+      var hold = arr.filter(function(x){return x.outcome==='hold'||!x.outcome;}).length;
+      var openActions = arr.reduce(function(sum,r){ return sum + (r.actionItems||[]).filter(function(a){return !a.closed;}).length; }, 0);
+      var hasIndependent = arr.some(function(r){return r.independentReviewer && r.independentReviewer.trim();});
+      el.innerHTML = '<div class="lm-sw">' +
+        '<div class="lm-sw-gauge-wrap">' +
+          '<span class="lm-sw-big">' + total + '</span><span class="lm-sw-big-label">design reviews</span>' +
+        '</div>' +
+        '<div class="lm-sw-section">' +
+          '<div class="lm-sw-section-title">Outcomes</div>' +
+          '<div class="lm-sw-pills">' +
+            '<span class="lm-sw-pill lm-sw-pill-green">' + approved + ' Approved</span>' +
+            '<span class="lm-sw-pill lm-sw-pill-amber">' + conditional + ' Conditional</span>' +
+            '<span class="lm-sw-pill lm-sw-pill-gray">' + hold + ' Open</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="lm-sw-section">' +
+          '<div class="lm-sw-section-title">Open action items</div>' +
+          '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Items requiring follow-up</span><span class="lm-sw-stat-value' + (openActions>0?' red':'') + '">' + openActions + '</span></div>' +
+          '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Independent reviewer</span><span class="lm-sw-stat-value">' + (hasIndependent ? '✓ Present' : '⚠ Missing') + '</span></div>' +
+        '</div>' +
+      '</div>';
+    }
+
     // ── INIT ──────────────────────────────────────────────────────────────
     load();
     renderList();
     renderIntro();
+    renderSidebarWidget();
   </script>
 </body>
 </html>

@@ -470,6 +470,13 @@ const LearnMode = (function () {
     .lm-intro-checklist-item::before { content: ''; width: 6px; height: 6px; background: #0AC0E9; border-radius: 50%; flex-shrink: 0; margin-top: 0.45rem; }
     .lm-intro-refs { margin-top: 0.85rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
     .lm-intro-ref { font-size: 0.66rem; font-weight: 600; letter-spacing: 0.02em; background: rgba(11,39,64,0.06); color: #0B2740; padding: 0.2rem 0.55rem; border-radius: 4px; }
+    .lm-intro.lm-intro-collapsed .lm-intro-body,
+    .lm-intro.lm-intro-collapsed .lm-intro-grid,
+    .lm-intro.lm-intro-collapsed .lm-intro-checklist,
+    .lm-intro.lm-intro-collapsed .lm-intro-refs { display: none; }
+    .lm-intro.lm-intro-collapsed { margin-bottom: 0.5rem; }
+    .lm-intro-chevron { transition: transform 0.2s; }
+    .lm-intro.lm-intro-collapsed .lm-intro-chevron { transform: rotate(-90deg); }
 
     /* Inline teach chip */
     .lm-teach { display: inline-flex; align-items: center; justify-content: center; width: 15px; height: 15px; margin-left: 0.25rem; vertical-align: middle; background: rgba(10,192,233,0.12); color: #089bbf; border-radius: 50%; font-size: 0.6rem; font-weight: 700; cursor: help; position: relative; flex-shrink: 0; }
@@ -715,6 +722,37 @@ const LearnMode = (function () {
       html.lm-ctx-open .main { margin-right: 0; }
       html.lm-ctx-open .lm-step-footer { right: 0; }
     }
+
+    /* Sidebar "At a glance" widget content */
+    .lm-sw { padding: 0.75rem 1rem; display: flex; flex-direction: column; gap: 0.7rem; }
+    .lm-sw-gauge-wrap { display: flex; flex-direction: column; align-items: center; padding: 0.5rem 0; gap: 0.25rem; }
+    .lm-sw-gauge-pct { font-size: 1.5rem; font-weight: 800; color: #0B2740; letter-spacing: -0.03em; line-height: 1; }
+    .lm-sw-gauge-sub { font-size: 0.64rem; color: rgba(11,39,64,0.48); }
+    .lm-sw-section { border-top: 1px solid rgba(11,39,64,0.07); padding-top: 0.65rem; }
+    .lm-sw-section-title { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.45rem; }
+    .lm-sw-pills { display: flex; flex-wrap: wrap; gap: 0.28rem; margin-bottom: 0.1rem; }
+    .lm-sw-pill { font-size: 0.65rem; font-weight: 600; padding: 0.16rem 0.48rem; border-radius: 100px; }
+    .lm-sw-pill-green { background: rgba(16,185,129,0.12); color: #047857; }
+    .lm-sw-pill-amber { background: rgba(245,158,11,0.12); color: #B45309; }
+    .lm-sw-pill-gray { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.52); }
+    .lm-sw-pill-red { background: rgba(239,68,68,0.1); color: #dc2626; }
+    .lm-sw-bar-row { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.28rem; }
+    .lm-sw-bar-label { font-size: 0.67rem; color: #304F6B; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lm-sw-bar-track { flex: 2; height: 5px; background: rgba(11,39,64,0.08); border-radius: 100px; overflow: hidden; }
+    .lm-sw-bar-fill { height: 100%; border-radius: 100px; background: #10B981; }
+    .lm-sw-bar-fill.amber { background: #F59E0B; }
+    .lm-sw-bar-fill.red { background: #EF4444; }
+    .lm-sw-bar-val { font-size: 0.6rem; font-weight: 600; color: rgba(11,39,64,0.42); min-width: 24px; text-align: right; }
+    .lm-sw-stat-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; padding: 0.18rem 0; }
+    .lm-sw-stat-label { color: rgba(11,39,64,0.52); }
+    .lm-sw-stat-value { font-weight: 700; color: #0B2740; }
+    .lm-sw-stat-value.red { color: #dc2626; }
+    .lm-sw-warn { font-size: 0.68rem; color: #B45309; background: rgba(245,158,11,0.09); border-radius: 6px; padding: 0.38rem 0.55rem; display: flex; align-items: flex-start; gap: 0.38rem; line-height: 1.4; }
+    .lm-sw-warn svg { flex-shrink: 0; margin-top: 0.05rem; width: 12px; height: 12px; stroke: #B45309; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .lm-sw-big { font-size: 1.6rem; font-weight: 800; color: #0B2740; letter-spacing: -0.03em; line-height: 1; }
+    .lm-sw-big-label { font-size: 0.67rem; color: rgba(11,39,64,0.5); margin-left: 0.25rem; font-weight: 500; }
+    .lm-sw-empty { font-size: 0.7rem; color: rgba(11,39,64,0.35); text-align: center; padding: 1rem 0; font-style: italic; }
+    .lm-sw-svg-gauge { display: block; overflow: visible; }
 
     /* Fixed bottom "Next step" footer — always visible when on current step */
     .lm-step-footer {
@@ -1018,8 +1056,7 @@ const LearnMode = (function () {
   function introCard(opts) {
     opts = opts || {};
     const id = opts.id || ('intro-' + (opts.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-'));
-    const dismissedKey = 'qms_lm_intro_dismissed_' + id;
-    if (localStorage.getItem(dismissedKey) === '1') return '';
+    const collapsed = sessionStorage.getItem('qms_intro_collapsed_' + id) === '1';
 
     let factsHTML = '';
     if (opts.facts && opts.facts.length) {
@@ -1042,24 +1079,33 @@ const LearnMode = (function () {
     const whyHTML = opts.why ? '<p><strong>Why it matters:</strong> ' + esc(opts.why) + '</p>' : '';
     const whatHTML = opts.what ? '<p>' + esc(opts.what) + '</p>' : '';
 
-    return '<div class="lm-intro learn-only" id="lm-intro-' + esc(id) + '">' +
+    return '<div class="lm-intro learn-only' + (collapsed ? ' lm-intro-collapsed' : '') + '" id="lm-intro-' + esc(id) + '">' +
       '<div class="lm-intro-head">' +
         '<div class="lm-intro-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>' +
         '<div style="flex:1;">' +
           (opts.tag ? '<div class="lm-intro-tag">' + esc(opts.tag) + '</div>' : '') +
           '<div class="lm-intro-title">' + esc(opts.title || 'About this module') + '</div>' +
         '</div>' +
-        '<button type="button" class="lm-intro-close" title="Dismiss" onclick="LearnMode._dismissIntro(\'' + esc(id) + '\')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+        '<button type="button" class="lm-intro-close" title="Collapse" onclick="LearnMode._toggleIntro(\'' + esc(id) + '\')">' +
+          '<svg class="lm-intro-chevron" viewBox="0 0 24 24" style="width:11px;height:11px;stroke:#0B2740;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;' + (collapsed ? 'transform:rotate(-90deg);' : '') + '"><polyline points="6 9 12 15 18 9"/></svg>' +
+        '</button>' +
       '</div>' +
       '<div class="lm-intro-body">' + whatHTML + whyHTML + '</div>' +
       factsHTML + checklistHTML + refsHTML +
     '</div>';
   }
 
-  function _dismissIntro(id) {
-    localStorage.setItem('qms_lm_intro_dismissed_' + id, '1');
-    const el = document.getElementById('lm-intro-' + id);
-    if (el) el.remove();
+  function _toggleIntro(id) {
+    var el = document.getElementById('lm-intro-' + id);
+    if (!el) return;
+    var collapsed = el.classList.toggle('lm-intro-collapsed');
+    var chevron = el.querySelector('.lm-intro-chevron');
+    if (chevron) chevron.style.transform = collapsed ? 'rotate(-90deg)' : '';
+    if (collapsed) {
+      sessionStorage.setItem('qms_intro_collapsed_' + id, '1');
+    } else {
+      sessionStorage.removeItem('qms_intro_collapsed_' + id);
+    }
   }
 
   function teach(text) { return '<span class="lm-teach learn-only" tabindex="0">?<span class="lm-teach-tip">' + esc(text) + '</span></span>'; }
@@ -1258,7 +1304,7 @@ const LearnMode = (function () {
       badgesHtml +
       '<button class="lm-step-banner-toggle" onclick="LearnMode._toggleCtxPanel(\'' + esc(pageStep.id) + '\')">' +
         '<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>' +
-        'Context' +
+        'Status' +
       '</button>';
 
     const main = document.querySelector('main.main, main, div.main');
@@ -1283,6 +1329,14 @@ const LearnMode = (function () {
     var oldTab = document.getElementById('lm-ctx-tab');
     if (oldTab) oldTab.remove();
 
+    // Check if this page has a sidebar widget — if not, hide the Status button
+    var widget = document.getElementById('lm-sidebar-widget');
+    var toggle = document.getElementById('lm-step-banner') && document.querySelector('.lm-step-banner-toggle');
+    if (!widget) {
+      if (toggle) toggle.style.display = 'none';
+      return;
+    }
+
     var panel = document.getElementById('lm-ctx-panel');
     if (!panel) {
       panel = document.createElement('div');
@@ -1295,35 +1349,25 @@ const LearnMode = (function () {
     var tbH = getComputedStyle(document.documentElement).getPropertyValue('--lm-topbar-h').trim() || '56px';
     panel.style.top = tbH;
 
-    // Is this the first visit to this step? Default open; closed if user previously dismissed.
+    // Default closed; open if user previously opened
     var isClosed = localStorage.getItem('qms_banner_ctx_closed_' + step.id) === '1';
     panel.classList.toggle('open', !isClosed);
     document.documentElement.classList.toggle('lm-ctx-open', !isClosed);
 
-    // Grab intro card content if already populated (inline script runs before DOMContentLoaded)
-    var introSlot = document.getElementById('intro-slot');
-    var introHTML = introSlot ? introSlot.innerHTML : '';
-    // Hide intro slot from the scroll area — its content lives in the panel
-    if (introSlot && introHTML) introSlot.style.display = 'none';
-
     panel.innerHTML =
       '<div class="lm-ctx-panel-head">' +
-        '<span class="lm-ctx-panel-label">Step context</span>' +
+        '<span class="lm-ctx-panel-label">At a glance</span>' +
         '<button class="lm-ctx-panel-close" onclick="LearnMode._toggleCtxPanel(\'' + esc(step.id) + '\')" title="Close panel">' +
           '<svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
         '</button>' +
       '</div>' +
-      '<div class="lm-ctx-panel-body">' +
-        '<div class="lm-ctx-panel-summary">' + esc(step.summary) + '</div>' +
-        '<div class="lm-ctx-panel-why"><strong>Why this matters:</strong> ' + esc(step.why) + '</div>' +
-        (introHTML ? '<div class="lm-ctx-panel-intro">' + introHTML + '</div>' : '') +
-      '</div>';
+      '<div class="lm-ctx-panel-body">' + widget.innerHTML + '</div>';
 
     // Inject the tab affordance (visible when panel is closed)
     var tab = document.createElement('div');
     tab.id = 'lm-ctx-tab';
     tab.className = 'lm-ctx-tab';
-    tab.textContent = 'Context';
+    tab.textContent = 'Status';
     tab.setAttribute('onclick', 'LearnMode._toggleCtxPanel(\'' + esc(step.id) + '\')');
     tab.style.top = 'calc(' + tbH + ' + (100vh - ' + tbH + ') / 2)';
     tab.style.transform = 'translateY(-50%)';
@@ -1336,9 +1380,6 @@ const LearnMode = (function () {
     var tab = document.getElementById('lm-ctx-tab');
     if (tab) tab.remove();
     document.documentElement.classList.remove('lm-ctx-open');
-    // Restore any hidden intro slot
-    var introSlot = document.getElementById('intro-slot');
-    if (introSlot) introSlot.style.display = '';
   }
 
   function _toggleCtxPanel(stepId) {

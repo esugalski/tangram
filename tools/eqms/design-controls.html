@@ -89,10 +89,8 @@
       border-radius: 12px;
       padding: 1.1rem 1.3rem;
       margin-bottom: 1.5rem;
-      display: flex;
-      gap: 1.5rem;
-      align-items: flex-start;
     }
+    .intro-panel-head { display: flex; align-items: flex-start; gap: 1.1rem; }
     .intro-icon-wrap {
       width: 40px; height: 40px; border-radius: 10px;
       background: rgba(10,192,233,0.1);
@@ -101,9 +99,15 @@
       flex-shrink: 0;
     }
     .intro-icon-wrap svg { width: 18px; height: 18px; stroke: var(--aqua-dark); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .intro-body-header { flex: 1; }
+    .intro-collapse-btn { margin-left: auto; width: 26px; height: 26px; border: none; background: rgba(11,39,64,0.05); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+    .intro-collapse-btn:hover { background: rgba(11,39,64,0.1); }
+    .intro-collapsible { margin-top: 0.75rem; }
+    .intro-panel.intro-collapsed .intro-collapsible { display: none; }
+    .intro-panel.intro-collapsed { margin-bottom: 0.75rem; }
     .intro-body { flex: 1; }
     .intro-eyebrow { font-size: 0.58rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--aqua-dark); margin-bottom: 0.35rem; }
-    .intro-title { font-size: 0.92rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; }
+    .intro-title { font-size: 0.92rem; font-weight: 700; color: var(--primary); margin-bottom: 0; }
     .intro-points { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
     .intro-point { font-size: 0.77rem; color: rgba(11,39,64,0.62); line-height: 1.55; display: flex; align-items: flex-start; gap: 0.4rem; max-width: 340px; }
     .intro-point-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--aqua); flex-shrink: 0; margin-top: 0.47rem; }
@@ -162,7 +166,6 @@
     /* ─── TWO-COLUMN LAYOUT ─── */
     .hub-body { display: flex; gap: 1.25rem; align-items: flex-start; }
     .cards-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.85rem; }
-    .right-rail { width: 264px; flex-shrink: 0; display: flex; flex-direction: column; gap: 0.85rem; }
 
     /* ─── SECTION CARDS ─── */
     .section-card {
@@ -303,13 +306,20 @@
         </div>
 
         <!-- INTRO PANEL -->
-        <div class="intro-panel">
-          <div class="intro-icon-wrap">
-            <svg viewBox="0 0 24 24"><path d="M2 20h20M4 20V10l8-6 8 6v10"/><path d="M10 20v-5h4v5"/></svg>
+        <div class="intro-panel" id="dc-intro-panel">
+          <div class="intro-panel-head">
+            <div class="intro-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M2 20h20M4 20V10l8-6 8 6v10"/><path d="M10 20v-5h4v5"/></svg>
+            </div>
+            <div class="intro-body-header">
+              <div class="intro-eyebrow">What are Design Controls?</div>
+              <div class="intro-title">The documented proof that your device actually does what patients and clinicians need it to do.</div>
+            </div>
+            <button type="button" class="intro-collapse-btn" id="dc-intro-toggle" onclick="toggleDCIntro()" title="Collapse">
+              <svg id="dc-intro-chevron" viewBox="0 0 24 24" style="width:12px;height:12px;stroke:#0B2740;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
           </div>
-          <div class="intro-body">
-            <div class="intro-eyebrow">What are Design Controls?</div>
-            <div class="intro-title">The documented proof that your device actually does what patients and clinicians need it to do.</div>
+          <div class="intro-collapsible" id="dc-intro-body">
             <div class="intro-points">
               <div class="intro-point">
                 <div class="intro-point-dot"></div>
@@ -334,7 +344,7 @@
                 ISO 13485 §7.3
               </span>
             </div>
-          </div>
+          </div><!-- /intro-collapsible -->
         </div>
 
         <!-- PROCESS FLOW -->
@@ -622,100 +632,27 @@
 
           </div><!-- /cards-col -->
 
-          <!-- RIGHT RAIL -->
-          <div class="right-rail">
-
-            <!-- Completeness gauge -->
-            <div class="widget">
-              <div class="widget-title">Design Controls Completeness</div>
-              <div class="gauge-wrap">
-                <div class="gauge-circle">
-                  <svg viewBox="0 0 64 64" width="64" height="64">
-                    <circle class="gauge-bg" cx="32" cy="32" r="26"/>
-                    <circle class="gauge-fill" id="gaugeFill" cx="32" cy="32" r="26" stroke="#0AC0E9"
-                      stroke-dasharray="163.4" stroke-dashoffset="106.2"/>
-                  </svg>
-                  <div class="gauge-num" id="gaugeNum">35%</div>
-                </div>
-                <div class="gauge-detail">
-                  <strong>2 of 7 sections</strong> have at least one fully approved record.<br><br>
-                  <span style="color:rgba(239,68,68,0.75);font-size:0.68rem;">5 sections need attention before 510(k) submission.</span>
-                </div>
+          <!-- Sidebar widget (hidden; content cloned into "At a glance" panel by learn-mode.js) -->
+          <div id="lm-sidebar-widget" style="display:none">
+            <div class="lm-sw">
+              <div class="lm-sw-gauge-wrap">
+                <div id="sw-gauge-pct" class="lm-sw-big">35%</div>
+                <div class="lm-sw-gauge-sub">overall completeness</div>
               </div>
-              <div class="section-label" style="margin-bottom:0.5rem;">Section status</div>
-              <div class="section-progress" id="sectionProgress">
-                <div class="sp-row">
-                  <span class="sp-label">Dev Plan</span>
-                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:100%;background:#10B981;"></div></div>
-                  <span class="sp-pct" style="color:#047857;">100%</span>
-                </div>
-                <div class="sp-row">
-                  <span class="sp-label">User Needs</span>
-                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:60%;background:#0AC0E9;"></div></div>
-                  <span class="sp-pct">60%</span>
-                </div>
-                <div class="sp-row">
-                  <span class="sp-label">Design Inputs</span>
-                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:71%;background:#0AC0E9;"></div></div>
-                  <span class="sp-pct">71%</span>
-                </div>
-                <div class="sp-row">
-                  <span class="sp-label">Design Outputs</span>
-                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:40%;background:#F59E0B;"></div></div>
-                  <span class="sp-pct" style="color:#b45309;">40%</span>
-                </div>
-                <div class="sp-row">
-                  <span class="sp-label">Design Reviews</span>
-                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:50%;background:#F59E0B;"></div></div>
-                  <span class="sp-pct" style="color:#b45309;">50%</span>
-                </div>
-                <div class="sp-row">
-                  <span class="sp-label">V&amp;V</span>
-                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:10%;background:#EF4444;"></div></div>
-                  <span class="sp-pct" style="color:#dc2626;">10%</span>
-                </div>
-                <div class="sp-row">
-                  <span class="sp-label">Trace Matrix</span>
-                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:40%;background:#EF4444;"></div></div>
-                  <span class="sp-pct" style="color:#dc2626;">40%</span>
-                </div>
+              <div class="lm-sw-section">
+                <div class="lm-sw-section-title">Section status</div>
+                <div id="sw-section-bars"></div>
+              </div>
+              <div class="lm-sw-section" id="sw-gaps-section">
+                <div class="lm-sw-section-title">Gaps to close</div>
+                <div id="sw-gaps"></div>
+              </div>
+              <div class="lm-sw-section">
+                <div class="lm-sw-section-title">Next action</div>
+                <div id="sw-next-action" style="font-size:0.68rem;color:#304F6B;line-height:1.5;"></div>
               </div>
             </div>
-
-            <!-- Gaps to close -->
-            <div class="widget">
-              <div class="widget-title">Gaps to Close</div>
-              <div class="gap-list">
-                <div class="gap-item">
-                  <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                  <div class="gap-item-text"><strong>UN-003, UN-004, UN-005</strong> have no linked V&amp;V activity</div>
-                </div>
-                <div class="gap-item">
-                  <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                  <div class="gap-item-text"><strong>DI-004, DI-006</strong> still in review — must be approved before V&amp;V can close</div>
-                </div>
-                <div class="gap-item">
-                  <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                  <div class="gap-item-text"><strong>DR-002</strong> (Design Inputs review) is open — needs to close before moving to Outputs phase</div>
-                </div>
-                <div class="gap-item">
-                  <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                  <div class="gap-item-text"><strong>DO-001, DO-003, DO-005</strong> are in review — approve before V&amp;V protocols reference them</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Next recommended action -->
-            <div class="next-action-box">
-              <div class="next-action-label">Next Recommended Action</div>
-              <div class="next-action-text">Close the Design Inputs review (DR-002) and approve DI-004 and DI-006. These are blocking your V&amp;V protocols — you can't write test acceptance criteria against unapproved requirements.</div>
-              <a href="design-review.html" class="next-action-btn">
-                Go to Design Reviews
-                <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-              </a>
-            </div>
-
-          </div><!-- /right-rail -->
+          </div>
 
         </div><!-- /hub-body -->
 
@@ -735,6 +672,121 @@
       productIdx = (productIdx + 1) % PRODUCTS.length;
       document.getElementById('productSelectorLabel').textContent = PRODUCTS[productIdx];
     }
+
+    function toggleDCIntro() {
+      var panel = document.getElementById('dc-intro-panel');
+      var chevron = document.getElementById('dc-intro-chevron');
+      if (!panel) return;
+      var collapsed = panel.classList.toggle('intro-collapsed');
+      if (chevron) chevron.style.transform = collapsed ? 'rotate(-90deg)' : '';
+      if (collapsed) sessionStorage.setItem('qms_intro_collapsed_hub', '1');
+      else sessionStorage.removeItem('qms_intro_collapsed_hub');
+    }
+
+    // Restore collapse state within session
+    (function() {
+      if (sessionStorage.getItem('qms_intro_collapsed_hub') === '1') {
+        var panel = document.getElementById('dc-intro-panel');
+        var chevron = document.getElementById('dc-intro-chevron');
+        if (panel) panel.classList.add('intro-collapsed');
+        if (chevron) chevron.style.transform = 'rotate(-90deg)';
+      }
+    })();
+
+    // Populate sidebar widget with computed completeness data
+    (function() {
+      var SECTION_KEYS = [
+        { label: 'Dev Plan', key: 'qms_dev_plan', getter: function(d) {
+            if (!d) return 0;
+            var all = Object.values(d.deliverables || {}); if (!all.length) return 0;
+            return Math.round(100 * all.filter(function(x){return x.done;}).length / all.length);
+          }},
+        { label: 'User Needs', key: 'qms_user_needs', getter: function(d) {
+            if (!d) return 0;
+            var arr = Object.values(d); if (!arr.length) return 0;
+            return Math.round(100 * arr.filter(function(x){return x.status==='approved';}).length / arr.length);
+          }},
+        { label: 'Design Inputs', key: 'qms_design_inputs', getter: function(d) {
+            if (!d) return 0;
+            var arr = Object.values(d); if (!arr.length) return 0;
+            return Math.round(100 * arr.filter(function(x){return x.status==='approved';}).length / arr.length);
+          }},
+        { label: 'Design Outputs', key: 'qms_design_outputs', getter: function(d) {
+            if (!d) return 0;
+            var arr = Object.values(d); if (!arr.length) return 0;
+            return Math.round(100 * arr.filter(function(x){return x.status==='approved';}).length / arr.length);
+          }},
+        { label: 'Design Reviews', key: 'qms_design_reviews', getter: function(d) {
+            if (!d) return 0;
+            var arr = Object.values(d); if (!arr.length) return 0;
+            return Math.round(100 * arr.filter(function(x){return x.outcome==='approved';}).length / arr.length);
+          }},
+        { label: 'V&V', key: 'qms_vv_items', getter: function(d) {
+            if (!d) return 0;
+            var arr = Object.values(d); if (!arr.length) return 0;
+            return Math.round(100 * arr.filter(function(x){return x.executionStatus==='approved'||x.executionStatus==='executed';}).length / arr.length);
+          }},
+        { label: 'Trace Matrix', key: null, getter: function() {
+            var un = Object.values(JSON.parse(localStorage.getItem('qms_user_needs')||'{}'));
+            if (!un.length) return 0;
+            var linked = un.filter(function(u){return u.linkedInputs&&u.linkedInputs.length;});
+            return Math.round(100 * linked.length / un.length);
+          }}
+      ];
+
+      var pcts = SECTION_KEYS.map(function(s) {
+        try {
+          var raw = s.key ? localStorage.getItem(s.key) : null;
+          var data = raw ? JSON.parse(raw) : null;
+          return s.getter(data);
+        } catch(e) { return 0; }
+      });
+
+      var overall = pcts.length ? Math.round(pcts.reduce(function(a,b){return a+b;},0)/pcts.length) : 0;
+      var swPct = document.getElementById('sw-gauge-pct');
+      if (swPct) swPct.textContent = overall + '%';
+
+      var barsEl = document.getElementById('sw-section-bars');
+      if (barsEl) {
+        barsEl.innerHTML = SECTION_KEYS.map(function(s, i) {
+          var pct = pcts[i];
+          var color = pct >= 80 ? '#10B981' : pct >= 50 ? '#F59E0B' : '#EF4444';
+          var valColor = pct >= 80 ? '#047857' : pct >= 50 ? '#b45309' : '#dc2626';
+          return '<div class="lm-sw-bar-row">' +
+            '<span class="lm-sw-bar-label">' + s.label + '</span>' +
+            '<div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:' + pct + '%;background:' + color + ';"></div></div>' +
+            '<span class="lm-sw-bar-val" style="color:' + valColor + ';">' + pct + '%</span>' +
+            '</div>';
+        }).join('');
+      }
+
+      // Gaps
+      var gaps = [];
+      try {
+        var un = JSON.parse(localStorage.getItem('qms_user_needs')||'{}');
+        Object.values(un).forEach(function(u){ if(!u.linkedInputs||!u.linkedInputs.length) gaps.push(u.id+' has no linked design inputs'); });
+      } catch(e){}
+      var gapsEl = document.getElementById('sw-gaps');
+      var gapsSection = document.getElementById('sw-gaps-section');
+      if (gapsEl) {
+        if (gaps.length) {
+          gapsEl.innerHTML = gaps.slice(0,3).map(function(g) {
+            return '<div class="lm-sw-warn"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' + g + '</div>';
+          }).join('') + (gaps.length > 3 ? '<div style="font-size:0.62rem;color:rgba(11,39,64,0.38);margin-top:0.25rem;">+' + (gaps.length-3) + ' more</div>' : '');
+        } else {
+          if (gapsSection) gapsSection.style.display = 'none';
+        }
+      }
+
+      // Next action
+      var nextEl = document.getElementById('sw-next-action');
+      if (nextEl) {
+        var minIdx = 0; var minPct = 101;
+        pcts.forEach(function(p,i){ if(p<minPct){minPct=p;minIdx=i;} });
+        var s = SECTION_KEYS[minIdx];
+        nextEl.textContent = 'Focus on ' + s.label + ' (' + pcts[minIdx] + '% complete) — the lowest-progress section.';
+      }
+    })();
   </script>
 </body>
 </html>

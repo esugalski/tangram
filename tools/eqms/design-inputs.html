@@ -397,6 +397,8 @@
     </div>
 
     <!-- CONTENT AREA -->
+    <div id="lm-sidebar-widget" style="display:none"></div>
+
     <div class="content-area" id="mainContentArea">
       <div class="doc-wrap">
 
@@ -1383,6 +1385,31 @@
       if (revDisplay) revDisplay.textContent = rev;
     }
 
+    function renderSidebarWidget() {
+      var el = document.getElementById('lm-sidebar-widget');
+      if (!el) return;
+      var arr = Object.values(ITEMS).filter(function(x){return x.type==='di';});
+      var total = arr.length;
+      var approved = arr.filter(function(x){return x.status==='approved';}).length;
+      var inReview = arr.filter(function(x){return x.status==='review';}).length;
+      var draft = total - approved - inReview;
+      var noVV = arr.filter(function(x){return !x.tracedBy||!x.tracedBy.length;}).length;
+      el.innerHTML = '<div class="lm-sw">' +
+        '<div class="lm-sw-gauge-wrap">' +
+          '<span class="lm-sw-big">' + total + '</span><span class="lm-sw-big-label">design inputs</span>' +
+        '</div>' +
+        '<div class="lm-sw-section">' +
+          '<div class="lm-sw-section-title">Approval status</div>' +
+          '<div class="lm-sw-pills">' +
+            '<span class="lm-sw-pill lm-sw-pill-green">' + approved + ' Approved</span>' +
+            '<span class="lm-sw-pill lm-sw-pill-amber">' + inReview + ' In Review</span>' +
+            '<span class="lm-sw-pill lm-sw-pill-gray">' + draft + ' Draft</span>' +
+          '</div>' +
+        '</div>' +
+        (noVV > 0 ? '<div class="lm-sw-section"><div class="lm-sw-warn"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' + noVV + ' input' + (noVV===1?'':'s') + ' not linked to a V&V test</div></div>' : '') +
+      '</div>';
+    }
+
     // ── INIT ──────────────────────────────────────────────────────────────
     loadSettings();
     loadDesignInputsFromStorage();
@@ -1421,6 +1448,7 @@
   <script src="approvals.js"></script>
   <script>
     initSidebar({ activePage: 'design-inputs-tool' });
+    renderSidebarWidget();
     (function(){
       if (typeof LearnMode === 'undefined' || !LearnMode.isGuided()) return;
       if (sessionStorage.getItem('qms_gate_dismissed_design_inputs')) return;

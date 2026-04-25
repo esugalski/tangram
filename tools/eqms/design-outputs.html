@@ -345,6 +345,8 @@
     </nav>
 
     <!-- CONTENT AREA -->
+    <div id="lm-sidebar-widget" style="display:none"></div>
+
     <div class="content-area" id="mainContentArea">
       <div class="doc-wrap">
 
@@ -1085,6 +1087,36 @@
       });
     }
 
+    function renderSidebarWidget() {
+      var el = document.getElementById('lm-sidebar-widget');
+      if (!el) return;
+      var arr = Object.values(ITEMS).filter(function(x){return x.type==='do';});
+      var total = arr.length;
+      var approved = arr.filter(function(x){return x.status==='approved';}).length;
+      var inReview = arr.filter(function(x){return x.status==='review';}).length;
+      var draft = total - approved - inReview;
+      var types = {};
+      arr.forEach(function(x){ var t = x.category||'Other'; types[t]=(types[t]||0)+1; });
+      var typeRows = Object.entries(types).map(function(e) {
+        var pct = total ? Math.round(100*e[1]/total) : 0;
+        return '<div class="lm-sw-bar-row"><span class="lm-sw-bar-label">'+e[0]+'</span><div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:'+pct+'%;"></div></div><span class="lm-sw-bar-val">'+e[1]+'</span></div>';
+      }).join('');
+      el.innerHTML = '<div class="lm-sw">' +
+        '<div class="lm-sw-gauge-wrap">' +
+          '<span class="lm-sw-big">' + total + '</span><span class="lm-sw-big-label">design outputs</span>' +
+        '</div>' +
+        '<div class="lm-sw-section">' +
+          '<div class="lm-sw-section-title">Approval status</div>' +
+          '<div class="lm-sw-pills">' +
+            '<span class="lm-sw-pill lm-sw-pill-green">' + approved + ' Approved</span>' +
+            '<span class="lm-sw-pill lm-sw-pill-amber">' + inReview + ' In Review</span>' +
+            '<span class="lm-sw-pill lm-sw-pill-gray">' + draft + ' Draft</span>' +
+          '</div>' +
+        '</div>' +
+        (typeRows ? '<div class="lm-sw-section"><div class="lm-sw-section-title">By type</div>' + typeRows + '</div>' : '') +
+      '</div>';
+    }
+
     loadSettings();
     loadDesignOutputsFromStorage();
     loadDocMeta();
@@ -1141,6 +1173,6 @@
   <script src="versions.js"></script>
   <script src="governance.js"></script>
   <script src="approvals.js"></script>
-  <script>initSidebar({ activePage: 'design-outputs' });</script>
+  <script>initSidebar({ activePage: 'design-outputs' }); renderSidebarWidget();</script>
 </body>
 </html>

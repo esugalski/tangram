@@ -96,6 +96,8 @@
     </div>
     <div class="doc-lock-banner" id="doc-lock" style="display:none;"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> This plan is approved. Fields are locked. Use "Initiate Revision" to start a new draft.</div>
 
+    <div id="lm-sidebar-widget" style="display:none"></div>
+
     <div class="page-scroll">
       <div id="intro-slot"></div>
 
@@ -588,11 +590,49 @@
       return c + extra + '\n\nWrite the design review exceptions and sub-team review notes for our development plan. Describe any specialized reviews (risk review per ISO 14971, software architecture review per IEC 62304, usability review per IEC 62366), cross-functional gate requirements, and exceptions to the standard phase-gate cadence. 3–4 sentences.';
     });
 
+    function renderSidebarWidget() {
+      var el = document.getElementById('lm-sidebar-widget');
+      if (!el) return;
+      var totalD = 0, doneD = 0, firstIncomplete = null, lastEnd = '';
+      state.phases.forEach(function(ph) {
+        ph.deliverables.forEach(function(d){ totalD++; if(d.status==='done') doneD++; });
+        if (!firstIncomplete && ph.deliverables.some(function(d){return d.status!=='done';})) firstIncomplete = ph.label;
+        if (ph.end && ph.end > lastEnd) lastEnd = ph.end;
+      });
+      var pct = totalD ? Math.round(100*doneD/totalD) : 0;
+      var teamCount = state.roles.filter(function(r){return r.name;}).length;
+      var phaseRows = state.phases.map(function(ph) {
+        var done = ph.deliverables.filter(function(d){return d.status==='done';}).length;
+        var total = ph.deliverables.length;
+        var p = total ? Math.round(100*done/total) : 0;
+        var color = p===100?'#10B981':p>=50?'#F59E0B':'#EF4444';
+        return '<div class="lm-sw-bar-row">' +
+          '<span class="lm-sw-bar-label">' + ph.label + '</span>' +
+          '<div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:'+p+'%;background:'+color+';"></div></div>' +
+          '<span class="lm-sw-bar-val">' + done + '/' + total + '</span>' +
+        '</div>';
+      }).join('');
+      el.innerHTML = '<div class="lm-sw">' +
+        '<div class="lm-sw-gauge-wrap">' +
+          '<span class="lm-sw-big">' + pct + '%</span>' +
+          '<span class="lm-sw-gauge-sub">plan completion</span>' +
+        '</div>' +
+        '<div class="lm-sw-section">' +
+          '<div class="lm-sw-section-title">Key stats</div>' +
+          '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Active phase</span><span class="lm-sw-stat-value">' + (firstIncomplete||'All done') + '</span></div>' +
+          '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Target launch</span><span class="lm-sw-stat-value">' + (lastEnd||'—') + '</span></div>' +
+          '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Team members</span><span class="lm-sw-stat-value">' + teamCount + '</span></div>' +
+        '</div>' +
+        '<div class="lm-sw-section"><div class="lm-sw-section-title">Phase breakdown</div>' + phaseRows + '</div>' +
+      '</div>';
+    }
+
     initSidebar({ activePage: 'dev-plan' });
     renderIntro();
     populate();
     renderHints();
     updateStatus();
+    renderSidebarWidget();
   </script>
 </body>
 </html>

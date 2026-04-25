@@ -94,6 +94,7 @@
     </div>
   </main>
 
+  <div id="lm-sidebar-widget" style="display:none"></div>
   <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js?v=1776901546755"></script>
   <script src="approvals.js?v=1776901546755"></script>
@@ -385,10 +386,52 @@
     AIAssist.register('f-scope', aiScope);
     AIAssist.register('f-acc', aiAcceptance);
 
+    function renderSidebarWidget() {
+      var el = document.getElementById('lm-sidebar-widget');
+      if (!el) return;
+      var arr = Object.values(ITEMS);
+      var total = arr.length;
+      var verif = arr.filter(function(x){return x.kind==='verification';}).length;
+      var valid = arr.filter(function(x){return x.kind==='validation';}).length;
+      var executed = arr.filter(function(x){return x.executionStatus==='approved'||x.executionStatus==='executed';}).length;
+      var pct = total ? Math.round(100*executed/total) : 0;
+      var pass = 0, fail = 0, pending = 0;
+      arr.forEach(function(x){
+        (x.testCases||[]).forEach(function(tc){
+          if(tc.result==='pass') pass++;
+          else if(tc.result==='fail') fail++;
+          else pending++;
+        });
+      });
+      var totalTC = pass+fail+pending;
+      el.innerHTML = '<div class="lm-sw">' +
+        '<div class="lm-sw-gauge-wrap">' +
+          '<span class="lm-sw-big">' + pct + '%</span>' +
+          '<span class="lm-sw-gauge-sub">executed or approved</span>' +
+        '</div>' +
+        '<div class="lm-sw-section">' +
+          '<div class="lm-sw-section-title">Activity split</div>' +
+          '<div class="lm-sw-pills">' +
+            '<span class="lm-sw-pill lm-sw-pill-green">' + verif + ' Verification</span>' +
+            '<span class="lm-sw-pill lm-sw-pill-amber">' + valid + ' Validation</span>' +
+          '</div>' +
+        '</div>' +
+        (totalTC > 0 ? '<div class="lm-sw-section"><div class="lm-sw-section-title">Test case results</div>' +
+          '<div class="lm-sw-pills">' +
+            '<span class="lm-sw-pill lm-sw-pill-green">' + pass + ' Pass</span>' +
+            '<span class="lm-sw-pill lm-sw-pill-red">' + fail + ' Fail</span>' +
+            '<span class="lm-sw-pill lm-sw-pill-gray">' + pending + ' Pending</span>' +
+          '</div>' +
+          '<div class="lm-sw-stat-row" style="margin-top:0.3rem;"><span class="lm-sw-stat-label">Total test cases</span><span class="lm-sw-stat-value">' + totalTC + '</span></div>' +
+        '</div>' : '') +
+      '</div>';
+    }
+
     initSidebar({ activePage: 'vv' });
     renderIntro();
     renderList();
     updateStatus();
+    renderSidebarWidget();
   </script>
 </body>
 </html>

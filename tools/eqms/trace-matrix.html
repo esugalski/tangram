@@ -307,6 +307,8 @@
     </nav>
 
     <!-- CONTENT AREA -->
+    <div id="lm-sidebar-widget" style="display:none"></div>
+
     <div class="content-area" id="mainContentArea">
 
       <!-- What this page is (Guided mode) -->
@@ -1111,6 +1113,38 @@
 
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
-  <script>initSidebar({ activePage: 'trace-matrix' });</script>
+  <script>
+    initSidebar({ activePage: 'trace-matrix' });
+    (function renderSidebarWidget() {
+      var el = document.getElementById('lm-sidebar-widget');
+      if (!el) return;
+      try {
+        var un = Object.values(JSON.parse(localStorage.getItem('qms_user_needs')||'{}'));
+        var di = Object.values(JSON.parse(localStorage.getItem('qms_design_inputs')||'{}'));
+        var doItems = Object.values(JSON.parse(localStorage.getItem('qms_design_outputs')||'{}'));
+        var vv = Object.values(JSON.parse(localStorage.getItem('qms_vv_items')||'{}'));
+        var totalUN = un.length;
+        var linkedUN = un.filter(function(u){return u.linkedInputs&&u.linkedInputs.length;}).length;
+        var pct = totalUN ? Math.round(100*linkedUN/totalUN) : 0;
+        var totalDI = di.length, linkedDI = di.filter(function(x){return (x.tracedBy||[]).length;}).length;
+        var totalDO = doItems.length, linkedDO = doItems.filter(function(x){return (x.tracesTo||[]).length;}).length;
+        var totalVV = vv.length;
+        var gapCount = (totalUN-linkedUN) + (totalDI-linkedDI) + (totalDO-linkedDO);
+        el.innerHTML = '<div class="lm-sw">' +
+          '<div class="lm-sw-gauge-wrap">' +
+            '<span class="lm-sw-big">' + pct + '%</span>' +
+            '<span class="lm-sw-gauge-sub">of user needs fully traced</span>' +
+          '</div>' +
+          (gapCount>0 ? '<div class="lm-sw-section"><div class="lm-sw-warn"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' + gapCount + ' missing link' + (gapCount===1?'':'s') + ' across all columns</div></div>' : '') +
+          '<div class="lm-sw-section"><div class="lm-sw-section-title">Coverage by column</div>' +
+            '<div class="lm-sw-bar-row"><span class="lm-sw-bar-label">User Needs</span><div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:'+(totalUN?Math.round(100*linkedUN/totalUN):0)+'%;"></div></div><span class="lm-sw-bar-val">'+linkedUN+'/'+totalUN+'</span></div>' +
+            '<div class="lm-sw-bar-row"><span class="lm-sw-bar-label">Design Inputs</span><div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:'+(totalDI?Math.round(100*linkedDI/totalDI):0)+'%;"></div></div><span class="lm-sw-bar-val">'+linkedDI+'/'+totalDI+'</span></div>' +
+            '<div class="lm-sw-bar-row"><span class="lm-sw-bar-label">Design Outputs</span><div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:'+(totalDO?Math.round(100*linkedDO/totalDO):0)+'%;"></div></div><span class="lm-sw-bar-val">'+linkedDO+'/'+totalDO+'</span></div>' +
+            '<div class="lm-sw-bar-row"><span class="lm-sw-bar-label">V&V Items</span><div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:'+(totalVV?100:0)+'%;"></div></div><span class="lm-sw-bar-val">'+totalVV+'</span></div>' +
+          '</div>' +
+        '</div>';
+      } catch(e) {}
+    })();
+  </script>
 </body>
 </html>
