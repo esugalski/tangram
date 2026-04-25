@@ -364,9 +364,40 @@
     .btn-save-settings:hover { background: var(--aqua-dark); transform: translateY(-1px); }
     .settings-save-flash { font-size: 0.78rem; font-weight: 700; color: var(--green); opacity: 0; transition: opacity 0.3s; margin-left: 0.5rem; }
     .settings-save-flash.show { opacity: 1; }
-    .explainer-collapse-btn { margin-left: auto; width: 22px; height: 22px; border: none; background: rgba(10,192,233,0.12); border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; padding: 0; }
-    .explainer-collapse-btn:hover { background: rgba(10,192,233,0.22); }
-    .explainer-collapsed .explainer-body { display: none; }
+    /* ─── DOC PAGE CARD ─── */
+    .doc-page-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 14px; overflow: hidden; margin-bottom: 1.5rem; }
+    .doc-page-card .doc-cover { background: transparent; border: none; border-radius: 0; margin-bottom: 0; border-bottom: 1px solid rgba(11,39,64,0.08); }
+    .doc-page-card .req-section-head { padding: 0.85rem 1.25rem; border-bottom: 1px solid rgba(11,39,64,0.06); margin-bottom: 0; }
+    .doc-page-card .list-table-wrap { border-radius: 0; border: none; }
+
+    /* ─── TABLE HEADER BUTTONS ─── */
+    .req-section-right { display: flex; align-items: center; gap: 0.5rem; }
+    .btn-tbl-add { display: inline-flex; align-items: center; gap: 0.4rem; background: var(--aqua); color: var(--primary); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.75rem; padding: 0.42rem 0.85rem; border-radius: 7px; border: none; cursor: pointer; transition: background 0.15s; box-shadow: 0 2px 6px rgba(10,192,233,0.22); }
+    .btn-tbl-add:hover { background: var(--aqua-dark); }
+    .btn-tbl-add svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-tbl-ai { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.75rem; padding: 0.42rem 0.85rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+    .btn-tbl-ai:hover { border-color: var(--aqua); color: var(--aqua-dark); }
+    .btn-tbl-ai svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── GUIDANCE BUTTON ─── */
+    .btn-guidance { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+    .btn-guidance:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-guidance svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── HELP PANEL ─── */
+    .help-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    .panel-overlay.help-open .help-panel { transform: translateX(0); }
+
+    /* ─── STATUS CHART ─── */
+    .status-chart-strip { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1.25rem; border-bottom: 1px solid rgba(11,39,64,0.06); }
+    .status-donut { flex-shrink: 0; transform: rotate(-90deg); }
+    .status-legend { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+    .status-legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: rgba(11,39,64,0.65); }
+    .status-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .status-legend-count { font-weight: 700; color: #0B2740; }
+
+    /* ─── FOOTER SUPPRESSION ─── */
+    #lm-step-footer { display: none !important; }
   </style>
 </head>
 <body>
@@ -394,22 +425,12 @@
         </button>
         <button class="btn-export" onclick="finalizeDocument()" id="btn-finalize" style="border-color:rgba(16,185,129,0.3);color:#047857;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Finalize &amp; Approve
+          Approve
         </button>
-        <button class="btn-add-un" onclick="openAddUserNeed()">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add User Need
+        <button class="btn-guidance" onclick="openHelpPanel()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Guidance
         </button>
-        <button class="btn-ai" id="btnAiAssist" onclick="openAiPanel()">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
-          AI Assist
-        </button>
-        <div class="gap-pill" onclick="openAiPanel(); scrollToGaps()">
-          <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          3 gaps
-        </div>
       </div>
     </header>
 
@@ -448,6 +469,7 @@
     <div class="content-area" id="mainContentArea">
       <div class="doc-wrap">
 
+        <div class="doc-page-card">
         <!-- DOCUMENT COVER -->
         <div class="doc-cover">
           <div class="doc-cover-top">
@@ -513,25 +535,26 @@
           </div>
         </div><!-- /doc-cover -->
 
-        <!-- What this page is (Guided mode) -->
-        <div class="learn-only" id="un-explainer" style="background:rgba(10,192,233,0.06);border:1px solid rgba(10,192,233,0.22);border-radius:10px;padding:0.85rem 1.1rem;margin:1.25rem 0 0.75rem;font-family:'Inter',sans-serif;">
-          <div style="display:flex;align-items:center;margin-bottom:0.3rem;">
-            <div style="font-size:0.58rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#089bbf;flex:1;">What is a &quot;User Need&quot;?</div>
-            <button class="explainer-collapse-btn" onclick="toggleExplainer('un-explainer','qms_explainer_un')" title="Collapse">
-              <svg id="un-explainer-chev" viewBox="0 0 24 24" style="width:11px;height:11px;stroke:#089bbf;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform 0.18s;"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-          </div>
-          <div class="explainer-body">
-            <div style="font-size:0.82rem;color:#0B2740;line-height:1.55;margin-bottom:0.5rem;">A <strong>user need</strong> is what someone expects the device to do for them, in plain language. Think: <em>&quot;The patient should be continuously monitored without having to do anything,&quot;</em> or <em>&quot;The clinician should be able to retrieve data remotely.&quot;</em></div>
-            <div style="font-size:0.76rem;color:#304F6B;line-height:1.55;">The table below is the <strong>User Needs list</strong>. Each row is one need. It becomes the foundation for every design input (Step 5), design output (Step 7), and V&amp;V test (Step 10) that follows. Each user need gets a unique ID (UN-001, UN-002, …) so every downstream requirement can trace back to it.</div>
-          </div>
+        <!-- Status chart -->
+        <div class="status-chart-strip" id="statusChartStrip">
+          <svg class="status-donut" id="statusDonut" viewBox="0 0 36 36" width="52" height="52"></svg>
+          <div class="status-legend" id="statusLegend"></div>
         </div>
 
         <!-- Requirements Table -->
         <div class="req-section-head">
           <div class="req-section-left">
             <span class="req-section-title">User needs</span>
-            <span class="req-section-count" id="reqCount">5</span>
+          </div>
+          <div class="req-section-right">
+            <button class="btn-tbl-ai" onclick="openAiPanel()">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              AI Assist
+            </button>
+            <button class="btn-tbl-add" onclick="openAddUserNeed()">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add User Need
+            </button>
           </div>
         </div>
         <div class="list-table-wrap">
@@ -596,6 +619,7 @@
           </tbody>
         </table>
       </div>
+        </div><!-- /doc-page-card -->
       </div><!-- /doc-wrap -->
     </div><!-- /content-area -->
 
@@ -784,6 +808,31 @@
               <div class="gap-list-item"><div class="gap-list-text"><strong>UN-005</strong> has no linked design inputs.</div></div>
               <div class="gap-list-item"><div class="gap-list-text"><strong>DI-007</strong> has no linked user need — regulatory-only requirement not traced to stakeholder needs.</div></div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HELP / GUIDANCE PANEL -->
+      <div class="help-panel" id="helpPanel">
+        <div class="panel-head">
+          <div class="panel-head-row">
+            <span class="panel-type-badge" style="background:rgba(10,192,233,0.1);color:#089bbf;">GUIDANCE</span>
+            <span class="panel-id">What is a "User Need"?</span>
+            <button class="panel-close" onclick="closeAllPanels()">
+              <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="panel-body" style="gap:1.25rem;">
+          <div style="font-size:0.84rem;color:#0B2740;line-height:1.65;">
+            A <strong>user need</strong> is what someone expects the device to do for them, in plain language. Think: <em>"The patient should be continuously monitored without having to do anything,"</em> or <em>"The clinician should be able to retrieve data remotely."</em>
+          </div>
+          <div style="font-size:0.78rem;color:#304F6B;line-height:1.65;">
+            The table below is the <strong>User Needs list</strong>. Each row is one need. It becomes the foundation for every design input, design output, and V&amp;V test that follows. Each user need gets a unique ID (UN-001, UN-002, …) so every downstream requirement can trace back to it.
+          </div>
+          <div style="border:2px dashed rgba(11,39,64,0.12);border-radius:10px;background:rgba(11,39,64,0.025);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.65rem;margin-top:0.25rem;">
+            <svg viewBox="0 0 24 24" style="width:34px;height:34px;stroke:rgba(11,39,64,0.18);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <span style="font-size:0.74rem;font-weight:500;color:rgba(11,39,64,0.28);">Video guide coming soon</span>
           </div>
         </div>
       </div>
@@ -984,21 +1033,6 @@
     }
     function toggleHistory(btn) { btn.classList.toggle('open'); btn.nextElementSibling.classList.toggle('hidden'); }
     function toggleHistoryEntry(head) { head.nextElementSibling.classList.toggle('open'); }
-    function toggleExplainer(panelId, storageKey) {
-      var panel = document.getElementById(panelId);
-      var chev = document.getElementById(panelId + '-chev');
-      var collapsed = panel.classList.toggle('explainer-collapsed');
-      if (chev) chev.style.transform = collapsed ? 'rotate(-90deg)' : '';
-      if (collapsed) sessionStorage.setItem(storageKey, '1');
-      else sessionStorage.removeItem(storageKey);
-    }
-    (function restoreExplainers() {
-      if (sessionStorage.getItem('qms_explainer_un') === '1') {
-        var p = document.getElementById('un-explainer');
-        var c = document.getElementById('un-explainer-chev');
-        if (p) { p.classList.add('explainer-collapsed'); if (c) c.style.transform = 'rotate(-90deg)'; }
-      }
-    })();
 
     function buildPanelBody(item, isChangeRequest = false) {
       let html = '';
@@ -1113,7 +1147,63 @@
     function discardPanel() { if (currentItemKey) openDetail(currentItemKey); }
     function openAiPanel() { currentPanelMode = 'ai'; document.getElementById('detailPanel').style.transform = 'translateX(100%)'; document.getElementById('aiPanel').style.transform = ''; document.getElementById('panelOverlay').classList.add('open'); }
     function scrollToGaps() { setTimeout(()=>{ const el=document.getElementById('gapAnalysisSection'); if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },350); }
-    function closeAllPanels() { document.getElementById('panelOverlay').classList.remove('open'); currentPanelMode = null; }
+    function openHelpPanel() {
+      document.getElementById('detailPanel').style.transform = 'translateX(100%)';
+      document.getElementById('aiPanel').style.transform = 'translateX(100%)';
+      var overlay = document.getElementById('panelOverlay');
+      overlay.classList.add('open', 'help-open');
+    }
+    function closeAllPanels() {
+      var overlay = document.getElementById('panelOverlay');
+      overlay.classList.remove('open', 'help-open');
+      currentPanelMode = null;
+    }
+    function buildStatusChart() {
+      var rows = document.querySelectorAll('.list-table tbody tr');
+      var counts = { approved: 0, review: 0, draft: 0 };
+      rows.forEach(function(r) {
+        if (r.classList.contains('row-approved')) counts.approved++;
+        else if (r.classList.contains('row-review')) counts.review++;
+        else counts.draft++;
+      });
+      var total = counts.approved + counts.review + counts.draft;
+      if (total === 0) return;
+      var colors = { approved: '#059669', review: '#b45309', draft: 'rgba(11,39,64,0.22)' };
+      var labels = { approved: 'Approved', review: 'Under Review', draft: 'Draft' };
+      var r = 15.9155, cx = 18, cy = 18;
+      var circumference = 2 * Math.PI * r;
+      var svg = document.getElementById('statusDonut');
+      if (!svg) return;
+      svg.innerHTML = '<circle cx="18" cy="18" r="15.9155" fill="none" stroke="rgba(11,39,64,0.06)" stroke-width="3.5"/>';
+      var offset = 0;
+      ['approved', 'review', 'draft'].forEach(function(key) {
+        if (counts[key] === 0) return;
+        var pct = (counts[key] / total) * circumference;
+        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
+        circle.setAttribute('fill', 'none');
+        circle.setAttribute('stroke', colors[key]);
+        circle.setAttribute('stroke-width', '3.5');
+        circle.setAttribute('stroke-dasharray', pct + ' ' + (circumference - pct));
+        circle.setAttribute('stroke-dashoffset', -offset);
+        svg.appendChild(circle);
+        offset += pct;
+      });
+      var legend = document.getElementById('statusLegend');
+      if (!legend) return;
+      legend.innerHTML = '';
+      ['approved', 'review', 'draft'].forEach(function(key) {
+        if (counts[key] === 0) return;
+        var pct = Math.round(counts[key] / total * 100);
+        legend.innerHTML += '<div class="status-legend-item">' +
+          '<span class="status-legend-dot" style="background:' + colors[key] + '"></span>' +
+          '<span>' + labels[key] + '</span>' +
+          '<span class="status-legend-count">' + counts[key] + '</span>' +
+          '<span style="color:rgba(11,39,64,0.35)">(' + pct + '%)</span>' +
+          '</div>';
+      });
+    }
+    document.addEventListener('DOMContentLoaded', buildStatusChart);
     function openAddUserNeed() {
       currentItemKey = '_new_un'; currentPanelMode = 'detail'; isProposingChange = false;
       document.getElementById('aiPanel').style.transform = 'translateX(100%)'; document.getElementById('detailPanel').style.transform = '';
