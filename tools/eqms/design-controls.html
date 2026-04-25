@@ -17,11 +17,13 @@
       --aqua:       #0AC0E9;
       --aqua-dark:  #089bbf;
       --light-gray: #F7F8FA;
+      --white:      #FFFFFF;
+      --gray:       #D2D2D2;
       --green:      #10B981;
       --amber:      #F59E0B;
       --red:        #EF4444;
       --indigo:     #6366f1;
-      --sidebar-w:  220px;
+      --sidebar-w:  232px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
@@ -36,11 +38,12 @@
     .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
     .sidebar-nav { flex: 1; padding: 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
     .sidebar-nav::-webkit-scrollbar { width: 0; }
-    .sidebar-nav-item { display: flex; align-items: center; gap: 0.65rem; padding: 0.5rem 0.85rem; border-radius: 7px; font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.62); cursor: pointer; transition: background 0.13s, color 0.13s; text-decoration: none; margin: 1px 0.5rem; white-space: nowrap; overflow: hidden; }
-    .sidebar-nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
-    .sidebar-nav-item.active { background: rgba(10,192,233,0.14); color: #0AC0E9; font-weight: 600; }
-    .sidebar-nav-icon { width: 16px; height: 16px; flex-shrink: 0; stroke: currentColor; fill: none; display: flex; }
-    .sidebar-nav-icon svg { width: 16px; height: 16px; stroke: inherit; fill: none; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; margin: 1px 0.5rem; white-space: nowrap; overflow: hidden; position: relative; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.9); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; font-weight: 600; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; display: flex; }
+    .sidebar-nav-icon svg { width: 15px; height: 15px; stroke: inherit; fill: none; }
     .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
     .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
     .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
@@ -49,7 +52,7 @@
 
     /* ─── APP SHELL ─── */
     .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
-    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 1.5rem; flex-shrink: 0; z-index: 10; }
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 1.5rem; flex-shrink: 0; z-index: 10; }
     .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; max-width: 380px; flex: 1; transition: border-color 0.15s; }
     .topbar-search:focus-within { border-color: rgba(10,192,233,0.4); }
     .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; flex-shrink: 0; }
@@ -70,6 +73,35 @@
     .main-area { flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem; min-width: 0; }
     .main-area::-webkit-scrollbar { width: 5px; }
     .main-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    /* ─── GUIDANCE BUTTON ─── */
+    .btn-guidance { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+    .btn-guidance:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-guidance svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── PANEL OVERLAY ─── */
+    .panel-overlay { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+    .panel-overlay.open { pointer-events: auto; }
+    .panel-backdrop { position: absolute; inset: 0; background: rgba(11,39,64,0.15); opacity: 0; transition: opacity 0.25s; }
+    .panel-overlay.open .panel-backdrop { opacity: 1; }
+    .help-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    .panel-overlay.help-open .help-panel { transform: translateX(0); }
+    .panel-head { padding: 1.2rem 1.25rem 1rem; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .panel-head-row { display: flex; align-items: center; gap: 0.65rem; }
+    .panel-type-badge { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 4px; }
+    .panel-id { font-size: 0.95rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; flex: 1; }
+    .panel-close { width: 28px; height: 28px; border-radius: 6px; border: none; background: rgba(11,39,64,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
+    .panel-close:hover { background: rgba(11,39,64,0.12); }
+    .panel-close svg { width: 14px; height: 14px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .panel-body { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+
+    /* ─── SUPPRESSION ─── */
+    #lm-step-footer { display: none !important; }
+    #lm-toggle-root { display: none !important; }
+    /* Remove unused topbar components */
+    .topbar-icon-btn, .topbar-notif-dot, .topbar-user { display: none; }
 
     /* ─── PRODUCT SELECTOR ─── */
     .product-selector-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
@@ -258,17 +290,10 @@
         <input type="text" placeholder="Search documents, CAPAs, products, audits…">
       </div>
       <div class="topbar-right">
-        <button class="topbar-icon-btn" title="Notifications">
-          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
-          <span class="topbar-notif-dot"></span>
+        <button class="btn-guidance" onclick="openHelpPanel()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Guidance
         </button>
-        <div class="topbar-user">
-          <div class="topbar-user-avatar">FM</div>
-          <div>
-            <div class="topbar-user-name">Founding Member</div>
-            <div class="topbar-user-role">Early Access</div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -660,11 +685,61 @@
     </div><!-- /content-wrap -->
   </div><!-- /app-main -->
 
+  <!-- PANEL OVERLAY -->
+  <div class="panel-overlay" id="panelOverlay">
+    <div class="panel-backdrop" onclick="closeAllPanels()"></div>
+    <div class="help-panel" id="helpPanel">
+      <div class="panel-head">
+        <div class="panel-head-row">
+          <span class="panel-type-badge" style="background:rgba(10,192,233,0.1);color:#089bbf;">GUIDANCE</span>
+          <span class="panel-id">Design Controls Overview</span>
+          <button class="panel-close" onclick="closeAllPanels()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div style="font-size:0.84rem;color:#0B2740;line-height:1.65;">
+          <strong>Design controls</strong> are the structured process of translating what patients and clinicians need into verified, validated device requirements — then proving you met them. They're required for all Class II and III devices under 21 CFR 820.30 and ISO 13485 §7.3.
+        </div>
+        <div style="font-size:0.8rem;color:#304F6B;line-height:1.65;">
+          Six sequential sections form an unbroken chain — each feeds the next. The Traceability Matrix runs alongside throughout, confirming every link is in place. Gaps in the chain become 483 observations.
+        </div>
+        <div style="background:rgba(11,39,64,0.03);border:1px solid rgba(11,39,64,0.08);border-radius:10px;padding:0.9rem 1rem;display:flex;flex-direction:column;gap:0.55rem;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(11,39,64,0.35);">The Chain</div>
+          <div style="font-size:0.78rem;color:#0B2740;line-height:1.6;">
+            <span style="font-weight:700;">User Needs</span> → <span style="font-weight:700;">Design Inputs</span> → <span style="font-weight:700;">Design Outputs</span> → <span style="font-weight:700;">Design Reviews</span> → <span style="font-weight:700;">V&amp;V</span> — all cross-referenced in the <span style="font-weight:700;">Trace Matrix</span>.
+          </div>
+        </div>
+        <div style="font-size:0.8rem;color:#304F6B;line-height:1.65;">
+          The majority of device recalls trace back to failures in this process: requirements that were never written down, outputs that didn't trace to inputs, or V&amp;V that didn't cover what patients actually do.
+        </div>
+        <!-- Video placeholder -->
+        <div style="border:2px dashed rgba(11,39,64,0.12);border-radius:10px;background:rgba(11,39,64,0.025);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.65rem;">
+          <svg viewBox="0 0 24 24" style="width:34px;height:34px;stroke:rgba(11,39,64,0.18);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          <span style="font-size:0.74rem;font-weight:500;color:rgba(11,39,64,0.28);">Video guide coming soon</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="seed-demo.js?v=1776901546755"></script>
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
   <script>
     initSidebar({ activePage: 'design-controls' });
+
+    function openHelpPanel() {
+      document.getElementById('helpPanel').style.transform = '';
+      var overlay = document.getElementById('panelOverlay');
+      overlay.classList.add('open', 'help-open');
+    }
+    function closeAllPanels() {
+      var overlay = document.getElementById('panelOverlay');
+      overlay.classList.remove('open', 'help-open');
+      document.getElementById('helpPanel').style.transform = 'translateX(100%)';
+    }
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAllPanels(); });
 
     var PRODUCTS = ['CardioSync Pro', 'CardioSync Lite', 'CardioSync Hub'];
     var productIdx = 0;
