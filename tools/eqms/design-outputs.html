@@ -307,14 +307,6 @@
     .help-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
     .panel-overlay.help-open .help-panel { transform: translateX(0); }
 
-    /* ─── STATUS CHART ─── */
-    .status-chart-strip { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1.25rem; border-bottom: 1px solid rgba(11,39,64,0.06); }
-    .status-donut { flex-shrink: 0; transform: rotate(-90deg); }
-    .status-legend { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-    .status-legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: rgba(11,39,64,0.65); }
-    .status-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .status-legend-count { font-weight: 700; color: #0B2740; }
-
     /* ─── FOOTER SUPPRESSION ─── */
     #lm-step-footer { display: none !important; }
   </style>
@@ -449,12 +441,6 @@
             </div>
           </div>
         </div><!-- /doc-cover -->
-
-        <!-- Status chart -->
-        <div class="status-chart-strip" id="statusChartStrip">
-          <svg class="status-donut" id="statusDonut" viewBox="0 0 36 36" width="52" height="52"></svg>
-          <div class="status-legend" id="statusLegend"></div>
-        </div>
 
         <!-- Outputs Table -->
         <div class="req-section-head">
@@ -974,52 +960,6 @@
       currentPanelMode = null;
       document.getElementById('contextBanner').classList.remove('visible');
     }
-    function buildStatusChart() {
-      var rows = document.querySelectorAll('.list-table tbody tr');
-      var counts = { approved: 0, review: 0, draft: 0 };
-      rows.forEach(function(r) {
-        if (r.classList.contains('row-approved')) counts.approved++;
-        else if (r.classList.contains('row-review')) counts.review++;
-        else counts.draft++;
-      });
-      var total = counts.approved + counts.review + counts.draft;
-      if (total === 0) return;
-      var colors = { approved: '#059669', review: '#b45309', draft: 'rgba(11,39,64,0.22)' };
-      var labels = { approved: 'Approved', review: 'Under Review', draft: 'Draft' };
-      var r = 15.9155, cx = 18, cy = 18;
-      var circumference = 2 * Math.PI * r;
-      var svg = document.getElementById('statusDonut');
-      if (!svg) return;
-      svg.innerHTML = '<circle cx="18" cy="18" r="15.9155" fill="none" stroke="rgba(11,39,64,0.06)" stroke-width="3.5"/>';
-      var offset = 0;
-      ['approved', 'review', 'draft'].forEach(function(key) {
-        if (counts[key] === 0) return;
-        var pct = (counts[key] / total) * circumference;
-        var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
-        circle.setAttribute('fill', 'none');
-        circle.setAttribute('stroke', colors[key]);
-        circle.setAttribute('stroke-width', '3.5');
-        circle.setAttribute('stroke-dasharray', pct + ' ' + (circumference - pct));
-        circle.setAttribute('stroke-dashoffset', -offset);
-        svg.appendChild(circle);
-        offset += pct;
-      });
-      var legend = document.getElementById('statusLegend');
-      if (!legend) return;
-      legend.innerHTML = '';
-      ['approved', 'review', 'draft'].forEach(function(key) {
-        if (counts[key] === 0) return;
-        var pct = Math.round(counts[key] / total * 100);
-        legend.innerHTML += '<div class="status-legend-item">' +
-          '<span class="status-legend-dot" style="background:' + colors[key] + '"></span>' +
-          '<span>' + labels[key] + '</span>' +
-          '<span class="status-legend-count">' + counts[key] + '</span>' +
-          '<span style="color:rgba(11,39,64,0.35)">(' + pct + '%)</span>' +
-          '</div>';
-      });
-    }
-    document.addEventListener('DOMContentLoaded', buildStatusChart);
     function syncDOStatusInDOM(key, status) {
       const labels = { approved: 'Approved', review: 'Under Review', draft: 'Draft' };
       const listRow = document.querySelector(`#do-tbody tr[onclick="openDetail('${key}')"]`);
@@ -1219,17 +1159,33 @@
         var pct = total ? Math.round(100*e[1]/total) : 0;
         return '<div class="lm-sw-bar-row"><span class="lm-sw-bar-label">'+e[0]+'</span><div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:'+pct+'%;"></div></div><span class="lm-sw-bar-val">'+e[1]+'</span></div>';
       }).join('');
+      var circ = 100;
+      var dc = { approved: '#059669', review: '#b45309', draft: 'rgba(11,39,64,0.22)' };
+      var dsvg = '<svg viewBox="0 0 36 36" width="56" height="56" style="transform:rotate(-90deg);flex-shrink:0;"><circle cx="18" cy="18" r="15.9155" fill="none" stroke="rgba(11,39,64,0.06)" stroke-width="3.5"/>';
+      var doff = 0;
+      [['approved',approved],['review',inReview],['draft',draft]].forEach(function(p) {
+        if (!p[1] || !total) return;
+        var pct = (p[1]/total)*circ;
+        dsvg += '<circle cx="18" cy="18" r="15.9155" fill="none" stroke="'+dc[p[0]]+'" stroke-width="3.5" stroke-dasharray="'+pct+' '+(circ-pct)+'" stroke-dashoffset="'+(-doff)+'"/>';
+        doff += pct;
+      });
+      dsvg += '</svg>';
+      var dleg = '';
+      [['approved','#059669','Approved',approved],['review','#b45309','Under Review',inReview],['draft','rgba(11,39,64,0.22)','Draft',draft]].forEach(function(p) {
+        if (!p[3]) return;
+        var pct = total ? Math.round(p[3]/total*100) : 0;
+        dleg += '<div style="display:flex;align-items:center;gap:0.35rem;font-size:0.68rem;color:rgba(11,39,64,0.65);">' +
+          '<span style="width:7px;height:7px;border-radius:50%;background:'+p[1]+';flex-shrink:0;display:inline-block;"></span>' +
+          '<span>'+p[2]+'</span><span style="font-weight:700;color:#0B2740;">'+p[3]+'</span><span style="color:rgba(11,39,64,0.35);">('+pct+'%)</span>' +
+          '</div>';
+      });
       el.innerHTML = '<div class="lm-sw">' +
+        '<div style="display:flex;align-items:center;gap:0.9rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(11,39,64,0.06);margin-bottom:0.75rem;">' +
+          dsvg +
+          '<div style="display:flex;flex-direction:column;gap:0.45rem;">' + dleg + '</div>' +
+        '</div>' +
         '<div class="lm-sw-gauge-wrap">' +
           '<span class="lm-sw-big">' + total + '</span><span class="lm-sw-big-label">design outputs</span>' +
-        '</div>' +
-        '<div class="lm-sw-section">' +
-          '<div class="lm-sw-section-title">Approval status</div>' +
-          '<div class="lm-sw-pills">' +
-            '<span class="lm-sw-pill lm-sw-pill-green">' + approved + ' Approved</span>' +
-            '<span class="lm-sw-pill lm-sw-pill-amber">' + inReview + ' In Review</span>' +
-            '<span class="lm-sw-pill lm-sw-pill-gray">' + draft + ' Draft</span>' +
-          '</div>' +
         '</div>' +
         (typeRows ? '<div class="lm-sw-section"><div class="lm-sw-section-title">By type</div>' + typeRows + '</div>' : '') +
       '</div>';
