@@ -114,10 +114,8 @@
     /* ─── PROCESS FLOW ─── */
     .flow-section { margin-bottom: 1.75rem; }
     .section-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.75rem; }
+    .flow-section-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; }
     .flow-strip {
-      background: white;
-      border: 1px solid rgba(11,39,64,0.08);
-      border-radius: 12px;
       padding: 1.1rem 1.25rem;
       display: flex;
       align-items: center;
@@ -126,6 +124,18 @@
     }
     .flow-strip::-webkit-scrollbar { height: 4px; }
     .flow-strip::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+    .flow-tm-bar { border-top: 1px dashed rgba(11,39,64,0.13); background: rgba(11,39,64,0.025); display: flex; align-items: center; padding: 0.65rem 1.25rem; gap: 0.75rem; text-decoration: none; color: inherit; transition: background 0.12s; cursor: pointer; }
+    .flow-tm-bar:hover { background: rgba(10,192,233,0.05); }
+    .flow-tm-brack-l { width: 8px; height: 20px; border-top: 1.5px solid rgba(11,39,64,0.18); border-bottom: 1.5px solid rgba(11,39,64,0.18); border-left: 1.5px solid rgba(11,39,64,0.18); flex-shrink: 0; }
+    .flow-tm-brack-r { width: 8px; height: 20px; border-top: 1.5px solid rgba(11,39,64,0.18); border-bottom: 1.5px solid rgba(11,39,64,0.18); border-right: 1.5px solid rgba(11,39,64,0.18); flex-shrink: 0; }
+    .flow-tm-icon { width: 28px; height: 28px; background: rgba(11,39,64,0.07); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .flow-tm-icon svg { width: 13px; height: 13px; stroke: var(--mid-blue); fill: none; stroke-width: 2; }
+    .flow-tm-info { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; }
+    .flow-tm-name { font-size: 0.77rem; font-weight: 700; color: var(--primary); white-space: nowrap; }
+    .flow-tm-sub { font-size: 0.67rem; color: rgba(11,39,64,0.42); }
+    .flow-tm-gap-chip { font-size: 0.62rem; font-weight: 700; padding: 0.13rem 0.42rem; background: rgba(245,158,11,0.12); color: #b45309; border-radius: 4px; flex-shrink: 0; white-space: nowrap; }
+    .flow-tm-open { font-size: 0.72rem; font-weight: 600; color: var(--aqua-dark); flex-shrink: 0; display: flex; align-items: center; gap: 0.25rem; }
+    .flow-tm-open svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
     .flow-node {
       display: flex;
       flex-direction: column;
@@ -293,7 +303,7 @@
               </div>
               <div class="intro-point">
                 <div class="intro-point-dot"></div>
-                Required for all Class II and III devices. The 7 sections below form an unbroken chain — each feeds the next. Gaps in the chain become 483 observations.
+                Required for all Class II and III devices. Six sequential sections form an unbroken chain — each feeds the next. The Trace Matrix runs alongside throughout, confirming every link is in place. Gaps in the chain become 483 observations.
               </div>
               <div class="intro-point">
                 <div class="intro-point-dot"></div>
@@ -316,47 +326,56 @@
         <!-- PROCESS FLOW -->
         <div class="flow-section">
           <div class="section-label">Process Flow — click any stage to open it</div>
-          <div class="flow-strip" id="flowStrip">
-            <a href="dev-plan.html" class="flow-node">
-              <span class="flow-node-num">01</span>
-              <span class="flow-node-label">Dev Plan</span>
-              <span class="flow-node-status flow-status-complete" id="fs-devplan">Complete</span>
-            </a>
-            <span class="flow-arrow">→</span>
-            <a href="user-needs.html" class="flow-node">
-              <span class="flow-node-num">02</span>
-              <span class="flow-node-label">User Needs</span>
-              <span class="flow-node-status flow-status-progress" id="fs-usneeds">In Progress</span>
-            </a>
-            <span class="flow-arrow">→</span>
-            <a href="design-inputs.html" class="flow-node">
-              <span class="flow-node-num">03</span>
-              <span class="flow-node-label">Design Inputs</span>
-              <span class="flow-node-status flow-status-progress" id="fs-dinputs">In Progress</span>
-            </a>
-            <span class="flow-arrow">→</span>
-            <a href="design-outputs.html" class="flow-node">
-              <span class="flow-node-num">04</span>
-              <span class="flow-node-label">Design Outputs</span>
-              <span class="flow-node-status flow-status-progress" id="fs-doutputs">In Progress</span>
-            </a>
-            <span class="flow-arrow">→</span>
-            <a href="design-review.html" class="flow-node">
-              <span class="flow-node-num">05</span>
-              <span class="flow-node-label">Design Reviews</span>
-              <span class="flow-node-status flow-status-progress" id="fs-dreviews">In Progress</span>
-            </a>
-            <span class="flow-arrow">→</span>
-            <a href="vv.html" class="flow-node">
-              <span class="flow-node-num">06</span>
-              <span class="flow-node-label">V&amp;V</span>
-              <span class="flow-node-status flow-status-gap" id="fs-vv">Gaps</span>
-            </a>
-            <span class="flow-arrow">→</span>
-            <a href="trace-matrix.html" class="flow-node">
-              <span class="flow-node-num">07</span>
-              <span class="flow-node-label">Trace Matrix</span>
-              <span class="flow-node-status flow-status-gap" id="fs-trace">3 Gaps</span>
+          <div class="flow-section-wrap">
+            <div class="flow-strip" id="flowStrip">
+              <a href="dev-plan.html" class="flow-node">
+                <span class="flow-node-num">01</span>
+                <span class="flow-node-label">Dev Plan</span>
+                <span class="flow-node-status flow-status-complete" id="fs-devplan">Complete</span>
+              </a>
+              <span class="flow-arrow">→</span>
+              <a href="user-needs.html" class="flow-node">
+                <span class="flow-node-num">02</span>
+                <span class="flow-node-label">User Needs</span>
+                <span class="flow-node-status flow-status-progress" id="fs-usneeds">In Progress</span>
+              </a>
+              <span class="flow-arrow">→</span>
+              <a href="design-inputs.html" class="flow-node">
+                <span class="flow-node-num">03</span>
+                <span class="flow-node-label">Design Inputs</span>
+                <span class="flow-node-status flow-status-progress" id="fs-dinputs">In Progress</span>
+              </a>
+              <span class="flow-arrow">→</span>
+              <a href="design-outputs.html" class="flow-node">
+                <span class="flow-node-num">04</span>
+                <span class="flow-node-label">Design Outputs</span>
+                <span class="flow-node-status flow-status-progress" id="fs-doutputs">In Progress</span>
+              </a>
+              <span class="flow-arrow">→</span>
+              <a href="design-review.html" class="flow-node">
+                <span class="flow-node-num">05</span>
+                <span class="flow-node-label">Design Reviews</span>
+                <span class="flow-node-status flow-status-progress" id="fs-dreviews">In Progress</span>
+              </a>
+              <span class="flow-arrow">→</span>
+              <a href="vv.html" class="flow-node">
+                <span class="flow-node-num">06</span>
+                <span class="flow-node-label">V&amp;V</span>
+                <span class="flow-node-status flow-status-gap" id="fs-vv">Gaps</span>
+              </a>
+            </div>
+            <a href="trace-matrix.html" class="flow-tm-bar">
+              <div class="flow-tm-brack-l"></div>
+              <div class="flow-tm-icon">
+                <svg viewBox="0 0 24 24"><rect x="2" y="3" width="7" height="7" rx="1"/><rect x="9" y="3" width="7" height="7" rx="1"/><rect x="16" y="3" width="6" height="7" rx="1"/><line x1="5.5" y1="10" x2="5.5" y2="14"/><line x1="12.5" y1="10" x2="12.5" y2="14"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="2" y1="14" x2="22" y2="14"/></svg>
+              </div>
+              <div class="flow-tm-info">
+                <span class="flow-tm-name">Trace Matrix</span>
+                <span class="flow-tm-sub">— maintained throughout, updated as each section progresses</span>
+              </div>
+              <span class="flow-tm-gap-chip" id="fs-trace">3 V&amp;V Gaps</span>
+              <span class="flow-tm-open">Open Trace Matrix <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+              <div class="flow-tm-brack-r"></div>
             </a>
           </div>
         </div>
@@ -561,10 +580,10 @@
               </div>
               <div class="card-body">
                 <div class="card-header">
-                  <span class="card-num">07</span>
+                  <span class="card-num" style="color:var(--aqua-dark);background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.2);border-radius:4px;padding:0.1rem 0.4rem;letter-spacing:0.04em;">Continuous</span>
                   <span class="card-title">Traceability Matrix</span>
                 </div>
-                <div class="card-what">The cross-section view that shows how every user need flows through to a design input, a design output, and a V&amp;V activity. If any row is incomplete, you have an open regulatory gap.</div>
+                <div class="card-what">A living cross-reference that maps every user need to a design input, a design output, and a V&amp;V result. You maintain it throughout the process — adding rows as each section progresses, not assembling it at the end. Any incomplete row is an open regulatory gap.</div>
                 <div class="card-meta-row">
                   <div class="card-meta-item">
                     <div class="card-meta-label">Why it matters</div>
