@@ -321,6 +321,28 @@
       </div>
     </header>
 
+    <!-- Design Controls Sub-Nav -->
+    <style>
+      .dc-subnav { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 40px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; overflow-x: auto; flex-shrink: 0; }
+      .dc-subnav::-webkit-scrollbar { height: 0; }
+      .dc-subnav-back { display: flex; align-items: center; gap: 0.35rem; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.45); text-decoration: none; padding: 0 0.75rem 0 0; border-right: 1px solid rgba(11,39,64,0.1); margin-right: 0.75rem; white-space: nowrap; transition: color 0.12s; }
+      .dc-subnav-back:hover { color: var(--aqua-dark); }
+      .dc-subnav-back svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+      .dc-subnav-link { font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.5); text-decoration: none; padding: 0 0.7rem; white-space: nowrap; height: 40px; display: flex; align-items: center; border-bottom: 2px solid transparent; transition: color 0.12s; }
+      .dc-subnav-link:hover { color: var(--primary); }
+      .dc-subnav-link.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+    </style>
+    <nav class="dc-subnav">
+      <a href="design-controls.html" class="dc-subnav-back"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Design Controls Overview</a>
+      <a href="dev-plan.html" class="dc-subnav-link">Dev Plan</a>
+      <a href="user-needs.html" class="dc-subnav-link">User Needs</a>
+      <a href="design-inputs.html" class="dc-subnav-link">Design Inputs</a>
+      <a href="design-outputs.html" class="dc-subnav-link active">Design Outputs</a>
+      <a href="design-review.html" class="dc-subnav-link">Design Reviews</a>
+      <a href="vv.html" class="dc-subnav-link">V&amp;V</a>
+      <a href="trace-matrix.html" class="dc-subnav-link">Trace Matrix</a>
+    </nav>
+
     <!-- CONTENT AREA -->
     <div class="content-area" id="mainContentArea">
       <div class="doc-wrap">

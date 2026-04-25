@@ -69,127 +69,171 @@
     .topbar-user-role { font-size: 0.63rem; color: rgba(11,39,64,0.4); }
 
     .content-wrap { flex: 1; display: flex; min-height: 0; overflow: hidden; }
-    .main-area { flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem; min-width: 0; display: flex; flex-direction: column; }
+    .main-area { flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem; min-width: 0; }
     .main-area::-webkit-scrollbar { width: 5px; }
     .main-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
 
-    /* ─── PAGE HEADER ─── */
-    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.85rem; gap: 1rem; }
-    .page-heading { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; }
-    .page-subtitle { font-size: 0.77rem; color: rgba(11,39,64,0.44); margin-top: 0.22rem; }
-    .page-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
-    .btn-primary { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; color: white; background: var(--aqua-dark); border: none; border-radius: 7px; padding: 0.45rem 0.9rem; cursor: pointer; transition: background 0.12s; white-space: nowrap; }
-    .btn-primary:hover { background: var(--aqua); }
-    .btn-primary svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-    .btn-ghost { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.42rem 0.8rem; cursor: pointer; transition: border-color 0.12s, background 0.12s; white-space: nowrap; }
-    .btn-ghost:hover { border-color: rgba(10,192,233,0.4); background: rgba(10,192,233,0.02); }
-    .btn-ghost svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
-
     /* ─── PRODUCT SELECTOR ─── */
-    .product-selector-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .product-selector-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
     .product-selector-lbl { font-size: 0.72rem; color: rgba(11,39,64,0.42); font-weight: 500; }
     .product-selector { display: inline-flex; align-items: center; gap: 0.45rem; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--primary); background: white; border: 1.5px solid rgba(11,39,64,0.15); border-radius: 20px; padding: 0.38rem 0.9rem; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
     .product-selector:hover { border-color: rgba(10,192,233,0.5); background: rgba(10,192,233,0.02); }
     .product-selector svg { width: 12px; height: 12px; stroke: rgba(11,39,64,0.4); fill: none; stroke-width: 2; }
 
-    /* ─── SUBTABS ─── */
-    .subtabs { display: flex; gap: 0; border-bottom: 1.5px solid rgba(11,39,64,0.08); margin-bottom: 1rem; overflow-x: auto; }
-    .subtabs::-webkit-scrollbar { height: 0; }
-    .subtab { font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; color: rgba(11,39,64,0.5); padding: 0.55rem 1rem; border: none; border-bottom: 2px solid transparent; margin-bottom: -1.5px; cursor: pointer; transition: color 0.12s; white-space: nowrap; background: transparent; }
-    .subtab:hover { color: var(--primary); }
-    .subtab.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
-    .subtab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 17px; height: 15px; background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); font-size: 0.59rem; font-weight: 700; padding: 0 0.32rem; border-radius: 10px; margin-left: 0.3rem; }
-    .subtab.active .subtab-count { background: rgba(10,192,233,0.12); color: var(--aqua-dark); }
+    /* ─── PAGE HEADER ─── */
+    .page-heading { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; margin-bottom: 0.2rem; }
+    .page-subtitle { font-size: 0.77rem; color: rgba(11,39,64,0.44); margin-bottom: 1.25rem; }
 
-    /* ─── FILTER BAR ─── */
-    .filter-bar { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    .filter-dropdown { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.36rem 0.65rem; cursor: pointer; transition: border-color 0.12s; white-space: nowrap; }
-    .filter-dropdown:hover { border-color: rgba(10,192,233,0.4); }
-    .filter-dropdown svg { width: 11px; height: 11px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; }
-    .filter-more-btn { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.42); background: transparent; border: none; cursor: pointer; padding: 0.36rem 0.45rem; }
+    /* ─── INTRO PANEL ─── */
+    .intro-panel {
+      background: white;
+      border: 1px solid rgba(11,39,64,0.08);
+      border-radius: 12px;
+      padding: 1.1rem 1.3rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .intro-icon-wrap {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(10,192,233,0.1);
+      border: 1px solid rgba(10,192,233,0.2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .intro-icon-wrap svg { width: 18px; height: 18px; stroke: var(--aqua-dark); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .intro-body { flex: 1; }
+    .intro-eyebrow { font-size: 0.58rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--aqua-dark); margin-bottom: 0.35rem; }
+    .intro-title { font-size: 0.92rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; }
+    .intro-points { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+    .intro-point { font-size: 0.77rem; color: rgba(11,39,64,0.62); line-height: 1.55; display: flex; align-items: flex-start; gap: 0.4rem; max-width: 340px; }
+    .intro-point-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--aqua); flex-shrink: 0; margin-top: 0.47rem; }
+    .intro-reg-chip { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.65rem; font-weight: 700; color: var(--aqua-dark); background: rgba(10,192,233,0.08); border: 1px solid rgba(10,192,233,0.2); border-radius: 5px; padding: 0.18rem 0.52rem; margin-top: 0.65rem; }
 
-    /* ─── TRACE MATRIX TABLE ─── */
-    .trace-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; overflow: hidden; }
-    .trace-table { width: 100%; border-collapse: collapse; }
-    .trace-table th { padding: 0.6rem 0.85rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); border-bottom: 1px solid rgba(11,39,64,0.07); background: rgba(11,39,64,0.015); text-align: left; white-space: nowrap; }
-    .trace-table th:first-child { padding-left: 1rem; width: 22%; }
-    .trace-table td { padding: 0.9rem 0.85rem; border-bottom: 1px solid rgba(11,39,64,0.055); vertical-align: top; }
-    .trace-table td:first-child { padding-left: 1rem; }
-    .trace-table tr:last-child td { border-bottom: none; }
-    .trace-table tbody tr:hover td { background: rgba(10,192,233,0.012); }
+    /* ─── PROCESS FLOW ─── */
+    .flow-section { margin-bottom: 1.75rem; }
+    .section-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.75rem; }
+    .flow-strip {
+      background: white;
+      border: 1px solid rgba(11,39,64,0.08);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow-x: auto;
+    }
+    .flow-strip::-webkit-scrollbar { height: 4px; }
+    .flow-strip::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+    .flow-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+      text-decoration: none;
+      padding: 0.65rem 1.1rem;
+      border-radius: 9px;
+      border: 1.5px solid rgba(11,39,64,0.1);
+      background: var(--light-gray);
+      transition: border-color 0.15s, background 0.15s, transform 0.12s;
+      flex-shrink: 0;
+      min-width: 108px;
+      cursor: pointer;
+    }
+    .flow-node:hover { border-color: rgba(10,192,233,0.4); background: rgba(10,192,233,0.03); transform: translateY(-1px); }
+    .flow-node-num { font-size: 0.56rem; font-weight: 800; letter-spacing: 0.08em; color: rgba(11,39,64,0.28); text-transform: uppercase; }
+    .flow-node-label { font-size: 0.76rem; font-weight: 700; color: var(--primary); text-align: center; line-height: 1.3; }
+    .flow-node-status { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.58rem; font-weight: 700; padding: 0.12rem 0.4rem; border-radius: 4px; }
+    .flow-status-complete { background: rgba(16,185,129,0.1); color: #047857; }
+    .flow-status-progress { background: rgba(245,158,11,0.12); color: #b45309; }
+    .flow-status-gap     { background: rgba(239,68,68,0.1); color: #dc2626; }
+    .flow-status-pending { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.4); }
+    .flow-arrow { color: rgba(11,39,64,0.18); font-size: 1rem; flex-shrink: 0; margin: 0 0.4rem; user-select: none; }
 
-    .un-id { display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 700; color: var(--aqua-dark); background: rgba(10,192,233,0.08); border: 1px solid rgba(10,192,233,0.2); border-radius: 5px; padding: 0.1rem 0.42rem; white-space: nowrap; margin-bottom: 0.35rem; cursor: pointer; transition: background 0.12s; }
-    .un-id:hover { background: rgba(10,192,233,0.15); }
-    .un-title { font-size: 0.78rem; font-weight: 500; color: var(--primary); line-height: 1.45; }
+    /* ─── TWO-COLUMN LAYOUT ─── */
+    .hub-body { display: flex; gap: 1.25rem; align-items: flex-start; }
+    .cards-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.85rem; }
+    .right-rail { width: 264px; flex-shrink: 0; display: flex; flex-direction: column; gap: 0.85rem; }
 
-    .trace-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
-    .trace-chip { display: inline-flex; align-items: center; font-size: 0.68rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 5px; white-space: nowrap; cursor: pointer; transition: opacity 0.12s; }
-    .trace-chip:hover { opacity: 0.75; }
-    .chip-di { background: rgba(99,102,241,0.1); color: #4338ca; border: 1px solid rgba(99,102,241,0.2); }
-    .chip-do { background: rgba(11,39,64,0.07); color: var(--mid-blue); border: 1px solid rgba(11,39,64,0.12); }
-    .chip-vv { background: rgba(16,185,129,0.1); color: #047857; border: 1px solid rgba(16,185,129,0.2); }
-    .chip-gap { background: rgba(239,68,68,0.07); color: rgba(239,68,68,0.7); border: 1px dashed rgba(239,68,68,0.3); font-weight: 500; font-style: italic; cursor: default; }
+    /* ─── SECTION CARDS ─── */
+    .section-card {
+      background: white;
+      border: 1px solid rgba(11,39,64,0.08);
+      border-radius: 12px;
+      padding: 1.1rem 1.3rem;
+      display: flex;
+      gap: 1rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .section-card:hover { border-color: rgba(10,192,233,0.3); box-shadow: 0 2px 12px rgba(10,192,233,0.06); }
+    .card-icon-wrap {
+      width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-icon-wrap svg { width: 16px; height: 16px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .card-body { flex: 1; min-width: 0; }
+    .card-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 0.3rem; }
+    .card-num { font-size: 0.6rem; font-weight: 700; color: rgba(11,39,64,0.28); text-transform: uppercase; letter-spacing: 0.08em; }
+    .card-title { font-size: 0.88rem; font-weight: 700; color: var(--primary); }
+    .card-what { font-size: 0.78rem; color: rgba(11,39,64,0.62); line-height: 1.55; margin-bottom: 0.5rem; }
+    .card-meta-row { display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+    .card-meta-item { flex: 1; min-width: 140px; }
+    .card-meta-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.3); margin-bottom: 0.22rem; }
+    .card-meta-text { font-size: 0.74rem; color: rgba(11,39,64,0.58); line-height: 1.5; }
+    .card-meta-text.pitfall { color: rgba(245,158,11,0.85); }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; padding-top: 0.65rem; border-top: 1px solid rgba(11,39,64,0.06); }
+    .card-status-text { font-size: 0.72rem; color: rgba(11,39,64,0.44); }
+    .card-status-text strong { color: var(--primary); font-weight: 600; }
+    .card-link-btn {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 600;
+      color: var(--aqua-dark); background: rgba(10,192,233,0.07);
+      border: 1px solid rgba(10,192,233,0.2); border-radius: 6px;
+      padding: 0.3rem 0.7rem; text-decoration: none; cursor: pointer;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .card-link-btn:hover { background: rgba(10,192,233,0.14); border-color: rgba(10,192,233,0.35); }
+    .card-link-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; }
 
-    .trace-status { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 700; padding: 0.17rem 0.52rem; border-radius: 5px; white-space: nowrap; letter-spacing: 0.02em; }
-    .trace-status.complete { background: rgba(16,185,129,0.1); color: #047857; }
-    .trace-status.partial  { background: rgba(245,158,11,0.12); color: #b45309; }
-    .trace-status.gap      { background: rgba(239,68,68,0.1); color: #dc2626; }
+    /* ─── RIGHT RAIL WIDGETS ─── */
+    .widget { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; padding: 1.1rem 1.15rem; }
+    .widget-title { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.85rem; }
 
-    /* ─── STANDARD DOC TABLE ─── */
-    .doc-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; overflow: hidden; }
-    .doc-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    .doc-table th { padding: 0.6rem 0.85rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); border-bottom: 1px solid rgba(11,39,64,0.07); background: rgba(11,39,64,0.015); text-align: left; white-space: nowrap; }
-    .doc-table th:first-child { padding-left: 1rem; width: 36px; }
-    .doc-table td { padding: 0.7rem 0.85rem; border-bottom: 1px solid rgba(11,39,64,0.055); vertical-align: middle; font-size: 0.8rem; }
-    .doc-table td:first-child { padding-left: 1rem; }
-    .doc-table tr:last-child td { border-bottom: none; }
-    .doc-table tbody tr:hover td { background: rgba(10,192,233,0.015); cursor: pointer; }
-    .doc-cb { width: 15px; height: 15px; accent-color: var(--aqua); cursor: pointer; }
-    .file-title { font-size: 0.81rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-    .file-id { font-size: 0.66rem; color: rgba(11,39,64,0.4); margin-top: 0.08rem; }
-    .status-badge { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 700; padding: 0.17rem 0.52rem; border-radius: 5px; white-space: nowrap; }
-    .cat-chip { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 600; padding: 0.14rem 0.45rem; border-radius: 4px; background: rgba(11,39,64,0.06); color: var(--mid-blue); white-space: nowrap; }
-    .doc-date { font-size: 0.73rem; color: rgba(11,39,64,0.52); white-space: nowrap; }
-    .doc-owner { font-size: 0.73rem; color: rgba(11,39,64,0.55); }
-    .action-icons { display: flex; align-items: center; gap: 0.3rem; }
-    .action-icon-btn { width: 26px; height: 26px; border-radius: 5px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: rgba(11,39,64,0.3); transition: background 0.12s, color 0.12s; }
-    .action-icon-btn:hover { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
-    .action-icon-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
-
-    /* ─── RIGHT PANEL ─── */
-    .right-panel { width: 272px; flex-shrink: 0; border-left: 1px solid rgba(11,39,64,0.07); padding: 1.5rem 1.1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; background: white; }
-    .right-panel::-webkit-scrollbar { width: 0; }
-    .widget { background: var(--light-gray); border: 1px solid rgba(11,39,64,0.07); border-radius: 10px; padding: 1rem 1.1rem; }
-    .widget-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); margin-bottom: 0.75rem; }
-    .widget-divider { height: 1px; background: rgba(11,39,64,0.07); margin: 0.5rem 0; }
-    .widget-view-all { font-size: 0.71rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; display: block; margin-top: 0.6rem; transition: color 0.12s; }
-    .widget-view-all:hover { color: var(--aqua); }
-
-    .snapshot-product-name { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem; }
-    .snapshot-role { font-size: 0.72rem; color: rgba(11,39,64,0.5); margin-bottom: 0.5rem; }
-    .snapshot-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; transition: color 0.12s; }
-    .snapshot-link:hover { color: var(--aqua); }
-    .snapshot-link svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; }
-
-    .gauge-wrap { display: flex; align-items: center; gap: 0.85rem; margin: 0.5rem 0 0.75rem; }
-    .gauge-circle { position: relative; width: 60px; height: 60px; flex-shrink: 0; }
+    /* Completeness gauge */
+    .gauge-wrap { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.85rem; }
+    .gauge-circle { position: relative; width: 64px; height: 64px; flex-shrink: 0; }
     .gauge-circle svg { transform: rotate(-90deg); }
-    .gauge-circle circle { fill: none; stroke-width: 6; }
+    .gauge-circle circle { fill: none; stroke-width: 7; }
     .gauge-bg { stroke: rgba(11,39,64,0.08); }
-    .gauge-fill { stroke-linecap: round; transition: stroke-dashoffset 0.5s ease; }
-    .gauge-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800; color: var(--primary); }
-    .gauge-info-label { font-size: 0.7rem; color: rgba(11,39,64,0.5); line-height: 1.4; }
-    .gauge-info-label strong { color: var(--primary); font-weight: 600; }
+    .gauge-fill { stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+    .gauge-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.92rem; font-weight: 800; color: var(--primary); }
+    .gauge-detail { font-size: 0.73rem; color: rgba(11,39,64,0.5); line-height: 1.5; }
+    .gauge-detail strong { color: var(--primary); font-weight: 600; }
 
-    .timeline-row { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.3rem 0; }
-    .timeline-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 0.3rem; }
-    .timeline-title { font-size: 0.73rem; color: rgba(11,39,64,0.6); flex: 1; line-height: 1.4; }
+    /* Sections progress bars */
+    .section-progress { display: flex; flex-direction: column; gap: 0.55rem; margin-bottom: 0.85rem; }
+    .sp-row { display: flex; align-items: center; gap: 0.6rem; }
+    .sp-label { font-size: 0.68rem; font-weight: 500; color: rgba(11,39,64,0.55); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sp-bar-wrap { width: 72px; height: 5px; background: rgba(11,39,64,0.07); border-radius: 3px; flex-shrink: 0; }
+    .sp-bar { height: 5px; border-radius: 3px; transition: width 0.5s ease; }
+    .sp-pct { font-size: 0.62rem; font-weight: 700; color: rgba(11,39,64,0.38); width: 22px; text-align: right; }
 
-    .empty-state { padding: 3rem 2rem; text-align: center; }
-    .empty-state-icon { width: 44px; height: 44px; border-radius: 10px; background: rgba(11,39,64,0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.85rem; }
-    .empty-state-icon svg { width: 20px; height: 20px; stroke: rgba(11,39,64,0.25); fill: none; stroke-width: 1.5; }
-    .empty-state-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.35rem; }
-    .empty-state-desc { font-size: 0.77rem; color: rgba(11,39,64,0.43); line-height: 1.6; }
+    /* Gaps list */
+    .gap-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .gap-item { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.55rem 0.7rem; background: rgba(245,158,11,0.05); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; }
+    .gap-item svg { width: 12px; height: 12px; stroke: #d97706; fill: none; stroke-width: 2; flex-shrink: 0; margin-top: 0.1rem; }
+    .gap-item-text { font-size: 0.71rem; color: #92400e; line-height: 1.45; }
+
+    /* Next action */
+    .next-action-box { background: rgba(10,192,233,0.05); border: 1px solid rgba(10,192,233,0.2); border-radius: 10px; padding: 0.85rem 1rem; }
+    .next-action-label { font-size: 0.58rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--aqua-dark); margin-bottom: 0.35rem; }
+    .next-action-text { font-size: 0.77rem; color: var(--primary); line-height: 1.5; margin-bottom: 0.65rem; }
+    .next-action-btn { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600; color: white; background: var(--aqua-dark); border: none; border-radius: 7px; padding: 0.4rem 0.85rem; cursor: pointer; transition: background 0.12s; text-decoration: none; }
+    .next-action-btn:hover { background: var(--aqua); }
+    .next-action-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; }
   </style>
 </head>
 <body>
@@ -222,22 +266,9 @@
 
     <div class="content-wrap">
       <div class="main-area">
-        <div class="page-header">
-          <div>
-            <div class="page-heading">Design Controls</div>
-            <div class="page-subtitle">Traceability, design inputs, outputs, reviews, and V&amp;V — scoped by product</div>
-          </div>
-          <div class="page-actions">
-            <button class="btn-ghost" id="exportBtn">
-              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-              Export
-            </button>
-            <button class="btn-primary">
-              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Add Document
-            </button>
-          </div>
-        </div>
+
+        <div class="page-heading">Design Controls</div>
+        <div class="page-subtitle">Your guide to the full design control process — what each section is for, how they connect, and where to focus next.</div>
 
         <div class="product-selector-row">
           <span class="product-selector-lbl">Product:</span>
@@ -247,351 +278,428 @@
           </button>
         </div>
 
-        <div class="subtabs">
-          <button class="subtab active" onclick="setTab(this,'trace')">Trace Matrix <span class="subtab-count" id="cnt-trace">5</span></button>
-          <button class="subtab" onclick="setTab(this,'inputs')">Design Inputs <span class="subtab-count" id="cnt-inputs">7</span></button>
-          <button class="subtab" onclick="setTab(this,'outputs')">Design Outputs <span class="subtab-count" id="cnt-outputs">5</span></button>
-          <button class="subtab" onclick="setTab(this,'reviews')">Design Reviews <span class="subtab-count" id="cnt-reviews">2</span></button>
-          <button class="subtab" onclick="setTab(this,'vv')">V&amp;V <span class="subtab-count" id="cnt-vv">2</span></button>
-        </div>
-
-        <div id="filterBarArea"></div>
-        <div id="contentArea"></div>
-      </div>
-
-      <div class="right-panel">
-        <div class="widget">
-          <div class="widget-title">Product Snapshot</div>
-          <div class="snapshot-product-name" id="snapshotProductName">CardioSync Pro</div>
-          <div class="snapshot-role">Product Manager: Sam Patel</div>
-          <a href="#" class="snapshot-link">Open Device File <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></a>
-        </div>
-        <div class="widget">
-          <div class="widget-title">Design Controls Completeness</div>
-          <div class="gauge-wrap">
-            <div class="gauge-circle">
-              <svg viewBox="0 0 60 60" width="60" height="60">
-                <circle class="gauge-bg" cx="30" cy="30" r="24"/>
-                <circle class="gauge-fill" id="gaugeFill" cx="30" cy="30" r="24" stroke="#0AC0E9"
-                  stroke-dasharray="150.8" stroke-dashoffset="90.5"/>
-              </svg>
-              <div class="gauge-num">40%</div>
+        <!-- INTRO PANEL -->
+        <div class="intro-panel">
+          <div class="intro-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M2 20h20M4 20V10l8-6 8 6v10"/><path d="M10 20v-5h4v5"/></svg>
+          </div>
+          <div class="intro-body">
+            <div class="intro-eyebrow">What are Design Controls?</div>
+            <div class="intro-title">The documented proof that your device actually does what patients and clinicians need it to do.</div>
+            <div class="intro-points">
+              <div class="intro-point">
+                <div class="intro-point-dot"></div>
+                Design controls are the structured process of translating user needs into verified, validated device requirements — then proving you met them.
+              </div>
+              <div class="intro-point">
+                <div class="intro-point-dot"></div>
+                Required for all Class II and III devices. The 7 sections below form an unbroken chain — each feeds the next. Gaps in the chain become 483 observations.
+              </div>
+              <div class="intro-point">
+                <div class="intro-point-dot"></div>
+                The majority of device recalls trace back to failures in this process: requirements that were never written down, outputs that didn't trace to inputs, or V&amp;V that didn't cover what patients actually do.
+              </div>
             </div>
             <div>
-              <div class="gauge-info-label"><strong>2 of 5</strong> user needs fully traced through V&amp;V</div>
-              <div class="gauge-info-label" style="margin-top:0.3rem;color:rgba(239,68,68,0.7)">3 gaps require V&amp;V coverage</div>
+              <span class="intro-reg-chip">
+                <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                21 CFR 820.30
+              </span>
+              <span class="intro-reg-chip" style="margin-left:0.4rem;">
+                <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                ISO 13485 §7.3
+              </span>
             </div>
           </div>
-          <a href="#" class="widget-view-all">View traceability report →</a>
         </div>
-        <div class="widget">
-          <div class="widget-title">Recent Design Changes</div>
-          <div id="designChangesContent">
-            <div class="timeline-row">
-              <div class="timeline-dot" style="background:#0AC0E9"></div>
-              <div class="timeline-title"><strong>CR-001 Approved</strong> — Battery runtime DI-002 updated to 3.5yr</div>
-            </div>
-            <div class="timeline-row">
-              <div class="timeline-dot" style="background:#F59E0B"></div>
-              <div class="timeline-title"><strong>DVER-001</strong> — Arrhythmia sensitivity test in progress</div>
-            </div>
-            <div class="timeline-row">
-              <div class="timeline-dot" style="background:#10B981"></div>
-              <div class="timeline-title"><strong>DR-001 Closed</strong> — Planning phase design review approved</div>
-            </div>
+
+        <!-- PROCESS FLOW -->
+        <div class="flow-section">
+          <div class="section-label">Process Flow — click any stage to open it</div>
+          <div class="flow-strip" id="flowStrip">
+            <a href="dev-plan.html" class="flow-node">
+              <span class="flow-node-num">01</span>
+              <span class="flow-node-label">Dev Plan</span>
+              <span class="flow-node-status flow-status-complete" id="fs-devplan">Complete</span>
+            </a>
+            <span class="flow-arrow">→</span>
+            <a href="user-needs.html" class="flow-node">
+              <span class="flow-node-num">02</span>
+              <span class="flow-node-label">User Needs</span>
+              <span class="flow-node-status flow-status-progress" id="fs-usneeds">In Progress</span>
+            </a>
+            <span class="flow-arrow">→</span>
+            <a href="design-inputs.html" class="flow-node">
+              <span class="flow-node-num">03</span>
+              <span class="flow-node-label">Design Inputs</span>
+              <span class="flow-node-status flow-status-progress" id="fs-dinputs">In Progress</span>
+            </a>
+            <span class="flow-arrow">→</span>
+            <a href="design-outputs.html" class="flow-node">
+              <span class="flow-node-num">04</span>
+              <span class="flow-node-label">Design Outputs</span>
+              <span class="flow-node-status flow-status-progress" id="fs-doutputs">In Progress</span>
+            </a>
+            <span class="flow-arrow">→</span>
+            <a href="design-review.html" class="flow-node">
+              <span class="flow-node-num">05</span>
+              <span class="flow-node-label">Design Reviews</span>
+              <span class="flow-node-status flow-status-progress" id="fs-dreviews">In Progress</span>
+            </a>
+            <span class="flow-arrow">→</span>
+            <a href="vv.html" class="flow-node">
+              <span class="flow-node-num">06</span>
+              <span class="flow-node-label">V&amp;V</span>
+              <span class="flow-node-status flow-status-gap" id="fs-vv">Gaps</span>
+            </a>
+            <span class="flow-arrow">→</span>
+            <a href="trace-matrix.html" class="flow-node">
+              <span class="flow-node-num">07</span>
+              <span class="flow-node-label">Trace Matrix</span>
+              <span class="flow-node-status flow-status-gap" id="fs-trace">3 Gaps</span>
+            </a>
           </div>
-          <a href="#" class="widget-view-all">View all design changes →</a>
         </div>
-      </div>
-    </div>
-  </div>
+
+        <!-- HUB BODY: CARDS + RAIL -->
+        <div class="hub-body">
+
+          <!-- SECTION CARDS -->
+          <div class="cards-col">
+            <div class="section-label">All Sections</div>
+
+            <!-- Dev Plan -->
+            <div class="section-card" style="border-left: 3px solid #10B981;">
+              <div class="card-icon-wrap" style="background:rgba(16,185,129,0.1);">
+                <svg viewBox="0 0 24 24" style="stroke:#047857;"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1" ry="1"/><path d="M9 12h6M9 16h4"/></svg>
+              </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <span class="card-num">01</span>
+                  <span class="card-title">Development Plan</span>
+                </div>
+                <div class="card-what">The up-front document that defines your project scope, milestones, team structure, and how you'll execute every other section below. Think of it as the contract between your team and your future QMS auditor.</div>
+                <div class="card-meta-row">
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Why it matters</div>
+                    <div class="card-meta-text">FDA reviewers use this to assess whether your design process was actually controlled — not improvised. It's the first document pulled in a 510(k) submission.</div>
+                  </div>
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Common pitfall</div>
+                    <div class="card-meta-text pitfall">Writing a plan after the project is already underway. The plan must be written and approved before design work begins.</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="card-status-text"><strong>7 phases defined</strong> · Approved Rev A</span>
+                  <a href="dev-plan.html" class="card-link-btn">
+                    Open Dev Plan
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- User Needs -->
+            <div class="section-card" style="border-left: 3px solid var(--aqua);">
+              <div class="card-icon-wrap" style="background:rgba(10,192,233,0.1);">
+                <svg viewBox="0 0 24 24" style="stroke:var(--aqua-dark);"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+              </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <span class="card-num">02</span>
+                  <span class="card-title">User Needs</span>
+                </div>
+                <div class="card-what">Captures what patients, clinicians, and operators actually need the device to do — in plain language, before any engineering decisions. These become the top-level requirements everything else traces back to.</div>
+                <div class="card-meta-row">
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Why it matters</div>
+                    <div class="card-meta-text">This is what a 510(k) reviewer reads first. If your device solves a problem you've never formally documented, that's a submission risk. Every design input must trace to at least one user need.</div>
+                  </div>
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Common pitfall</div>
+                    <div class="card-meta-text pitfall">Writing needs as engineering specs ("sensor accuracy ±2%") instead of user statements ("clinicians must be alerted within one minute"). Save the numbers for Design Inputs.</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="card-status-text"><strong>5 user needs</strong> · 3 approved, 2 in review</span>
+                  <a href="user-needs.html" class="card-link-btn">
+                    Open User Needs
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Design Inputs -->
+            <div class="section-card" style="border-left: 3px solid var(--indigo);">
+              <div class="card-icon-wrap" style="background:rgba(99,102,241,0.1);">
+                <svg viewBox="0 0 24 24" style="stroke:#4338ca;"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+              </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <span class="card-num">03</span>
+                  <span class="card-title">Design Inputs</span>
+                </div>
+                <div class="card-what">Translates each user need into a measurable, testable engineering requirement. These are the specs your engineers build to — and the criteria your V&amp;V team will test against later.</div>
+                <div class="card-meta-row">
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Why it matters</div>
+                    <div class="card-meta-text">If a design input isn't testable, you can't verify it — and if you can't verify it, you can't close out 820.30(f). Incomplete inputs are the #1 reason V&amp;V test plans fall apart.</div>
+                  </div>
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Common pitfall</div>
+                    <div class="card-meta-text pitfall">Leaving inputs in "Draft" indefinitely. Unapproved inputs aren't controlled — any change during development could go undetected and break your traceability.</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="card-status-text"><strong>7 inputs</strong> · 5 approved, 2 in review</span>
+                  <a href="design-inputs.html" class="card-link-btn">
+                    Open Design Inputs
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Design Outputs -->
+            <div class="section-card" style="border-left: 3px solid #f97316;">
+              <div class="card-icon-wrap" style="background:rgba(249,115,22,0.1);">
+                <svg viewBox="0 0 24 24" style="stroke:#c2410c;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <span class="card-num">04</span>
+                  <span class="card-title">Design Outputs</span>
+                </div>
+                <div class="card-what">The actual deliverables your team produces — drawings, firmware, test methods, labeling, manufacturing specs. Each output must trace to at least one design input, demonstrating it was built for a specific reason.</div>
+                <div class="card-meta-row">
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Why it matters</div>
+                    <div class="card-meta-text">Outputs form the Device Master Record (DMR) — the technical package that transfers to manufacturing. Any output that can't be traced to an input is a gap the FDA will flag.</div>
+                  </div>
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Common pitfall</div>
+                    <div class="card-meta-text pitfall">Treating labeling and Instructions for Use as an afterthought. They're design outputs and must trace to user needs and safety inputs — not just marketing.</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="card-status-text"><strong>5 outputs</strong> · 2 approved, 3 in review</span>
+                  <a href="design-outputs.html" class="card-link-btn">
+                    Open Design Outputs
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Design Reviews -->
+            <div class="section-card" style="border-left: 3px solid #8b5cf6;">
+              <div class="card-icon-wrap" style="background:rgba(139,92,246,0.1);">
+                <svg viewBox="0 0 24 24" style="stroke:#6d28d9;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 11l-4 4-2-2"/></svg>
+              </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <span class="card-num">05</span>
+                  <span class="card-title">Design Reviews</span>
+                </div>
+                <div class="card-what">Formal checkpoints where a multidisciplinary team reviews whether the design is ready to move to the next phase. Required at key milestones by 820.30(e) — not optional, and not just a team meeting.</div>
+                <div class="card-meta-row">
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Why it matters</div>
+                    <div class="card-meta-text">Design reviews catch issues before they become expensive. An FDA inspector will look at meeting minutes and action item closure — they need to show independent reviewers were present.</div>
+                  </div>
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Common pitfall</div>
+                    <div class="card-meta-text pitfall">Having only engineers in the room. A valid design review requires at least one reviewer who was not responsible for the design being reviewed.</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="card-status-text"><strong>2 reviews</strong> · 1 approved, 1 open</span>
+                  <a href="design-review.html" class="card-link-btn">
+                    Open Design Reviews
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- V&V -->
+            <div class="section-card" style="border-left: 3px solid var(--green);">
+              <div class="card-icon-wrap" style="background:rgba(16,185,129,0.1);">
+                <svg viewBox="0 0 24 24" style="stroke:#047857;"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <span class="card-num">06</span>
+                  <span class="card-title">Verification &amp; Validation</span>
+                </div>
+                <div class="card-what">Two distinct activities: Verification ("did we build it right?" — design outputs meet design inputs) and Validation ("did we build the right thing?" — the device meets user needs in the real-world environment).</div>
+                <div class="card-meta-row">
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Why it matters</div>
+                    <div class="card-meta-text">This is the proof package. A 510(k) or PMA without complete V&amp;V test reports will not clear review. Every design input must have a corresponding verification test that passed.</div>
+                  </div>
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Common pitfall</div>
+                    <div class="card-meta-text pitfall">Conflating verification and validation — or running validation first. You must verify the design meets its inputs before validating with real users in a realistic environment.</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="card-status-text"><strong>2 activities</strong> · 1 in progress, 1 draft</span>
+                  <a href="vv.html" class="card-link-btn">
+                    Open V&amp;V
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Trace Matrix -->
+            <div class="section-card" style="border-left: 3px solid var(--primary);">
+              <div class="card-icon-wrap" style="background:rgba(11,39,64,0.07);">
+                <svg viewBox="0 0 24 24" style="stroke:var(--mid-blue);"><rect x="2" y="3" width="7" height="7" rx="1"/><rect x="9" y="3" width="7" height="7" rx="1"/><rect x="16" y="3" width="6" height="7" rx="1"/><line x1="5.5" y1="10" x2="5.5" y2="14"/><line x1="12.5" y1="10" x2="12.5" y2="14"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="2" y1="14" x2="22" y2="14"/></svg>
+              </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <span class="card-num">07</span>
+                  <span class="card-title">Traceability Matrix</span>
+                </div>
+                <div class="card-what">The cross-section view that shows how every user need flows through to a design input, a design output, and a V&amp;V activity. If any row is incomplete, you have an open regulatory gap.</div>
+                <div class="card-meta-row">
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Why it matters</div>
+                    <div class="card-meta-text">This is the single most common document auditors request during an FDA inspection. A complete, gap-free trace matrix is the clearest possible signal that your design process was controlled.</div>
+                  </div>
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Common pitfall</div>
+                    <div class="card-meta-text pitfall">Building the trace matrix after the fact, at submission time. It should be maintained continuously — gaps caught early cost hours to fix; gaps found at submission cost months.</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="card-status-text"><strong>5 user needs</strong> · <span style="color:#dc2626;font-weight:600;">3 V&amp;V gaps</span></span>
+                  <a href="trace-matrix.html" class="card-link-btn">
+                    Open Trace Matrix
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /cards-col -->
+
+          <!-- RIGHT RAIL -->
+          <div class="right-rail">
+
+            <!-- Completeness gauge -->
+            <div class="widget">
+              <div class="widget-title">Design Controls Completeness</div>
+              <div class="gauge-wrap">
+                <div class="gauge-circle">
+                  <svg viewBox="0 0 64 64" width="64" height="64">
+                    <circle class="gauge-bg" cx="32" cy="32" r="26"/>
+                    <circle class="gauge-fill" id="gaugeFill" cx="32" cy="32" r="26" stroke="#0AC0E9"
+                      stroke-dasharray="163.4" stroke-dashoffset="106.2"/>
+                  </svg>
+                  <div class="gauge-num" id="gaugeNum">35%</div>
+                </div>
+                <div class="gauge-detail">
+                  <strong>2 of 7 sections</strong> have at least one fully approved record.<br><br>
+                  <span style="color:rgba(239,68,68,0.75);font-size:0.68rem;">5 sections need attention before 510(k) submission.</span>
+                </div>
+              </div>
+              <div class="section-label" style="margin-bottom:0.5rem;">Section status</div>
+              <div class="section-progress" id="sectionProgress">
+                <div class="sp-row">
+                  <span class="sp-label">Dev Plan</span>
+                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:100%;background:#10B981;"></div></div>
+                  <span class="sp-pct" style="color:#047857;">100%</span>
+                </div>
+                <div class="sp-row">
+                  <span class="sp-label">User Needs</span>
+                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:60%;background:#0AC0E9;"></div></div>
+                  <span class="sp-pct">60%</span>
+                </div>
+                <div class="sp-row">
+                  <span class="sp-label">Design Inputs</span>
+                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:71%;background:#0AC0E9;"></div></div>
+                  <span class="sp-pct">71%</span>
+                </div>
+                <div class="sp-row">
+                  <span class="sp-label">Design Outputs</span>
+                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:40%;background:#F59E0B;"></div></div>
+                  <span class="sp-pct" style="color:#b45309;">40%</span>
+                </div>
+                <div class="sp-row">
+                  <span class="sp-label">Design Reviews</span>
+                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:50%;background:#F59E0B;"></div></div>
+                  <span class="sp-pct" style="color:#b45309;">50%</span>
+                </div>
+                <div class="sp-row">
+                  <span class="sp-label">V&amp;V</span>
+                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:10%;background:#EF4444;"></div></div>
+                  <span class="sp-pct" style="color:#dc2626;">10%</span>
+                </div>
+                <div class="sp-row">
+                  <span class="sp-label">Trace Matrix</span>
+                  <div class="sp-bar-wrap"><div class="sp-bar" style="width:40%;background:#EF4444;"></div></div>
+                  <span class="sp-pct" style="color:#dc2626;">40%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gaps to close -->
+            <div class="widget">
+              <div class="widget-title">Gaps to Close</div>
+              <div class="gap-list">
+                <div class="gap-item">
+                  <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <div class="gap-item-text"><strong>UN-003, UN-004, UN-005</strong> have no linked V&amp;V activity</div>
+                </div>
+                <div class="gap-item">
+                  <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <div class="gap-item-text"><strong>DI-004, DI-006</strong> still in review — must be approved before V&amp;V can close</div>
+                </div>
+                <div class="gap-item">
+                  <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <div class="gap-item-text"><strong>DR-002</strong> (Design Inputs review) is open — needs to close before moving to Outputs phase</div>
+                </div>
+                <div class="gap-item">
+                  <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <div class="gap-item-text"><strong>DO-001, DO-003, DO-005</strong> are in review — approve before V&amp;V protocols reference them</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Next recommended action -->
+            <div class="next-action-box">
+              <div class="next-action-label">Next Recommended Action</div>
+              <div class="next-action-text">Close the Design Inputs review (DR-002) and approve DI-004 and DI-006. These are blocking your V&amp;V protocols — you can't write test acceptance criteria against unapproved requirements.</div>
+              <a href="design-review.html" class="next-action-btn">
+                Go to Design Reviews
+                <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+            </div>
+
+          </div><!-- /right-rail -->
+
+        </div><!-- /hub-body -->
+
+      </div><!-- /main-area -->
+    </div><!-- /content-wrap -->
+  </div><!-- /app-main -->
 
   <script src="seed-demo.js?v=1776901546755"></script>
   <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
-  <script src="filter-dropdown.js"></script>
   <script>
     initSidebar({ activePage: 'design-controls' });
-
-    var activeTab = 'trace';
 
     var PRODUCTS = ['CardioSync Pro', 'CardioSync Lite', 'CardioSync Hub'];
     var productIdx = 0;
     function cycleProduct() {
       productIdx = (productIdx + 1) % PRODUCTS.length;
       document.getElementById('productSelectorLabel').textContent = PRODUCTS[productIdx];
-      document.getElementById('snapshotProductName').textContent = PRODUCTS[productIdx];
-      render();
     }
-
-    var STATUS_DISPLAY = {
-      approved:    { label:'Approved',     bg:'rgba(16,185,129,0.1)',  color:'#047857' },
-      closed:      { label:'Closed',       bg:'rgba(16,185,129,0.1)',  color:'#047857' },
-      complete:    { label:'Complete',     bg:'rgba(16,185,129,0.1)',  color:'#047857' },
-      draft:       { label:'Draft',        bg:'rgba(245,158,11,0.12)', color:'#b45309' },
-      open:        { label:'Open',         bg:'rgba(245,158,11,0.12)', color:'#b45309' },
-      review:      { label:'In Review',    bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
-      'in-progress':{ label:'In Progress', bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
-      planned:     { label:'Planned',      bg:'rgba(11,39,64,0.07)',   color:'rgba(11,39,64,0.45)' },
-      pending:     { label:'Pending',      bg:'rgba(245,158,11,0.12)', color:'#b45309' },
-    };
-    function getStatus(k) { return STATUS_DISPLAY[k] || { label:k||'—', bg:'rgba(11,39,64,0.07)', color:'rgba(11,39,64,0.38)' }; }
-    function badge(k) { var s=getStatus(k); return '<span class="status-badge" style="background:'+s.bg+';color:'+s.color+'">'+s.label+'</span>'; }
-    function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-
-    // ── TRACE MATRIX DATA ──────────────────────────────────────────────
-    var TRACE_ROWS = [
-      {
-        un:  { id:'UN-001', title:'Device shall accurately detect cardiac arrhythmia events' },
-        dis: ['DI-001','DI-006'],
-        dos: ['DO-001'],
-        vvs: [{ id:'DVER-001', status:'in-progress' }],
-        traceStatus: 'partial',
-      },
-      {
-        un:  { id:'UN-002', title:'Clinicians shall be able to retrieve monitoring data remotely' },
-        dis: ['DI-004','DI-006'],
-        dos: ['DO-003'],
-        vvs: [{ id:'DV-001', status:'draft' }],
-        traceStatus: 'partial',
-      },
-      {
-        un:  { id:'UN-003', title:'Device shall not cause patient discomfort during extended wear' },
-        dis: ['DI-005','DI-007'],
-        dos: ['DO-004'],
-        vvs: [],
-        traceStatus: 'gap',
-      },
-      {
-        un:  { id:'UN-004', title:'Patient data shall be protected from unauthorized access' },
-        dis: ['DI-003'],
-        dos: ['DO-003','DO-005'],
-        vvs: [],
-        traceStatus: 'gap',
-      },
-      {
-        un:  { id:'UN-005', title:'Device shall operate reliably for the intended monitoring period' },
-        dis: ['DI-002'],
-        dos: ['DO-002'],
-        vvs: [],
-        traceStatus: 'gap',
-      },
-    ];
-
-    // ── DESIGN INPUTS DATA ─────────────────────────────────────────────
-    var DESIGN_INPUTS = [
-      { id:'DI-001', title:'Arrhythmia detection sensitivity ≥98%, FPR ≤2%',                      status:'approved', category:'Performance',  owner:'Jordan Kim',   date:'2026-01-20' },
-      { id:'DI-002', title:'Battery runtime ≥3.5 years on single power source',                   status:'approved', category:'Reliability',  owner:'Jordan Kim',   date:'2026-02-17' },
-      { id:'DI-003', title:'AES-256 end-to-end encryption for all data transmission',             status:'approved', category:'Security',     owner:'Priya Shah',   date:'2026-01-20' },
-      { id:'DI-004', title:'BLE connectivity at ≤30m range from paired mobile device',           status:'review',   category:'Connectivity', owner:'Jordan Kim',   date:'2026-02-01' },
-      { id:'DI-005', title:'Device mass ≤75g; IP68 waterproof rating',                           status:'approved', category:'Physical',     owner:'Sam Patel',    date:'2026-01-20' },
-      { id:'DI-006', title:'Clinician alert delivered within 60s of event detection',             status:'review',   category:'Performance',  owner:'Jordan Kim',   date:'2026-02-01' },
-      { id:'DI-007', title:'Housing withstands 100kPa static pressure without deformation',      status:'approved', category:'Safety',       owner:'Jordan Kim',   date:'2026-01-20' },
-    ];
-
-    // ── DESIGN OUTPUTS DATA ────────────────────────────────────────────
-    var DESIGN_OUTPUTS = [
-      { id:'DO-001', title:'Firmware arrhythmia detection module v0.4.2',           status:'review',   category:'Software',    owner:'Jordan Kim', date:'2026-03-10', tracesDI:'DI-001, DI-006' },
-      { id:'DO-002', title:'Battery cell specification — Meridian BT-350-3.5',      status:'approved', category:'Hardware',    owner:'Jordan Kim', date:'2026-02-17', tracesDI:'DI-002' },
-      { id:'DO-003', title:'Mobile app encrypted communications module',             status:'review',   category:'Software',    owner:'Priya Shah', date:'2026-03-15', tracesDI:'DI-003, DI-004' },
-      { id:'DO-004', title:'Mechanical enclosure drawings DWG-001 Rev A',           status:'approved', category:'Mechanical',  owner:'Sam Patel',  date:'2026-01-28', tracesDI:'DI-005, DI-007' },
-      { id:'DO-005', title:'Instructions for Use and product labeling IFU-001 Rev A', status:'review', category:'Labeling',    owner:'Mira Chen',  date:'2026-03-20', tracesDI:'DI-003, DI-005' },
-    ];
-
-    // ── DESIGN REVIEWS DATA ────────────────────────────────────────────
-    var DESIGN_REVIEWS = [
-      { id:'DR-001', title:'Planning Phase Design Review',      status:'approved', phase:'Planning',       date:'2025-11-24', owner:'Alex Reyes' },
-      { id:'DR-002', title:'Design Inputs Phase Review',        status:'open',     phase:'Design Inputs',  date:'2026-04-30', owner:'Alex Reyes' },
-    ];
-
-    // ── V&V DATA ───────────────────────────────────────────────────────
-    var VV_ITEMS = [
-      { id:'DVER-001', kind:'Verification', title:'Arrhythmia detection sensitivity testing',         status:'in-progress', tracesTo:'DI-001, DI-006, UN-001', owner:'Priya Shah', date:'2026-03-01' },
-      { id:'DV-001',   kind:'Validation',   title:'Simulated-use validation — Clinician workflow',   status:'draft',       tracesTo:'UN-002',                  owner:'Priya Shah', date:'2026-04-15' },
-    ];
-
-    // ── RENDER ─────────────────────────────────────────────────────────
-    function setTab(btn, tab) {
-      document.querySelectorAll('.subtab').forEach(function(b){ b.classList.remove('active'); });
-      btn.classList.add('active');
-      activeTab = tab;
-      render();
-    }
-
-    function render() {
-      var el = document.getElementById('contentArea');
-      var fb = document.getElementById('filterBarArea');
-      if (activeTab === 'trace') {
-        fb.innerHTML = renderTraceFilters();
-        el.innerHTML = renderTraceMatrix();
-      } else if (activeTab === 'inputs') {
-        fb.innerHTML = renderStdFilters(['All Status','Approved','In Review','Draft'], ['All Categories','Performance','Reliability','Security','Connectivity','Physical','Safety']);
-        el.innerHTML = renderDITable();
-      } else if (activeTab === 'outputs') {
-        fb.innerHTML = renderStdFilters(['All Status','Approved','In Review','Draft'], ['All Categories','Software','Hardware','Mechanical','Labeling']);
-        el.innerHTML = renderDOTable();
-      } else if (activeTab === 'reviews') {
-        fb.innerHTML = renderStdFilters(['All Status','Approved','Open'], ['All Phases','Planning','Design Inputs','Design Outputs','V&V']);
-        el.innerHTML = renderDRTable();
-      } else if (activeTab === 'vv') {
-        fb.innerHTML = renderStdFilters(['All Status','In Progress','Draft','Planned'], ['All Types','Verification','Validation']);
-        el.innerHTML = renderVVTable();
-      }
-    }
-
-    function renderTraceFilters() {
-      return '<div class="filter-bar">' +
-        '<button class="filter-dropdown">Status <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
-        '<button class="filter-dropdown">Phase <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
-        '<button class="filter-dropdown">Owner <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
-        '<button class="filter-more-btn">+ More Filters</button>' +
-        '</div>';
-    }
-
-    function renderStdFilters(statuses, cats) {
-      return '<div class="filter-bar">' +
-        '<button class="filter-dropdown">Status <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
-        '<button class="filter-dropdown">Category <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
-        '<button class="filter-dropdown">Owner <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
-        '<button class="filter-dropdown">Updated <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
-        '<button class="filter-more-btn">+ More Filters</button>' +
-        '</div>';
-    }
-
-    function traceStatusBadge(s) {
-      if (s === 'complete') return '<span class="trace-status complete">Complete</span>';
-      if (s === 'partial')  return '<span class="trace-status partial">Partial</span>';
-      return '<span class="trace-status gap">Gap</span>';
-    }
-
-    function renderTraceMatrix() {
-      var html = '<div class="trace-table-wrap"><table class="trace-table">' +
-        '<thead><tr>' +
-        '<th>User Need</th>' +
-        '<th>Design Inputs</th>' +
-        '<th>Design Outputs</th>' +
-        '<th>V&amp;V</th>' +
-        '<th>Trace Status</th>' +
-        '</tr></thead><tbody>';
-
-      TRACE_ROWS.forEach(function(row) {
-        html += '<tr>';
-        // User Need
-        html += '<td><span class="un-id">' + esc(row.un.id) + '</span><div class="un-title">' + esc(row.un.title) + '</div></td>';
-        // Design Inputs
-        html += '<td><div class="trace-chips">';
-        row.dis.forEach(function(d){ html += '<span class="trace-chip chip-di">' + esc(d) + '</span>'; });
-        html += '</div></td>';
-        // Design Outputs
-        html += '<td><div class="trace-chips">';
-        row.dos.forEach(function(d){ html += '<span class="trace-chip chip-do">' + esc(d) + '</span>'; });
-        html += '</div></td>';
-        // V&V
-        html += '<td><div class="trace-chips">';
-        if (row.vvs.length) {
-          row.vvs.forEach(function(v){
-            var s = getStatus(v.status);
-            html += '<span class="trace-chip chip-vv" style="background:' + s.bg + ';color:' + s.color + ';border-color:' + s.color + '40">' + esc(v.id) + '</span>';
-          });
-        } else {
-          html += '<span class="trace-chip chip-gap">No V&amp;V linked</span>';
-        }
-        html += '</div></td>';
-        // Status
-        html += '<td>' + traceStatusBadge(row.traceStatus) + '</td>';
-        html += '</tr>';
-      });
-
-      html += '</tbody></table></div>';
-      return html;
-    }
-
-    function fmtDate(iso) {
-      if (!iso) return '—';
-      try { return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); } catch(e) { return iso.slice(0,10); }
-    }
-
-    function renderDITable() {
-      var html = '<div class="doc-table-wrap"><table class="doc-table"><thead><tr>' +
-        '<th><input type="checkbox" class="doc-cb"></th>' +
-        '<th style="width:45%">Requirement</th>' +
-        '<th>Category</th><th>Status</th><th>Updated</th><th>Owner</th><th>Actions</th>' +
-        '</tr></thead><tbody>';
-      DESIGN_INPUTS.forEach(function(item) {
-        html += '<tr><td><input type="checkbox" class="doc-cb"></td>' +
-          '<td><span class="file-title">' + esc(item.title) + '</span><span class="file-id">' + esc(item.id) + '</span></td>' +
-          '<td><span class="cat-chip">' + esc(item.category) + '</span></td>' +
-          '<td>' + badge(item.status) + '</td>' +
-          '<td class="doc-date">' + fmtDate(item.date) + '</td>' +
-          '<td class="doc-owner">' + esc(item.owner) + '</td>' +
-          '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="action-icon-btn" title="Edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td>' +
-          '</tr>';
-      });
-      html += '</tbody></table></div>';
-      return html;
-    }
-
-    function renderDOTable() {
-      var html = '<div class="doc-table-wrap"><table class="doc-table"><thead><tr>' +
-        '<th><input type="checkbox" class="doc-cb"></th>' +
-        '<th style="width:38%">Output</th>' +
-        '<th>Category</th><th>Traces to</th><th>Status</th><th>Updated</th><th>Actions</th>' +
-        '</tr></thead><tbody>';
-      DESIGN_OUTPUTS.forEach(function(item) {
-        html += '<tr><td><input type="checkbox" class="doc-cb"></td>' +
-          '<td><span class="file-title">' + esc(item.title) + '</span><span class="file-id">' + esc(item.id) + ' · ' + esc(item.owner) + '</span></td>' +
-          '<td><span class="cat-chip">' + esc(item.category) + '</span></td>' +
-          '<td style="font-size:0.72rem;color:rgba(11,39,64,0.5)">' + esc(item.tracesDI) + '</td>' +
-          '<td>' + badge(item.status) + '</td>' +
-          '<td class="doc-date">' + fmtDate(item.date) + '</td>' +
-          '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="action-icon-btn" title="Edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td>' +
-          '</tr>';
-      });
-      html += '</tbody></table></div>';
-      return html;
-    }
-
-    function renderDRTable() {
-      var html = '<div class="doc-table-wrap"><table class="doc-table"><thead><tr>' +
-        '<th><input type="checkbox" class="doc-cb"></th>' +
-        '<th style="width:42%">Review</th>' +
-        '<th>Phase</th><th>Status</th><th>Date</th><th>Chair</th><th>Actions</th>' +
-        '</tr></thead><tbody>';
-      DESIGN_REVIEWS.forEach(function(item) {
-        html += '<tr><td><input type="checkbox" class="doc-cb"></td>' +
-          '<td><span class="file-title">' + esc(item.title) + '</span><span class="file-id">' + esc(item.id) + '</span></td>' +
-          '<td><span class="cat-chip">' + esc(item.phase) + '</span></td>' +
-          '<td>' + badge(item.status) + '</td>' +
-          '<td class="doc-date">' + fmtDate(item.date) + '</td>' +
-          '<td class="doc-owner">' + esc(item.owner) + '</td>' +
-          '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>' +
-          '</tr>';
-      });
-      html += '</tbody></table></div>';
-      return html;
-    }
-
-    function renderVVTable() {
-      var html = '<div class="doc-table-wrap"><table class="doc-table"><thead><tr>' +
-        '<th><input type="checkbox" class="doc-cb"></th>' +
-        '<th style="width:38%">Activity</th>' +
-        '<th>Type</th><th>Traces to</th><th>Status</th><th>Updated</th><th>Actions</th>' +
-        '</tr></thead><tbody>';
-      VV_ITEMS.forEach(function(item) {
-        html += '<tr><td><input type="checkbox" class="doc-cb"></td>' +
-          '<td><span class="file-title">' + esc(item.title) + '</span><span class="file-id">' + esc(item.id) + ' · ' + esc(item.owner) + '</span></td>' +
-          '<td><span class="cat-chip">' + esc(item.kind) + '</span></td>' +
-          '<td style="font-size:0.72rem;color:rgba(11,39,64,0.5)">' + esc(item.tracesTo) + '</td>' +
-          '<td>' + badge(item.status) + '</td>' +
-          '<td class="doc-date">' + fmtDate(item.date) + '</td>' +
-          '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="action-icon-btn" title="Edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td>' +
-          '</tr>';
-      });
-      html += '</tbody></table></div>';
-      return html;
-    }
-
-    render();
   </script>
 </body>
 </html>
