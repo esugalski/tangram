@@ -961,6 +961,17 @@ const LearnMode = (function () {
     .lm-map-step.locked .lm-map-step-status { background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.45); }
     .lm-map-step.lm-map-step-other-role { opacity: 0.42; cursor: default !important; }
     .lm-map-step.lm-map-step-other-role .lm-map-step-dot { background: rgba(11,39,64,0.08) !important; color: rgba(11,39,64,0.38) !important; }
+
+    /* Doc status badges inside the step banner */
+    .lm-step-banner-badges { display: flex; align-items: center; gap: 0.45rem; flex-shrink: 0; margin-right: 0.25rem; }
+    .lm-step-banner-rev { font-size: 0.67rem; font-weight: 700; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.85); padding: 0.18rem 0.55rem; border-radius: 5px; letter-spacing: 0.02em; }
+    .lm-step-banner-status { font-size: 0.67rem; font-weight: 700; padding: 0.18rem 0.6rem; border-radius: 20px; }
+    .lm-step-banner-status--draft { background: rgba(10,192,233,0.22); color: #8FE4F7; }
+    .lm-step-banner-status--review { background: rgba(245,158,11,0.22); color: #fbbf24; }
+    .lm-step-banner-status--approved { background: rgba(16,185,129,0.22); color: #6ee7b7; }
+    /* Hide topbar doc badges in guided mode — they show in the step banner instead */
+    body[data-learn-mode="guided"] .ver-badge,
+    body[data-learn-mode="guided"] .status-pill { display: none !important; }
   `;
 
   function injectCSS() {
@@ -1226,11 +1237,25 @@ const LearnMode = (function () {
     const st = journeyState();
     const pct = Math.round(100 * (pageStepIdx) / Math.max(1, visible.length - 1));
 
+    // Read doc rev/status badges from page (if present) for injection into banner
+    var verBadgeEl = document.getElementById('docVerBadge');
+    var statusPillEl = document.getElementById('docStatusPill');
+    var revText = verBadgeEl ? verBadgeEl.textContent.trim() : '';
+    var rawClass = statusPillEl ? statusPillEl.className : '';
+    var statusMatch = rawClass.match(/\b(draft|review|approved|none)\b/);
+    var statusClass = statusMatch ? statusMatch[1] : 'draft';
+    var statusText = statusPillEl ? statusPillEl.textContent.trim() : 'Draft';
+    var badgesHtml = '<div class="lm-step-banner-badges">' +
+      (revText ? '<span class="lm-step-banner-rev">' + esc(revText) + '</span>' : '') +
+      '<span class="lm-step-banner-status lm-step-banner-status--' + statusClass + '">' + esc(statusText) + '</span>' +
+      '</div>';
+
     const banner = document.createElement('div');
     banner.id = 'lm-step-banner';
     banner.className = 'lm-step-banner';
     banner.innerHTML =
       '<div class="lm-step-banner-title">' + esc(pageStep.title) + '</div>' +
+      badgesHtml +
       '<button class="lm-step-banner-toggle" onclick="LearnMode._toggleCtxPanel(\'' + esc(pageStep.id) + '\')">' +
         '<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>' +
         'Context' +
