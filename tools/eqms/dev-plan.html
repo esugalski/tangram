@@ -37,6 +37,36 @@
     #intro-slot      { display: none !important; }
     .learn-only      { display: none !important; }
 
+    /* ─── TOPBAR EXTRAS ─── */
+    .topbar-left { display: flex; align-items: center; gap: 0.65rem; flex: 1; }
+    .ver-badge { font-size: 0.68rem; font-weight: 700; background: rgba(11,39,64,0.07); border: 1px solid rgba(11,39,64,0.12); color: var(--mid-blue); padding: 0.2rem 0.6rem; border-radius: 5px; white-space: nowrap; }
+    .status-pill { font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 20px; white-space: nowrap; }
+    .status-pill.draft { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .status-pill.review { background: rgba(245,158,11,0.12); color: #b45309; }
+    .status-pill.approved { background: rgba(16,185,129,0.12); color: #059669; }
+
+    /* ─── DOC COVER ─── */
+    .content-area { flex: 1; overflow-y: auto; padding: 1.5rem; }
+    .content-area::-webkit-scrollbar { width: 5px; }
+    .content-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+    .doc-cover { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 14px; padding: 2rem 2.25rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+    .doc-cover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #10B981, #0AC0E9); }
+    .doc-cover-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+    .doc-cover-meta { display: flex; flex-direction: column; gap: 0.25rem; text-align: right; flex-shrink: 0; }
+    .doc-cover-meta-row { font-size: 0.7rem; color: rgba(11,39,64,0.4); white-space: nowrap; }
+    .doc-cover-meta-row strong { color: var(--primary); font-weight: 600; }
+    .doc-company { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.5rem; }
+    .doc-name { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 0.35rem; }
+    .doc-subtitle { font-size: 0.82rem; color: rgba(11,39,64,0.5); line-height: 1.5; max-width: 480px; }
+    .doc-cover-divider { height: 1px; background: rgba(11,39,64,0.08); margin: 1.5rem 0; }
+    .doc-cover-fields { display: grid; gap: 1rem; }
+    .doc-field { display: flex; flex-direction: column; gap: 0.2rem; }
+    .doc-field-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.3); }
+    .doc-field-input { font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; font-family: 'Inter', sans-serif; background: var(--light-gray); outline: none; transition: border-color 0.15s; width: 100%; }
+    .doc-field-input:focus { border-color: var(--aqua); background: white; }
+    .doc-field-textarea { font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; font-family: 'Inter', sans-serif; background: var(--light-gray); outline: none; transition: border-color 0.15s; resize: vertical; line-height: 1.55; width: 100%; }
+    .doc-field-textarea:focus { border-color: var(--aqua); background: white; }
+
     .phase-timeline { display: grid; grid-template-columns: 160px 1fr; gap: 1rem; margin-bottom: 1.25rem; }
     .phase-marker { position: relative; padding-top: 0.4rem; }
     .phase-marker-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--aqua); margin-bottom: 0.25rem; box-shadow: 0 0 0 4px rgba(10,192,233,0.15); }
@@ -83,12 +113,15 @@
 
   <main class="main">
     <header class="topbar">
-      <div class="topbar-search">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" placeholder="Search documents, CAPAs, products, audits…">
+      <div class="topbar-left">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, CAPAs, products, audits…">
+        </div>
+        <span class="ver-badge" id="docVerBadge">Rev A</span>
+        <span class="status-pill draft" id="docStatusPill">Draft</span>
       </div>
       <div class="topbar-right">
-        <button class="btn-secondary" onclick="loadStarter()"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>Load starter</button>
         <button class="btn-primary" onclick="savePlan()"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Save</button>
         <button class="btn-guidance" onclick="openHelpPanel()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Guidance</button>
       </div>
@@ -116,18 +149,54 @@
       <a href="trace-matrix.html" class="dc-subnav-link">Trace Matrix</a>
     </nav>
 
-    <div class="doc-approval-bar">
-      <div class="proc-status-pill draft" id="proc-status-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev A</div>
-      <div style="flex:1;"></div>
-      <div id="approval-route-panel"></div>
-      <button class="btn-approve" id="approve-btn" onclick="initiateApproval()"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve</button>
-    </div>
-    <div class="doc-lock-banner" id="doc-lock" style="display:none;"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> This plan is approved. Fields are locked. Use "Initiate Revision" to start a new draft.</div>
+    <div class="doc-lock-banner" id="doc-lock" style="display:none;"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> This plan is approved. Fields are locked. Use "Initiate Revision" in the Approval section to start a new draft.</div>
 
     <div id="lm-sidebar-widget" style="display:none"></div>
 
-    <div class="page-scroll">
+    <div class="content-area">
       <div id="intro-slot"></div>
+
+      <!-- Document Cover -->
+      <div class="doc-cover">
+        <div class="doc-cover-top">
+          <div>
+            <div class="doc-company">Tangram MedTech</div>
+            <div class="doc-name">Design &amp; Development Plan</div>
+            <div class="doc-subtitle">A written plan describing design activities, responsibilities, review points, and V&amp;V requirements per 21 CFR 820.30(b) and ISO 13485 §7.3.2.</div>
+          </div>
+          <div class="doc-cover-meta">
+            <div class="doc-cover-meta-row">Document No. <strong>DP-001</strong></div>
+            <div class="doc-cover-meta-row">Revision <strong id="docRevisionDisplay">A</strong></div>
+            <div class="doc-cover-meta-row">Status <strong id="docStatusDisplay">Draft</strong></div>
+          </div>
+        </div>
+        <div class="doc-cover-divider"></div>
+        <div id="hint-scope" class="learn-only" style="margin-bottom:0.75rem;"></div>
+        <div class="doc-cover-fields" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:1rem;">
+          <div class="doc-field">
+            <div class="doc-field-label">Project name</div>
+            <input class="doc-field-input" id="f-project" placeholder="e.g. CardioSync Pro Rev A">
+          </div>
+          <div class="doc-field">
+            <div class="doc-field-label">Project manager</div>
+            <input class="doc-field-input" id="f-pm" placeholder="Name + role">
+          </div>
+          <div class="doc-field">
+            <div class="doc-field-label">Plan version</div>
+            <input class="doc-field-input" id="f-version" placeholder="1.0">
+          </div>
+        </div>
+        <div class="doc-cover-fields" style="grid-template-columns:1fr 1fr;">
+          <div class="doc-field">
+            <div class="doc-field-label">Project objective</div>
+            <textarea class="doc-field-textarea" id="f-objective" data-ai rows="3" placeholder="What you're designing and why, in 2–3 sentences."></textarea>
+          </div>
+          <div class="doc-field">
+            <div class="doc-field-label">Success criteria</div>
+            <textarea class="doc-field-textarea" id="f-success" data-ai rows="3" placeholder="How you'll know the project is done (e.g. 510(k) cleared, first shipment, pilot completed)."></textarea>
+          </div>
+        </div>
+      </div>
 
       <div class="kpi-row">
         <div class="kpi-tile">
@@ -149,38 +218,6 @@
           <div class="kpi-tile-label">Team members</div>
           <div class="kpi-tile-value" id="kpi-team">0</div>
           <div class="kpi-tile-sub">With named responsibilities</div>
-        </div>
-      </div>
-
-      <!-- Project scope -->
-      <div class="card">
-        <div class="card-head"><div class="card-title">Project scope</div></div>
-        <div class="card-body">
-          <div id="hint-scope" class="learn-only" style="margin-bottom:0.6rem;"></div>
-          <div class="form-row-3">
-            <div class="form-field">
-              <label class="form-label">Project name</label>
-              <input class="form-input" id="f-project" placeholder="e.g. CardioSync Pro Rev A">
-            </div>
-            <div class="form-field">
-              <label class="form-label">Project manager</label>
-              <input class="form-input" id="f-pm" placeholder="Name + role">
-            </div>
-            <div class="form-field">
-              <label class="form-label">Plan version</label>
-              <input class="form-input" id="f-version" placeholder="1.0">
-            </div>
-          </div>
-          <div class="form-row" style="margin-top:0.85rem;">
-            <div class="form-field">
-              <label class="form-label">Project objective</label>
-              <textarea class="form-textarea" id="f-objective" data-ai rows="3" placeholder="What you're designing and why, in 2–3 sentences."></textarea>
-            </div>
-            <div class="form-field">
-              <label class="form-label">Success criteria</label>
-              <textarea class="form-textarea" id="f-success" data-ai rows="3" placeholder="How you'll know the project is done (e.g. 510(k) cleared, first shipment, pilot completed)."></textarea>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -235,8 +272,7 @@
       <div class="card">
         <div class="card-head"><div class="card-title">Approval</div></div>
         <div class="card-body" id="approval-body">
-          <div class="subtle">Once the plan is drafted, route it for signature via the e-sign flow (same module used for SOPs).</div>
-          <button class="btn-primary" style="margin-top:0.8rem;" onclick="signPlan()"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Sign &amp; approve plan</button>
+          <div class="subtle">Once the plan is drafted, route it for signature via the approval flow.</div>
         </div>
       </div>
     </div>
@@ -388,10 +424,10 @@
           return {
             id: p.id, label: p.label, blurb: p.blurb,
             start: '', end: '', exit: '',
-            deliverables: []
+            deliverables: (STARTER_DELIVERABLES[p.id] || []).map(function(d){ return { name: d.name, owner: d.owner, status: 'pending' }; })
           };
         }),
-        roles: [],
+        roles: STARTER_ROLES.map(function(r){ return { role: r.role, name: '', scope: r.scope }; }),
         signature: null,
         approved: false, revision: 'A', approvedAt: null, approvedBy: null, signatures: null, revHistory: []
       };
@@ -588,31 +624,34 @@
 
     function renderApproval() {
       const body = document.getElementById('approval-body');
+      if (!body) return;
       if (state.approved) {
-        body.innerHTML = '<div class="subtle">This plan is approved. Use "Initiate Revision" in the header to start a new draft.</div>';
+        body.innerHTML = '<div class="subtle">This plan is approved.</div>';
         if (window.Approvals) Approvals.renderStatusPanel('dev-plan', 'doc', body);
+        body.innerHTML += '<button class="btn-revise" style="margin-top:0.75rem;" onclick="initiateRevision()"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Initiate Revision</button>';
       } else {
-        body.innerHTML = '<div class="subtle">Once the plan is drafted, use the Approve button above to route it for signature.</div>';
+        body.innerHTML = '<div class="subtle">Once the plan is drafted, route it for signature via the approval flow.</div>' +
+          '<button class="btn-approve" style="margin-top:0.75rem;" onclick="initiateApproval()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Approve &amp; Route for Signature</button>';
       }
     }
 
     function updateStatus() {
-      var pill = document.getElementById('proc-status-pill');
-      var btn = document.getElementById('approve-btn');
+      var verBadge = document.getElementById('docVerBadge');
+      var statusPill = document.getElementById('docStatusPill');
+      var revDisp = document.getElementById('docRevisionDisplay');
+      var statDisp = document.getElementById('docStatusDisplay');
       var lock = document.getElementById('doc-lock');
-      if (!pill) return;
       var rev = state.revision || 'A';
+      if (verBadge) verBadge.textContent = 'Rev ' + rev;
+      if (revDisp) revDisp.textContent = rev;
       if (state.approved) {
-        pill.className = 'proc-status-pill approved';
-        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved · Rev ' + rev;
-        if (btn) { btn.className = 'btn-revise'; btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Initiate Revision'; btn.onclick = initiateRevision; }
+        if (statusPill) { statusPill.className = 'status-pill approved'; statusPill.textContent = 'Approved'; }
+        if (statDisp) statDisp.textContent = 'Approved';
         if (lock) lock.style.display = '';
         lockFields();
-        if (window.Approvals) Approvals.renderStatusPanel('dev-plan', 'doc', document.getElementById('approval-route-panel'));
       } else {
-        pill.className = 'proc-status-pill draft';
-        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev ' + rev;
-        if (btn) { btn.className = 'btn-approve'; btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve'; btn.onclick = initiateApproval; }
+        if (statusPill) { statusPill.className = 'status-pill draft'; statusPill.textContent = 'Draft'; }
+        if (statDisp) statDisp.textContent = 'Draft';
         if (lock) lock.style.display = 'none';
         unlockFields();
       }
@@ -721,7 +760,7 @@
     }
 
     initSidebar({ activePage: 'dev-plan' });
-    renderIntro();
+    try { renderIntro(); } catch(e) {}
     populate();
     renderHints();
     updateStatus();
