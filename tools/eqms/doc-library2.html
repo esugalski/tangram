@@ -449,10 +449,11 @@
       }},
       { key:'qms_procedures', normalize: function(raw) {
         if (!raw || typeof raw !== 'object') return [];
-        return Object.values(raw).map(function(p) {
+        var SKIP = {'SOP-DC-001':1,'SOP-DC-002':1,'SOP-RM-001':1,'SOP-TR-001':1,'SOP-CH-001':1,'SOP-CAPA-001':1,'SOP-NC-001':1,'SOP-SUP-001':1,'SOP-AUD-001':1,'SOP-001':1,'SOP-002':1,'SOP-003':1,'SOP-005':1};
+        return Object.values(raw).filter(function(p){ return p.id && !SKIP[p.id]; }).map(function(p) {
           var typeLabel = p.type === 'work-instruction' ? 'Work Instruction' : p.type === 'form' ? 'Form' : 'Procedure';
           var date = (p.approvalSignature && p.approvalSignature.timestamp) ? p.approvalSignature.timestamp : (p.createdAt || '');
-          return { id: p.id || '?', title: p.title || 'Untitled Procedure', category:'Quality System',
+          return { id: p.id, title: p.title || 'Untitled Procedure', category:'Quality System',
             type: typeLabel, typeKey:'procedure', status: p.status || 'draft',
             version: p.revision ? 'Rev ' + p.revision : null,
             date: date, dateLabel: fmtDate(date),
