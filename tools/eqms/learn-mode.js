@@ -88,6 +88,13 @@ const LearnMode = (function () {
       why: 'A design control record is only valid if the person who created it was trained on the governing procedure. Training records must be created before the first design control record.',
       checkKey: 'qms_team_people'
     },
+    { id: 'design-controls-hub', pageId: 'design-controls',          file: 'design-controls.html',
+      roles: ['design'],
+      title: 'Orient to Design Controls',
+      summary: 'Review the seven design control sections, how they connect, and where you currently stand before creating any records.',
+      why: 'Design controls are the most scrutinized section of any 510(k). Seeing the full chain before creating records helps you avoid the traceability gaps that cost months to fix at submission time.',
+      checkKey: null
+    },
     { id: 'plan',              pageId: 'dev-plan',                   file: 'dev-plan.html',
       roles: ['design'],
       title: 'Write your development plan',
