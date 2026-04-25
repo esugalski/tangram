@@ -286,6 +286,9 @@
     .btn-save-settings:hover { background: var(--aqua-dark); transform: translateY(-1px); }
     .settings-save-flash { font-size: 0.78rem; font-weight: 700; color: var(--green); opacity: 0; transition: opacity 0.3s; margin-left: 0.5rem; }
     .settings-save-flash.show { opacity: 1; }
+    .explainer-collapse-btn { margin-left: auto; width: 22px; height: 22px; border: none; background: rgba(10,192,233,0.12); border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; padding: 0; }
+    .explainer-collapse-btn:hover { background: rgba(10,192,233,0.22); }
+    .explainer-collapsed .explainer-body { display: none; }
   </style>
 </head>
 <body>
@@ -419,10 +422,17 @@
         </div><!-- /doc-cover -->
 
         <!-- What this page is (Guided mode) -->
-        <div class="learn-only" style="background:rgba(10,192,233,0.06);border:1px solid rgba(10,192,233,0.22);border-radius:10px;padding:0.85rem 1.1rem;margin:1.25rem 0 0.75rem;font-family:'Inter',sans-serif;">
-          <div style="font-size:0.58rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#089bbf;margin-bottom:0.3rem;">What is a &quot;Design Output&quot;?</div>
-          <div style="font-size:0.82rem;color:#0B2740;line-height:1.55;margin-bottom:0.5rem;">If design inputs are <em>what</em> the device must do, <strong>design outputs</strong> are <em>how</em> it does it — the actual drawings, specs, firmware source, schematics, labels, and IFU (instructions for use). The physical and documentary artifacts that make up your device.</div>
-          <div style="font-size:0.76rem;color:#304F6B;line-height:1.55;">Rules of thumb: (1) every output must trace to at least one design input, (2) outputs must be reviewed and approved before use in production, and (3) changes to outputs go through Change Control. Together with the inputs + V&amp;V reports, these outputs make up the <strong>Device Master Record (DMR)</strong>.</div>
+        <div class="learn-only" id="do-explainer" style="background:rgba(10,192,233,0.06);border:1px solid rgba(10,192,233,0.22);border-radius:10px;padding:0.85rem 1.1rem;margin:1.25rem 0 0.75rem;font-family:'Inter',sans-serif;">
+          <div style="display:flex;align-items:center;margin-bottom:0.3rem;">
+            <div style="font-size:0.58rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#089bbf;flex:1;">What is a &quot;Design Output&quot;?</div>
+            <button class="explainer-collapse-btn" onclick="toggleExplainer('do-explainer','qms_explainer_do')" title="Collapse">
+              <svg id="do-explainer-chev" viewBox="0 0 24 24" style="width:11px;height:11px;stroke:#089bbf;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform 0.18s;"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="explainer-body">
+            <div style="font-size:0.82rem;color:#0B2740;line-height:1.55;margin-bottom:0.5rem;">If design inputs are <em>what</em> the device must do, <strong>design outputs</strong> are <em>how</em> it does it — the actual drawings, specs, firmware source, schematics, labels, and IFU (instructions for use). The physical and documentary artifacts that make up your device.</div>
+            <div style="font-size:0.76rem;color:#304F6B;line-height:1.55;">Rules of thumb: (1) every output must trace to at least one design input, (2) outputs must be reviewed and approved before use in production, and (3) changes to outputs go through Change Control. Together with the inputs + V&amp;V reports, these outputs make up the <strong>Device Master Record (DMR)</strong>.</div>
+          </div>
         </div>
 
         <!-- Outputs Table -->
@@ -786,6 +796,21 @@
 
     function toggleHistory(btn) { btn.classList.toggle('open'); btn.nextElementSibling.classList.toggle('hidden'); }
     function toggleHistoryEntry(head) { head.nextElementSibling.classList.toggle('open'); }
+    function toggleExplainer(panelId, storageKey) {
+      var panel = document.getElementById(panelId);
+      var chev = document.getElementById(panelId + '-chev');
+      var collapsed = panel.classList.toggle('explainer-collapsed');
+      if (chev) chev.style.transform = collapsed ? 'rotate(-90deg)' : '';
+      if (collapsed) sessionStorage.setItem(storageKey, '1');
+      else sessionStorage.removeItem(storageKey);
+    }
+    (function restoreExplainers() {
+      if (sessionStorage.getItem('qms_explainer_do') === '1') {
+        var p = document.getElementById('do-explainer');
+        var c = document.getElementById('do-explainer-chev');
+        if (p) { p.classList.add('explainer-collapsed'); if (c) c.style.transform = 'rotate(-90deg)'; }
+      }
+    })();
 
     function buildPanelBody(item, isChangeRequest = false) {
       let html = '';

@@ -364,6 +364,9 @@
     .btn-save-settings:hover { background: var(--aqua-dark); transform: translateY(-1px); }
     .settings-save-flash { font-size: 0.78rem; font-weight: 700; color: var(--green); opacity: 0; transition: opacity 0.3s; margin-left: 0.5rem; }
     .settings-save-flash.show { opacity: 1; }
+    .explainer-collapse-btn { margin-left: auto; width: 22px; height: 22px; border: none; background: rgba(10,192,233,0.12); border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; padding: 0; }
+    .explainer-collapse-btn:hover { background: rgba(10,192,233,0.22); }
+    .explainer-collapsed .explainer-body { display: none; }
   </style>
 </head>
 <body>
@@ -511,10 +514,17 @@
         </div><!-- /doc-cover -->
 
         <!-- What this page is (Guided mode) -->
-        <div class="learn-only" style="background:rgba(10,192,233,0.06);border:1px solid rgba(10,192,233,0.22);border-radius:10px;padding:0.85rem 1.1rem;margin:1.25rem 0 0.75rem;font-family:'Inter',sans-serif;">
-          <div style="font-size:0.58rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#089bbf;margin-bottom:0.3rem;">What is a &quot;User Need&quot;?</div>
-          <div style="font-size:0.82rem;color:#0B2740;line-height:1.55;margin-bottom:0.5rem;">A <strong>user need</strong> is what someone expects the device to do for them, in plain language. Think: <em>&quot;The patient should be continuously monitored without having to do anything,&quot;</em> or <em>&quot;The clinician should be able to retrieve data remotely.&quot;</em></div>
-          <div style="font-size:0.76rem;color:#304F6B;line-height:1.55;">The table below is the <strong>User Needs list</strong>. Each row is one need. It becomes the foundation for every design input (Step 5), design output (Step 7), and V&amp;V test (Step 10) that follows. Each user need gets a unique ID (UN-001, UN-002, …) so every downstream requirement can trace back to it.</div>
+        <div class="learn-only" id="un-explainer" style="background:rgba(10,192,233,0.06);border:1px solid rgba(10,192,233,0.22);border-radius:10px;padding:0.85rem 1.1rem;margin:1.25rem 0 0.75rem;font-family:'Inter',sans-serif;">
+          <div style="display:flex;align-items:center;margin-bottom:0.3rem;">
+            <div style="font-size:0.58rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#089bbf;flex:1;">What is a &quot;User Need&quot;?</div>
+            <button class="explainer-collapse-btn" onclick="toggleExplainer('un-explainer','qms_explainer_un')" title="Collapse">
+              <svg id="un-explainer-chev" viewBox="0 0 24 24" style="width:11px;height:11px;stroke:#089bbf;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;transition:transform 0.18s;"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="explainer-body">
+            <div style="font-size:0.82rem;color:#0B2740;line-height:1.55;margin-bottom:0.5rem;">A <strong>user need</strong> is what someone expects the device to do for them, in plain language. Think: <em>&quot;The patient should be continuously monitored without having to do anything,&quot;</em> or <em>&quot;The clinician should be able to retrieve data remotely.&quot;</em></div>
+            <div style="font-size:0.76rem;color:#304F6B;line-height:1.55;">The table below is the <strong>User Needs list</strong>. Each row is one need. It becomes the foundation for every design input (Step 5), design output (Step 7), and V&amp;V test (Step 10) that follows. Each user need gets a unique ID (UN-001, UN-002, …) so every downstream requirement can trace back to it.</div>
+          </div>
         </div>
 
         <!-- Requirements Table -->
@@ -974,6 +984,21 @@
     }
     function toggleHistory(btn) { btn.classList.toggle('open'); btn.nextElementSibling.classList.toggle('hidden'); }
     function toggleHistoryEntry(head) { head.nextElementSibling.classList.toggle('open'); }
+    function toggleExplainer(panelId, storageKey) {
+      var panel = document.getElementById(panelId);
+      var chev = document.getElementById(panelId + '-chev');
+      var collapsed = panel.classList.toggle('explainer-collapsed');
+      if (chev) chev.style.transform = collapsed ? 'rotate(-90deg)' : '';
+      if (collapsed) sessionStorage.setItem(storageKey, '1');
+      else sessionStorage.removeItem(storageKey);
+    }
+    (function restoreExplainers() {
+      if (sessionStorage.getItem('qms_explainer_un') === '1') {
+        var p = document.getElementById('un-explainer');
+        var c = document.getElementById('un-explainer-chev');
+        if (p) { p.classList.add('explainer-collapsed'); if (c) c.style.transform = 'rotate(-90deg)'; }
+      }
+    })();
 
     function buildPanelBody(item, isChangeRequest = false) {
       let html = '';
