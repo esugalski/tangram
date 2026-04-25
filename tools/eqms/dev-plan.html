@@ -198,29 +198,6 @@
         </div>
       </div>
 
-      <div class="kpi-row">
-        <div class="kpi-tile">
-          <div class="kpi-tile-label">Overall completion</div>
-          <div class="kpi-tile-value" id="kpi-completion">0%</div>
-          <div class="kpi-tile-sub" id="kpi-completion-sub">0 of 0 deliverables</div>
-        </div>
-        <div class="kpi-tile">
-          <div class="kpi-tile-label">Active phase</div>
-          <div class="kpi-tile-value" id="kpi-phase" style="font-size:1.1rem;">—</div>
-          <div class="kpi-tile-sub">Based on first incomplete phase</div>
-        </div>
-        <div class="kpi-tile">
-          <div class="kpi-tile-label">Target launch</div>
-          <div class="kpi-tile-value" id="kpi-launch" style="font-size:1.1rem;">—</div>
-          <div class="kpi-tile-sub">From last phase end date</div>
-        </div>
-        <div class="kpi-tile">
-          <div class="kpi-tile-label">Team members</div>
-          <div class="kpi-tile-value" id="kpi-team">0</div>
-          <div class="kpi-tile-sub">With named responsibilities</div>
-        </div>
-      </div>
-
       <!-- Phases -->
       <div class="card">
         <div class="card-head">
@@ -556,19 +533,7 @@
     function removeRole(i) { state.roles.splice(i,1); save(); renderRoles(); renderKPIs(); }
 
     function renderKPIs() {
-      let totalD = 0, doneD = 0, firstIncomplete = null, lastEnd = '';
-      state.phases.forEach(function(ph) {
-        ph.deliverables.forEach(function(d){ totalD++; if (d.status === 'done') doneD++; });
-        if (!firstIncomplete && ph.deliverables.some(function(d){ return d.status !== 'done'; })) firstIncomplete = ph.label;
-        if (ph.end && ph.end > lastEnd) lastEnd = ph.end;
-      });
-      const pct = totalD ? Math.round(100 * doneD / totalD) : 0;
-      document.getElementById('kpi-completion').textContent = pct + '%';
-      document.getElementById('kpi-completion-sub').textContent = doneD + ' of ' + totalD + ' deliverables';
-      document.getElementById('kpi-phase').textContent = firstIncomplete || 'All complete';
-      document.getElementById('kpi-launch').textContent = lastEnd || '—';
-      const teamCount = state.roles.filter(function(r){ return r.name; }).length;
-      document.getElementById('kpi-team').textContent = teamCount;
+      renderSidebarWidget();
     }
 
     function renderHints() {
@@ -744,19 +709,24 @@
           '<span class="lm-sw-bar-val">' + done + '/' + total + '</span>' +
         '</div>';
       }).join('');
-      el.innerHTML = '<div class="lm-sw">' +
+      var html = '<div class="lm-sw">' +
         '<div class="lm-sw-gauge-wrap">' +
           '<span class="lm-sw-big">' + pct + '%</span>' +
           '<span class="lm-sw-gauge-sub">plan completion</span>' +
         '</div>' +
         '<div class="lm-sw-section">' +
           '<div class="lm-sw-section-title">Key stats</div>' +
+          '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Overall</span><span class="lm-sw-stat-value">' + doneD + ' of ' + totalD + ' deliverables</span></div>' +
           '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Active phase</span><span class="lm-sw-stat-value">' + (firstIncomplete||'All done') + '</span></div>' +
           '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Target launch</span><span class="lm-sw-stat-value">' + (lastEnd||'—') + '</span></div>' +
           '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Team members</span><span class="lm-sw-stat-value">' + teamCount + '</span></div>' +
         '</div>' +
         '<div class="lm-sw-section"><div class="lm-sw-section-title">Phase breakdown</div>' + phaseRows + '</div>' +
       '</div>';
+      el.innerHTML = html;
+      // Keep the visible At a Glance panel body in sync
+      var ctxBody = document.querySelector('#lm-ctx-panel .lm-ctx-panel-body');
+      if (ctxBody) ctxBody.innerHTML = html;
     }
 
     initSidebar({ activePage: 'dev-plan' });
