@@ -1230,13 +1230,11 @@ const LearnMode = (function () {
     banner.id = 'lm-step-banner';
     banner.className = 'lm-step-banner';
     banner.innerHTML =
-      '<div class="lm-step-banner-num">Step ' + (pageStepIdx + 1) + ' / ' + visible.length + '</div>' +
       '<div class="lm-step-banner-title">' + esc(pageStep.title) + '</div>' +
       '<button class="lm-step-banner-toggle" onclick="LearnMode._toggleCtxPanel(\'' + esc(pageStep.id) + '\')">' +
         '<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>' +
         'Context' +
-      '</button>' +
-      '<div class="lm-step-banner-bar"><div class="lm-step-banner-bar-fill" style="width:' + pct + '%;"></div></div>';
+      '</button>';
 
     const main = document.querySelector('main.main, main, div.main');
     if (main) {
@@ -1346,7 +1344,7 @@ const LearnMode = (function () {
     footer.id = 'lm-step-footer';
     footer.className = 'lm-step-footer';
     footer.innerHTML =
-      '<div class="lm-step-footer-text">Done exploring this page? Next up: <strong>' + esc(cur.title) + '</strong> <span class="lm-step-footer-progress">· step ' + (st.currentIdx + 1) + ' of ' + st.total + '</span></div>' +
+      '<div class="lm-step-footer-text">Done exploring this page? Next up: <strong>' + esc(cur.title) + '</strong></div>' +
       '<button class="lm-step-footer-next" onclick="LearnMode._completeAndAdvance(\'' + esc(cur.id) + '\')">' + esc(nextLabel) + iconSvg + '</button>';
     document.body.appendChild(footer);
   }
