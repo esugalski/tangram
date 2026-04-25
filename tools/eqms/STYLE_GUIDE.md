@@ -408,14 +408,81 @@ Add these to the `<style>` block on any Design Controls page to suppress guided-
 
 ---
 
-## 15. New Page Checklist
+## 15. Guidance Panel Content Principle
+
+**All page-level explanatory, educational, and regulatory context belongs in the Guidance panel — never inline on the page body.**
+
+The Guidance button (topbar-right, ghost outline) opens a 420px slide-in panel that is the canonical home for:
+- "What is this section?" explanations
+- Regulatory context (which CFR/ISO clauses apply and why)
+- Best practices and common pitfalls
+- Video/tutorial placeholders
+- Checklists for regulatory compliance
+
+### What this replaces
+
+| Old pattern | Correct pattern |
+|-------------|-----------------|
+| `.intro-panel` inline block | Guidance panel body |
+| `#intro-slot` + `renderIntro()` / `LearnMode.introCard()` | Guidance panel body |
+| `.learn-only` hardcoded explainer divs | Guidance panel body |
+| Inline regulatory callouts | Guidance panel body |
+
+### How to implement
+
+Every page must have:
+1. A `[ Guidance ]` button in topbar-right (ghost outline style — see Section 6)
+2. A `#panelOverlay` + `#helpPanel` overlay structure (420px slide-in — see Section 9)
+3. `openHelpPanel()` and `closeAllPanels()` JS functions
+4. An Escape key listener: `document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAllPanels(); })`
+
+### Guidance panel structure
+
+```html
+<div class="panel-overlay" id="panelOverlay">
+  <div class="panel-backdrop" onclick="closeAllPanels()"></div>
+  <div class="help-panel" id="helpPanel">
+    <div class="panel-head">
+      <div class="panel-head-row">
+        <span class="panel-type-badge" style="background:rgba(10,192,233,0.1);color:#089bbf;">GUIDANCE</span>
+        <span class="panel-id">Page Name</span>
+        <button class="panel-close" onclick="closeAllPanels()"><!-- × svg --></button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <!-- What it is / why it matters / regulatory context / checklist / video placeholder -->
+      <!-- Video placeholder always at bottom: -->
+      <div style="border:2px dashed rgba(11,39,64,0.12);border-radius:10px;background:rgba(11,39,64,0.025);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.65rem;">
+        <svg><!-- play icon --></svg>
+        <span style="font-size:0.74rem;font-weight:500;color:rgba(11,39,64,0.28);">Video guide coming soon</span>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+### Suppressing legacy guided-mode content
+
+Where `renderIntro()`, `LearnMode.introCard()`, or `.learn-only` elements exist in the page, suppress them with CSS:
+
+```css
+#intro-slot      { display: none !important; }
+.learn-only      { display: none !important; }
+```
+
+Leave the JS functions in place (removing them risks errors if `learn-mode.js` still calls them). Suppress them visually and add equivalent content to the Guidance panel.
+
+---
+
+## 16. New Page Checklist
 
 When creating a new eQMS tool page:
 
 - [ ] Copy `:root` variables block verbatim
 - [ ] Use the sidebar + main + topbar shell structure
 - [ ] Topbar-right: `[ Export ] [ Approve ] [ Guidance ]` — nothing else
-- [ ] Add `btn-guidance` → opens `#helpPanel` with page-specific explanation
+- [ ] Add `btn-guidance` → opens `#helpPanel` with page-specific explanation (what it is, regulatory context, best practices, video placeholder)
+- [ ] Guidance panel replaces any `#intro-slot`, `renderIntro()`, or `.learn-only` explainer elements — suppress those with CSS if present
 - [ ] Wrap doc-cover + section-head + table in `.doc-page-card`
 - [ ] Section head: title left, `[+ Add Item]` right (`.btn-tbl-add`)
 - [ ] Table rows use `.row-approved / .row-review / .row-draft` for left border stripe

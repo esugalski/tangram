@@ -10,6 +10,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
   <style>
+    /* ─── GUIDANCE BUTTON ─── */
+    .btn-guidance { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
+    .btn-guidance:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-guidance svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    /* ─── HELP PANEL ─── */
+    .panel-overlay { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+    .panel-overlay.open { pointer-events: auto; }
+    .panel-backdrop { position: absolute; inset: 0; background: rgba(11,39,64,0.15); opacity: 0; transition: opacity 0.25s; }
+    .panel-overlay.open .panel-backdrop { opacity: 1; }
+    .help-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    .panel-overlay.help-open .help-panel { transform: translateX(0); }
+    .panel-head { padding: 1.2rem 1.25rem 1rem; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .panel-head-row { display: flex; align-items: center; gap: 0.65rem; }
+    .panel-type-badge { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 4px; }
+    .panel-id { font-size: 0.95rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; flex: 1; }
+    .panel-close { width: 28px; height: 28px; border-radius: 6px; border: none; background: rgba(11,39,64,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
+    .panel-close:hover { background: rgba(11,39,64,0.12); }
+    .panel-close svg { width: 14px; height: 14px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .help-panel-body { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
+    .help-panel-body::-webkit-scrollbar { width: 4px; }
+    .help-panel-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+    /* ─── SUPPRESSIONS ─── */
+    #lm-step-footer { display: none !important; }
+    #lm-toggle-root { display: none !important; }
+    #intro-slot      { display: none !important; }
+    .learn-only      { display: none !important; }
+
     .phase-timeline { display: grid; grid-template-columns: 160px 1fr; gap: 1rem; margin-bottom: 1.25rem; }
     .phase-marker { position: relative; padding-top: 0.4rem; }
     .phase-marker-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--aqua); margin-bottom: 0.25rem; box-shadow: 0 0 0 4px rgba(10,192,233,0.15); }
@@ -63,6 +90,7 @@
       <div class="topbar-right">
         <button class="btn-secondary" onclick="loadStarter()"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>Load starter</button>
         <button class="btn-primary" onclick="savePlan()"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Save</button>
+        <button class="btn-guidance" onclick="openHelpPanel()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Guidance</button>
       </div>
     </header>
 
@@ -214,6 +242,58 @@
     </div>
   </main>
 
+  <!-- GUIDANCE PANEL -->
+  <div class="panel-overlay" id="panelOverlay">
+    <div class="panel-backdrop" onclick="closeAllPanels()"></div>
+    <div class="help-panel" id="helpPanel">
+      <div class="panel-head">
+        <div class="panel-head-row">
+          <span class="panel-type-badge" style="background:rgba(10,192,233,0.1);color:#089bbf;">GUIDANCE</span>
+          <span class="panel-id">Development Plan</span>
+          <button class="panel-close" onclick="closeAllPanels()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="help-panel-body">
+        <div style="font-size:0.84rem;color:#0B2740;line-height:1.65;">
+          <strong>Your design &amp; development plan</strong> is a written record that describes the design work, responsibilities, interfaces, and review points. This is typically the first formal quality record a medtech startup produces — and one of the first things auditors ask for.
+        </div>
+        <div style="font-size:0.8rem;color:#304F6B;line-height:1.65;">
+          Without a plan, you can't show that design activities were controlled. A missing or outdated dev plan is a common FDA 483 observation. Keeping this updated also anchors every downstream gate review.
+        </div>
+        <div style="background:rgba(11,39,64,0.03);border:1px solid rgba(11,39,64,0.08);border-radius:10px;padding:0.9rem 1rem;display:flex;flex-direction:column;gap:0.55rem;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(11,39,64,0.35);">What to include</div>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;">
+            <div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.78rem;color:#0B2740;line-height:1.55;"><span style="color:#0AC0E9;font-weight:700;flex-shrink:0;">✓</span>Project name, PM, and plan version</div>
+            <div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.78rem;color:#0B2740;line-height:1.55;"><span style="color:#0AC0E9;font-weight:700;flex-shrink:0;">✓</span>Phases with deliverables and owners</div>
+            <div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.78rem;color:#0B2740;line-height:1.55;"><span style="color:#0AC0E9;font-weight:700;flex-shrink:0;">✓</span>Entry and exit criteria per phase</div>
+            <div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.78rem;color:#0B2740;line-height:1.55;"><span style="color:#0AC0E9;font-weight:700;flex-shrink:0;">✓</span>Named individuals in the responsibility matrix</div>
+            <div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.78rem;color:#0B2740;line-height:1.55;"><span style="color:#0AC0E9;font-weight:700;flex-shrink:0;">✓</span>Review cadence and gate criteria</div>
+            <div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.78rem;color:#0B2740;line-height:1.55;"><span style="color:#0AC0E9;font-weight:700;flex-shrink:0;">✓</span>Route for approval via e-signature</div>
+          </div>
+        </div>
+        <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:0.9rem 1rem;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#b45309;margin-bottom:0.4rem;">Key facts</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem 1rem;">
+            <div><div style="font-size:0.62rem;color:rgba(11,39,64,0.42);font-weight:600;">Updated</div><div style="font-size:0.78rem;color:#0B2740;font-weight:500;">Each phase transition + significant changes</div></div>
+            <div><div style="font-size:0.62rem;color:rgba(11,39,64,0.42);font-weight:600;">Signed by</div><div style="font-size:0.78rem;color:#0B2740;font-weight:500;">Project Manager + QA (minimum)</div></div>
+            <div><div style="font-size:0.62rem;color:rgba(11,39,64,0.42);font-weight:600;">Referenced by</div><div style="font-size:0.78rem;color:#0B2740;font-weight:500;">Design History File, Management Review</div></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.65rem;font-weight:700;color:#089bbf;background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.2);border-radius:5px;padding:0.18rem 0.52rem;"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>FDA 21 CFR 820.30(b)</span>
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.65rem;font-weight:700;color:#089bbf;background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.2);border-radius:5px;padding:0.18rem 0.52rem;"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>ISO 13485 §7.3.2</span>
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.65rem;font-weight:700;color:#089bbf;background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.2);border-radius:5px;padding:0.18rem 0.52rem;"><svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>ISO 14971 §4</span>
+        </div>
+        <div style="border:2px dashed rgba(11,39,64,0.12);border-radius:10px;background:rgba(11,39,64,0.025);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.65rem;">
+          <svg viewBox="0 0 24 24" style="width:34px;height:34px;stroke:rgba(11,39,64,0.18);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          <span style="font-size:0.74rem;font-weight:500;color:rgba(11,39,64,0.28);">Video guide coming soon</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="seed-demo.js?v=1776901546755"></script>
 
   <script src="learn-mode.js?v=1776901546755"></script>
@@ -221,6 +301,19 @@
   <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js"></script>
   <script src="approvals.js?v=1776901546755"></script>
+  <script>
+    function openHelpPanel() {
+      document.getElementById('helpPanel').style.transform = '';
+      var overlay = document.getElementById('panelOverlay');
+      overlay.classList.add('open', 'help-open');
+    }
+    function closeAllPanels() {
+      var overlay = document.getElementById('panelOverlay');
+      overlay.classList.remove('open', 'help-open');
+      document.getElementById('helpPanel').style.transform = 'translateX(100%)';
+    }
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAllPanels(); });
+  </script>
   <script>
     'use strict';
     const KEY = 'qms_dev_plan';
