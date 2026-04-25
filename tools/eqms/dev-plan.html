@@ -45,6 +45,17 @@
     .status-pill.review { background: rgba(245,158,11,0.12); color: #b45309; }
     .status-pill.approved { background: rgba(16,185,129,0.12); color: #059669; }
 
+    /* ─── EXPORT / APPROVE BUTTONS ─── */
+    .btn-export { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
+    .btn-export:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-export svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── DELIVERABLE STATUS BADGE ─── */
+    .deliv-status { display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.12rem 0.5rem; border-radius: 4px; white-space: nowrap; }
+    .deliv-status.draft { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); }
+    .deliv-status.pending { background: rgba(245,158,11,0.12); color: #b45309; }
+    .deliv-status.approved { background: rgba(16,185,129,0.1); color: #047857; }
+
     /* ─── DOC COVER ─── */
     .content-area { flex: 1; overflow-y: auto; padding: 1.5rem; }
     .content-area::-webkit-scrollbar { width: 5px; }
@@ -83,7 +94,7 @@
     .phase-desc { font-size: 0.75rem; color: rgba(11,39,64,0.55); margin-bottom: 0.75rem; line-height: 1.5; }
 
     .deliv-list { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.6rem; }
-    .deliv-row { display: grid; grid-template-columns: 18px 1fr 130px 110px 24px; gap: 0.45rem; align-items: center; padding: 0.35rem 0.45rem; background: rgba(11,39,64,0.025); border-radius: 6px; }
+    .deliv-row { display: grid; grid-template-columns: 1fr 130px auto 24px; gap: 0.45rem; align-items: center; padding: 0.35rem 0.45rem; background: rgba(11,39,64,0.025); border-radius: 6px; }
     .deliv-row input[type="text"] { font-family: inherit; font-size: 0.74rem; border: 1px solid transparent; background: transparent; outline: none; padding: 0.2rem 0.3rem; border-radius: 4px; }
     .deliv-row input[type="text"]:hover, .deliv-row input[type="text"]:focus { background: white; border-color: rgba(11,39,64,0.12); }
     .deliv-row select { font-family: inherit; font-size: 0.72rem; border: 1px solid rgba(11,39,64,0.08); border-radius: 5px; padding: 0.22rem 0.35rem; background: white; outline: none; }
@@ -122,7 +133,14 @@
         <span class="status-pill draft" id="docStatusPill">Draft</span>
       </div>
       <div class="topbar-right">
-        <button class="btn-primary" onclick="savePlan()"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>Save</button>
+        <button class="btn-export" onclick="exportPlan()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="btn-export" onclick="initiateApproval()" id="btn-approve" style="border-color:rgba(16,185,129,0.3);color:#047857;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Approve
+        </button>
         <button class="btn-guidance" onclick="openHelpPanel()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Guidance</button>
       </div>
     </header>
@@ -172,7 +190,7 @@
         </div>
         <div class="doc-cover-divider"></div>
         <div id="hint-scope" class="learn-only" style="margin-bottom:0.75rem;"></div>
-        <div class="doc-cover-fields" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:1rem;">
+        <div class="doc-cover-fields" style="grid-template-columns:1fr 1fr;margin-bottom:1rem;">
           <div class="doc-field">
             <div class="doc-field-label">Project name</div>
             <input class="doc-field-input" id="f-project" placeholder="e.g. CardioSync Pro Rev A">
@@ -180,10 +198,6 @@
           <div class="doc-field">
             <div class="doc-field-label">Project manager</div>
             <input class="doc-field-input" id="f-pm" placeholder="Name + role">
-          </div>
-          <div class="doc-field">
-            <div class="doc-field-label">Plan version</div>
-            <input class="doc-field-input" id="f-version" placeholder="1.0">
           </div>
         </div>
         <div class="doc-cover-fields" style="grid-template-columns:1fr 1fr;">
@@ -225,33 +239,6 @@
         </div>
       </div>
 
-      <!-- Reviews & Risk/Reg links -->
-      <div class="card">
-        <div class="card-head"><div class="card-title">Planned reviews &amp; decision gates</div></div>
-        <div class="card-body">
-          <div id="hint-reviews" class="learn-only" style="margin-bottom:0.6rem;"></div>
-          <div class="form-field" style="margin-bottom:0.85rem;">
-            <label class="form-label">Review cadence</label>
-            <select class="form-select" id="f-cadence">
-              <option>Phase-gate (review at end of each phase)</option>
-              <option>Monthly core team review + phase-gate</option>
-              <option>Bi-weekly team review + phase-gate</option>
-              <option>Custom (describe in notes)</option>
-            </select>
-          </div>
-          <div class="form-field">
-            <label class="form-label">Notes / rationale</label>
-            <textarea class="form-textarea" id="f-review-notes" data-ai rows="3" placeholder="Any exceptions, sub-team reviews, or cross-functional gates."></textarea>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><div class="card-title">Approval</div></div>
-        <div class="card-body" id="approval-body">
-          <div class="subtle">Once the plan is drafted, route it for signature via the approval flow.</div>
-        </div>
-      </div>
     </div>
   </main>
 
@@ -278,7 +265,7 @@
         <div style="background:rgba(11,39,64,0.03);border:1px solid rgba(11,39,64,0.08);border-radius:10px;padding:0.9rem 1rem;display:flex;flex-direction:column;gap:0.55rem;">
           <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(11,39,64,0.35);">What to include</div>
           <div style="display:flex;flex-direction:column;gap:0.4rem;">
-            <div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.78rem;color:#0B2740;line-height:1.55;"><span style="color:#0AC0E9;font-weight:700;flex-shrink:0;">✓</span>Project name, PM, and plan version</div>
+            <div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.78rem;color:#0B2740;line-height:1.55;"><span style="color:#0AC0E9;font-weight:700;flex-shrink:0;">✓</span>Project name and project manager</div>
             <div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.78rem;color:#0B2740;line-height:1.55;"><span style="color:#0AC0E9;font-weight:700;flex-shrink:0;">✓</span>Phases with deliverables and owners</div>
             <div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.78rem;color:#0B2740;line-height:1.55;"><span style="color:#0AC0E9;font-weight:700;flex-shrink:0;">✓</span>Entry and exit criteria per phase</div>
             <div style="display:flex;align-items:flex-start;gap:0.4rem;font-size:0.78rem;color:#0B2740;line-height:1.55;"><span style="color:#0AC0E9;font-weight:700;flex-shrink:0;">✓</span>Named individuals in the responsibility matrix</div>
@@ -338,7 +325,6 @@
       { id:'verification', label:'Verification',  blurb:'Design outputs meet design inputs — testing, inspection, analysis.' },
       { id:'validation',   label:'Validation',    blurb:'The device meets user needs in the real-world use environment.' },
       { id:'transfer',     label:'Design Transfer',blurb:'Production can reliably build the approved design (DMR → DHR).' },
-      { id:'postmarket',   label:'Post-Market',   blurb:'Surveillance, PMS reports, complaints, CAPA, change control.' },
     ];
 
     // Optional starter templates — user-triggered via "Load starter" button
@@ -370,10 +356,6 @@
         { name: 'DMR assembled', owner: 'Ops' },
         { name: 'Production process validation (IQ/OQ/PQ)', owner: 'Ops' },
       ],
-      postmarket: [
-        { name: 'PMS plan & trending metrics', owner: 'PMS Lead' },
-        { name: 'Complaint handling in place', owner: 'QA' },
-      ],
     };
 
     const STARTER_ROLES = [
@@ -385,23 +367,34 @@
 
     let state = load();
 
+    function migrateDelivStatus(st) {
+      if (st === 'done') return 'approved';
+      if (st === 'in-progress') return 'pending';
+      if (['draft','pending','approved'].indexOf(st) >= 0) return st;
+      return 'draft';
+    }
     function load() {
       try {
         const s = JSON.parse(localStorage.getItem(KEY));
-        if (s && s.phases) return s;
+        if (s && s.phases) {
+          // Remove postmarket phase if present
+          s.phases = s.phases.filter(function(ph){ return ph.id !== 'postmarket'; });
+          s.phases.forEach(function(ph) {
+            ph.deliverables.forEach(function(d){ d.status = migrateDelivStatus(d.status); });
+          });
+          return s;
+        }
       } catch (e) {}
       return defaults();
     }
     function defaults() {
       return {
-        project: '', pm: '', version: '1.0', objective: '', success: '',
-        cadence: 'Phase-gate (review at end of each phase)',
-        reviewNotes: '',
+        project: '', pm: '', objective: '', success: '',
         phases: TEMPLATE_PHASES.map(function(p){
           return {
             id: p.id, label: p.label, blurb: p.blurb,
-            start: '', end: '', exit: '',
-            deliverables: (STARTER_DELIVERABLES[p.id] || []).map(function(d){ return { name: d.name, owner: d.owner, status: 'pending' }; })
+            start: '', end: '', exit: '', reviewDate: '', reviewChair: '',
+            deliverables: (STARTER_DELIVERABLES[p.id] || []).map(function(d){ return { name: d.name, owner: d.owner, status: 'draft' }; })
           };
         }),
         roles: STARTER_ROLES.map(function(r){ return { role: r.role, name: '', scope: r.scope }; }),
@@ -430,7 +423,6 @@
       toast('Starter template loaded');
     }
     function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
-    function savePlan() { sync(); save(); toast('Plan saved'); }
     function seedDefault() {
       if (!confirm('Reset to the default FDA 820.30(b) phase template? Your current edits will be lost.')) return;
       state = defaults();
@@ -450,21 +442,24 @@
     function sync() {
       state.project = document.getElementById('f-project').value;
       state.pm = document.getElementById('f-pm').value;
-      state.version = document.getElementById('f-version').value;
       state.objective = document.getElementById('f-objective').value;
       state.success = document.getElementById('f-success').value;
-      state.cadence = document.getElementById('f-cadence').value;
-      state.reviewNotes = document.getElementById('f-review-notes').value;
       renderKPIs();
-      save();  // auto-persist so Journey detects progress
+      save();
     }
+
+    const STATUS_BADGE = {
+      'draft':    '<span class="deliv-status draft">Draft</span>',
+      'pending':  '<span class="deliv-status pending">Pending</span>',
+      'approved': '<span class="deliv-status approved">Approved</span>'
+    };
 
     function renderPhases() {
       const host = document.getElementById('phases-host');
       host.innerHTML = state.phases.map(function(ph, phIdx) {
-        const doneCount = ph.deliverables.filter(function(d){ return d.status === 'done'; }).length;
+        const approvedCount = ph.deliverables.filter(function(d){ return d.status === 'approved'; }).length;
         const total = ph.deliverables.length;
-        const pct = total ? Math.round(100 * doneCount / total) : 0;
+        const pct = total ? Math.round(100 * approvedCount / total) : 0;
         const timelineDate = ph.end || ph.start || '—';
         return '<div class="phase-timeline">' +
           '<div class="phase-marker">' +
@@ -477,16 +472,16 @@
             '<div class="phase-desc">'+esc(ph.blurb)+'</div>' +
             '<div class="deliv-list">' +
               ph.deliverables.map(function(d, dIdx) {
-                const done = d.status === 'done';
-                const check = '<div class="deliv-check '+(done?'done':'')+'" onclick="toggleDeliverable('+phIdx+','+dIdx+')">'+(done?'<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>':'')+'</div>';
+                const st = d.status || 'draft';
+                const badge = STATUS_BADGE[st] || STATUS_BADGE['draft'];
+                const deleteBtn = st === 'draft'
+                  ? '<button class="btn-icon danger" onclick="removeDeliverable('+phIdx+','+dIdx+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>'
+                  : '<span style="width:24px;display:inline-block;"></span>';
                 return '<div class="deliv-row">' +
-                  check +
                   '<input type="text" placeholder="Deliverable description" value="'+esc(d.name)+'" oninput="updateDeliverable('+phIdx+','+dIdx+',\'name\',this.value)">' +
                   '<input type="text" placeholder="Owner" value="'+esc(d.owner||'')+'" oninput="updateDeliverable('+phIdx+','+dIdx+',\'owner\',this.value)">' +
-                  '<select onchange="updateDeliverable('+phIdx+','+dIdx+',\'status\',this.value)">' +
-                    ['pending','in-progress','done','blocked'].map(function(s){ return '<option '+(d.status===s?'selected':'')+' value="'+s+'">'+s+'</option>'; }).join('') +
-                  '</select>' +
-                  '<button class="btn-icon danger" onclick="removeDeliverable('+phIdx+','+dIdx+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
+                  badge +
+                  deleteBtn +
                 '</div>';
               }).join('') +
             '</div>' +
@@ -495,6 +490,7 @@
               '<div class="phase-meta-item"><div class="phase-meta-label">Start</div><div class="phase-meta-val"><input type="date" value="'+esc(ph.start||'')+'" onchange="updatePhaseMeta('+phIdx+',\'start\',this.value)"></div></div>' +
               '<div class="phase-meta-item"><div class="phase-meta-label">End</div><div class="phase-meta-val"><input type="date" value="'+esc(ph.end||'')+'" onchange="updatePhaseMeta('+phIdx+',\'end\',this.value)"></div></div>' +
               '<div class="phase-meta-item" style="grid-column:span 2;"><div class="phase-meta-label">Exit criteria</div><div class="phase-meta-val"><input type="text" placeholder="What must be true to close this phase" value="'+esc(ph.exit||'')+'" oninput="updatePhaseMeta('+phIdx+',\'exit\',this.value)"></div></div>' +
+              '<div class="phase-meta-item" style="grid-column:1 / -1;"><div class="phase-meta-label">Planned Design Review</div><div class="phase-meta-val" style="display:flex;gap:0.5rem;"><input type="date" value="'+esc(ph.reviewDate||'')+'" onchange="updatePhaseMeta('+phIdx+',\'reviewDate\',this.value)" style="flex:0 0 150px;"><input type="text" placeholder="Chair / reviewer" value="'+esc(ph.reviewChair||'')+'" oninput="updatePhaseMeta('+phIdx+',\'reviewChair\',this.value)" style="flex:1;"></div></div>' +
             '</div>' +
             '<div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%;background:'+phaseColor(ph.id)+';"></div></div>' +
           '</div>' +
@@ -503,7 +499,7 @@
     }
 
     function phaseColor(id, alpha) {
-      const map = { planning:'#0AC0E9', inputs:'#304F6B', outputs:'#f97316', verification:'#6366f1', validation:'#9333ea', transfer:'#10B981', postmarket:'#10B981' };
+      const map = { planning:'#0AC0E9', inputs:'#304F6B', outputs:'#f97316', verification:'#6366f1', validation:'#9333ea', transfer:'#10B981' };
       const hex = map[id] || '#0AC0E9';
       if (alpha == null) return hex;
       // Convert hex to rgba with alpha
@@ -511,10 +507,13 @@
       return 'rgba('+r+','+g+','+b+','+alpha+')';
     }
 
-    function addDeliverable(phIdx) { state.phases[phIdx].deliverables.push({ name:'', owner:'', status:'pending' }); save(); renderPhases(); renderKPIs(); }
-    function removeDeliverable(phIdx, dIdx) { state.phases[phIdx].deliverables.splice(dIdx,1); save(); renderPhases(); renderKPIs(); }
-    function updateDeliverable(phIdx, dIdx, field, val) { state.phases[phIdx].deliverables[dIdx][field] = val; save(); if (field==='status') { renderPhases(); } renderKPIs(); }
-    function toggleDeliverable(phIdx, dIdx) { const d = state.phases[phIdx].deliverables[dIdx]; d.status = d.status === 'done' ? 'pending' : 'done'; save(); renderPhases(); renderKPIs(); }
+    function addDeliverable(phIdx) { state.phases[phIdx].deliverables.push({ name:'', owner:'', status:'draft' }); save(); renderPhases(); renderKPIs(); }
+    function removeDeliverable(phIdx, dIdx) {
+      const d = state.phases[phIdx].deliverables[dIdx];
+      if (d.status !== 'draft') { toast('Only Draft deliverables can be deleted'); return; }
+      state.phases[phIdx].deliverables.splice(dIdx,1); save(); renderPhases(); renderKPIs();
+    }
+    function updateDeliverable(phIdx, dIdx, field, val) { state.phases[phIdx].deliverables[dIdx][field] = val; save(); renderKPIs(); }
     function updatePhaseMeta(phIdx, field, val) { state.phases[phIdx][field] = val; save(); renderKPIs(); }
 
     function renderRoles() {
@@ -571,12 +570,9 @@
     function populate() {
       document.getElementById('f-project').value = state.project || '';
       document.getElementById('f-pm').value = state.pm || '';
-      document.getElementById('f-version').value = state.version || '';
       document.getElementById('f-objective').value = state.objective || '';
       document.getElementById('f-success').value = state.success || '';
-      document.getElementById('f-cadence').value = state.cadence || 'Phase-gate (review at end of each phase)';
-      document.getElementById('f-review-notes').value = state.reviewNotes || '';
-      ['f-project','f-pm','f-version','f-objective','f-success','f-cadence','f-review-notes'].forEach(function(id){
+      ['f-project','f-pm','f-objective','f-success'].forEach(function(id){
         const el = document.getElementById(id);
         el.addEventListener('input', sync);
         el.addEventListener('change', sync);
@@ -584,20 +580,6 @@
       renderPhases();
       renderRoles();
       renderKPIs();
-      renderApproval();
-    }
-
-    function renderApproval() {
-      const body = document.getElementById('approval-body');
-      if (!body) return;
-      if (state.approved) {
-        body.innerHTML = '<div class="subtle">This plan is approved.</div>';
-        if (window.Approvals) Approvals.renderStatusPanel('dev-plan', 'doc', body);
-        body.innerHTML += '<button class="btn-revise" style="margin-top:0.75rem;" onclick="initiateRevision()"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Initiate Revision</button>';
-      } else {
-        body.innerHTML = '<div class="subtle">Once the plan is drafted, route it for signature via the approval flow.</div>' +
-          '<button class="btn-approve" style="margin-top:0.75rem;" onclick="initiateApproval()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Approve &amp; Route for Signature</button>';
-      }
     }
 
     function updateStatus() {
@@ -606,6 +588,7 @@
       var revDisp = document.getElementById('docRevisionDisplay');
       var statDisp = document.getElementById('docStatusDisplay');
       var lock = document.getElementById('doc-lock');
+      var approveBtn = document.getElementById('btn-approve');
       var rev = state.revision || 'A';
       if (verBadge) verBadge.textContent = 'Rev ' + rev;
       if (revDisp) revDisp.textContent = rev;
@@ -613,14 +596,42 @@
         if (statusPill) { statusPill.className = 'status-pill approved'; statusPill.textContent = 'Approved'; }
         if (statDisp) statDisp.textContent = 'Approved';
         if (lock) lock.style.display = '';
+        if (approveBtn) { approveBtn.textContent = 'Initiate Revision'; approveBtn.style.borderColor = 'rgba(11,39,64,0.18)'; approveBtn.style.color = ''; approveBtn.onclick = initiateRevision; }
         lockFields();
       } else {
         if (statusPill) { statusPill.className = 'status-pill draft'; statusPill.textContent = 'Draft'; }
         if (statDisp) statDisp.textContent = 'Draft';
         if (lock) lock.style.display = 'none';
+        if (approveBtn) { approveBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Approve'; approveBtn.style.borderColor = 'rgba(16,185,129,0.3)'; approveBtn.style.color = '#047857'; approveBtn.onclick = initiateApproval; }
         unlockFields();
       }
-      renderApproval();
+    }
+
+    function exportPlan() {
+      sync();
+      var lines = ['Design & Development Plan', '========================', ''];
+      lines.push('Document No.: DP-001');
+      lines.push('Revision: ' + (state.revision || 'A'));
+      lines.push('Status: ' + (state.approved ? 'Approved' : 'Draft'));
+      if (state.project) lines.push('Project: ' + state.project);
+      if (state.pm) lines.push('Project Manager: ' + state.pm);
+      if (state.objective) lines.push('\nObjective:\n' + state.objective);
+      if (state.success) lines.push('\nSuccess Criteria:\n' + state.success);
+      lines.push('\n--- Phases ---');
+      state.phases.forEach(function(ph) {
+        lines.push('\n' + ph.label.toUpperCase());
+        if (ph.start) lines.push('  Start: ' + ph.start);
+        if (ph.end) lines.push('  End: ' + ph.end);
+        if (ph.exit) lines.push('  Exit Criteria: ' + ph.exit);
+        if (ph.reviewDate) lines.push('  Design Review: ' + ph.reviewDate + (ph.reviewChair ? ' — ' + ph.reviewChair : ''));
+        ph.deliverables.forEach(function(d) {
+          lines.push('  [' + (d.status||'draft').toUpperCase() + '] ' + (d.name||'(unnamed)') + (d.owner ? ' — ' + d.owner : ''));
+        });
+      });
+      var blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = 'design-development-plan-rev' + (state.revision||'A') + '.txt';
+      a.click(); URL.revokeObjectURL(a.href);
     }
 
     function initiateApproval() {
@@ -692,14 +703,14 @@
       if (!el) return;
       var totalD = 0, doneD = 0, firstIncomplete = null, lastEnd = '';
       state.phases.forEach(function(ph) {
-        ph.deliverables.forEach(function(d){ totalD++; if(d.status==='done') doneD++; });
+        ph.deliverables.forEach(function(d){ totalD++; if(d.status==='approved') doneD++; });
         if (!firstIncomplete && ph.deliverables.some(function(d){return d.status!=='done';})) firstIncomplete = ph.label;
         if (ph.end && ph.end > lastEnd) lastEnd = ph.end;
       });
       var pct = totalD ? Math.round(100*doneD/totalD) : 0;
       var teamCount = state.roles.filter(function(r){return r.name;}).length;
       var phaseRows = state.phases.map(function(ph) {
-        var done = ph.deliverables.filter(function(d){return d.status==='done';}).length;
+        var done = ph.deliverables.filter(function(d){return d.status==='approved';}).length;
         var total = ph.deliverables.length;
         var p = total ? Math.round(100*done/total) : 0;
         var color = p===100?'#10B981':p>=50?'#F59E0B':'#EF4444';
