@@ -16,10 +16,16 @@ const NAV_ITEMS = [
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
   },
   {
-    key: 'products-mdf',
-    label: 'Products / MDF',
-    href: 'products-mdf.html',
-    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
+    key: 'design-controls',
+    label: 'Design Controls',
+    href: 'design-controls.html',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="5" height="6" rx="1"/><rect x="9.5" y="9" width="5" height="6" rx="1"/><rect x="17" y="9" width="5" height="6" rx="1"/><line x1="7" y1="12" x2="9.5" y2="12"/><line x1="14.5" y1="12" x2="17" y2="12"/></svg>',
+  },
+  {
+    key: 'risk-management',
+    label: 'Risk Management',
+    href: 'risk-management.html',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
   },
   {
     key: 'capa-ncr',
@@ -69,24 +75,27 @@ const ACTIVE_MAP = {
   'standards-library':  'library',
   'document-control':   'library',
   'design-review':      'library',
-  // → Products / MDF
-  'user-needs':                 'products-mdf',
-  'regulatory-assessment':      'products-mdf',
-  'dev-plan':                   'products-mdf',
-  'design-inputs-tool':         'products-mdf',
-  'trace-matrix':               'products-mdf',
-  'risk-management-plan':       'products-mdf',
-  'design-outputs':             'products-mdf',
-  'dmr':                        'products-mdf',
-  'vv':                         'products-mdf',
-  'validation-hub':             'products-mdf',
-  'design-control':             'products-mdf',
-  'risk-management-procedure':  'products-mdf',
+  // → Design Controls
+  'products-mdf':               'design-controls',
+  'user-needs':                 'design-controls',
+  'regulatory-assessment':      'design-controls',
+  'dev-plan':                   'design-controls',
+  'design-inputs-tool':         'design-controls',
+  'trace-matrix':               'design-controls',
+  'design-outputs':             'design-controls',
+  'dmr':                        'design-controls',
+  'vv':                         'design-controls',
+  'validation-hub':             'design-controls',
+  'design-control':             'design-controls',
+  // → Risk Management
+  'risk-management-plan':       'risk-management',
+  'risk-management-procedure':  'risk-management',
   // → CAPA / NCR
   'capa':             'capa-ncr',
   'nonconformance':   'capa-ncr',
   'complaints':       'capa-ncr',
   'change-control':   'capa-ncr',
+  'post-market':      'capa-ncr',
   // → Suppliers
   'suppliers':  'suppliers',
   'equipment':  'suppliers',
@@ -98,7 +107,6 @@ const ACTIVE_MAP = {
   'training':       'training',
   // → Reports
   'management-review':  'reports',
-  'post-market':        'reports',
 };
 
 const SIDEBAR_FLAT_CSS = [
@@ -214,7 +222,7 @@ function initSidebar(config) {
       '</div>' +
     '</div>';
 
-  var root = document.getElementById('sidebar-root');
+  var root = document.getElementById('sidebar-root') || document.getElementById('sidebar');
   if (root) root.innerHTML = html;
 
   injectMobileSidebarControls();

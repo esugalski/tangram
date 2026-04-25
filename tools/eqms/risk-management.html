@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Management — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --light-gray: #F7F8FA;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --sidebar-w:  220px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; overflow: hidden; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.65rem; padding: 0.5rem 0.85rem; border-radius: 7px; font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.62); cursor: pointer; transition: background 0.13s, color 0.13s; text-decoration: none; margin: 1px 0.5rem; white-space: nowrap; overflow: hidden; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.14); color: #0AC0E9; font-weight: 600; }
+    .sidebar-nav-icon { width: 16px; height: 16px; flex-shrink: 0; stroke: currentColor; fill: none; display: flex; }
+    .sidebar-nav-icon svg { width: 16px; height: 16px; stroke: inherit; fill: none; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); }
+
+    /* ─── APP SHELL ─── */
+    .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 60px; display: flex; align-items: center; flex-shrink: 0; z-index: 10; }
+    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; }
+    .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 1.5rem; }
+    .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; width: min(400px, 100%); transition: border-color 0.15s; }
+    .topbar-search:focus-within { border-color: rgba(10,192,233,0.4); }
+    .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; flex-shrink: 0; }
+    .topbar-search input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 100%; }
+    .topbar-search input::placeholder { color: rgba(11,39,64,0.35); }
+    .topbar-right { display: flex; align-items: center; gap: 0.5rem; padding: 0 1.25rem; flex-shrink: 0; }
+    .topbar-icon-btn { width: 34px; height: 34px; border-radius: 8px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.12s; position: relative; }
+    .topbar-icon-btn:hover { background: var(--light-gray); }
+    .topbar-icon-btn svg { width: 16px; height: 16px; stroke: var(--mid-blue); fill: none; stroke-width: 2; }
+    .topbar-notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--red); border: 1.5px solid white; }
+    .topbar-user { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.3rem 0.6rem; border-radius: 8px; transition: background 0.12s; }
+    .topbar-user:hover { background: var(--light-gray); }
+    .topbar-user-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(10,192,233,0.1); border: 1.5px solid rgba(10,192,233,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua-dark); flex-shrink: 0; }
+    .topbar-user-name { font-size: 0.8rem; font-weight: 600; color: var(--primary); }
+    .topbar-user-role { font-size: 0.63rem; color: rgba(11,39,64,0.4); }
+
+    .content-wrap { flex: 1; display: flex; min-height: 0; overflow: hidden; }
+    .main-area { flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem; min-width: 0; display: flex; flex-direction: column; }
+    .main-area::-webkit-scrollbar { width: 5px; }
+    .main-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    /* ─── PAGE HEADER ─── */
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.85rem; gap: 1rem; }
+    .page-heading { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; }
+    .page-subtitle { font-size: 0.77rem; color: rgba(11,39,64,0.44); margin-top: 0.22rem; }
+    .page-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; color: white; background: var(--aqua-dark); border: none; border-radius: 7px; padding: 0.45rem 0.9rem; cursor: pointer; transition: background 0.12s; white-space: nowrap; }
+    .btn-primary:hover { background: var(--aqua); }
+    .btn-primary svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-ghost { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.42rem 0.8rem; cursor: pointer; transition: border-color 0.12s, background 0.12s; white-space: nowrap; }
+    .btn-ghost:hover { border-color: rgba(10,192,233,0.4); background: rgba(10,192,233,0.02); }
+    .btn-ghost svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* ─── PRODUCT SELECTOR ─── */
+    .product-selector-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .product-selector-lbl { font-size: 0.72rem; color: rgba(11,39,64,0.42); font-weight: 500; }
+    .product-selector { display: inline-flex; align-items: center; gap: 0.45rem; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--primary); background: white; border: 1.5px solid rgba(11,39,64,0.15); border-radius: 20px; padding: 0.38rem 0.9rem; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+    .product-selector:hover { border-color: rgba(10,192,233,0.5); background: rgba(10,192,233,0.02); }
+    .product-selector svg { width: 12px; height: 12px; stroke: rgba(11,39,64,0.4); fill: none; stroke-width: 2; }
+
+    /* ─── SUBTABS ─── */
+    .subtabs { display: flex; gap: 0; border-bottom: 1.5px solid rgba(11,39,64,0.08); margin-bottom: 1rem; overflow-x: auto; }
+    .subtabs::-webkit-scrollbar { height: 0; }
+    .subtab { font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; color: rgba(11,39,64,0.5); padding: 0.55rem 1rem; border: none; border-bottom: 2px solid transparent; margin-bottom: -1.5px; cursor: pointer; transition: color 0.12s; white-space: nowrap; background: transparent; }
+    .subtab:hover { color: var(--primary); }
+    .subtab.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+    .subtab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 17px; height: 15px; background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); font-size: 0.59rem; font-weight: 700; padding: 0 0.32rem; border-radius: 10px; margin-left: 0.3rem; }
+    .subtab.active .subtab-count { background: rgba(10,192,233,0.12); color: var(--aqua-dark); }
+
+    /* ─── FILTER BAR ─── */
+    .filter-bar { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filter-dropdown { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.36rem 0.65rem; cursor: pointer; transition: border-color 0.12s; white-space: nowrap; }
+    .filter-dropdown:hover { border-color: rgba(10,192,233,0.4); }
+    .filter-dropdown svg { width: 11px; height: 11px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; }
+    .filter-more-btn { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.42); background: transparent; border: none; cursor: pointer; padding: 0.36rem 0.45rem; }
+
+    /* ─── RISK ANALYSIS TABLE ─── */
+    .risk-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; overflow: hidden; }
+    .risk-table { width: 100%; border-collapse: collapse; }
+    .risk-table th { padding: 0.6rem 0.75rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); border-bottom: 1px solid rgba(11,39,64,0.07); background: rgba(11,39,64,0.015); text-align: left; white-space: nowrap; }
+    .risk-table th:first-child { padding-left: 1rem; width: 18%; }
+    .risk-table td { padding: 0.85rem 0.75rem; border-bottom: 1px solid rgba(11,39,64,0.055); vertical-align: top; font-size: 0.8rem; }
+    .risk-table td:first-child { padding-left: 1rem; }
+    .risk-table tr:last-child td { border-bottom: none; }
+    .risk-table tbody tr:hover td { background: rgba(10,192,233,0.012); cursor: pointer; }
+
+    .risk-id { display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 700; color: var(--mid-blue); background: rgba(11,39,64,0.06); border: 1px solid rgba(11,39,64,0.12); border-radius: 5px; padding: 0.1rem 0.42rem; white-space: nowrap; margin-bottom: 0.3rem; }
+    .risk-hazard { font-size: 0.8rem; font-weight: 600; color: var(--primary); line-height: 1.35; }
+    .risk-harm { font-size: 0.72rem; color: rgba(11,39,64,0.55); margin-top: 0.18rem; line-height: 1.35; }
+
+    .risk-score { display: inline-flex; flex-direction: column; align-items: center; gap: 0.1rem; }
+    .risk-score-val { font-size: 1rem; font-weight: 800; color: var(--primary); line-height: 1; }
+    .risk-score-formula { font-size: 0.6rem; color: rgba(11,39,64,0.4); }
+
+    .risk-level { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 700; padding: 0.17rem 0.55rem; border-radius: 5px; white-space: nowrap; letter-spacing: 0.03em; }
+    .risk-level.acceptable   { background: rgba(16,185,129,0.1);  color: #047857; }
+    .risk-level.alarp        { background: rgba(245,158,11,0.12); color: #b45309; }
+    .risk-level.unacceptable { background: rgba(239,68,68,0.1);   color: #dc2626; }
+
+    .control-list { display: flex; flex-direction: column; gap: 0.3rem; }
+    .control-item { display: flex; align-items: flex-start; gap: 0.35rem; }
+    .control-type { display: inline-flex; align-items: center; font-size: 0.58rem; font-weight: 700; padding: 0.08rem 0.35rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.05rem; }
+    .control-type.inherent   { background: rgba(99,102,241,0.1); color: #4338ca; }
+    .control-type.protective { background: rgba(245,158,11,0.1); color: #b45309; }
+    .control-type.info       { background: rgba(11,39,64,0.07);  color: rgba(11,39,64,0.5); }
+    .control-desc { font-size: 0.73rem; color: rgba(11,39,64,0.65); line-height: 1.4; }
+
+    /* ─── STANDARD DOC TABLE ─── */
+    .doc-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; overflow: hidden; }
+    .doc-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .doc-table th { padding: 0.6rem 0.85rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); border-bottom: 1px solid rgba(11,39,64,0.07); background: rgba(11,39,64,0.015); text-align: left; white-space: nowrap; }
+    .doc-table th:first-child { padding-left: 1rem; width: 36px; }
+    .doc-table td { padding: 0.7rem 0.85rem; border-bottom: 1px solid rgba(11,39,64,0.055); vertical-align: middle; font-size: 0.8rem; }
+    .doc-table td:first-child { padding-left: 1rem; }
+    .doc-table tr:last-child td { border-bottom: none; }
+    .doc-table tbody tr:hover td { background: rgba(10,192,233,0.015); cursor: pointer; }
+    .doc-cb { width: 15px; height: 15px; accent-color: var(--aqua); cursor: pointer; }
+    .file-title { font-size: 0.81rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .file-id { font-size: 0.66rem; color: rgba(11,39,64,0.4); margin-top: 0.08rem; }
+    .status-badge { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 700; padding: 0.17rem 0.52rem; border-radius: 5px; white-space: nowrap; }
+    .cat-chip { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 600; padding: 0.14rem 0.45rem; border-radius: 4px; background: rgba(11,39,64,0.06); color: var(--mid-blue); white-space: nowrap; }
+    .doc-date { font-size: 0.73rem; color: rgba(11,39,64,0.52); white-space: nowrap; }
+    .doc-owner { font-size: 0.73rem; color: rgba(11,39,64,0.55); }
+    .action-icons { display: flex; align-items: center; gap: 0.3rem; }
+    .action-icon-btn { width: 26px; height: 26px; border-radius: 5px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: rgba(11,39,64,0.3); transition: background 0.12s, color 0.12s; }
+    .action-icon-btn:hover { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .action-icon-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* ─── RIGHT PANEL ─── */
+    .right-panel { width: 272px; flex-shrink: 0; border-left: 1px solid rgba(11,39,64,0.07); padding: 1.5rem 1.1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; background: white; }
+    .right-panel::-webkit-scrollbar { width: 0; }
+    .widget { background: var(--light-gray); border: 1px solid rgba(11,39,64,0.07); border-radius: 10px; padding: 1rem 1.1rem; }
+    .widget-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); margin-bottom: 0.75rem; }
+    .widget-divider { height: 1px; background: rgba(11,39,64,0.07); margin: 0.5rem 0; }
+    .widget-view-all { font-size: 0.71rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; display: block; margin-top: 0.6rem; transition: color 0.12s; }
+    .widget-view-all:hover { color: var(--aqua); }
+
+    .risk-stat-row { display: flex; align-items: center; justify-content: space-between; padding: 0.28rem 0; }
+    .risk-stat-label { font-size: 0.75rem; color: rgba(11,39,64,0.6); }
+    .risk-stat-count { font-size: 0.8rem; font-weight: 700; color: var(--primary); }
+    .risk-stat-count.amber { color: #b45309; }
+    .risk-stat-count.red   { color: #dc2626; }
+    .risk-stat-count.green { color: #047857; }
+
+    /* 5×5 Risk Matrix */
+    .risk-matrix-wrap { margin: 0.5rem 0 0.75rem; }
+    .risk-matrix-title { font-size: 0.65rem; color: rgba(11,39,64,0.4); margin-bottom: 0.4rem; display: flex; align-items: center; justify-content: space-between; }
+    .rm-grid { display: grid; grid-template-columns: 18px repeat(5, 1fr); grid-template-rows: repeat(5, 1fr) 18px; gap: 2px; }
+    .rm-cell { border-radius: 3px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.52rem; font-weight: 700; }
+    .rm-label { display: flex; align-items: center; justify-content: center; font-size: 0.52rem; color: rgba(11,39,64,0.35); font-weight: 600; }
+    .rm-hazard-dot { display: flex; align-items: center; justify-content: center; }
+    .rm-dot { width: 10px; height: 10px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.48rem; font-weight: 800; color: white; }
+
+    .gauge-wrap { display: flex; align-items: center; gap: 0.85rem; margin: 0.5rem 0 0.75rem; }
+    .gauge-circle { position: relative; width: 60px; height: 60px; flex-shrink: 0; }
+    .gauge-circle svg { transform: rotate(-90deg); }
+    .gauge-circle circle { fill: none; stroke-width: 6; }
+    .gauge-bg { stroke: rgba(11,39,64,0.08); }
+    .gauge-fill { stroke-linecap: round; }
+    .gauge-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800; color: var(--primary); }
+    .gauge-info-label { font-size: 0.7rem; color: rgba(11,39,64,0.5); line-height: 1.4; }
+    .gauge-info-label strong { color: var(--primary); font-weight: 600; }
+
+    .timeline-row { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.3rem 0; }
+    .timeline-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 0.3rem; }
+    .timeline-title { font-size: 0.73rem; color: rgba(11,39,64,0.6); flex: 1; line-height: 1.4; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <div class="app-main">
+    <div class="topbar">
+      <div class="topbar-brand-area"></div>
+      <div class="topbar-center">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, CAPAs, products, audits…">
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" title="Notifications">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="topbar-notif-dot"></span>
+        </button>
+        <div class="topbar-user">
+          <div class="topbar-user-avatar">FM</div>
+          <div>
+            <div class="topbar-user-name">Founding Member</div>
+            <div class="topbar-user-role">Early Access</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-wrap">
+      <div class="main-area">
+        <div class="page-header">
+          <div>
+            <div class="page-heading">Risk Management</div>
+            <div class="page-subtitle">ISO 14971 risk analysis, controls, and residual risk — scoped by product</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn-ghost">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Export Risk File
+            </button>
+            <button class="btn-primary">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Hazard
+            </button>
+          </div>
+        </div>
+
+        <div class="product-selector-row">
+          <span class="product-selector-lbl">Product:</span>
+          <button class="product-selector" id="productSelectorBtn" onclick="cycleProduct()">
+            <span id="productSelectorLabel">CardioSync Pro</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+
+        <div class="subtabs">
+          <button class="subtab active" onclick="setTab(this,'analysis')">Risk Analysis <span class="subtab-count" id="cnt-analysis">4</span></button>
+          <button class="subtab" onclick="setTab(this,'register')">Risk Register <span class="subtab-count" id="cnt-register">4</span></button>
+          <button class="subtab" onclick="setTab(this,'controls')">Risk Controls <span class="subtab-count" id="cnt-controls">10</span></button>
+          <button class="subtab" onclick="setTab(this,'residual')">Residual Risk Summary <span class="subtab-count" id="cnt-residual">4</span></button>
+        </div>
+
+        <div id="filterBarArea"></div>
+        <div id="contentArea"></div>
+      </div>
+
+      <div class="right-panel">
+        <div class="widget">
+          <div class="widget-title">Risk Summary</div>
+          <div class="risk-stat-row"><span class="risk-stat-label">Total hazards</span><span class="risk-stat-count">4</span></div>
+          <div class="risk-stat-row"><span class="risk-stat-label">Residual ALARP</span><span class="risk-stat-count amber">2</span></div>
+          <div class="risk-stat-row"><span class="risk-stat-label">Residual unacceptable</span><span class="risk-stat-count red">0</span></div>
+          <div class="risk-stat-row"><span class="risk-stat-label">Residual acceptable</span><span class="risk-stat-count green">2</span></div>
+          <a href="#" class="widget-view-all">View risk management plan →</a>
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">Risk Matrix</div>
+          <div class="risk-matrix-wrap">
+            <div class="risk-matrix-title">
+              <span>Pre-control (○) · Residual (●)</span>
+            </div>
+            <div id="riskMatrix"></div>
+            <div style="font-size:0.6rem;color:rgba(11,39,64,0.35);margin-top:0.5rem;text-align:center">Probability (Y) × Severity (X)</div>
+          </div>
+          <a href="#" class="widget-view-all">View all hazards →</a>
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">Risk Acceptance</div>
+          <div class="gauge-wrap">
+            <div class="gauge-circle">
+              <svg viewBox="0 0 60 60" width="60" height="60">
+                <circle class="gauge-bg" cx="30" cy="30" r="24"/>
+                <circle class="gauge-fill" cx="30" cy="30" r="24" stroke="#10B981"
+                  stroke-dasharray="150.8" stroke-dashoffset="75.4"/>
+              </svg>
+              <div class="gauge-num">50%</div>
+            </div>
+            <div>
+              <div class="gauge-info-label"><strong>2 of 4</strong> hazards at acceptable residual risk</div>
+              <div class="gauge-info-label" style="margin-top:0.3rem">2 ALARP — justify in risk-benefit analysis</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="widget">
+          <div class="widget-title">Recent Risk Updates</div>
+          <div class="timeline-row">
+            <div class="timeline-dot" style="background:#F59E0B"></div>
+            <div class="timeline-title"><strong>RISK-004</strong> — Battery spec updated per CR-001; TR-070 re-run required</div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-dot" style="background:#10B981"></div>
+            <div class="timeline-title"><strong>RISK-002</strong> — TR-050 sensitivity test 98.7% — meets acceptance</div>
+          </div>
+          <div class="timeline-row">
+            <div class="timeline-dot" style="background:#0AC0E9"></div>
+            <div class="timeline-title"><strong>RISK-003</strong> — Pen-test report TR-060 completed</div>
+          </div>
+          <a href="#" class="widget-view-all">View risk file history →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script src="filter-dropdown.js"></script>
+  <script>
+    initSidebar({ activePage: 'risk-management' });
+
+    var activeTab = 'analysis';
+
+    var PRODUCTS = ['CardioSync Pro', 'CardioSync Lite', 'CardioSync Hub'];
+    var productIdx = 0;
+    function cycleProduct() {
+      productIdx = (productIdx + 1) % PRODUCTS.length;
+      document.getElementById('productSelectorLabel').textContent = PRODUCTS[productIdx];
+      render();
+    }
+
+    function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      try { return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); } catch(e) { return iso.slice(0,10); }
+    }
+
+    // ── RISK DATA ──────────────────────────────────────────────────────
+    var RISKS = [
+      {
+        id: 'RISK-001',
+        hazard: 'High electrical energy',
+        situation: 'Housing seal degrades and battery is exposed to skin moisture during normal wear.',
+        harm: 'Skin burn or electrocution',
+        initialP: 2, initialS: 4,
+        controls: [
+          { type:'inherent',   desc:'Hermetic sealed enclosure with IP68 rating' },
+          { type:'protective', desc:'Secondary moisture-detection cut-off circuit' },
+          { type:'info',       desc:'IFU warning about visible cracking' },
+        ],
+        residualP: 1, residualS: 4,
+        verification: 'TR-045, TR-046', status: 'approved',
+      },
+      {
+        id: 'RISK-002',
+        hazard: 'Missed arrhythmia detection (false negative)',
+        situation: 'Detection algorithm fails to recognize a VT event due to motion artifact.',
+        harm: 'Delay in treatment of life-threatening event',
+        initialP: 3, initialS: 5,
+        controls: [
+          { type:'inherent',   desc:'Multi-lead signal fusion algorithm' },
+          { type:'protective', desc:'Uncertainty alert when signal quality drops' },
+          { type:'info',       desc:'IFU: device is adjunct, not sole diagnostic source' },
+        ],
+        residualP: 1, residualS: 5,
+        verification: 'TR-050, TR-051', status: 'approved',
+      },
+      {
+        id: 'RISK-003',
+        hazard: 'Unauthorized access to patient data',
+        situation: 'Attacker intercepts BLE transmission between device and phone app.',
+        harm: 'Loss of patient confidentiality / PHI exposure',
+        initialP: 3, initialS: 3,
+        controls: [
+          { type:'inherent',   desc:'AES-256 end-to-end encryption' },
+          { type:'protective', desc:'Device-phone pairing with 6-digit confirmation' },
+        ],
+        residualP: 1, residualS: 3,
+        verification: 'TR-060, SW-003', status: 'approved',
+      },
+      {
+        id: 'RISK-004',
+        hazard: 'Battery failure during critical monitoring window',
+        situation: 'Battery depletes faster than expected and device stops recording.',
+        harm: 'Gap in arrhythmia monitoring coverage',
+        initialP: 4, initialS: 3,
+        controls: [
+          { type:'inherent',   desc:'Over-spec battery (3.5yr vs 3yr requirement)' },
+          { type:'protective', desc:'App alerts user at 10% remaining capacity' },
+          { type:'info',       desc:'IFU states typical replacement interval' },
+        ],
+        residualP: 2, residualS: 3,
+        verification: 'TR-070 (pending re-run)', status: 'open',
+      },
+    ];
+
+    function riskScore(p, s) { return p * s; }
+    function riskLevel(score) {
+      if (score <= 4) return { cls:'acceptable',   label:'Acceptable' };
+      if (score <= 14) return { cls:'alarp',        label:'ALARP' };
+      return               { cls:'unacceptable',  label:'Unacceptable' };
+    }
+    function rlBadge(p, s) {
+      var sc = riskScore(p, s);
+      var rl = riskLevel(sc);
+      return '<span class="risk-level ' + rl.cls + '">' + rl.label + '</span>';
+    }
+
+    function statusBadge(k) {
+      var map = {
+        approved: { bg:'rgba(16,185,129,0.1)',  color:'#047857', label:'Approved' },
+        open:     { bg:'rgba(245,158,11,0.12)', color:'#b45309', label:'Open' },
+        draft:    { bg:'rgba(245,158,11,0.12)', color:'#b45309', label:'Draft' },
+      };
+      var s = map[k] || { bg:'rgba(11,39,64,0.07)', color:'rgba(11,39,64,0.4)', label:k };
+      return '<span class="status-badge" style="background:'+s.bg+';color:'+s.color+'">'+s.label+'</span>';
+    }
+
+    // ── RISK MATRIX (5×5) ───────────────────────────────────────────────
+    function buildRiskMatrix() {
+      // Cell color by score
+      function cellColor(p, s) {
+        var sc = p * s;
+        if (sc <= 4)  return 'rgba(16,185,129,0.12)';
+        if (sc <= 14) return 'rgba(245,158,11,0.12)';
+        return 'rgba(239,68,68,0.12)';
+      }
+
+      // Map hazards to (P,S) cells — pre-control and residual
+      var preDots   = {};
+      var residDots = {};
+      RISKS.forEach(function(r, idx) {
+        var pk = r.initialP + ',' + r.initialS;
+        if (!preDots[pk]) preDots[pk] = [];
+        preDots[pk].push(idx + 1);
+
+        var rk = r.residualP + ',' + r.residualS;
+        if (!residDots[rk]) residDots[rk] = [];
+        residDots[rk].push(idx + 1);
+      });
+
+      // Build grid: rows = P 5→1 (top=high), cols = S 1→5
+      var html = '<div class="rm-grid">';
+      for (var p = 5; p >= 1; p--) {
+        // Y-axis label
+        html += '<div class="rm-label">' + p + '</div>';
+        for (var s = 1; s <= 5; s++) {
+          var bg = cellColor(p, s);
+          var pk = p + ',' + s;
+          var pre = preDots[pk] || [];
+          var res = residDots[pk] || [];
+          html += '<div class="rm-cell" style="background:' + bg + '">';
+          // Pre-control circles (outline)
+          pre.forEach(function(n) {
+            html += '<div style="width:12px;height:12px;border-radius:50%;border:1.5px solid rgba(11,39,64,0.5);display:inline-flex;align-items:center;justify-content:center;font-size:0.48rem;font-weight:800;color:rgba(11,39,64,0.7);margin:1px">' + n + '</div>';
+          });
+          // Residual circles (filled)
+          res.forEach(function(n) {
+            // Don't double-draw if same cell
+            var alreadyPre = pre.indexOf(n) !== -1;
+            if (!alreadyPre) {
+              html += '<div style="width:12px;height:12px;border-radius:50%;background:rgba(11,39,64,0.55);display:inline-flex;align-items:center;justify-content:center;font-size:0.48rem;font-weight:800;color:white;margin:1px">' + n + '</div>';
+            } else {
+              // already drawn as outline; add filled version overlapping — use different style
+              html += '<div style="width:12px;height:12px;border-radius:50%;background:rgba(11,39,64,0.55);display:inline-flex;align-items:center;justify-content:center;font-size:0.48rem;font-weight:800;color:white;margin:1px">↓</div>';
+            }
+          });
+          html += '</div>';
+        }
+      }
+      // X-axis labels
+      html += '<div></div>';
+      for (var s2 = 1; s2 <= 5; s2++) {
+        html += '<div class="rm-label">' + s2 + '</div>';
+      }
+      html += '</div>';
+      return html;
+    }
+
+    // ── RENDER ─────────────────────────────────────────────────────────
+    function setTab(btn, tab) {
+      document.querySelectorAll('.subtab').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      activeTab = tab;
+      render();
+    }
+
+    function render() {
+      var el = document.getElementById('contentArea');
+      var fb = document.getElementById('filterBarArea');
+      var filters = '<div class="filter-bar">' +
+        '<button class="filter-dropdown">Risk Level <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+        '<button class="filter-dropdown">Hazard Category <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+        '<button class="filter-dropdown">Status <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+        '<button class="filter-more-btn">+ More Filters</button>' +
+        '</div>';
+      fb.innerHTML = filters;
+
+      if (activeTab === 'analysis')  el.innerHTML = renderRiskAnalysis();
+      else if (activeTab === 'register') el.innerHTML = renderRegister();
+      else if (activeTab === 'controls') el.innerHTML = renderControls();
+      else if (activeTab === 'residual') el.innerHTML = renderResidual();
+    }
+
+    function renderRiskAnalysis() {
+      var html = '<div class="risk-table-wrap"><table class="risk-table"><thead><tr>' +
+        '<th>Hazard / Harm</th>' +
+        '<th>Pre-Control Risk</th>' +
+        '<th>Risk Controls</th>' +
+        '<th>Residual Risk</th>' +
+        '<th>Verification</th>' +
+        '</tr></thead><tbody>';
+
+      RISKS.forEach(function(r) {
+        var preScore = riskScore(r.initialP, r.initialS);
+        var resScore = riskScore(r.residualP, r.residualS);
+
+        html += '<tr>';
+        html += '<td><div class="risk-id">' + esc(r.id) + '</div><div class="risk-hazard">' + esc(r.hazard) + '</div><div class="risk-harm">' + esc(r.harm) + '</div></td>';
+
+        html += '<td style="text-align:center">' +
+          '<div class="risk-score"><span class="risk-score-val">' + preScore + '</span><span class="risk-score-formula">' + r.initialP + '×' + r.initialS + '</span></div>' +
+          '<div style="margin-top:0.4rem">' + rlBadge(r.initialP, r.initialS) + '</div>' +
+          '</td>';
+
+        html += '<td><div class="control-list">';
+        r.controls.forEach(function(c) {
+          html += '<div class="control-item"><span class="control-type ' + esc(c.type) + '">' + esc(c.type) + '</span><span class="control-desc">' + esc(c.desc) + '</span></div>';
+        });
+        html += '</div></td>';
+
+        html += '<td style="text-align:center">' +
+          '<div class="risk-score"><span class="risk-score-val">' + resScore + '</span><span class="risk-score-formula">' + r.residualP + '×' + r.residualS + '</span></div>' +
+          '<div style="margin-top:0.4rem">' + rlBadge(r.residualP, r.residualS) + '</div>' +
+          '</td>';
+
+        html += '<td style="font-size:0.72rem;color:rgba(11,39,64,0.55);line-height:1.5">' + esc(r.verification) + '</td>';
+        html += '</tr>';
+      });
+
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    function renderRegister() {
+      var html = '<div class="doc-table-wrap"><table class="doc-table"><thead><tr>' +
+        '<th><input type="checkbox" class="doc-cb"></th>' +
+        '<th style="width:32%">Hazard</th>' +
+        '<th>Initial Risk</th><th>Residual Risk</th><th>Controls</th><th>Status</th><th>Actions</th>' +
+        '</tr></thead><tbody>';
+      RISKS.forEach(function(r) {
+        html += '<tr><td><input type="checkbox" class="doc-cb"></td>' +
+          '<td><span class="file-title">' + esc(r.hazard) + '</span><span class="file-id">' + esc(r.id) + ' · ' + esc(r.harm) + '</span></td>' +
+          '<td>' + rlBadge(r.initialP, r.initialS) + '</td>' +
+          '<td>' + rlBadge(r.residualP, r.residualS) + '</td>' +
+          '<td style="font-size:0.75rem;color:rgba(11,39,64,0.6)">' + r.controls.length + ' controls</td>' +
+          '<td>' + statusBadge(r.status) + '</td>' +
+          '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="action-icon-btn" title="Edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td>' +
+          '</tr>';
+      });
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    function renderControls() {
+      var html = '<div class="doc-table-wrap"><table class="doc-table"><thead><tr>' +
+        '<th><input type="checkbox" class="doc-cb"></th>' +
+        '<th style="width:38%">Control Measure</th>' +
+        '<th>Type</th><th>Hazard</th><th>Status</th><th>Actions</th>' +
+        '</tr></thead><tbody>';
+      RISKS.forEach(function(r) {
+        r.controls.forEach(function(c) {
+          html += '<tr><td><input type="checkbox" class="doc-cb"></td>' +
+            '<td><span class="file-title">' + esc(c.desc) + '</span><span class="file-id">' + esc(r.id) + '</span></td>' +
+            '<td><span class="control-type ' + esc(c.type) + '" style="font-size:0.68rem;padding:0.14rem 0.45rem;border-radius:4px">' + esc(c.type) + '</span></td>' +
+            '<td style="font-size:0.75rem;color:rgba(11,39,64,0.6)">' + esc(r.hazard) + '</td>' +
+            '<td>' + statusBadge(r.status) + '</td>' +
+            '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>' +
+            '</tr>';
+        });
+      });
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    function renderResidual() {
+      var html = '<div class="risk-table-wrap"><table class="risk-table"><thead><tr>' +
+        '<th>Hazard</th>' +
+        '<th>Residual Probability</th>' +
+        '<th>Residual Severity</th>' +
+        '<th>Residual Score</th>' +
+        '<th>Residual Risk Level</th>' +
+        '<th>Verification</th>' +
+        '</tr></thead><tbody>';
+      RISKS.forEach(function(r) {
+        var resScore = riskScore(r.residualP, r.residualS);
+        html += '<tr>';
+        html += '<td><div class="risk-id">' + esc(r.id) + '</div><div class="risk-hazard">' + esc(r.hazard) + '</div></td>';
+        html += '<td style="text-align:center;font-size:0.9rem;font-weight:700">' + r.residualP + '</td>';
+        html += '<td style="text-align:center;font-size:0.9rem;font-weight:700">' + r.residualS + '</td>';
+        html += '<td style="text-align:center"><div class="risk-score"><span class="risk-score-val">' + resScore + '</span><span class="risk-score-formula">' + r.residualP + '×' + r.residualS + '</span></div></td>';
+        html += '<td>' + rlBadge(r.residualP, r.residualS) + '</td>';
+        html += '<td style="font-size:0.72rem;color:rgba(11,39,64,0.55)">' + esc(r.verification) + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    // Init
+    document.getElementById('riskMatrix').innerHTML = buildRiskMatrix();
+    render();
+  </script>
+</body>
+</html>

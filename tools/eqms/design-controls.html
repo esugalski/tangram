@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Controls — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --light-gray: #F7F8FA;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+      --sidebar-w:  220px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; overflow: hidden; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.65rem; padding: 0.5rem 0.85rem; border-radius: 7px; font-size: 0.82rem; font-weight: 500; color: rgba(255,255,255,0.62); cursor: pointer; transition: background 0.13s, color 0.13s; text-decoration: none; margin: 1px 0.5rem; white-space: nowrap; overflow: hidden; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.14); color: #0AC0E9; font-weight: 600; }
+    .sidebar-nav-icon { width: 16px; height: 16px; flex-shrink: 0; stroke: currentColor; fill: none; display: flex; }
+    .sidebar-nav-icon svg { width: 16px; height: 16px; stroke: inherit; fill: none; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); }
+
+    /* ─── APP SHELL ─── */
+    .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 60px; display: flex; align-items: center; flex-shrink: 0; z-index: 10; }
+    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; }
+    .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 1.5rem; }
+    .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; width: min(400px, 100%); transition: border-color 0.15s; }
+    .topbar-search:focus-within { border-color: rgba(10,192,233,0.4); }
+    .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; flex-shrink: 0; }
+    .topbar-search input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 100%; }
+    .topbar-search input::placeholder { color: rgba(11,39,64,0.35); }
+    .topbar-right { display: flex; align-items: center; gap: 0.5rem; padding: 0 1.25rem; flex-shrink: 0; }
+    .topbar-icon-btn { width: 34px; height: 34px; border-radius: 8px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.12s; position: relative; }
+    .topbar-icon-btn:hover { background: var(--light-gray); }
+    .topbar-icon-btn svg { width: 16px; height: 16px; stroke: var(--mid-blue); fill: none; stroke-width: 2; }
+    .topbar-notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--red); border: 1.5px solid white; }
+    .topbar-user { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.3rem 0.6rem; border-radius: 8px; transition: background 0.12s; }
+    .topbar-user:hover { background: var(--light-gray); }
+    .topbar-user-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(10,192,233,0.1); border: 1.5px solid rgba(10,192,233,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua-dark); flex-shrink: 0; }
+    .topbar-user-name { font-size: 0.8rem; font-weight: 600; color: var(--primary); }
+    .topbar-user-role { font-size: 0.63rem; color: rgba(11,39,64,0.4); }
+
+    .content-wrap { flex: 1; display: flex; min-height: 0; overflow: hidden; }
+    .main-area { flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem; min-width: 0; display: flex; flex-direction: column; }
+    .main-area::-webkit-scrollbar { width: 5px; }
+    .main-area::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    /* ─── PAGE HEADER ─── */
+    .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.85rem; gap: 1rem; }
+    .page-heading { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; }
+    .page-subtitle { font-size: 0.77rem; color: rgba(11,39,64,0.44); margin-top: 0.22rem; }
+    .page-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; color: white; background: var(--aqua-dark); border: none; border-radius: 7px; padding: 0.45rem 0.9rem; cursor: pointer; transition: background 0.12s; white-space: nowrap; }
+    .btn-primary:hover { background: var(--aqua); }
+    .btn-primary svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-ghost { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.42rem 0.8rem; cursor: pointer; transition: border-color 0.12s, background 0.12s; white-space: nowrap; }
+    .btn-ghost:hover { border-color: rgba(10,192,233,0.4); background: rgba(10,192,233,0.02); }
+    .btn-ghost svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* ─── PRODUCT SELECTOR ─── */
+    .product-selector-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .product-selector-lbl { font-size: 0.72rem; color: rgba(11,39,64,0.42); font-weight: 500; }
+    .product-selector { display: inline-flex; align-items: center; gap: 0.45rem; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--primary); background: white; border: 1.5px solid rgba(11,39,64,0.15); border-radius: 20px; padding: 0.38rem 0.9rem; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+    .product-selector:hover { border-color: rgba(10,192,233,0.5); background: rgba(10,192,233,0.02); }
+    .product-selector svg { width: 12px; height: 12px; stroke: rgba(11,39,64,0.4); fill: none; stroke-width: 2; }
+
+    /* ─── SUBTABS ─── */
+    .subtabs { display: flex; gap: 0; border-bottom: 1.5px solid rgba(11,39,64,0.08); margin-bottom: 1rem; overflow-x: auto; }
+    .subtabs::-webkit-scrollbar { height: 0; }
+    .subtab { font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; color: rgba(11,39,64,0.5); padding: 0.55rem 1rem; border: none; border-bottom: 2px solid transparent; margin-bottom: -1.5px; cursor: pointer; transition: color 0.12s; white-space: nowrap; background: transparent; }
+    .subtab:hover { color: var(--primary); }
+    .subtab.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+    .subtab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 17px; height: 15px; background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); font-size: 0.59rem; font-weight: 700; padding: 0 0.32rem; border-radius: 10px; margin-left: 0.3rem; }
+    .subtab.active .subtab-count { background: rgba(10,192,233,0.12); color: var(--aqua-dark); }
+
+    /* ─── FILTER BAR ─── */
+    .filter-bar { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .filter-dropdown { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.36rem 0.65rem; cursor: pointer; transition: border-color 0.12s; white-space: nowrap; }
+    .filter-dropdown:hover { border-color: rgba(10,192,233,0.4); }
+    .filter-dropdown svg { width: 11px; height: 11px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; }
+    .filter-more-btn { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.42); background: transparent; border: none; cursor: pointer; padding: 0.36rem 0.45rem; }
+
+    /* ─── TRACE MATRIX TABLE ─── */
+    .trace-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; overflow: hidden; }
+    .trace-table { width: 100%; border-collapse: collapse; }
+    .trace-table th { padding: 0.6rem 0.85rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); border-bottom: 1px solid rgba(11,39,64,0.07); background: rgba(11,39,64,0.015); text-align: left; white-space: nowrap; }
+    .trace-table th:first-child { padding-left: 1rem; width: 22%; }
+    .trace-table td { padding: 0.9rem 0.85rem; border-bottom: 1px solid rgba(11,39,64,0.055); vertical-align: top; }
+    .trace-table td:first-child { padding-left: 1rem; }
+    .trace-table tr:last-child td { border-bottom: none; }
+    .trace-table tbody tr:hover td { background: rgba(10,192,233,0.012); }
+
+    .un-id { display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 700; color: var(--aqua-dark); background: rgba(10,192,233,0.08); border: 1px solid rgba(10,192,233,0.2); border-radius: 5px; padding: 0.1rem 0.42rem; white-space: nowrap; margin-bottom: 0.35rem; cursor: pointer; transition: background 0.12s; }
+    .un-id:hover { background: rgba(10,192,233,0.15); }
+    .un-title { font-size: 0.78rem; font-weight: 500; color: var(--primary); line-height: 1.45; }
+
+    .trace-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .trace-chip { display: inline-flex; align-items: center; font-size: 0.68rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 5px; white-space: nowrap; cursor: pointer; transition: opacity 0.12s; }
+    .trace-chip:hover { opacity: 0.75; }
+    .chip-di { background: rgba(99,102,241,0.1); color: #4338ca; border: 1px solid rgba(99,102,241,0.2); }
+    .chip-do { background: rgba(11,39,64,0.07); color: var(--mid-blue); border: 1px solid rgba(11,39,64,0.12); }
+    .chip-vv { background: rgba(16,185,129,0.1); color: #047857; border: 1px solid rgba(16,185,129,0.2); }
+    .chip-gap { background: rgba(239,68,68,0.07); color: rgba(239,68,68,0.7); border: 1px dashed rgba(239,68,68,0.3); font-weight: 500; font-style: italic; cursor: default; }
+
+    .trace-status { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 700; padding: 0.17rem 0.52rem; border-radius: 5px; white-space: nowrap; letter-spacing: 0.02em; }
+    .trace-status.complete { background: rgba(16,185,129,0.1); color: #047857; }
+    .trace-status.partial  { background: rgba(245,158,11,0.12); color: #b45309; }
+    .trace-status.gap      { background: rgba(239,68,68,0.1); color: #dc2626; }
+
+    /* ─── STANDARD DOC TABLE ─── */
+    .doc-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; overflow: hidden; }
+    .doc-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .doc-table th { padding: 0.6rem 0.85rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); border-bottom: 1px solid rgba(11,39,64,0.07); background: rgba(11,39,64,0.015); text-align: left; white-space: nowrap; }
+    .doc-table th:first-child { padding-left: 1rem; width: 36px; }
+    .doc-table td { padding: 0.7rem 0.85rem; border-bottom: 1px solid rgba(11,39,64,0.055); vertical-align: middle; font-size: 0.8rem; }
+    .doc-table td:first-child { padding-left: 1rem; }
+    .doc-table tr:last-child td { border-bottom: none; }
+    .doc-table tbody tr:hover td { background: rgba(10,192,233,0.015); cursor: pointer; }
+    .doc-cb { width: 15px; height: 15px; accent-color: var(--aqua); cursor: pointer; }
+    .file-title { font-size: 0.81rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+    .file-id { font-size: 0.66rem; color: rgba(11,39,64,0.4); margin-top: 0.08rem; }
+    .status-badge { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 700; padding: 0.17rem 0.52rem; border-radius: 5px; white-space: nowrap; }
+    .cat-chip { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 600; padding: 0.14rem 0.45rem; border-radius: 4px; background: rgba(11,39,64,0.06); color: var(--mid-blue); white-space: nowrap; }
+    .doc-date { font-size: 0.73rem; color: rgba(11,39,64,0.52); white-space: nowrap; }
+    .doc-owner { font-size: 0.73rem; color: rgba(11,39,64,0.55); }
+    .action-icons { display: flex; align-items: center; gap: 0.3rem; }
+    .action-icon-btn { width: 26px; height: 26px; border-radius: 5px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: rgba(11,39,64,0.3); transition: background 0.12s, color 0.12s; }
+    .action-icon-btn:hover { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .action-icon-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    /* ─── RIGHT PANEL ─── */
+    .right-panel { width: 272px; flex-shrink: 0; border-left: 1px solid rgba(11,39,64,0.07); padding: 1.5rem 1.1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; background: white; }
+    .right-panel::-webkit-scrollbar { width: 0; }
+    .widget { background: var(--light-gray); border: 1px solid rgba(11,39,64,0.07); border-radius: 10px; padding: 1rem 1.1rem; }
+    .widget-title { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.36); margin-bottom: 0.75rem; }
+    .widget-divider { height: 1px; background: rgba(11,39,64,0.07); margin: 0.5rem 0; }
+    .widget-view-all { font-size: 0.71rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; display: block; margin-top: 0.6rem; transition: color 0.12s; }
+    .widget-view-all:hover { color: var(--aqua); }
+
+    .snapshot-product-name { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem; }
+    .snapshot-role { font-size: 0.72rem; color: rgba(11,39,64,0.5); margin-bottom: 0.5rem; }
+    .snapshot-link { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; font-weight: 600; color: var(--aqua-dark); text-decoration: none; transition: color 0.12s; }
+    .snapshot-link:hover { color: var(--aqua); }
+    .snapshot-link svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .gauge-wrap { display: flex; align-items: center; gap: 0.85rem; margin: 0.5rem 0 0.75rem; }
+    .gauge-circle { position: relative; width: 60px; height: 60px; flex-shrink: 0; }
+    .gauge-circle svg { transform: rotate(-90deg); }
+    .gauge-circle circle { fill: none; stroke-width: 6; }
+    .gauge-bg { stroke: rgba(11,39,64,0.08); }
+    .gauge-fill { stroke-linecap: round; transition: stroke-dashoffset 0.5s ease; }
+    .gauge-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800; color: var(--primary); }
+    .gauge-info-label { font-size: 0.7rem; color: rgba(11,39,64,0.5); line-height: 1.4; }
+    .gauge-info-label strong { color: var(--primary); font-weight: 600; }
+
+    .timeline-row { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.3rem 0; }
+    .timeline-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 0.3rem; }
+    .timeline-title { font-size: 0.73rem; color: rgba(11,39,64,0.6); flex: 1; line-height: 1.4; }
+
+    .empty-state { padding: 3rem 2rem; text-align: center; }
+    .empty-state-icon { width: 44px; height: 44px; border-radius: 10px; background: rgba(11,39,64,0.05); display: flex; align-items: center; justify-content: center; margin: 0 auto 0.85rem; }
+    .empty-state-icon svg { width: 20px; height: 20px; stroke: rgba(11,39,64,0.25); fill: none; stroke-width: 1.5; }
+    .empty-state-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.35rem; }
+    .empty-state-desc { font-size: 0.77rem; color: rgba(11,39,64,0.43); line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <div class="app-main">
+    <div class="topbar">
+      <div class="topbar-brand-area"></div>
+      <div class="topbar-center">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, CAPAs, products, audits…">
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" title="Notifications">
+          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="topbar-notif-dot"></span>
+        </button>
+        <div class="topbar-user">
+          <div class="topbar-user-avatar">FM</div>
+          <div>
+            <div class="topbar-user-name">Founding Member</div>
+            <div class="topbar-user-role">Early Access</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-wrap">
+      <div class="main-area">
+        <div class="page-header">
+          <div>
+            <div class="page-heading">Design Controls</div>
+            <div class="page-subtitle">Traceability, design inputs, outputs, reviews, and V&amp;V — scoped by product</div>
+          </div>
+          <div class="page-actions">
+            <button class="btn-ghost" id="exportBtn">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Export
+            </button>
+            <button class="btn-primary">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Document
+            </button>
+          </div>
+        </div>
+
+        <div class="product-selector-row">
+          <span class="product-selector-lbl">Product:</span>
+          <button class="product-selector" id="productSelectorBtn" onclick="cycleProduct()">
+            <span id="productSelectorLabel">CardioSync Pro</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+
+        <div class="subtabs">
+          <button class="subtab active" onclick="setTab(this,'trace')">Trace Matrix <span class="subtab-count" id="cnt-trace">5</span></button>
+          <button class="subtab" onclick="setTab(this,'inputs')">Design Inputs <span class="subtab-count" id="cnt-inputs">7</span></button>
+          <button class="subtab" onclick="setTab(this,'outputs')">Design Outputs <span class="subtab-count" id="cnt-outputs">5</span></button>
+          <button class="subtab" onclick="setTab(this,'reviews')">Design Reviews <span class="subtab-count" id="cnt-reviews">2</span></button>
+          <button class="subtab" onclick="setTab(this,'vv')">V&amp;V <span class="subtab-count" id="cnt-vv">2</span></button>
+        </div>
+
+        <div id="filterBarArea"></div>
+        <div id="contentArea"></div>
+      </div>
+
+      <div class="right-panel">
+        <div class="widget">
+          <div class="widget-title">Product Snapshot</div>
+          <div class="snapshot-product-name" id="snapshotProductName">CardioSync Pro</div>
+          <div class="snapshot-role">Product Manager: Sam Patel</div>
+          <a href="#" class="snapshot-link">Open Device File <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></a>
+        </div>
+        <div class="widget">
+          <div class="widget-title">Design Controls Completeness</div>
+          <div class="gauge-wrap">
+            <div class="gauge-circle">
+              <svg viewBox="0 0 60 60" width="60" height="60">
+                <circle class="gauge-bg" cx="30" cy="30" r="24"/>
+                <circle class="gauge-fill" id="gaugeFill" cx="30" cy="30" r="24" stroke="#0AC0E9"
+                  stroke-dasharray="150.8" stroke-dashoffset="90.5"/>
+              </svg>
+              <div class="gauge-num">40%</div>
+            </div>
+            <div>
+              <div class="gauge-info-label"><strong>2 of 5</strong> user needs fully traced through V&amp;V</div>
+              <div class="gauge-info-label" style="margin-top:0.3rem;color:rgba(239,68,68,0.7)">3 gaps require V&amp;V coverage</div>
+            </div>
+          </div>
+          <a href="#" class="widget-view-all">View traceability report →</a>
+        </div>
+        <div class="widget">
+          <div class="widget-title">Recent Design Changes</div>
+          <div id="designChangesContent">
+            <div class="timeline-row">
+              <div class="timeline-dot" style="background:#0AC0E9"></div>
+              <div class="timeline-title"><strong>CR-001 Approved</strong> — Battery runtime DI-002 updated to 3.5yr</div>
+            </div>
+            <div class="timeline-row">
+              <div class="timeline-dot" style="background:#F59E0B"></div>
+              <div class="timeline-title"><strong>DVER-001</strong> — Arrhythmia sensitivity test in progress</div>
+            </div>
+            <div class="timeline-row">
+              <div class="timeline-dot" style="background:#10B981"></div>
+              <div class="timeline-title"><strong>DR-001 Closed</strong> — Planning phase design review approved</div>
+            </div>
+          </div>
+          <a href="#" class="widget-view-all">View all design changes →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script src="filter-dropdown.js"></script>
+  <script>
+    initSidebar({ activePage: 'design-controls' });
+
+    var activeTab = 'trace';
+
+    var PRODUCTS = ['CardioSync Pro', 'CardioSync Lite', 'CardioSync Hub'];
+    var productIdx = 0;
+    function cycleProduct() {
+      productIdx = (productIdx + 1) % PRODUCTS.length;
+      document.getElementById('productSelectorLabel').textContent = PRODUCTS[productIdx];
+      document.getElementById('snapshotProductName').textContent = PRODUCTS[productIdx];
+      render();
+    }
+
+    var STATUS_DISPLAY = {
+      approved:    { label:'Approved',     bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+      closed:      { label:'Closed',       bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+      complete:    { label:'Complete',     bg:'rgba(16,185,129,0.1)',  color:'#047857' },
+      draft:       { label:'Draft',        bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      open:        { label:'Open',         bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+      review:      { label:'In Review',    bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      'in-progress':{ label:'In Progress', bg:'rgba(99,102,241,0.12)', color:'#4338ca' },
+      planned:     { label:'Planned',      bg:'rgba(11,39,64,0.07)',   color:'rgba(11,39,64,0.45)' },
+      pending:     { label:'Pending',      bg:'rgba(245,158,11,0.12)', color:'#b45309' },
+    };
+    function getStatus(k) { return STATUS_DISPLAY[k] || { label:k||'—', bg:'rgba(11,39,64,0.07)', color:'rgba(11,39,64,0.38)' }; }
+    function badge(k) { var s=getStatus(k); return '<span class="status-badge" style="background:'+s.bg+';color:'+s.color+'">'+s.label+'</span>'; }
+    function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+    // ── TRACE MATRIX DATA ──────────────────────────────────────────────
+    var TRACE_ROWS = [
+      {
+        un:  { id:'UN-001', title:'Device shall accurately detect cardiac arrhythmia events' },
+        dis: ['DI-001','DI-006'],
+        dos: ['DO-001'],
+        vvs: [{ id:'DVER-001', status:'in-progress' }],
+        traceStatus: 'partial',
+      },
+      {
+        un:  { id:'UN-002', title:'Clinicians shall be able to retrieve monitoring data remotely' },
+        dis: ['DI-004','DI-006'],
+        dos: ['DO-003'],
+        vvs: [{ id:'DV-001', status:'draft' }],
+        traceStatus: 'partial',
+      },
+      {
+        un:  { id:'UN-003', title:'Device shall not cause patient discomfort during extended wear' },
+        dis: ['DI-005','DI-007'],
+        dos: ['DO-004'],
+        vvs: [],
+        traceStatus: 'gap',
+      },
+      {
+        un:  { id:'UN-004', title:'Patient data shall be protected from unauthorized access' },
+        dis: ['DI-003'],
+        dos: ['DO-003','DO-005'],
+        vvs: [],
+        traceStatus: 'gap',
+      },
+      {
+        un:  { id:'UN-005', title:'Device shall operate reliably for the intended monitoring period' },
+        dis: ['DI-002'],
+        dos: ['DO-002'],
+        vvs: [],
+        traceStatus: 'gap',
+      },
+    ];
+
+    // ── DESIGN INPUTS DATA ─────────────────────────────────────────────
+    var DESIGN_INPUTS = [
+      { id:'DI-001', title:'Arrhythmia detection sensitivity ≥98%, FPR ≤2%',                      status:'approved', category:'Performance',  owner:'Jordan Kim',   date:'2026-01-20' },
+      { id:'DI-002', title:'Battery runtime ≥3.5 years on single power source',                   status:'approved', category:'Reliability',  owner:'Jordan Kim',   date:'2026-02-17' },
+      { id:'DI-003', title:'AES-256 end-to-end encryption for all data transmission',             status:'approved', category:'Security',     owner:'Priya Shah',   date:'2026-01-20' },
+      { id:'DI-004', title:'BLE connectivity at ≤30m range from paired mobile device',           status:'review',   category:'Connectivity', owner:'Jordan Kim',   date:'2026-02-01' },
+      { id:'DI-005', title:'Device mass ≤75g; IP68 waterproof rating',                           status:'approved', category:'Physical',     owner:'Sam Patel',    date:'2026-01-20' },
+      { id:'DI-006', title:'Clinician alert delivered within 60s of event detection',             status:'review',   category:'Performance',  owner:'Jordan Kim',   date:'2026-02-01' },
+      { id:'DI-007', title:'Housing withstands 100kPa static pressure without deformation',      status:'approved', category:'Safety',       owner:'Jordan Kim',   date:'2026-01-20' },
+    ];
+
+    // ── DESIGN OUTPUTS DATA ────────────────────────────────────────────
+    var DESIGN_OUTPUTS = [
+      { id:'DO-001', title:'Firmware arrhythmia detection module v0.4.2',           status:'review',   category:'Software',    owner:'Jordan Kim', date:'2026-03-10', tracesDI:'DI-001, DI-006' },
+      { id:'DO-002', title:'Battery cell specification — Meridian BT-350-3.5',      status:'approved', category:'Hardware',    owner:'Jordan Kim', date:'2026-02-17', tracesDI:'DI-002' },
+      { id:'DO-003', title:'Mobile app encrypted communications module',             status:'review',   category:'Software',    owner:'Priya Shah', date:'2026-03-15', tracesDI:'DI-003, DI-004' },
+      { id:'DO-004', title:'Mechanical enclosure drawings DWG-001 Rev A',           status:'approved', category:'Mechanical',  owner:'Sam Patel',  date:'2026-01-28', tracesDI:'DI-005, DI-007' },
+      { id:'DO-005', title:'Instructions for Use and product labeling IFU-001 Rev A', status:'review', category:'Labeling',    owner:'Mira Chen',  date:'2026-03-20', tracesDI:'DI-003, DI-005' },
+    ];
+
+    // ── DESIGN REVIEWS DATA ────────────────────────────────────────────
+    var DESIGN_REVIEWS = [
+      { id:'DR-001', title:'Planning Phase Design Review',      status:'approved', phase:'Planning',       date:'2025-11-24', owner:'Alex Reyes' },
+      { id:'DR-002', title:'Design Inputs Phase Review',        status:'open',     phase:'Design Inputs',  date:'2026-04-30', owner:'Alex Reyes' },
+    ];
+
+    // ── V&V DATA ───────────────────────────────────────────────────────
+    var VV_ITEMS = [
+      { id:'DVER-001', kind:'Verification', title:'Arrhythmia detection sensitivity testing',         status:'in-progress', tracesTo:'DI-001, DI-006, UN-001', owner:'Priya Shah', date:'2026-03-01' },
+      { id:'DV-001',   kind:'Validation',   title:'Simulated-use validation — Clinician workflow',   status:'draft',       tracesTo:'UN-002',                  owner:'Priya Shah', date:'2026-04-15' },
+    ];
+
+    // ── RENDER ─────────────────────────────────────────────────────────
+    function setTab(btn, tab) {
+      document.querySelectorAll('.subtab').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      activeTab = tab;
+      render();
+    }
+
+    function render() {
+      var el = document.getElementById('contentArea');
+      var fb = document.getElementById('filterBarArea');
+      if (activeTab === 'trace') {
+        fb.innerHTML = renderTraceFilters();
+        el.innerHTML = renderTraceMatrix();
+      } else if (activeTab === 'inputs') {
+        fb.innerHTML = renderStdFilters(['All Status','Approved','In Review','Draft'], ['All Categories','Performance','Reliability','Security','Connectivity','Physical','Safety']);
+        el.innerHTML = renderDITable();
+      } else if (activeTab === 'outputs') {
+        fb.innerHTML = renderStdFilters(['All Status','Approved','In Review','Draft'], ['All Categories','Software','Hardware','Mechanical','Labeling']);
+        el.innerHTML = renderDOTable();
+      } else if (activeTab === 'reviews') {
+        fb.innerHTML = renderStdFilters(['All Status','Approved','Open'], ['All Phases','Planning','Design Inputs','Design Outputs','V&V']);
+        el.innerHTML = renderDRTable();
+      } else if (activeTab === 'vv') {
+        fb.innerHTML = renderStdFilters(['All Status','In Progress','Draft','Planned'], ['All Types','Verification','Validation']);
+        el.innerHTML = renderVVTable();
+      }
+    }
+
+    function renderTraceFilters() {
+      return '<div class="filter-bar">' +
+        '<button class="filter-dropdown">Status <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+        '<button class="filter-dropdown">Phase <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+        '<button class="filter-dropdown">Owner <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+        '<button class="filter-more-btn">+ More Filters</button>' +
+        '</div>';
+    }
+
+    function renderStdFilters(statuses, cats) {
+      return '<div class="filter-bar">' +
+        '<button class="filter-dropdown">Status <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+        '<button class="filter-dropdown">Category <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+        '<button class="filter-dropdown">Owner <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+        '<button class="filter-dropdown">Updated <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>' +
+        '<button class="filter-more-btn">+ More Filters</button>' +
+        '</div>';
+    }
+
+    function traceStatusBadge(s) {
+      if (s === 'complete') return '<span class="trace-status complete">Complete</span>';
+      if (s === 'partial')  return '<span class="trace-status partial">Partial</span>';
+      return '<span class="trace-status gap">Gap</span>';
+    }
+
+    function renderTraceMatrix() {
+      var html = '<div class="trace-table-wrap"><table class="trace-table">' +
+        '<thead><tr>' +
+        '<th>User Need</th>' +
+        '<th>Design Inputs</th>' +
+        '<th>Design Outputs</th>' +
+        '<th>V&amp;V</th>' +
+        '<th>Trace Status</th>' +
+        '</tr></thead><tbody>';
+
+      TRACE_ROWS.forEach(function(row) {
+        html += '<tr>';
+        // User Need
+        html += '<td><span class="un-id">' + esc(row.un.id) + '</span><div class="un-title">' + esc(row.un.title) + '</div></td>';
+        // Design Inputs
+        html += '<td><div class="trace-chips">';
+        row.dis.forEach(function(d){ html += '<span class="trace-chip chip-di">' + esc(d) + '</span>'; });
+        html += '</div></td>';
+        // Design Outputs
+        html += '<td><div class="trace-chips">';
+        row.dos.forEach(function(d){ html += '<span class="trace-chip chip-do">' + esc(d) + '</span>'; });
+        html += '</div></td>';
+        // V&V
+        html += '<td><div class="trace-chips">';
+        if (row.vvs.length) {
+          row.vvs.forEach(function(v){
+            var s = getStatus(v.status);
+            html += '<span class="trace-chip chip-vv" style="background:' + s.bg + ';color:' + s.color + ';border-color:' + s.color + '40">' + esc(v.id) + '</span>';
+          });
+        } else {
+          html += '<span class="trace-chip chip-gap">No V&amp;V linked</span>';
+        }
+        html += '</div></td>';
+        // Status
+        html += '<td>' + traceStatusBadge(row.traceStatus) + '</td>';
+        html += '</tr>';
+      });
+
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      try { return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); } catch(e) { return iso.slice(0,10); }
+    }
+
+    function renderDITable() {
+      var html = '<div class="doc-table-wrap"><table class="doc-table"><thead><tr>' +
+        '<th><input type="checkbox" class="doc-cb"></th>' +
+        '<th style="width:45%">Requirement</th>' +
+        '<th>Category</th><th>Status</th><th>Updated</th><th>Owner</th><th>Actions</th>' +
+        '</tr></thead><tbody>';
+      DESIGN_INPUTS.forEach(function(item) {
+        html += '<tr><td><input type="checkbox" class="doc-cb"></td>' +
+          '<td><span class="file-title">' + esc(item.title) + '</span><span class="file-id">' + esc(item.id) + '</span></td>' +
+          '<td><span class="cat-chip">' + esc(item.category) + '</span></td>' +
+          '<td>' + badge(item.status) + '</td>' +
+          '<td class="doc-date">' + fmtDate(item.date) + '</td>' +
+          '<td class="doc-owner">' + esc(item.owner) + '</td>' +
+          '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="action-icon-btn" title="Edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td>' +
+          '</tr>';
+      });
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    function renderDOTable() {
+      var html = '<div class="doc-table-wrap"><table class="doc-table"><thead><tr>' +
+        '<th><input type="checkbox" class="doc-cb"></th>' +
+        '<th style="width:38%">Output</th>' +
+        '<th>Category</th><th>Traces to</th><th>Status</th><th>Updated</th><th>Actions</th>' +
+        '</tr></thead><tbody>';
+      DESIGN_OUTPUTS.forEach(function(item) {
+        html += '<tr><td><input type="checkbox" class="doc-cb"></td>' +
+          '<td><span class="file-title">' + esc(item.title) + '</span><span class="file-id">' + esc(item.id) + ' · ' + esc(item.owner) + '</span></td>' +
+          '<td><span class="cat-chip">' + esc(item.category) + '</span></td>' +
+          '<td style="font-size:0.72rem;color:rgba(11,39,64,0.5)">' + esc(item.tracesDI) + '</td>' +
+          '<td>' + badge(item.status) + '</td>' +
+          '<td class="doc-date">' + fmtDate(item.date) + '</td>' +
+          '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="action-icon-btn" title="Edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td>' +
+          '</tr>';
+      });
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    function renderDRTable() {
+      var html = '<div class="doc-table-wrap"><table class="doc-table"><thead><tr>' +
+        '<th><input type="checkbox" class="doc-cb"></th>' +
+        '<th style="width:42%">Review</th>' +
+        '<th>Phase</th><th>Status</th><th>Date</th><th>Chair</th><th>Actions</th>' +
+        '</tr></thead><tbody>';
+      DESIGN_REVIEWS.forEach(function(item) {
+        html += '<tr><td><input type="checkbox" class="doc-cb"></td>' +
+          '<td><span class="file-title">' + esc(item.title) + '</span><span class="file-id">' + esc(item.id) + '</span></td>' +
+          '<td><span class="cat-chip">' + esc(item.phase) + '</span></td>' +
+          '<td>' + badge(item.status) + '</td>' +
+          '<td class="doc-date">' + fmtDate(item.date) + '</td>' +
+          '<td class="doc-owner">' + esc(item.owner) + '</td>' +
+          '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></td>' +
+          '</tr>';
+      });
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    function renderVVTable() {
+      var html = '<div class="doc-table-wrap"><table class="doc-table"><thead><tr>' +
+        '<th><input type="checkbox" class="doc-cb"></th>' +
+        '<th style="width:38%">Activity</th>' +
+        '<th>Type</th><th>Traces to</th><th>Status</th><th>Updated</th><th>Actions</th>' +
+        '</tr></thead><tbody>';
+      VV_ITEMS.forEach(function(item) {
+        html += '<tr><td><input type="checkbox" class="doc-cb"></td>' +
+          '<td><span class="file-title">' + esc(item.title) + '</span><span class="file-id">' + esc(item.id) + ' · ' + esc(item.owner) + '</span></td>' +
+          '<td><span class="cat-chip">' + esc(item.kind) + '</span></td>' +
+          '<td style="font-size:0.72rem;color:rgba(11,39,64,0.5)">' + esc(item.tracesTo) + '</td>' +
+          '<td>' + badge(item.status) + '</td>' +
+          '<td class="doc-date">' + fmtDate(item.date) + '</td>' +
+          '<td><div class="action-icons"><button class="action-icon-btn" title="View"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="action-icon-btn" title="Edit"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div></td>' +
+          '</tr>';
+      });
+      html += '</tbody></table></div>';
+      return html;
+    }
+
+    render();
+  </script>
+</body>
+</html>

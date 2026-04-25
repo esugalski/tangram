@@ -224,9 +224,13 @@
           <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
           <span class="sidebar-nav-label">Library</span>
         </a>
-        <a class="sidebar-nav-item" href="products-mdf.html">
-          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-          <span class="sidebar-nav-label">Products / MDF</span>
+        <a class="sidebar-nav-item" href="design-controls.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><rect x="2" y="9" width="5" height="6" rx="1"/><rect x="9.5" y="9" width="5" height="6" rx="1"/><rect x="17" y="9" width="5" height="6" rx="1"/><line x1="7" y1="12" x2="9.5" y2="12"/><line x1="14.5" y1="12" x2="17" y2="12"/></svg>
+          <span class="sidebar-nav-label">Design Controls</span>
+        </a>
+        <a class="sidebar-nav-item" href="risk-management.html">
+          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span class="sidebar-nav-label">Risk Management</span>
         </a>
         <a class="sidebar-nav-item active" href="capa-ncr.html">
           <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
@@ -312,6 +316,7 @@
           <button class="subtab" onclick="setTab(this,'ncrs')">NCRs <span class="subtab-count" id="cnt-ncrs">0</span></button>
           <button class="subtab" onclick="setTab(this,'complaints')">Complaints <span class="subtab-count" id="cnt-complaints">0</span></button>
           <button class="subtab" onclick="setTab(this,'effectiveness')">Effectiveness Checks <span class="subtab-count" id="cnt-effectiveness">0</span></button>
+          <button class="subtab" onclick="setTab(this,'postmarket')">Post-Market <span class="subtab-count" id="cnt-postmarket">0</span></button>
         </div>
 
         <div class="filter-bar">
@@ -418,6 +423,13 @@
     var filterState = {};
     var allCapas = [], allNcrs = [], allComplaints = [];
 
+    var allPostMarket = [
+      {id:'PMS-001',title:'Post-market surveillance plan — CardioSync Pro',status:'approved',type:'PMS Plan',date:'2026-01-15',owner:'Mira Chen'},
+      {id:'PSUR-001',title:'Periodic safety update report — Q1 2026',status:'in-progress',type:'PSUR',date:'2026-04-01',owner:'Mira Chen'},
+      {id:'PMS-002',title:'Complaint trend analysis — arrhythmia detection signals',status:'open',type:'Trend Analysis',date:'2026-03-30',owner:'James Wilson'},
+      {id:'PMCF-001',title:'Post-market clinical follow-up protocol',status:'draft',type:'PMCF Protocol',date:'2026-02-20',owner:'Mira Chen'},
+    ];
+
     function loadData() {
       try { allCapas = JSON.parse(localStorage.getItem('qms_capas')||'[]'); } catch(e) { allCapas = []; }
       try { allNcrs = JSON.parse(localStorage.getItem('qms_nonconformances')||'[]'); } catch(e) { allNcrs = []; }
@@ -456,6 +468,7 @@
       if (activeTab === 'ncrs') return allNcrs;
       if (activeTab === 'complaints') return allComplaints;
       if (activeTab === 'effectiveness') return allCapas.filter(function(c){ return c.status === 'effectiveness'; });
+      if (activeTab === 'postmarket') return allPostMarket;
       return [];
     }
 
@@ -542,7 +555,7 @@
     }
 
     function updateCounts() {
-      var tabs = {capas: allCapas.length, ncrs: allNcrs.length, complaints: allComplaints.length, effectiveness: allCapas.filter(function(c){return c.status==='effectiveness';}).length};
+      var tabs = {capas: allCapas.length, ncrs: allNcrs.length, complaints: allComplaints.length, effectiveness: allCapas.filter(function(c){return c.status==='effectiveness';}).length, postmarket: allPostMarket.length};
       Object.keys(tabs).forEach(function(k){
         var el = document.getElementById('cnt-' + k);
         if (el) el.textContent = tabs[k];
