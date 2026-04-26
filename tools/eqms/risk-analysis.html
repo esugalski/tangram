@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Analysis — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css">
+  <style>
+    /* ── SUPPRESSIONS ── */
+    #lm-step-footer { display: none !important; }
+    #lm-toggle-root { display: none !important; }
+    #lm-step-banner { display: none !important; }
+
+    /* ── MODULE HEADER ── */
+    .module-header { background: var(--primary); height: 46px; display: flex; align-items: center; padding: 0 1.5rem; flex-shrink: 0; }
+    .module-header-title { font-size: 0.84rem; font-weight: 700; color: white; letter-spacing: -0.01em; }
+
+    /* ── SUBNAV ── */
+    .rm-subnav { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 40px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; overflow-x: auto; flex-shrink: 0; }
+    .rm-subnav::-webkit-scrollbar { height: 0; }
+    .rm-subnav-back { display: flex; align-items: center; gap: 0.35rem; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.45); text-decoration: none; padding: 0 0.9rem 0 0; border-right: 1px solid rgba(11,39,64,0.1); margin-right: 0.75rem; white-space: nowrap; transition: color 0.12s; flex-shrink: 0; }
+    .rm-subnav-back:hover { color: var(--aqua-dark); }
+    .rm-subnav-back svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .rm-subnav-link { font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.5); text-decoration: none; padding: 0 0.7rem; white-space: nowrap; height: 40px; display: flex; align-items: center; border-bottom: 2px solid transparent; transition: color 0.12s; }
+    .rm-subnav-link:hover { color: var(--primary); }
+    .rm-subnav-link.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+
+    /* ── TOPBAR EXTRAS ── */
+    .topbar-left { display: flex; align-items: center; gap: 0.65rem; flex: 1; min-width: 0; }
+    .btn-export { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
+    .btn-export:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-export svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-guidance { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
+    .btn-guidance:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-guidance svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ── PRODUCT SELECTOR ── */
+    .product-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .product-label { font-size: 0.7rem; font-weight: 500; color: rgba(11,39,64,0.42); white-space: nowrap; }
+    .product-selector { display: inline-flex; align-items: center; gap: 0.45rem; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--primary); background: white; border: 1.5px solid rgba(11,39,64,0.15); border-radius: 20px; padding: 0.38rem 0.9rem; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+    .product-selector:hover { border-color: rgba(10,192,233,0.5); background: rgba(10,192,233,0.02); }
+    .product-selector svg { width: 12px; height: 12px; stroke: rgba(11,39,64,0.4); fill: none; stroke-width: 2; }
+
+    /* ── PROGRESS + MATRIX ROW ── */
+    .header-row-bottom { display: flex; align-items: flex-start; gap: 1.5rem; }
+    .progress-side { flex: 1; min-width: 0; }
+    .progress-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+    .progress-track { flex: 1; height: 6px; border-radius: 3px; background: rgba(11,39,64,0.07); overflow: hidden; display: flex; }
+    .progress-seg { height: 100%; transition: width 0.3s ease; }
+    .progress-seg.green { background: var(--green); }
+    .progress-seg.amber { background: var(--amber); }
+    .progress-seg.red   { background: var(--red); }
+    .progress-counts { display: flex; gap: 0.8rem; flex-shrink: 0; flex-wrap: wrap; }
+    .progress-count { display: flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; font-weight: 600; }
+    .progress-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .progress-dot.green { background: var(--green); }
+    .progress-dot.amber { background: var(--amber); }
+    .progress-dot.red   { background: var(--red); }
+    .progress-dot.gray  { background: rgba(11,39,64,0.25); }
+    .progress-total { font-size: 0.7rem; color: rgba(11,39,64,0.42); font-weight: 500; white-space: nowrap; }
+
+    /* ── FILTER TABS ── */
+    .filter-row { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+    .filter-label { font-size: 0.7rem; font-weight: 600; color: rgba(11,39,64,0.38); text-transform: uppercase; letter-spacing: 0.08em; margin-right: 0.2rem; white-space: nowrap; }
+    .filter-tab { font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 0.28rem 0.75rem; border-radius: 20px; border: 1.5px solid rgba(11,39,64,0.12); background: transparent; color: rgba(11,39,64,0.5); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+    .filter-tab:hover { border-color: rgba(11,39,64,0.22); color: var(--primary); background: rgba(11,39,64,0.03); }
+    .filter-tab.active          { border-color: rgba(11,39,64,0.35); background: var(--primary); color: white; }
+    .filter-tab.f-acc.active    { border-color: rgba(16,185,129,0.45); background: rgba(16,185,129,0.1); color: #047857; }
+    .filter-tab.f-alarp.active  { border-color: rgba(245,158,11,0.45); background: rgba(245,158,11,0.1); color: #b45309; }
+    .filter-tab.f-unac.active   { border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.1); color: #dc2626; }
+    .filter-tab.f-open.active   { border-color: rgba(10,192,233,0.5); background: rgba(10,192,233,0.08); color: var(--aqua-dark); }
+
+    /* ── MINI RISK MATRIX ── */
+    .matrix-side { flex-shrink: 0; }
+    .matrix-wrap { display: flex; gap: 0.4rem; align-items: flex-end; }
+    .matrix-y-label { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(11,39,64,0.35); writing-mode: vertical-rl; transform: rotate(180deg); padding-bottom: 20px; }
+    .matrix-body { display: flex; flex-direction: column; gap: 2px; }
+    .matrix-row { display: flex; gap: 2px; align-items: center; }
+    .matrix-s-label { font-size: 0.58rem; font-weight: 700; color: rgba(11,39,64,0.38); width: 14px; text-align: right; flex-shrink: 0; margin-right: 2px; }
+    .matrix-cell { width: 26px; height: 22px; border-radius: 3px; position: relative; display: flex; align-items: center; justify-content: center; }
+    .matrix-cell.acc  { background: rgba(16,185,129,0.18); }
+    .matrix-cell.alarp{ background: rgba(245,158,11,0.18); }
+    .matrix-cell.unac { background: rgba(239,68,68,0.16); }
+    .matrix-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); border: 1.5px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: transform 0.15s; }
+    .matrix-dot:hover { transform: scale(1.3); cursor: pointer; }
+    .matrix-dot.dot-acc  { background: #047857; }
+    .matrix-dot.dot-alarp{ background: #b45309; }
+    .matrix-dot.dot-unac { background: #dc2626; }
+    .matrix-x-row { display: flex; padding-left: 18px; gap: 2px; }
+    .matrix-x-label { width: 26px; font-size: 0.55rem; font-weight: 700; color: rgba(11,39,64,0.38); text-align: center; margin-top: 3px; }
+    .matrix-x-title { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(11,39,64,0.35); text-align: center; padding-left: 18px; margin-top: 2px; }
+
+    /* ── SECTION NOTE ── */
+    .section-note { font-size: 0.76rem; color: rgba(11,39,64,0.55); line-height: 1.65; padding: 0.7rem 0.9rem; background: rgba(10,192,233,0.04); border: 1px solid rgba(10,192,233,0.16); border-radius: 8px; margin-bottom: 1rem; }
+
+    /* ── RISK ANALYSIS TABLE ── */
+    .ra-table-wrap { overflow-x: auto; border-radius: 0 0 12px 12px; }
+    .ra-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    .ra-table thead { position: sticky; top: 0; z-index: 10; }
+    .ra-table thead th { background: var(--primary); color: rgba(255,255,255,0.7); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem 0.9rem; text-align: left; border-bottom: none; white-space: nowrap; }
+    .ra-table thead th.col-id   { width: 72px; }
+    .ra-table thead th.col-hz   { width: 160px; }
+    .ra-table thead th.col-sit  { width: 200px; }
+    .ra-table thead th.col-harm { width: 170px; }
+    .ra-table thead th.col-p    { width: 54px; text-align: center; }
+    .ra-table thead th.col-s    { width: 54px; text-align: center; }
+    .ra-table thead th.col-score{ width: 60px; text-align: center; }
+    .ra-table thead th.col-lvl  { width: 100px; text-align: center; }
+    .ra-table thead th.col-act  { width: 52px; text-align: center; }
+
+    .ra-table tbody tr { border-bottom: 1px solid rgba(11,39,64,0.055); transition: background 0.1s; }
+    .ra-table tbody tr:hover td { background: rgba(11,39,64,0.012); }
+    .ra-table tbody td { padding: 0.5rem 0.9rem; vertical-align: middle; }
+    .ra-table tbody tr:last-child td { border-bottom: none; }
+
+    /* ID badge */
+    .risk-id-badge { font-size: 0.62rem; font-weight: 800; color: rgba(11,39,64,0.5); background: rgba(11,39,64,0.06); border: 1px solid rgba(11,39,64,0.1); border-radius: 4px; padding: 0.12rem 0.4rem; white-space: nowrap; display: inline-block; letter-spacing: 0.04em; cursor: pointer; transition: background 0.12s; }
+    .risk-id-badge:hover { background: rgba(10,192,233,0.1); color: var(--aqua-dark); border-color: rgba(10,192,233,0.3); }
+
+    /* inline ghost textareas */
+    .cell-input { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.76rem; color: var(--primary); border: 1.5px solid transparent; background: transparent; border-radius: 6px; padding: 0.28rem 0.42rem; resize: none; min-height: 30px; outline: none; transition: border-color 0.12s, background 0.12s; line-height: 1.45; }
+    .cell-input:hover { border-color: rgba(11,39,64,0.1); background: rgba(11,39,64,0.015); }
+    .cell-input:focus { border-color: rgba(10,192,233,0.45); background: white; }
+    .cell-input::placeholder { color: rgba(11,39,64,0.25); font-style: italic; }
+
+    /* P/S selects */
+    .p-select { font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 700; padding: 0.28rem 0.22rem; border-radius: 6px; border: 1.5px solid rgba(11,39,64,0.14); background: white; color: rgba(11,39,64,0.45); cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; text-align: center; transition: border-color 0.12s, background 0.12s, color 0.12s; width: 38px; }
+    .p-select:focus { border-color: rgba(10,192,233,0.5); color: var(--primary); }
+    .p-select.set { border-color: rgba(11,39,64,0.2); color: var(--primary); background: rgba(11,39,64,0.03); }
+    .td-p { text-align: center; }
+
+    /* score cell */
+    .score-cell { text-align: center; font-size: 0.82rem; font-weight: 800; color: rgba(11,39,64,0.3); letter-spacing: -0.01em; }
+    .score-cell.score-acc  { color: #047857; }
+    .score-cell.score-alarp{ color: #b45309; }
+    .score-cell.score-unac { color: #dc2626; }
+
+    /* level badge */
+    .td-lvl { text-align: center; }
+    .lvl-badge { display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.18rem 0.55rem; border-radius: 4px; white-space: nowrap; }
+    .lvl-badge.acc  { background: rgba(16,185,129,0.1); color: #047857; border: 1px solid rgba(16,185,129,0.25); }
+    .lvl-badge.alarp{ background: rgba(245,158,11,0.1); color: #b45309; border: 1px solid rgba(245,158,11,0.28); }
+    .lvl-badge.unac { background: rgba(239,68,68,0.1); color: #dc2626; border: 1px solid rgba(239,68,68,0.25); }
+    .lvl-badge.empty{ background: rgba(11,39,64,0.05); color: rgba(11,39,64,0.35); border: 1px solid rgba(11,39,64,0.1); }
+
+    /* action cell */
+    .td-act { text-align: center; white-space: nowrap; }
+    .btn-open-row { width: 22px; height: 22px; border-radius: 5px; border: 1px solid rgba(10,192,233,0.3); background: rgba(10,192,233,0.07); color: var(--aqua-dark); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.12s, border-color 0.12s; padding: 0; }
+    .btn-open-row:hover { background: rgba(10,192,233,0.15); border-color: rgba(10,192,233,0.5); }
+    .btn-open-row svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-del-row { width: 22px; height: 22px; border-radius: 5px; border: none; background: transparent; color: rgba(11,39,64,0.25); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.12s, color 0.12s; padding: 0; margin-left: 2px; }
+    .btn-del-row:hover { background: rgba(239,68,68,0.08); color: #dc2626; }
+    .btn-del-row svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+
+    /* empty state */
+    .empty-row td { text-align: center; padding: 3rem 1rem; color: rgba(11,39,64,0.35); font-size: 0.8rem; }
+    .empty-icon { width: 36px; height: 36px; background: rgba(11,39,64,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem; }
+    .empty-icon svg { width: 18px; height: 18px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 1.5; }
+
+    /* add row footer */
+    .table-footer { padding: 0.6rem 0.9rem; border-top: 1px solid rgba(11,39,64,0.06); }
+    .btn-add-row { background: transparent; border: 1.5px dashed rgba(11,39,64,0.22); color: rgba(11,39,64,0.55); font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 0.38rem 0.85rem; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.12s; }
+    .btn-add-row:hover { background: rgba(10,192,233,0.04); border-color: rgba(10,192,233,0.4); color: var(--aqua-dark); }
+    .btn-add-row svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+
+    /* ── PANEL OVERLAY (shared) ── */
+    .panel-overlay { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+    .panel-overlay.open { pointer-events: auto; }
+    .panel-backdrop { position: absolute; inset: 0; background: rgba(11,39,64,0.15); opacity: 0; transition: opacity 0.25s; }
+    .panel-overlay.open .panel-backdrop { opacity: 1; }
+
+    /* ── ROW DETAIL PANEL ── */
+    .row-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 460px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    .panel-overlay.row-open .row-panel { transform: translateX(0); }
+    .row-panel-head { padding: 1.1rem 1.25rem 0.9rem; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .row-panel-head-row { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.5rem; }
+    .row-panel-id { font-size: 0.95rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; flex: 1; }
+    .row-panel-badge-wrap { display: flex; align-items: center; gap: 0.4rem; }
+    .panel-close { width: 28px; height: 28px; border-radius: 6px; border: none; background: rgba(11,39,64,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
+    .panel-close:hover { background: rgba(11,39,64,0.12); }
+    .panel-close svg { width: 14px; height: 14px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .row-panel-score-strip { display: flex; align-items: center; gap: 0.75rem; font-size: 0.72rem; color: rgba(11,39,64,0.45); }
+    .score-strip-item { display: flex; align-items: center; gap: 0.3rem; }
+    .score-strip-val { font-weight: 700; color: var(--primary); }
+    .score-strip-times { color: rgba(11,39,64,0.3); font-size: 0.68rem; }
+    .row-panel-body { flex: 1; overflow-y: auto; padding: 1.15rem; display: flex; flex-direction: column; gap: 0.85rem; }
+    .row-panel-body::-webkit-scrollbar { width: 4px; }
+    .row-panel-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+
+    /* Panel form fields */
+    .pf-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.4); margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.35rem; }
+    .pf-label .iso-tag { font-size: 0.55rem; font-weight: 600; color: rgba(10,192,233,0.7); background: rgba(10,192,233,0.08); border: 1px solid rgba(10,192,233,0.18); border-radius: 3px; padding: 0.05rem 0.32rem; letter-spacing: 0.03em; text-transform: none; }
+    .pf-input { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.45rem 0.65rem; outline: none; transition: border-color 0.15s; background: white; }
+    .pf-input:focus { border-color: var(--aqua); }
+    .pf-textarea { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.45rem 0.65rem; outline: none; transition: border-color 0.15s; background: white; resize: vertical; min-height: 62px; line-height: 1.55; }
+    .pf-textarea:focus { border-color: var(--aqua); }
+    .pf-select { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.45rem 0.65rem; outline: none; transition: border-color 0.15s; background: white; cursor: pointer; }
+    .pf-select:focus { border-color: var(--aqua); }
+
+    /* Panel section divider */
+    .pf-divider { height: 1px; background: rgba(11,39,64,0.07); margin: 0.2rem 0; }
+    .pf-section-head { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.32); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
+    .pf-section-head::after { content: ''; flex: 1; height: 1px; background: rgba(11,39,64,0.07); }
+
+    /* P block in panel */
+    .p-block { background: rgba(11,39,64,0.025); border: 1px solid rgba(11,39,64,0.07); border-radius: 9px; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .p-row { display: flex; align-items: flex-start; gap: 0.65rem; }
+    .p-selector-col { flex-shrink: 0; }
+    .p-selector-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 0.2rem; }
+    .pf-num-select { font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 800; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.14); border-radius: 7px; padding: 0.4rem 0.5rem; background: white; cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; text-align: center; transition: border-color 0.15s; width: 54px; }
+    .pf-num-select:focus { border-color: var(--aqua); }
+    .p-rationale-col { flex: 1; min-width: 0; }
+    .p-combined-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.65rem; background: rgba(11,39,64,0.035); border-radius: 6px; }
+    .p-combined-label { font-size: 0.65rem; font-weight: 600; color: rgba(11,39,64,0.45); flex: 1; }
+    .p-combined-val { font-size: 0.88rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; }
+    .p-combined-sub { font-size: 0.6rem; color: rgba(11,39,64,0.35); font-weight: 500; }
+
+    /* Score summary at bottom of panel */
+    .score-summary { background: rgba(11,39,64,0.03); border: 1px solid rgba(11,39,64,0.08); border-radius: 9px; padding: 0.85rem 1rem; display: flex; align-items: center; gap: 1rem; }
+    .score-summary-main { flex: 1; }
+    .score-summary-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 0.2rem; }
+    .score-summary-val { font-size: 1.8rem; font-weight: 900; letter-spacing: -0.03em; color: rgba(11,39,64,0.2); transition: color 0.2s; }
+    .score-summary-val.acc  { color: #047857; }
+    .score-summary-val.alarp{ color: #b45309; }
+    .score-summary-val.unac { color: #dc2626; }
+    .score-summary-eq { font-size: 0.65rem; color: rgba(11,39,64,0.35); font-weight: 500; margin-top: 0.1rem; }
+
+    /* ── GUIDANCE PANEL ── */
+    .help-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    .panel-overlay.help-open .help-panel { transform: translateX(0); }
+    .panel-head { padding: 1.2rem 1.25rem 1rem; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .panel-head-row { display: flex; align-items: center; gap: 0.65rem; }
+    .panel-id { font-size: 0.95rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; flex: 1; }
+    .panel-body { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+    .panel-section-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.4rem; }
+    .panel-p { font-size: 0.78rem; color: rgba(11,39,64,0.65); line-height: 1.65; }
+    .panel-p strong { color: var(--primary); font-weight: 600; }
+
+    /* Scale table in guidance */
+    .scale-table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+    .scale-table th { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.38); padding: 0.3rem 0.5rem; text-align: left; border-bottom: 1px solid rgba(11,39,64,0.08); }
+    .scale-table td { padding: 0.32rem 0.5rem; border-bottom: 1px solid rgba(11,39,64,0.05); color: rgba(11,39,64,0.7); line-height: 1.45; }
+    .scale-table tr:last-child td { border-bottom: none; }
+    .scale-num { font-weight: 700; color: var(--primary); width: 24px; }
+
+    /* ── SAVE INDICATOR ── */
+    .save-indicator { font-size: 0.68rem; color: rgba(11,39,64,0.3); display: flex; align-items: center; gap: 0.3rem; margin-left: auto; transition: color 0.3s; }
+    .save-indicator.saving { color: var(--aqua-dark); }
+    .save-indicator.saved  { color: #059669; }
+    .save-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+
+    <!-- ── TOPBAR ── -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, risks, products…">
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="save-indicator" id="saveIndicator">
+          <span class="save-dot"></span>
+          <span id="saveLabel">All changes saved</span>
+        </span>
+        <button class="btn-export" onclick="exportCSV()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+        <button class="btn-guidance" onclick="openHelpPanel()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Guidance
+        </button>
+      </div>
+    </header>
+
+    <!-- ── MODULE HEADER ── -->
+    <div class="module-header">
+      <span class="module-header-title">Risk Management</span>
+    </div>
+
+    <!-- ── SUBNAV ── -->
+    <nav class="rm-subnav">
+      <a href="risk-management-overview.html" class="rm-subnav-back">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Risk Management Overview
+      </a>
+      <a href="risk-management-plan.html" class="rm-subnav-link">Risk Management Plan</a>
+      <a href="hazard-identification.html" class="rm-subnav-link">Hazard Identification</a>
+      <a href="risk-analysis.html" class="rm-subnav-link active">Risk Analysis</a>
+      <a href="#" class="rm-subnav-link">Risk Management Report</a>
+    </nav>
+
+    <!-- ── SCROLLABLE CONTENT ── -->
+    <div class="page-scroll">
+
+      <!-- ── HEADER CARD ── -->
+      <div class="card" style="margin-bottom:1rem;">
+        <div class="card-body" style="padding:1rem 1.1rem 0.9rem;">
+
+          <!-- Product selector -->
+          <div class="product-row">
+            <span class="product-label">Product:</span>
+            <button class="product-selector" id="productSelectorBtn" onclick="cycleProduct()">
+              <span id="productSelectorLabel">CardioSync Pro</span>
+              <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+
+          <div class="header-row-bottom">
+            <div class="progress-side">
+              <!-- Progress bar -->
+              <div class="progress-row">
+                <div class="progress-track">
+                  <div class="progress-seg green" id="pgAcc"   style="width:0%"></div>
+                  <div class="progress-seg amber" id="pgAlarp" style="width:0%"></div>
+                  <div class="progress-seg red"   id="pgUnac"  style="width:0%"></div>
+                </div>
+                <div class="progress-counts">
+                  <span class="progress-count"><span class="progress-dot green"></span><span id="ctAcc">0</span> Acceptable</span>
+                  <span class="progress-count"><span class="progress-dot amber"></span><span id="ctAlarp">0</span> ALARP</span>
+                  <span class="progress-count"><span class="progress-dot red"></span><span id="ctUnac">0</span> Unacceptable</span>
+                </div>
+                <span class="progress-total" id="pgTotal">0 / 0 scored</span>
+              </div>
+
+              <!-- Filters -->
+              <div class="filter-row">
+                <span class="filter-label">Show:</span>
+                <button class="filter-tab active"        data-filter="all"          onclick="setFilter('all')">All</button>
+                <button class="filter-tab f-open"        data-filter="incomplete"   onclick="setFilter('incomplete')">Incomplete</button>
+                <button class="filter-tab f-acc"         data-filter="Acceptable"   onclick="setFilter('Acceptable')">Acceptable</button>
+                <button class="filter-tab f-alarp"       data-filter="ALARP"        onclick="setFilter('ALARP')">ALARP</button>
+                <button class="filter-tab f-unac"        data-filter="Unacceptable" onclick="setFilter('Unacceptable')">Unacceptable</button>
+              </div>
+            </div>
+
+            <!-- Mini risk matrix -->
+            <div class="matrix-side">
+              <div class="matrix-wrap">
+                <div class="matrix-y-label">Severity</div>
+                <div>
+                  <div class="matrix-body" id="riskMatrix"></div>
+                  <div class="matrix-x-row">
+                    <div class="matrix-x-label">1</div>
+                    <div class="matrix-x-label">2</div>
+                    <div class="matrix-x-label">3</div>
+                    <div class="matrix-x-label">4</div>
+                    <div class="matrix-x-label">5</div>
+                  </div>
+                  <div class="matrix-x-title">Probability (P)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── SECTION NOTE ── -->
+      <div class="section-note">
+        Estimate the risk for each hazardous situation identified in the previous step. Set <strong>P1</strong> (probability of the hazardous situation), <strong>P2</strong> (probability of harm occurring given the situation), and <strong>S</strong> (severity of potential harm). Risk score = combined P × S per <strong>ISO 14971:2019 §5.5</strong>. Click a row's ID to open the full detail panel and record rationale for each estimate.
+      </div>
+
+      <!-- ── TABLE CARD ── -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-head">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--aqua);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
+            </svg>
+            Risk Analysis — ISO 14971:2019 §5.5
+          </div>
+          <span class="card-title-sub" id="rowCount">0 risks</span>
+        </div>
+        <div class="ra-table-wrap">
+          <table class="ra-table" id="raTable">
+            <thead>
+              <tr>
+                <th class="col-id">Risk ID</th>
+                <th class="col-hz">Hazard</th>
+                <th class="col-sit">Hazardous Situation</th>
+                <th class="col-harm">Possible Harm</th>
+                <th class="col-p">P1</th>
+                <th class="col-p">P2</th>
+                <th class="col-s">S</th>
+                <th class="col-score">Score</th>
+                <th class="col-lvl">Level</th>
+                <th class="col-act"></th>
+              </tr>
+            </thead>
+            <tbody id="raTbody"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <button class="btn-add-row" onclick="addRisk()">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Risk Row
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /page-scroll -->
+  </main>
+
+  <!-- ── ROW DETAIL PANEL OVERLAY ── -->
+  <div class="panel-overlay" id="rowPanelOverlay" onclick="closeRowPanel(event)">
+    <div class="panel-backdrop"></div>
+    <div class="row-panel" id="rowPanel">
+      <div class="row-panel-head">
+        <div class="row-panel-head-row">
+          <div class="row-panel-id" id="rpId">RA-001</div>
+          <div class="row-panel-badge-wrap">
+            <span class="lvl-badge empty" id="rpLvlBadge">—</span>
+          </div>
+          <button class="panel-close" onclick="closeRowPanel()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="row-panel-score-strip" id="rpScoreStrip">
+          <span class="score-strip-item">P1: <span class="score-strip-val" id="rpP1Val">—</span></span>
+          <span class="score-strip-times">×</span>
+          <span class="score-strip-item">P2: <span class="score-strip-val" id="rpP2Val">—</span></span>
+          <span class="score-strip-times">=</span>
+          <span class="score-strip-item">P: <span class="score-strip-val" id="rpPVal">—</span></span>
+          <span class="score-strip-times">×</span>
+          <span class="score-strip-item">S: <span class="score-strip-val" id="rpSVal">—</span></span>
+          <span class="score-strip-times">=</span>
+          <span class="score-strip-item">Score: <span class="score-strip-val" id="rpScoreVal">—</span></span>
+        </div>
+      </div>
+      <div class="row-panel-body">
+
+        <!-- Identification -->
+        <div>
+          <div class="pf-section-head">Identification</div>
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <div>
+              <div class="pf-label">Hazard <span class="iso-tag">ISO 14971 §5.4</span></div>
+              <input class="pf-input" id="rpHazard" type="text" placeholder="e.g. Electrical energy" oninput="rpFieldChange('hazard', this.value)">
+            </div>
+            <div>
+              <div class="pf-label">Hazardous Situation <span class="iso-tag">ISO 14971 §5.4</span></div>
+              <textarea class="pf-textarea" id="rpHazSit" rows="2" placeholder="How could a patient or user be exposed to this hazard?" oninput="rpFieldChange('hazSituation', this.value)"></textarea>
+            </div>
+            <div>
+              <div class="pf-label">Foreseeable Sequence of Events <span class="iso-tag">ISO/TR 24971 §4</span></div>
+              <textarea class="pf-textarea" id="rpSeqEvents" rows="2" placeholder="Step-by-step chain of events from hazard to harm" oninput="rpFieldChange('seqEvents', this.value)"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-divider"></div>
+
+        <!-- Harm -->
+        <div>
+          <div class="pf-section-head">Harm Assessment</div>
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <div>
+              <div class="pf-label">Possible Harm <span class="iso-tag">ISO 14971 §5.5(a)</span></div>
+              <textarea class="pf-textarea" id="rpHarm" rows="2" placeholder="Describe the expected harm to patients, users, or third parties" oninput="rpFieldChange('possibleHarm', this.value)"></textarea>
+            </div>
+            <div>
+              <div class="pf-label">Harm Category</div>
+              <select class="pf-select" id="rpHarmCat" onchange="rpFieldChange('harmCat', this.value)">
+                <option value="">— Select category —</option>
+                <option value="Physical">Physical</option>
+                <option value="Psychological">Psychological</option>
+                <option value="Property Damage">Property Damage</option>
+                <option value="Death">Death</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-divider"></div>
+
+        <!-- Probability -->
+        <div>
+          <div class="pf-section-head">Probability Estimation <span class="iso-tag" style="font-size:0.55rem;font-weight:600;color:rgba(10,192,233,0.7);background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.18);border-radius:3px;padding:0.05rem 0.32rem;letter-spacing:0.03em;margin-left:0.3rem;">ISO 14971 §5.5(b)</span></div>
+          <div class="p-block">
+            <!-- P1 -->
+            <div class="p-row">
+              <div class="p-selector-col">
+                <div class="p-selector-label">P1</div>
+                <select class="pf-num-select" id="rpP1" onchange="rpPChange()">
+                  <option value="0">—</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <div class="p-rationale-col">
+                <div class="pf-label">P1 Rationale — Likelihood of hazardous situation</div>
+                <textarea class="pf-textarea" id="rpP1Rat" rows="2" placeholder="Justify P1 selection (1=Incredible … 5=Frequent)" oninput="rpFieldChange('p1Rationale', this.value)" style="min-height:52px;"></textarea>
+              </div>
+            </div>
+            <!-- P2 -->
+            <div class="p-row">
+              <div class="p-selector-col">
+                <div class="p-selector-label">P2</div>
+                <select class="pf-num-select" id="rpP2" onchange="rpPChange()">
+                  <option value="0">—</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <div class="p-rationale-col">
+                <div class="pf-label">P2 Rationale — Likelihood of harm given situation</div>
+                <textarea class="pf-textarea" id="rpP2Rat" rows="2" placeholder="Justify P2 selection (1=Incredible … 5=Frequent)" oninput="rpFieldChange('p2Rationale', this.value)" style="min-height:52px;"></textarea>
+              </div>
+            </div>
+            <!-- Combined -->
+            <div class="p-combined-row">
+              <span class="p-combined-label">Combined P = P1 × P2 → P level</span>
+              <span class="p-combined-val" id="rpPCombined">—</span>
+              <span class="p-combined-sub" id="rpPCombinedSub"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-divider"></div>
+
+        <!-- Severity -->
+        <div>
+          <div class="pf-section-head">Severity Estimation <span class="iso-tag" style="font-size:0.55rem;font-weight:600;color:rgba(10,192,233,0.7);background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.18);border-radius:3px;padding:0.05rem 0.32rem;letter-spacing:0.03em;margin-left:0.3rem;">ISO 14971 §5.5(a)</span></div>
+          <div class="p-block">
+            <div class="p-row">
+              <div class="p-selector-col">
+                <div class="p-selector-label">S</div>
+                <select class="pf-num-select" id="rpS" onchange="rpPChange()">
+                  <option value="0">—</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <div class="p-rationale-col">
+                <div class="pf-label">S Rationale — Severity of potential harm</div>
+                <textarea class="pf-textarea" id="rpSRat" rows="2" placeholder="Justify S selection (1=Negligible … 5=Catastrophic)" oninput="rpFieldChange('sRationale', this.value)" style="min-height:52px;"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-divider"></div>
+
+        <!-- Risk score summary -->
+        <div class="score-summary">
+          <div class="score-summary-main">
+            <div class="score-summary-label">Risk Score (P × S)</div>
+            <div class="score-summary-val empty" id="rpScoreBig">—</div>
+            <div class="score-summary-eq" id="rpScoreEq"></div>
+          </div>
+          <div>
+            <span class="lvl-badge empty" id="rpLvlBadge2">Not scored</span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div>
+          <div class="pf-label">Notes / Special Conditions</div>
+          <textarea class="pf-textarea" id="rpNotes" rows="2" placeholder="Any additional context, references, or conditions affecting this risk estimate" oninput="rpFieldChange('notes', this.value)"></textarea>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GUIDANCE PANEL OVERLAY ── -->
+  <div class="panel-overlay" id="helpPanelOverlay" onclick="closeHelpPanel(event)">
+    <div class="panel-backdrop"></div>
+    <div class="help-panel" id="helpPanel">
+      <div class="panel-head">
+        <div class="panel-head-row">
+          <div class="panel-id">Risk Analysis</div>
+          <button class="panel-close" onclick="closeHelpPanel()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div>
+          <div class="panel-section-title">Purpose</div>
+          <p class="panel-p">This table implements <strong>ISO 14971:2019 §5.5 — Risk estimation</strong>. For each hazardous situation identified in the previous step, estimate the probability of harm and its severity to produce an initial (pre-control) risk level.</p>
+        </div>
+        <div>
+          <div class="panel-section-title">Probability Scales (P1 &amp; P2)</div>
+          <table class="scale-table">
+            <thead><tr><th>Level</th><th>Label</th><th>Definition</th></tr></thead>
+            <tbody>
+              <tr><td class="scale-num">1</td><td>Incredible</td><td>Almost inconceivable; no similar events known</td></tr>
+              <tr><td class="scale-num">2</td><td>Remote</td><td>Not expected to occur in device lifetime</td></tr>
+              <tr><td class="scale-num">3</td><td>Occasional</td><td>Might occur once or rarely in device lifetime</td></tr>
+              <tr><td class="scale-num">4</td><td>Probable</td><td>Likely to occur several times in device lifetime</td></tr>
+              <tr><td class="scale-num">5</td><td>Frequent</td><td>Expected to occur regularly</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="panel-section-title">Severity Scale (S)</div>
+          <table class="scale-table">
+            <thead><tr><th>Level</th><th>Label</th><th>Definition</th></tr></thead>
+            <tbody>
+              <tr><td class="scale-num">1</td><td>Negligible</td><td>No injury; inconvenience only</td></tr>
+              <tr><td class="scale-num">2</td><td>Minor</td><td>Temporary injury; no professional medical intervention required</td></tr>
+              <tr><td class="scale-num">3</td><td>Serious</td><td>Injury requiring professional medical intervention</td></tr>
+              <tr><td class="scale-num">4</td><td>Critical</td><td>Permanent impairment or life-threatening injury</td></tr>
+              <tr><td class="scale-num">5</td><td>Catastrophic</td><td>Death of patient, user, or third party</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="panel-section-title">Risk Acceptability</div>
+          <p class="panel-p"><strong>Acceptable (green)</strong> — Score ≤ 4. Risk is acceptable as-is.<br><br><strong>ALARP (amber)</strong> — Score 5–14. Risk is tolerable only if reduction is impracticable. Document rationale in the Risk Management Plan.<br><br><strong>Unacceptable (red)</strong> — Score ≥ 15. Risk control measures are mandatory.</p>
+        </div>
+        <div>
+          <div class="panel-section-title">Scoring Method</div>
+          <p class="panel-p">Combined P = P1 × P2 (raw product), then quantized to a 1–5 level:<br>1→1 · 2–4→2 · 5–9→3 · 10–16→4 · 17–25→5<br><br>Risk Score = P_level × S (range 1–25).</p>
+        </div>
+        <div>
+          <div class="panel-section-title">References</div>
+          <p class="panel-p">ISO 14971:2019 §5.5 — Risk estimation<br>ISO/TR 24971:2020 §4, Table 1 — Risk analysis table structure<br>ISO 14971:2019 Annex D — Risk acceptability</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script>
+    // ── Constants ──────────────────────────────────────────────────
+    const PRODUCTS = ['CardioSync Pro', 'NeuroStim 7', 'PulseGuard IV'];
+    const PROB_LABELS = ['—', 'Incredible', 'Remote', 'Occasional', 'Probable', 'Frequent'];
+    const SEV_LABELS  = ['—', 'Negligible', 'Minor', 'Serious', 'Critical', 'Catastrophic'];
+    const STORAGE_KEY = 'ra_risks_v1';
+
+    // ── Risk scoring functions ─────────────────────────────────────
+    function pLevel(p1, p2) {
+      if (!p1 || !p2) return 0;
+      const raw = p1 * p2;
+      if (raw === 1) return 1;
+      if (raw <= 4)  return 2;
+      if (raw <= 9)  return 3;
+      if (raw <= 16) return 4;
+      return 5;
+    }
+
+    function riskScore(p1, p2, s) {
+      const pl = pLevel(p1, p2);
+      if (!pl || !s) return null;
+      return pl * s;
+    }
+
+    function riskLevel(score) {
+      if (score === null) return null;
+      if (score <= 4)  return 'Acceptable';
+      if (score <= 14) return 'ALARP';
+      return 'Unacceptable';
+    }
+
+    function levelClass(level) {
+      if (level === 'Acceptable')   return 'acc';
+      if (level === 'ALARP')        return 'alarp';
+      if (level === 'Unacceptable') return 'unac';
+      return 'empty';
+    }
+
+    // Matrix cell background: P (x, 1-5) × S (y, 1-5) → level
+    function matrixCellLevel(p, s) {
+      const score = p * s;
+      if (score <= 4)  return 'acc';
+      if (score <= 14) return 'alarp';
+      return 'unac';
+    }
+
+    // ── Data ──────────────────────────────────────────────────────
+    let risks = [];
+    let nextId = 1;
+
+    function loadData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const d = JSON.parse(saved);
+          risks = d.risks || [];
+          nextId = d.nextId || risks.length + 1;
+        }
+      } catch(e) {}
+      if (risks.length === 0) seedDemoData();
+    }
+
+    function seedDemoData() {
+      risks = [
+        { id: 'RA-001', hazard: 'Electrical energy', hazSituation: 'Patient contact with exposed energized components during device operation', seqEvents: 'Insulation failure → exposed conductor → patient contact → electric shock', possibleHarm: 'Ventricular fibrillation, cardiac arrest', harmCat: 'Death', p1: 2, p1Rationale: 'Double insulation and ground fault protection; failure is remote', p2: 4, p2Rationale: 'If patient is in contact with exposed conductor, likelihood of cardiac harm is high', s: 5, sRationale: 'Cardiac arrest can be fatal without immediate intervention', notes: '' },
+        { id: 'RA-002', hazard: 'Thermal energy', hazSituation: 'Skin contact with overheated external housing during extended use', seqEvents: 'Cooling system degradation → surface temperature rise → prolonged contact → burn', possibleHarm: 'First to second degree burn on skin contact area', harmCat: 'Physical', p1: 3, p1Rationale: 'Possible during prolonged sessions; cooling is a known failure mode', p2: 3, p2Rationale: 'Burn only if contact is sustained; patient could withdraw', s: 2, sRationale: 'Minor burn; treatable without hospitalization', notes: 'Temperature limit 43°C per IEC 60601-1 clause 11.1' },
+        { id: 'RA-003', hazard: 'Mechanical energy', hazSituation: 'Sharp edge on device enclosure contacts user skin during handling', seqEvents: 'Manufacturing defect → sharp edge on housing → user handles device → laceration', possibleHarm: 'Laceration of fingers or hands', harmCat: 'Physical', p1: 2, p1Rationale: 'In-process inspection screens most edge defects', p2: 2, p2Rationale: 'Minor laceration only if user applies pressure to affected area', s: 2, sRationale: 'Superficial wound; no hospitalization expected', notes: '' },
+      ];
+      nextId = 4;
+      saveData();
+    }
+
+    function saveData() {
+      const indicator = document.getElementById('saveIndicator');
+      const label = document.getElementById('saveLabel');
+      indicator.className = 'save-indicator saving';
+      label.textContent = 'Saving…';
+      clearTimeout(window._saveTimer);
+      window._saveTimer = setTimeout(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ risks, nextId }));
+        indicator.className = 'save-indicator saved';
+        label.textContent = 'All changes saved';
+        setTimeout(() => { indicator.className = 'save-indicator'; label.textContent = 'All changes saved'; }, 1800);
+      }, 400);
+    }
+
+    function makeId() {
+      const id = `RA-${String(nextId).padStart(3,'0')}`;
+      nextId++;
+      return id;
+    }
+
+    function addRisk() {
+      risks.push({ id: makeId(), hazard: '', hazSituation: '', seqEvents: '', possibleHarm: '', harmCat: '', p1: 0, p1Rationale: '', p2: 0, p2Rationale: '', s: 0, sRationale: '', notes: '' });
+      saveData();
+      renderTable();
+      updateProgress();
+    }
+
+    function deleteRisk(id) {
+      risks = risks.filter(r => r.id !== id);
+      if (activePanelId === id) closeRowPanel();
+      saveData();
+      renderTable();
+      updateProgress();
+    }
+
+    // ── Active filter ──────────────────────────────────────────────
+    let activeFilter = 'all';
+
+    function setFilter(f) {
+      activeFilter = f;
+      document.querySelectorAll('.filter-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === f);
+      });
+      renderTable();
+    }
+
+    function matchesFilter(r) {
+      if (activeFilter === 'all') return true;
+      const sc = riskScore(r.p1, r.p2, r.s);
+      const lv = riskLevel(sc);
+      if (activeFilter === 'incomplete') return sc === null;
+      return lv === activeFilter;
+    }
+
+    // ── Table rendering ────────────────────────────────────────────
+    function renderTable() {
+      const tbody = document.getElementById('raTbody');
+      const visible = risks.filter(matchesFilter);
+
+      if (visible.length === 0) {
+        tbody.innerHTML = `<tr class="empty-row"><td colspan="10"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div>${activeFilter === 'all' ? 'No risks yet — click <strong>Add Risk Row</strong> to begin.' : 'No risks match the current filter.'}</td></tr>`;
+        document.getElementById('rowCount').textContent = '0 risks';
+        return;
+      }
+
+      document.getElementById('rowCount').textContent = `${risks.length} risk${risks.length !== 1 ? 's' : ''}`;
+
+      tbody.innerHTML = visible.map(r => {
+        const sc   = riskScore(r.p1, r.p2, r.s);
+        const lv   = riskLevel(sc);
+        const cls  = levelClass(lv);
+        const pl   = pLevel(r.p1, r.p2);
+
+        const scoreHtml = sc !== null
+          ? `<td class="score-cell score-${cls}">${sc}</td>`
+          : `<td class="score-cell">—</td>`;
+
+        const lvlHtml = lv
+          ? `<td class="td-lvl"><span class="lvl-badge ${cls}">${lv}</span></td>`
+          : `<td class="td-lvl"><span class="lvl-badge empty">—</span></td>`;
+
+        return `<tr data-id="${r.id}">
+          <td><span class="risk-id-badge" onclick="openRowPanel('${r.id}')" title="Open detail panel">${r.id}</span></td>
+          <td><textarea class="cell-input" rows="1" placeholder="Hazard…" oninput="fieldChange('${r.id}','hazard',this.value)" onfocus="autoExpand(this)" onblur="autoCollapse(this)">${esc(r.hazard)}</textarea></td>
+          <td><textarea class="cell-input" rows="1" placeholder="Hazardous situation…" oninput="fieldChange('${r.id}','hazSituation',this.value)" onfocus="autoExpand(this)" onblur="autoCollapse(this)">${esc(r.hazSituation)}</textarea></td>
+          <td><textarea class="cell-input" rows="1" placeholder="Possible harm…" oninput="fieldChange('${r.id}','possibleHarm',this.value)" onfocus="autoExpand(this)" onblur="autoCollapse(this)">${esc(r.possibleHarm)}</textarea></td>
+          <td class="td-p"><select class="p-select${r.p1 ? ' set' : ''}" onchange="fieldChange('${r.id}','p1',+this.value)">
+            <option value="0"${!r.p1?' selected':''}>—</option>
+            ${[1,2,3,4,5].map(n=>`<option value="${n}"${r.p1===n?' selected':''}>${n}</option>`).join('')}
+          </select></td>
+          <td class="td-p"><select class="p-select${r.p2 ? ' set' : ''}" onchange="fieldChange('${r.id}','p2',+this.value)">
+            <option value="0"${!r.p2?' selected':''}>—</option>
+            ${[1,2,3,4,5].map(n=>`<option value="${n}"${r.p2===n?' selected':''}>${n}</option>`).join('')}
+          </select></td>
+          <td class="td-p"><select class="p-select${r.s ? ' set' : ''}" onchange="fieldChange('${r.id}','s',+this.value)">
+            <option value="0"${!r.s?' selected':''}>—</option>
+            ${[1,2,3,4,5].map(n=>`<option value="${n}"${r.s===n?' selected':''}>${n}</option>`).join('')}
+          </select></td>
+          ${scoreHtml}
+          ${lvlHtml}
+          <td class="td-act">
+            <button class="btn-open-row" onclick="openRowPanel('${r.id}')" title="Open detail panel">
+              <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="btn-del-row" onclick="deleteRisk('${r.id}')" title="Delete row">
+              <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    function autoExpand(ta) { ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; }
+    function autoCollapse(ta) { ta.style.height=''; }
+
+    function fieldChange(id, field, value) {
+      const r = risks.find(r => r.id === id);
+      if (!r) return;
+      r[field] = value;
+      if (['p1','p2','s'].includes(field)) {
+        updateRowScore(id);
+        updateProgress();
+        if (activePanelId === id) syncPanelScore();
+      }
+      saveData();
+    }
+
+    function updateRowScore(id) {
+      const r = risks.find(r => r.id === id);
+      if (!r) return;
+      const sc  = riskScore(r.p1, r.p2, r.s);
+      const lv  = riskLevel(sc);
+      const cls = levelClass(lv);
+      const row = document.querySelector(`tr[data-id="${id}"]`);
+      if (!row) return;
+      const scoreTd = row.querySelector('.score-cell');
+      const lvlTd   = row.querySelector('.td-lvl');
+      if (scoreTd) {
+        scoreTd.textContent = sc !== null ? sc : '—';
+        scoreTd.className = `score-cell${sc !== null ? ` score-${cls}` : ''}`;
+      }
+      if (lvlTd) {
+        lvlTd.innerHTML = lv
+          ? `<span class="lvl-badge ${cls}">${lv}</span>`
+          : `<span class="lvl-badge empty">—</span>`;
+      }
+      // update p-select coloring
+      const selects = row.querySelectorAll('.p-select');
+      selects[0].className = `p-select${r.p1 ? ' set' : ''}`;
+      selects[1].className = `p-select${r.p2 ? ' set' : ''}`;
+      selects[2].className = `p-select${r.s  ? ' set' : ''}`;
+    }
+
+    // ── Progress bar & matrix ──────────────────────────────────────
+    function updateProgress() {
+      const total = risks.length;
+      let acc = 0, alarp = 0, unac = 0, scored = 0;
+      risks.forEach(r => {
+        const sc = riskScore(r.p1, r.p2, r.s);
+        if (sc === null) return;
+        scored++;
+        const lv = riskLevel(sc);
+        if (lv === 'Acceptable')   acc++;
+        else if (lv === 'ALARP')   alarp++;
+        else                       unac++;
+      });
+      const pct = n => total ? `${(n/total*100).toFixed(1)}%` : '0%';
+      document.getElementById('pgAcc').style.width   = pct(acc);
+      document.getElementById('pgAlarp').style.width = pct(alarp);
+      document.getElementById('pgUnac').style.width  = pct(unac);
+      document.getElementById('ctAcc').textContent   = acc;
+      document.getElementById('ctAlarp').textContent = alarp;
+      document.getElementById('ctUnac').textContent  = unac;
+      document.getElementById('pgTotal').textContent = `${scored} / ${total} scored`;
+      renderMatrix();
+    }
+
+    // ── Mini risk matrix ──────────────────────────────────────────
+    function renderMatrix() {
+      const container = document.getElementById('riskMatrix');
+      // Build cell map: key = `${p}_${s}` → array of risk objects
+      const cellMap = {};
+      risks.forEach(r => {
+        const pl = pLevel(r.p1, r.p2);
+        if (!pl || !r.s) return;
+        const key = `${pl}_${r.s}`;
+        if (!cellMap[key]) cellMap[key] = [];
+        cellMap[key].push(r);
+      });
+
+      // Render rows S=5 (top) down to S=1 (bottom)
+      let html = '';
+      for (let s = 5; s >= 1; s--) {
+        html += `<div class="matrix-row"><span class="matrix-s-label">${s}</span>`;
+        for (let p = 1; p <= 5; p++) {
+          const bg = matrixCellLevel(p, s);
+          const key = `${p}_${s}`;
+          const dots = (cellMap[key] || []).map(r => {
+            const sc = riskScore(r.p1, r.p2, r.s);
+            const lv = riskLevel(sc);
+            const dc = levelClass(lv);
+            return `<span class="matrix-dot dot-${dc}" title="${r.id}: ${r.hazard||'Unnamed'}"></span>`;
+          }).join('');
+          html += `<div class="matrix-cell ${bg}">${dots}</div>`;
+        }
+        html += `</div>`;
+      }
+      container.innerHTML = html;
+    }
+
+    // ── Row detail panel ──────────────────────────────────────────
+    let activePanelId = null;
+
+    function openRowPanel(id) {
+      const r = risks.find(r => r.id === id);
+      if (!r) return;
+      activePanelId = id;
+      // Populate fields
+      document.getElementById('rpId').textContent         = r.id;
+      document.getElementById('rpHazard').value           = r.hazard || '';
+      document.getElementById('rpHazSit').value           = r.hazSituation || '';
+      document.getElementById('rpSeqEvents').value        = r.seqEvents || '';
+      document.getElementById('rpHarm').value             = r.possibleHarm || '';
+      document.getElementById('rpHarmCat').value          = r.harmCat || '';
+      document.getElementById('rpP1').value               = r.p1 || 0;
+      document.getElementById('rpP1Rat').value            = r.p1Rationale || '';
+      document.getElementById('rpP2').value               = r.p2 || 0;
+      document.getElementById('rpP2Rat').value            = r.p2Rationale || '';
+      document.getElementById('rpS').value                = r.s || 0;
+      document.getElementById('rpSRat').value             = r.sRationale || '';
+      document.getElementById('rpNotes').value            = r.notes || '';
+      syncPanelScore();
+      document.getElementById('rowPanelOverlay').classList.add('open', 'row-open');
+    }
+
+    function closeRowPanel(e) {
+      if (e && e.target !== document.getElementById('rowPanelOverlay') && e.target !== document.querySelector('#rowPanelOverlay .panel-backdrop')) return;
+      document.getElementById('rowPanelOverlay').classList.remove('open', 'row-open');
+      activePanelId = null;
+    }
+
+    function rpFieldChange(field, value) {
+      if (!activePanelId) return;
+      const r = risks.find(r => r.id === activePanelId);
+      if (!r) return;
+      r[field] = value;
+      // sync back to table cell if applicable
+      const row = document.querySelector(`tr[data-id="${activePanelId}"]`);
+      if (row) {
+        const textareaMap = { hazard: 0, hazSituation: 1, possibleHarm: 2 };
+        if (field in textareaMap) {
+          const tas = row.querySelectorAll('.cell-input');
+          if (tas[textareaMap[field]]) tas[textareaMap[field]].value = value;
+        }
+      }
+      saveData();
+    }
+
+    function rpPChange() {
+      if (!activePanelId) return;
+      const r = risks.find(r => r.id === activePanelId);
+      if (!r) return;
+      r.p1 = +document.getElementById('rpP1').value;
+      r.p2 = +document.getElementById('rpP2').value;
+      r.s  = +document.getElementById('rpS').value;
+      syncPanelScore();
+      updateRowScore(activePanelId);
+      updateProgress();
+      saveData();
+    }
+
+    function syncPanelScore() {
+      if (!activePanelId) return;
+      const r   = risks.find(r => r.id === activePanelId);
+      const pl  = pLevel(r.p1, r.p2);
+      const sc  = riskScore(r.p1, r.p2, r.s);
+      const lv  = riskLevel(sc);
+      const cls = levelClass(lv);
+
+      // strip
+      document.getElementById('rpP1Val').textContent    = r.p1 || '—';
+      document.getElementById('rpP2Val').textContent    = r.p2 || '—';
+      document.getElementById('rpPVal').textContent     = pl   || '—';
+      document.getElementById('rpSVal').textContent     = r.s  || '—';
+      document.getElementById('rpScoreVal').textContent = sc   !== null ? sc : '—';
+
+      // combined P
+      const combEl  = document.getElementById('rpPCombined');
+      const combSub = document.getElementById('rpPCombinedSub');
+      if (r.p1 && r.p2) {
+        combEl.textContent  = pl;
+        combSub.textContent = `(${r.p1} × ${r.p2} = ${r.p1*r.p2} → level ${pl})`;
+      } else {
+        combEl.textContent  = '—';
+        combSub.textContent = '';
+      }
+
+      // score big
+      const scoreBig = document.getElementById('rpScoreBig');
+      const scoreEq  = document.getElementById('rpScoreEq');
+      scoreBig.textContent = sc !== null ? sc : '—';
+      scoreBig.className   = `score-summary-val${sc !== null ? ` ${cls}` : ' empty'}`;
+      scoreEq.textContent  = sc !== null ? `P${pl} × S${r.s} = ${sc}` : '';
+
+      // badges — update class + text directly to preserve element IDs
+      ['rpLvlBadge', 'rpLvlBadge2'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.className = `lvl-badge ${lv ? cls : 'empty'}`;
+        el.textContent = lv || 'Not scored';
+      });
+    }
+
+    // ── Guidance panel ────────────────────────────────────────────
+    function openHelpPanel() {
+      document.getElementById('helpPanelOverlay').classList.add('open', 'help-open');
+    }
+
+    function closeHelpPanel(e) {
+      if (e && e.target !== document.getElementById('helpPanelOverlay') && e.target !== document.querySelector('#helpPanelOverlay .panel-backdrop')) return;
+      document.getElementById('helpPanelOverlay').classList.remove('open', 'help-open');
+    }
+
+    // ── Product selector ──────────────────────────────────────────
+    let productIdx = 0;
+    function cycleProduct() {
+      productIdx = (productIdx + 1) % PRODUCTS.length;
+      document.getElementById('productSelectorLabel').textContent = PRODUCTS[productIdx];
+    }
+
+    // ── Export CSV ────────────────────────────────────────────────
+    function exportCSV() {
+      const headers = ['Risk ID','Hazard','Hazardous Situation','Sequence of Events','Possible Harm','Harm Category','P1','P1 Rationale','P2','P2 Rationale','P Level','S','S Rationale','Risk Score','Risk Level','Notes'];
+      const rows = risks.map(r => {
+        const pl = pLevel(r.p1, r.p2);
+        const sc = riskScore(r.p1, r.p2, r.s);
+        const lv = riskLevel(sc);
+        return [r.id, r.hazard, r.hazSituation, r.seqEvents, r.possibleHarm, r.harmCat, r.p1||'', r.p1Rationale, r.p2||'', r.p2Rationale, pl||'', r.s||'', r.sRationale, sc!==null?sc:'', lv||'', r.notes].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
+      });
+      const csv = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'risk-analysis.csv'; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ── Init ──────────────────────────────────────────────────────
+    (function init() {
+      if (typeof initSidebar === 'function') initSidebar({ activePage: 'risk-management' });
+      loadData();
+      renderTable();
+      updateProgress();
+    })();
+  </script>
+</body>
+</html>
