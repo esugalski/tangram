@@ -191,6 +191,27 @@
     .save-indicator.saving { color: var(--aqua-dark); }
     .save-indicator.saved  { color: #059669; }
     .save-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+    /* toast */
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(8px);
+      background: var(--primary); color: rgba(255,255,255,0.92);
+      font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; line-height: 1.5;
+      padding: 0.65rem 1.1rem 0.65rem 0.9rem; border-radius: 10px;
+      box-shadow: 0 8px 28px rgba(11,39,64,0.28), 0 2px 8px rgba(11,39,64,0.18);
+      display: flex; align-items: flex-start; gap: 0.65rem; max-width: 420px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+      z-index: 9999;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .toast-icon { flex-shrink: 0; margin-top: 1px; }
+    .toast-icon svg { width: 15px; height: 15px; stroke: var(--aqua); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .toast-body { flex: 1; }
+    .toast-title { font-weight: 700; color: white; margin-bottom: 0.1rem; }
+    .toast-msg { color: rgba(255,255,255,0.7); }
+    .toast-close { flex-shrink: 0; background: transparent; border: none; cursor: pointer; color: rgba(255,255,255,0.4); font-size: 1rem; line-height: 1; padding: 0; margin-top: -1px; transition: color 0.12s; }
+    .toast-close:hover { color: rgba(255,255,255,0.8); }
   </style>
 </head>
 <body>
@@ -226,6 +247,16 @@
         </button>
       </div>
     </header>
+
+    <!-- ── TOAST ── -->
+    <div class="toast" id="appToast" role="status" aria-live="polite">
+      <span class="toast-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+      <span class="toast-body">
+        <div class="toast-title" id="toastTitle"></div>
+        <div class="toast-msg" id="toastMsg"></div>
+      </span>
+      <button class="toast-close" onclick="dismissToast()" aria-label="Dismiss">×</button>
+    </div>
 
     <!-- ── MODULE HEADER ── -->
     <div class="module-header">
@@ -931,14 +962,37 @@
       }, 600);
     }
 
+    // ─── Toast ───────────────────────────────────────────────────────────────
+    var toastTimer = null;
+    function showToast(title, msg) {
+      var el = document.getElementById('appToast');
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastMsg').textContent   = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(dismissToast, 4500);
+    }
+    function dismissToast() {
+      document.getElementById('appToast').classList.remove('show');
+    }
+
     function generateAll() {
       var btn = document.getElementById('btnGenAll');
-      btn.classList.add('loading');
-      btn.textContent = '… Generating';
 
       var applicable = QUESTIONS.filter(function(q) {
         return getResponse(q.ref).response === 'Applicable';
       });
+
+      if (applicable.length === 0) {
+        showToast(
+          'No applicable questions yet.',
+          'Set at least one question to Applicable, then Generate All will fill in hazards and situations for you.'
+        );
+        return;
+      }
+
+      btn.classList.add('loading');
+      btn.textContent = '… Generating';
 
       var idx = 0;
       function next() {
