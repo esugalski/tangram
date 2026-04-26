@@ -724,8 +724,9 @@
 
   </main>
 
-  <script src="sidebar.js"></script>
+  <script src="esign.js"></script>
   <script src="approvals.js"></script>
+  <script src="sidebar.js"></script>
   <script>
     var RPT = {};
     var currentVerdict = null;
@@ -1127,6 +1128,7 @@
     }
 
     // ─── Init ─────────────────────────────────────────────────────────────────
+    initSidebar({ activePage: 'risk-management' });
     loadReport();
     wireFields();
     restoreVerdict();
@@ -1134,7 +1136,6 @@
     loadHazidStats();
     loadRmpStatus();
     updateStatus();
-    initSidebar({ activePage: 'risk-management' });
   </script>
 </body>
 </html>
