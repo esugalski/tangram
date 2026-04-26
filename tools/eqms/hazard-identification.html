@@ -248,16 +248,6 @@
       </div>
     </header>
 
-    <!-- ── TOAST ── -->
-    <div class="toast" id="appToast" role="status" aria-live="polite">
-      <span class="toast-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
-      <span class="toast-body">
-        <div class="toast-title" id="toastTitle"></div>
-        <div class="toast-msg" id="toastMsg"></div>
-      </span>
-      <button class="toast-close" onclick="dismissToast()" aria-label="Dismiss">×</button>
-    </div>
-
     <!-- ── MODULE HEADER ── -->
     <div class="module-header">
       <span class="module-header-title">Risk Management</span>
@@ -1202,5 +1192,16 @@
     renderTable();
 
   </script>
+
+  <!-- ── TOAST — outside .main to avoid overflow:hidden clipping ── -->
+  <div class="toast" id="appToast" role="status" aria-live="polite">
+    <span class="toast-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+    <span class="toast-body">
+      <div class="toast-title" id="toastTitle"></div>
+      <div class="toast-msg" id="toastMsg"></div>
+    </span>
+    <button class="toast-close" onclick="dismissToast()" aria-label="Dismiss">×</button>
+  </div>
+
 </body>
 </html>
