@@ -76,10 +76,14 @@ Every page uses the same three-zone shell:
 ┌─────────────────────────────────────────────────┐
 │  SIDEBAR (232px fixed)  │  MAIN                 │
 │                         │  ┌─────────────────┐  │
-│  dark navy (#071e31)    │  │ TOPBAR (58px)   │  │
+│  dark navy (#071e31)    │  │ TOPBAR (58px)   │  │  white bg, search bar
 │                         │  ├─────────────────┤  │
-│  nav items              │  │ CONTENT AREA    │  │
-│  active = aqua tint     │  │ (scrollable)    │  │
+│  nav items              │  │ MODULE HEADER   │  │  navy bg, module name
+│  active = aqua tint     │  ├─────────────────┤  │
+│                         │  │ SUB-NAV (40px)  │  │  white bg, section tabs
+│                         │  ├─────────────────┤  │
+│                         │  │ CONTENT AREA    │  │
+│                         │  │ (scrollable)    │  │
 │                         │  └─────────────────┘  │
 └─────────────────────────────────────────────────┘
 ```
@@ -119,7 +123,61 @@ The topbar-left holds the search bar + doc revision/status badges. The topbar-ri
 
 ---
 
-## 6. Buttons
+## 6. Module Header Band
+
+A full-width dark navy bar positioned immediately below the topbar and above the sub-nav on every hub/overview page. It displays the module name in white, providing a clear visual anchor that separates the global chrome (topbar) from the module-scoped chrome (sub-nav and content).
+
+```
+┌─────────────────────────────────────────────────┐
+│  TOPBAR (white, 58 px)                          │
+├─────────────────────────────────────────────────┤
+│  MODULE HEADER (navy, 46 px)  "Design Controls" │  ← this element
+├─────────────────────────────────────────────────┤
+│  SUB-NAV (white, 40 px)                         │
+├─────────────────────────────────────────────────┤
+│  CONTENT AREA                                   │
+└─────────────────────────────────────────────────┘
+```
+
+### HTML
+
+```html
+<div class="module-header">
+  <span class="module-header-title">Module Name</span>
+</div>
+```
+
+Place this div as a **direct child of `.app-main`**, immediately after the topbar div and before the sub-nav `<nav>`.
+
+### CSS
+
+```css
+.module-header {
+  background: var(--primary);   /* #0B2740 deep navy */
+  height: 46px;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  flex-shrink: 0;
+}
+.module-header-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.01em;
+}
+```
+
+### Rules
+
+- **Always present** on hub/overview pages (Design Controls, Risk Management, CAPA, etc.)
+- The module title must exactly match the sidebar nav label for that module
+- No icons, badges, or actions inside the band — title only
+- Never change the background color — it must always be `var(--primary)` to maintain the navy-to-white contrast rhythm with the sub-nav below it
+
+---
+
+## 7. Buttons
 
 Four button variants used across the app. Never invent new button shapes — use one of these.
 
@@ -170,7 +228,7 @@ All button icons: `width: 12–14px; stroke: currentColor; fill: none; stroke-wi
 
 ---
 
-## 7. Document Page Card
+## 8. Document Page Card
 
 The unified white card that wraps doc-cover metadata + table header + requirements table into one continuous surface.
 
@@ -213,7 +271,7 @@ The unified white card that wraps doc-cover metadata + table header + requiremen
 
 ---
 
-## 8. Page Accent Band
+## 9. Page Accent Band
 
 A 4 px full-width gradient stripe that anchors the top of every main content area. It runs edge-to-edge below the sub-nav and signals the visual boundary between navigation chrome and working content. The aqua→indigo gradient ties every page back to the platform's primary action color while providing forward motion (left-to-right energy).
 
@@ -270,7 +328,7 @@ Never change the direction or swap the stops — consistent directionality reinf
 
 ---
 
-## 9. Requirements Table
+## 10. Requirements Table
 
 ```css
 .list-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; }
@@ -308,7 +366,7 @@ Never change the direction or swap the stops — consistent directionality reinf
 
 ---
 
-## 10. Slide-in Panels (420px)
+## 11. Slide-in Panels (420px)
 
 All panels share the same overlay + slide-in infrastructure. Never create a full-page modal for detail views — use a panel.
 
@@ -360,7 +418,7 @@ The footer is hidden by default; shown with `.dirty` when unsaved changes exist.
 
 ---
 
-## 11. Sidebar
+## 12. Sidebar
 
 The sidebar is rendered by `sidebar.js` via `initSidebar({ activePage: 'page-id' })`. Do not hardcode sidebar HTML — call the JS initializer.
 
@@ -373,7 +431,7 @@ The sidebar is rendered by `sidebar.js` via `initSidebar({ activePage: 'page-id'
 
 ---
 
-## 12. At a Glance Widget (Sidebar Panel)
+## 13. At a Glance Widget (Sidebar Panel)
 
 Rendered by `renderSidebarWidget()` on each page into `#lm-sidebar-widget`. The widget is copied into the guided-mode At a Glance panel by `learn-mode.js`.
 
@@ -411,7 +469,7 @@ The donut is generated as an inline SVG string using the `stroke-dasharray` tech
 
 ---
 
-## 13. Shared JS Infrastructure
+## 14. Shared JS Infrastructure
 
 | File | Purpose |
 |------|---------|
@@ -440,7 +498,7 @@ The donut is generated as an inline SVG string using the `stroke-dasharray` tech
 
 ---
 
-## 14. Interaction Conventions
+## 15. Interaction Conventions
 
 | Pattern | Rule |
 |---------|------|
@@ -454,7 +512,7 @@ The donut is generated as an inline SVG string using the `stroke-dasharray` tech
 
 ---
 
-## 15. Page-level Suppressions (Design Controls pages)
+## 16. Page-level Suppressions (Design Controls pages)
 
 Add these to the `<style>` block on any Design Controls page to suppress guided-mode chrome that doesn't belong there:
 
@@ -465,7 +523,7 @@ Add these to the `<style>` block on any Design Controls page to suppress guided-
 
 ---
 
-## 16. Guidance Panel Content Principle
+## 17. Guidance Panel Content Principle
 
 **All page-level explanatory, educational, and regulatory context belongs in the Guidance panel — never inline on the page body.**
 
@@ -531,13 +589,14 @@ Leave the JS functions in place (removing them risks errors if `learn-mode.js` s
 
 ---
 
-## 17. New Page Checklist
+## 18. New Page Checklist
 
 When creating a new eQMS tool page:
 
 - [ ] Copy `:root` variables block verbatim
 - [ ] Use the sidebar + main + topbar shell structure
 - [ ] Topbar-right: `[ Export ] [ Approve ] [ Guidance ]` — nothing else
+- [ ] Add `<div class="module-header"><span class="module-header-title">Module Name</span></div>` between topbar and sub-nav (hub/overview pages)
 - [ ] Add `<div class="page-accent-band"></div>` between sub-nav and `.content-wrap` (hub/overview pages only; doc pages use `doc-cover::before`)
 - [ ] Add `btn-guidance` → opens `#helpPanel` with page-specific explanation (what it is, regulatory context, best practices, video placeholder)
 - [ ] Guidance panel replaces any `#intro-slot`, `renderIntro()`, or `.learn-only` explainer elements — suppress those with CSS if present
