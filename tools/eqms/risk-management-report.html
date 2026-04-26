@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Management Report — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <style>
+    /* ─── SUPPRESSIONS ─── */
+    #lm-step-footer { display: none !important; }
+    #lm-toggle-root { display: none !important; }
+    #intro-slot      { display: none !important; }
+    .learn-only      { display: none !important; }
+
+    /* ─── TOPBAR EXTRAS ─── */
+    .topbar-left { display: flex; align-items: center; gap: 0.65rem; flex: 1; min-width: 0; }
+    .ver-badge { font-size: 0.68rem; font-weight: 700; background: rgba(11,39,64,0.07); border: 1px solid rgba(11,39,64,0.12); color: var(--mid-blue); padding: 0.2rem 0.6rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
+    .status-pill { font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .status-pill.draft    { background: rgba(10,192,233,0.1);  color: var(--aqua-dark); }
+    .status-pill.approved { background: rgba(16,185,129,0.12); color: #059669; }
+
+    /* ─── ACTION BUTTONS ─── */
+    .btn-export { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
+    .btn-export:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-export svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── MODULE SUBNAV ─── */
+    .rm-subnav { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 40px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; overflow-x: auto; flex-shrink: 0; }
+    .rm-subnav::-webkit-scrollbar { height: 0; }
+    .rm-subnav-back { display: flex; align-items: center; gap: 0.35rem; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.45); text-decoration: none; padding: 0 0.9rem 0 0; border-right: 1px solid rgba(11,39,64,0.1); margin-right: 0.75rem; white-space: nowrap; transition: color 0.12s; flex-shrink: 0; }
+    .rm-subnav-back:hover { color: var(--aqua-dark); }
+    .rm-subnav-back svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .rm-subnav-link { font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.5); text-decoration: none; padding: 0 0.7rem; white-space: nowrap; height: 40px; display: flex; align-items: center; border-bottom: 2px solid transparent; transition: color 0.12s; }
+    .rm-subnav-link:hover { color: var(--primary); }
+    .rm-subnav-link.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+
+    /* ─── DOC COVER ─── */
+    .doc-cover { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 14px; padding: 2rem 2.25rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+    .doc-cover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ef4444, #f97316 40%, #0AC0E9); }
+    .doc-cover-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+    .doc-cover-meta { display: flex; flex-direction: column; gap: 0.25rem; text-align: right; flex-shrink: 0; }
+    .doc-cover-meta-row { font-size: 0.7rem; color: rgba(11,39,64,0.4); white-space: nowrap; }
+    .doc-cover-meta-row strong { color: var(--primary); font-weight: 600; }
+    .doc-company { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.5rem; }
+    .doc-name { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 0.35rem; }
+    .doc-subtitle { font-size: 0.82rem; color: rgba(11,39,64,0.5); line-height: 1.5; max-width: 520px; }
+    .doc-cover-divider { height: 1px; background: rgba(11,39,64,0.08); margin: 1.5rem 0; }
+    .doc-field { display: flex; flex-direction: column; gap: 0.2rem; }
+    .doc-field-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.3); }
+    .doc-field-input { font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; font-family: 'Inter', sans-serif; background: var(--light-gray); outline: none; transition: border-color 0.15s; width: 100%; }
+    .doc-field-input:focus { border-color: var(--aqua); background: white; }
+    .doc-field-input:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    /* ─── SECTION NOTE ─── */
+    .section-note { font-size: 0.76rem; color: rgba(11,39,64,0.55); line-height: 1.65; margin-bottom: 1rem; padding: 0.7rem 0.9rem; background: rgba(10,192,233,0.04); border: 1px solid rgba(10,192,233,0.16); border-radius: 8px; }
+
+    /* ─── STATS ROW ─── */
+    .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem; margin-bottom: 1.25rem; }
+    .stat-card { background: rgba(11,39,64,0.025); border: 1px solid rgba(11,39,64,0.08); border-radius: 10px; padding: 1rem; display: flex; flex-direction: column; gap: 0.2rem; }
+    .stat-val { font-size: 1.75rem; font-weight: 800; color: var(--primary); letter-spacing: -0.05em; line-height: 1; }
+    .stat-label { font-size: 0.65rem; font-weight: 600; color: rgba(11,39,64,0.42); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 0.15rem; }
+    .stat-card.acceptable .stat-val { color: var(--green); }
+    .stat-card.tolerable  .stat-val { color: var(--amber); }
+    .stat-card.unacceptable .stat-val { color: var(--red); }
+
+    /* ─── RISK DISTRIBUTION BAR ─── */
+    .dist-bar-wrap { margin-bottom: 1.25rem; }
+    .dist-bar-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; }
+    .dist-bar-title { font-size: 0.72rem; font-weight: 700; color: rgba(11,39,64,0.5); letter-spacing: 0.06em; text-transform: uppercase; }
+    .dist-bar { height: 10px; border-radius: 6px; background: rgba(11,39,64,0.06); overflow: hidden; display: flex; }
+    .dist-seg { height: 100%; transition: width 0.4s; }
+    .dist-seg.acc  { background: var(--green); }
+    .dist-seg.tol  { background: var(--amber); }
+    .dist-seg.unacc { background: var(--red); }
+    .dist-legend { display: flex; gap: 1.1rem; margin-top: 0.45rem; }
+    .dist-legend-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.68rem; color: rgba(11,39,64,0.55); font-weight: 500; }
+    .dist-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dist-dot.acc  { background: var(--green); }
+    .dist-dot.tol  { background: var(--amber); }
+    .dist-dot.unacc { background: var(--red); }
+
+    /* ─── SUMMARY TABLE ─── */
+    .summary-table { width: 100%; border-collapse: collapse; }
+    .summary-table thead th { text-align: left; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.42); padding: 0.5rem 0.75rem; border-bottom: 1.5px solid rgba(11,39,64,0.08); }
+    .summary-table tbody td { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(11,39,64,0.05); vertical-align: middle; font-size: 0.78rem; color: var(--primary); }
+    .summary-table tbody tr:last-child td { border-bottom: none; }
+    .summary-table tbody tr:hover td { background: rgba(11,39,64,0.015); }
+
+    /* ─── RISK LEVEL PILLS ─── */
+    .rl-pill { display: inline-flex; align-items: center; font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 4px; white-space: nowrap; }
+    .rl-pill.acceptable   { background: rgba(16,185,129,0.1); color: #047857; }
+    .rl-pill.tolerable    { background: rgba(245,158,11,0.12); color: #b45309; }
+    .rl-pill.unacceptable { background: rgba(239,68,68,0.12); color: #dc2626; }
+
+    /* ─── DETERMINATION BLOCK ─── */
+    .determination-block { border-radius: 10px; padding: 1.25rem 1.5rem; border: 1.5px solid; margin-bottom: 1.25rem; }
+    .determination-block.acceptable   { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.04); }
+    .determination-block.tolerable    { border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.04); }
+    .determination-block.unacceptable { border-color: rgba(239,68,68,0.3);  background: rgba(239,68,68,0.04); }
+    .determination-block.pending      { border-color: rgba(11,39,64,0.14);  background: rgba(11,39,64,0.025); }
+    .determination-title { font-size: 0.78rem; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 0.3rem; }
+    .determination-block.acceptable   .determination-title { color: #047857; }
+    .determination-block.tolerable    .determination-title { color: #b45309; }
+    .determination-block.unacceptable .determination-title { color: #dc2626; }
+    .determination-block.pending      .determination-title { color: rgba(11,39,64,0.5); }
+    .determination-text { font-size: 0.76rem; color: rgba(11,39,64,0.58); line-height: 1.65; }
+
+    /* ─── CONTROL TYPE BADGES ─── */
+    .ct-badge { display: inline-flex; align-items: center; font-size: 0.63rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; white-space: nowrap; letter-spacing: 0.02em; }
+    .ct-badge.inherent  { background: rgba(99,102,241,0.1); color: #4338ca; }
+    .ct-badge.protective { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
+    .ct-badge.information { background: rgba(245,158,11,0.1); color: #b45309; }
+
+    /* ─── RELATED DOCS ─── */
+    .related-docs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+    .related-doc-card { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: white; border: 1px solid rgba(11,39,64,0.1); border-radius: 9px; text-decoration: none; transition: border-color 0.14s, box-shadow 0.14s; }
+    .related-doc-card:hover { border-color: rgba(10,192,233,0.4); box-shadow: 0 3px 12px rgba(10,192,233,0.09); }
+    .related-doc-icon { width: 32px; height: 32px; border-radius: 7px; background: rgba(11,39,64,0.05); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .related-doc-icon svg { width: 15px; height: 15px; stroke: var(--mid-blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .related-doc-info { flex: 1; min-width: 0; }
+    .related-doc-id { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.35); }
+    .related-doc-title { font-size: 0.78rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.1rem; }
+    .related-doc-status { margin-left: auto; flex-shrink: 0; }
+    .rd-status { font-size: 0.6rem; font-weight: 700; padding: 0.14rem 0.45rem; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .rd-status.approved { background: rgba(16,185,129,0.1); color: #047857; }
+    .rd-status.draft { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); }
+
+    /* ─── CONCLUSION BOX ─── */
+    .conclusion-box { background: white; border: 1.5px solid rgba(11,39,64,0.1); border-radius: 12px; padding: 1.5rem 1.75rem; margin-bottom: 1.25rem; }
+    .conclusion-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+    .conclusion-icon { width: 36px; height: 36px; border-radius: 9px; background: rgba(16,185,129,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .conclusion-icon svg { width: 18px; height: 18px; stroke: var(--green); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .conclusion-title { font-size: 1rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; }
+    .conclusion-textarea { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.65rem 0.85rem; outline: none; resize: vertical; line-height: 1.65; background: var(--light-gray); transition: border-color 0.15s; min-height: 80px; }
+    .conclusion-textarea:focus { border-color: var(--aqua); background: white; }
+    .conclusion-textarea:disabled { opacity: 0.65; cursor: not-allowed; }
+
+    /* ─── SIGN-OFF BLOCK ─── */
+    .signoff-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.85rem; }
+    .signoff-field { display: flex; flex-direction: column; gap: 0.2rem; }
+    .signoff-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.3); }
+    .signoff-input { font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; font-family: 'Inter', sans-serif; background: var(--light-gray); outline: none; transition: border-color 0.15s; width: 100%; }
+    .signoff-input:focus { border-color: var(--aqua); background: white; }
+    .signoff-input:disabled { opacity: 0.65; cursor: not-allowed; }
+    .signoff-sig-box { height: 48px; border: 1.5px dashed rgba(11,39,64,0.18); border-radius: 7px; background: rgba(11,39,64,0.02); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; color: rgba(11,39,64,0.3); font-style: italic; margin-top: 0.35rem; }
+    .signoff-sig-box.signed { border-style: solid; border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.03); color: #047857; font-style: normal; font-weight: 600; }
+
+    /* ─── INLINE BADGE ─── */
+    .ref-badge { display: inline-flex; align-items: center; font-size: 0.68rem; font-weight: 700; color: var(--mid-blue); background: rgba(11,39,64,0.06); border: 1px solid rgba(11,39,64,0.12); border-radius: 5px; padding: 0.12rem 0.45rem; white-space: nowrap; }
+
+    /* ─── OVERALL VERDICT SELECT ─── */
+    .verdict-row { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    .verdict-btn { flex: 1; padding: 0.7rem; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; background: white; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.5); cursor: pointer; transition: all 0.15s; text-align: center; }
+    .verdict-btn:hover { border-color: rgba(11,39,64,0.25); color: var(--primary); }
+    .verdict-btn.selected.acceptable   { border-color: rgba(16,185,129,0.5); background: rgba(16,185,129,0.06); color: #047857; }
+    .verdict-btn.selected.tolerable    { border-color: rgba(245,158,11,0.5); background: rgba(245,158,11,0.06); color: #b45309; }
+    .verdict-btn.selected.unacceptable { border-color: rgba(239,68,68,0.5); background: rgba(239,68,68,0.06); color: #dc2626; }
+
+    /* ─── FORM ELEMENTS (from RMP) ─── */
+    .form-textarea { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.5rem 0.65rem; outline: none; resize: vertical; line-height: 1.6; background: var(--light-gray); transition: border-color 0.15s; }
+    .form-textarea:focus { border-color: var(--aqua); background: white; }
+    .form-textarea:disabled { opacity: 0.65; cursor: not-allowed; }
+    .form-input  { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; outline: none; background: var(--light-gray); transition: border-color 0.15s; }
+    .form-input:focus { border-color: var(--aqua); background: white; }
+    .form-input:disabled { opacity: 0.65; cursor: not-allowed; }
+    .form-field { display: flex; flex-direction: column; gap: 0.3rem; }
+    .form-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.35); }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, risks, products…">
+        </div>
+        <span class="ver-badge" id="docVerBadge">Rev A</span>
+        <span class="status-pill draft" id="docStatusPill">Draft</span>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-export" onclick="exportReport()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="btn-export" id="btn-approve" onclick="initiateApproval()" style="border-color:rgba(16,185,129,0.3);color:#047857;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Approve
+        </button>
+      </div>
+    </header>
+
+    <!-- Module sub-nav -->
+    <nav class="rm-subnav">
+      <a href="risk-management-overview.html" class="rm-subnav-back">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Risk Management Overview
+      </a>
+      <a href="risk-management-plan.html" class="rm-subnav-link">Risk Management Plan</a>
+      <a href="hazard-identification.html" class="rm-subnav-link">Hazard Identification</a>
+      <a href="risk-analysis.html" class="rm-subnav-link">Risk Analysis</a>
+      <a href="risk-management-report.html" class="rm-subnav-link active">Risk Management Report</a>
+    </nav>
+
+    <!-- Approved lock banner -->
+    <div class="doc-lock-banner" id="doc-lock" style="display:none;">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      This report is approved. Fields are locked. Use "Initiate Revision" to start a new draft.
+    </div>
+
+    <div id="approval-route-panel"></div>
+
+    <!-- Scrollable document body -->
+    <div class="page-scroll">
+
+      <!-- ── Document cover ── -->
+      <div class="doc-cover">
+        <div class="doc-cover-top">
+          <div>
+            <div class="doc-company">Tangram MedTech</div>
+            <div class="doc-name">Risk Management Report</div>
+            <div class="doc-subtitle">Comprehensive risk management summary per ISO 14971:2019 §9 — consolidates hazard identification, risk analysis, control evidence, and residual risk evaluation into a final determination of overall risk acceptability.</div>
+          </div>
+          <div class="doc-cover-meta">
+            <div class="doc-cover-meta-row">Document No. <strong>RM-004</strong></div>
+            <div class="doc-cover-meta-row">Revision <strong id="docRevisionDisplay">A</strong></div>
+            <div class="doc-cover-meta-row">Status <strong id="docStatusDisplay">Draft</strong></div>
+          </div>
+        </div>
+        <div class="doc-cover-divider"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+          <div class="doc-field">
+            <div class="doc-field-label">Product / device</div>
+            <input class="doc-field-input" id="f-device" placeholder="Device name and configuration">
+          </div>
+          <div class="doc-field">
+            <div class="doc-field-label">Risk Management Plan Ref.</div>
+            <input class="doc-field-input" id="f-rmp-ref" placeholder="e.g. RM-001 Rev A, Approved 2025-09-05">
+          </div>
+          <div class="doc-field">
+            <div class="doc-field-label">Report Author</div>
+            <input class="doc-field-input" id="f-author" placeholder="Name and title">
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 1: SCOPE OF RISK MANAGEMENT ACTIVITIES ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">1 · Scope of risk management activities</div>
+          <span class="card-title-sub">ISO 14971:2019 §9(a) — confirm alignment with the risk management plan</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0.85rem;">
+          <div class="section-note">
+            This section confirms the scope of risk management activities carried out for this device and verifies that all activities were conducted in accordance with the approved Risk Management Plan (RM-001). Any deviations from the plan must be noted here per ISO 14971 §9.
+          </div>
+          <div class="form-field">
+            <label class="form-label">Lifecycle phases covered</label>
+            <textarea class="form-textarea" id="p-lifecycle" rows="2" placeholder="Confirm all lifecycle phases covered, e.g.: Concept, design and development, manufacturing, distribution, clinical use, servicing, and decommissioning."></textarea>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;">
+            <div class="form-field">
+              <label class="form-label">Intended use environments</label>
+              <textarea class="form-textarea" id="p-environments" rows="2" placeholder="Clinical settings, home use, intended user population, etc."></textarea>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Deviations from the risk management plan</label>
+              <textarea class="form-textarea" id="p-deviations" rows="2" placeholder="None — or describe any deviations and their justification."></textarea>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Standards and guidance applied</label>
+            <textarea class="form-textarea" id="p-standards" rows="2" placeholder="e.g. ISO 14971:2019, ISO/TR 24971:2020, IEC 60601-1, IEC 62366-1, ISO 10993-1 (as applicable)"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 2: HAZARD IDENTIFICATION SUMMARY ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">2 · Hazard identification summary</div>
+          <span class="card-title-sub">ISO 14971:2019 §5 &amp; ISO/TR 24971 §4 — evidence that all foreseeable hazards were considered</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="section-note">
+            Hazard identification was conducted per ISO 14971:2019 §5 and ISO/TR 24971 Annex C (energy, biological, environmental, information, functional, and use-related hazards). The structured checklist mapped each hazard type to foreseeable hazardous situations and sequences of events leading to harm.
+          </div>
+
+          <!-- Auto-populated stats from hazard identification localStorage -->
+          <div class="stat-row" id="hazid-stats-row">
+            <div class="stat-card">
+              <div class="stat-val" id="stat-total-hazards">—</div>
+              <div class="stat-label">Hazards identified</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val" id="stat-hazard-categories">—</div>
+              <div class="stat-label">Hazard categories</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val" id="stat-total-risks">—</div>
+              <div class="stat-label">Risk scenarios analyzed</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val" id="stat-hazid-coverage">—</div>
+              <div class="stat-label">Checklist questions reviewed</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;">
+            <div class="form-field">
+              <label class="form-label">Methods used for hazard identification</label>
+              <textarea class="form-textarea" id="p-hazid-methods" rows="3" placeholder="e.g. Structured checklist per ISO/TR 24971 Annex C; design FMEA; use FMEA; literature review of similar devices; clinical expert review."></textarea>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Participants and qualifications</label>
+              <textarea class="form-textarea" id="p-hazid-participants" rows="3" placeholder="e.g. Cross-functional team including design engineering, clinical affairs, regulatory, and manufacturing. Team roster documented in RM File."></textarea>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Assessment of completeness</label>
+            <textarea class="form-textarea" id="p-hazid-completeness" rows="2" placeholder="Statement confirming that all reasonably foreseeable hazards and hazardous situations have been identified, and that the hazard identification is complete to the extent practicable."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 3: INITIAL RISK ESTIMATION ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">3 · Initial risk estimation &amp; evaluation results</div>
+          <span class="card-title-sub">ISO 14971:2019 §§5–6 — risk estimation using the RPN method defined in the Risk Management Plan</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="section-note">
+            Risk estimation was performed using the RPN (Risk Priority Number) method defined in Risk Management Plan RM-001: RPN = Severity × P1 × P2. Acceptability thresholds are those established in the approved plan, prior to the commencement of hazard identification per ISO 14971 §4.2(c).
+          </div>
+
+          <!-- Initial risk distribution (auto-populated from risk analysis data) -->
+          <div class="dist-bar-wrap">
+            <div class="dist-bar-label-row">
+              <span class="dist-bar-title">Initial risk distribution (before controls)</span>
+            </div>
+            <div class="dist-bar" id="initial-dist-bar">
+              <div class="dist-seg acc"   id="init-seg-acc"   style="width:0%"></div>
+              <div class="dist-seg tol"   id="init-seg-tol"   style="width:0%"></div>
+              <div class="dist-seg unacc" id="init-seg-unacc" style="width:0%"></div>
+            </div>
+            <div class="dist-legend">
+              <div class="dist-legend-item"><div class="dist-dot acc"></div> <span id="init-count-acc">—</span> Broadly Acceptable</div>
+              <div class="dist-legend-item"><div class="dist-dot tol"></div> <span id="init-count-tol">—</span> Tolerable</div>
+              <div class="dist-legend-item"><div class="dist-dot unacc"></div> <span id="init-count-unacc">—</span> Unacceptable</div>
+            </div>
+          </div>
+
+          <!-- Summary table of highest-risk items -->
+          <div>
+            <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:rgba(11,39,64,0.4);margin-bottom:0.5rem;">Top initial risks by RPN</div>
+            <div style="overflow-x:auto;border:1px solid rgba(11,39,64,0.08);border-radius:9px;">
+              <table class="summary-table" id="initial-risk-table">
+                <thead>
+                  <tr>
+                    <th>Risk ID</th>
+                    <th style="width:36%">Hazard / Hazardous Situation</th>
+                    <th>Harm</th>
+                    <th>RPN</th>
+                    <th>Initial Level</th>
+                  </tr>
+                </thead>
+                <tbody id="initial-risk-tbody">
+                  <tr><td colspan="5" style="text-align:center;padding:1.5rem;color:rgba(11,39,64,0.35);font-size:0.78rem;font-style:italic;">Populated from Risk Analysis data — complete risk analysis first.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 4: RISK CONTROL MEASURES ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">4 · Risk control measures implemented</div>
+          <span class="card-title-sub">ISO 14971:2019 §7 — hierarchy of controls: inherent safety → protective measures → information for safety</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="section-note">
+            Risk controls were selected and implemented in accordance with ISO 14971:2019 §7, applying the three-option hierarchy. Each control measure was verified for effectiveness before inclusion. Introduction of new risks due to control measures was also evaluated per §7.6.
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:0.5rem;">
+            <div class="stat-card">
+              <div class="stat-val" id="ctrl-inherent-count">—</div>
+              <div class="stat-label"><span class="ct-badge inherent" style="margin-right:0.3rem">Inherent safety</span> controls</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val" id="ctrl-protective-count">—</div>
+              <div class="stat-label"><span class="ct-badge protective" style="margin-right:0.3rem">Protective</span> measures</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val" id="ctrl-info-count">—</div>
+              <div class="stat-label"><span class="ct-badge information" style="margin-right:0.3rem">Information</span> for safety</div>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Control measure implementation evidence</label>
+            <textarea class="form-textarea" id="p-ctrl-evidence" rows="3" placeholder="Describe the evidence demonstrating that risk control measures were implemented as specified. Reference verification records, test reports, design outputs, or labeling documents."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">New or introduced risks from control measures</label>
+            <textarea class="form-textarea" id="p-ctrl-new-risks" rows="2" placeholder="Describe any new hazards or hazardous situations introduced as a result of implementing risk controls, and how these were addressed (ISO 14971 §7.6)."></textarea>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;">
+            <div class="form-field">
+              <label class="form-label">Control verification method</label>
+              <textarea class="form-textarea" id="p-ctrl-verification" rows="2" placeholder="e.g. Design verification testing, inspection, analysis, or review of manufacturing records."></textarea>
+            </div>
+            <div class="form-field">
+              <label class="form-label">References to verification records</label>
+              <textarea class="form-textarea" id="p-ctrl-ref" rows="2" placeholder="e.g. Test report TR-2025-001, Design Verification Protocol DVP-001, Labeling Review LR-001."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 5: RESIDUAL RISK EVALUATION ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">5 · Residual risk evaluation</div>
+          <span class="card-title-sub">ISO 14971:2019 §§7.4–8 — post-control risk levels and acceptability determination for each risk</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="section-note">
+            After implementation of risk controls, residual risk was re-estimated for each risk scenario. Where residual risk falls in the tolerable zone, the risk has been evaluated against clinical benefit per ISO 14971 §8.2 (benefit-risk analysis). All risks must be within the acceptability criteria defined in RM-001 before this report can be approved.
+          </div>
+
+          <!-- Residual risk distribution -->
+          <div class="dist-bar-wrap">
+            <div class="dist-bar-label-row">
+              <span class="dist-bar-title">Residual risk distribution (after controls)</span>
+            </div>
+            <div class="dist-bar" id="residual-dist-bar">
+              <div class="dist-seg acc"   id="res-seg-acc"   style="width:0%"></div>
+              <div class="dist-seg tol"   id="res-seg-tol"   style="width:0%"></div>
+              <div class="dist-seg unacc" id="res-seg-unacc" style="width:0%"></div>
+            </div>
+            <div class="dist-legend">
+              <div class="dist-legend-item"><div class="dist-dot acc"></div> <span id="res-count-acc">—</span> Broadly Acceptable</div>
+              <div class="dist-legend-item"><div class="dist-dot tol"></div> <span id="res-count-tol">—</span> Tolerable (ALARP applied)</div>
+              <div class="dist-legend-item"><div class="dist-dot unacc"></div> <span id="res-count-unacc">—</span> Unacceptable</div>
+            </div>
+          </div>
+
+          <!-- Summary table -->
+          <div>
+            <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:rgba(11,39,64,0.4);margin-bottom:0.5rem;">Residual risk summary by scenario</div>
+            <div style="overflow-x:auto;border:1px solid rgba(11,39,64,0.08);border-radius:9px;">
+              <table class="summary-table" id="residual-risk-table">
+                <thead>
+                  <tr>
+                    <th>Risk ID</th>
+                    <th style="width:30%">Hazard / Harm</th>
+                    <th>Initial RPN</th>
+                    <th>Initial Level</th>
+                    <th>Controls Applied</th>
+                    <th>Residual RPN</th>
+                    <th>Residual Level</th>
+                  </tr>
+                </thead>
+                <tbody id="residual-risk-tbody">
+                  <tr><td colspan="7" style="text-align:center;padding:1.5rem;color:rgba(11,39,64,0.35);font-size:0.78rem;font-style:italic;">Populated from Risk Analysis data — complete risk analysis first.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">ALARP / AFAP justification for tolerable residual risks</label>
+            <textarea class="form-textarea" id="p-alarp" rows="3" placeholder="For each risk remaining in the tolerable zone: confirm that risk has been reduced as far as practicable (ALARP) and that further reduction would be disproportionate to the benefit gained. Reference the specific controls applied and state why further reduction is not reasonably practicable."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 6: BENEFIT-RISK ANALYSIS ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">6 · Benefit-risk analysis</div>
+          <span class="card-title-sub">ISO 14971:2019 §8 — required for residual risks in the tolerable zone and for the overall determination</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0.85rem;">
+          <div class="section-note">
+            Where residual risks remain in the tolerable zone after risk reduction, or where risks cannot be reduced further, a formal benefit-risk analysis is required under ISO 14971:2019 §8.2. Clinical benefits must be documented and weighed against the residual risks. If benefits do not outweigh residual risks, the device may not be placed on the market.
+          </div>
+          <div class="form-field">
+            <label class="form-label">Clinical benefits of the device</label>
+            <textarea class="form-textarea" id="p-benefits" rows="3" placeholder="Describe the clinical benefits the device provides to patients and users, including therapeutic value, diagnostic accuracy, patient outcomes, and quality-of-life improvements. Reference clinical data or literature as appropriate."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Comparison with available alternatives</label>
+            <textarea class="form-textarea" id="p-alternatives" rows="2" placeholder="Describe how the benefit-risk profile of this device compares to available alternatives (including treatment alternatives, similar devices, or no treatment). Reference state of the art per ISO 14971 §4.2(d)."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Benefit-risk determination for tolerable residual risks</label>
+            <textarea class="form-textarea" id="p-br-determination" rows="3" placeholder="For each residual risk in the tolerable zone: state the specific clinical benefit that outweighs that risk, and reference the supporting evidence (clinical study, literature, expert opinion). Confirm the benefit outweighs the risk."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Evidence basis for benefit claims</label>
+            <textarea class="form-textarea" id="p-evidence-basis" rows="2" placeholder="e.g. Clinical Evaluation Report CER-001 Rev B; pre-clinical study results; published literature (references); post-market data from predicate devices."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 7: OVERALL RESIDUAL RISK EVALUATION ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">7 · Overall residual risk evaluation</div>
+          <span class="card-title-sub">ISO 14971:2019 §9 — the key determination required in the Risk Management Report</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="section-note">
+            Per ISO 14971:2019 §9, the overall residual risk — considering all residual risks collectively — must be evaluated and determined to be acceptable before the device proceeds to production or market. This is a separate determination from the individual risk evaluations performed in §6.
+          </div>
+
+          <div>
+            <div class="form-label" style="margin-bottom:0.55rem;">Overall residual risk determination</div>
+            <div class="verdict-row" id="verdict-row">
+              <button class="verdict-btn" id="vbtn-acceptable" onclick="setVerdict('acceptable')">
+                ✓&ensp;Acceptable — benefits outweigh all residual risks
+              </button>
+              <button class="verdict-btn" id="vbtn-tolerable" onclick="setVerdict('tolerable')">
+                ⚠&ensp;Tolerable — acceptable with benefit-risk justification
+              </button>
+              <button class="verdict-btn" id="vbtn-unacceptable" onclick="setVerdict('unacceptable')">
+                ✕&ensp;Unacceptable — additional risk reduction required
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic determination block -->
+          <div id="verdict-block" class="determination-block pending">
+            <div class="determination-title" id="verdict-block-title">No determination made yet</div>
+            <div class="determination-text" id="verdict-block-text">Select an overall residual risk determination above, then complete the narrative justification below.</div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Justification and basis for overall determination</label>
+            <textarea class="form-textarea" id="p-overall-justification" rows="4" placeholder="Provide a narrative justification for the overall residual risk determination. Reference the individual risk evaluations, benefit-risk analysis, and state-of-the-art comparisons. Confirm that this determination is consistent with the risk acceptability criteria in RM-001, and that the overall residual risk is acceptable in light of the clinical benefit."></textarea>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Competent person assessment of completeness</label>
+            <textarea class="form-textarea" id="p-competent-assessment" rows="2" placeholder="Statement by the competent person(s) that the risk management activities have been completed in accordance with the risk management plan (RM-001) and that all records required by ISO 14971 are present in the risk management file."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 8: POST-PRODUCTION ACTIVITIES ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">8 · Post-production information collection</div>
+          <span class="card-title-sub">ISO 14971:2019 §10 and ISO/TR 24971 §9 — post-market surveillance and feedback loop</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0.85rem;">
+          <div class="section-note">
+            Per ISO 14971:2019 §10, the manufacturer must establish a system to collect and review information about the device during post-production. This section documents the planned post-production surveillance activities that will feed back into the risk management file. Results must be reviewed and the risk management file updated as needed.
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;">
+            <div class="form-field">
+              <label class="form-label">Post-market surveillance (PMS) plan reference</label>
+              <input class="form-input" id="p-pms-ref" placeholder="e.g. PMS Plan PMS-001 Rev A">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Post-market clinical follow-up (PMCF) reference</label>
+              <input class="form-input" id="p-pmcf-ref" placeholder="e.g. PMCF Plan PMCF-001 (if applicable)">
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Types of post-production data to be collected</label>
+            <textarea class="form-textarea" id="p-pms-data" rows="3" placeholder="e.g.&#10;• Complaint and adverse event reports (MDR, IVDR)&#10;• Post-market surveillance literature reviews&#10;• Field safety corrective action (FSCA) monitoring&#10;• Customer satisfaction and usability feedback&#10;• Regulatory authority safety databases (MAUDE, EUDAMED)&#10;• Service and maintenance records"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Criteria for updating the risk management file</label>
+            <textarea class="form-textarea" id="p-update-criteria" rows="2" placeholder="Define the thresholds or triggers that would require review and update of the risk management file, e.g.: reportable adverse events, change in device design, new post-market safety signals, periodic review per schedule in RM-001."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Review frequency</label>
+            <input class="form-input" id="p-review-freq" placeholder="e.g. Annually, or within 30 days of a reportable adverse event, or upon any design change trigger.">
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 9: REFERENCED DOCUMENTS ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">9 · Referenced documents</div>
+          <span class="card-title-sub">Risk management file documents supporting this report</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+          <div class="section-note">
+            The Risk Management Report is a summary of the complete risk management file. The following documents comprise the full risk management file for this device and are incorporated by reference into this report per ISO 14971:2019 §3.21.
+          </div>
+          <div class="related-docs-grid">
+            <a href="risk-management-plan.html" class="related-doc-card">
+              <div class="related-doc-icon">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              </div>
+              <div class="related-doc-info">
+                <div class="related-doc-id">RM-001</div>
+                <div class="related-doc-title">Risk Management Plan</div>
+              </div>
+              <div class="related-doc-status"><span class="rd-status draft" id="rmp-status-badge">Draft</span></div>
+            </a>
+            <a href="hazard-identification.html" class="related-doc-card">
+              <div class="related-doc-icon">
+                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div class="related-doc-info">
+                <div class="related-doc-id">RM-002</div>
+                <div class="related-doc-title">Hazard Identification Checklist</div>
+              </div>
+              <div class="related-doc-status"><span class="rd-status draft" id="hazid-status-badge">Draft</span></div>
+            </a>
+            <a href="risk-analysis.html" class="related-doc-card">
+              <div class="related-doc-icon">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              </div>
+              <div class="related-doc-info">
+                <div class="related-doc-id">RM-003</div>
+                <div class="related-doc-title">Risk Analysis &amp; Risk Controls</div>
+              </div>
+              <div class="related-doc-status"><span class="rd-status draft" id="ra-status-badge">In Progress</span></div>
+            </a>
+            <a href="risk-management-procedure.html" class="related-doc-card">
+              <div class="related-doc-icon">
+                <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              </div>
+              <div class="related-doc-info">
+                <div class="related-doc-id">SOP-RM-001</div>
+                <div class="related-doc-title">Risk Management Procedure</div>
+              </div>
+              <div class="related-doc-status"><span class="rd-status approved">Approved</span></div>
+            </a>
+          </div>
+
+          <!-- Additional referenced documents -->
+          <div class="form-field">
+            <label class="form-label">Additional supporting documents</label>
+            <textarea class="form-textarea" id="p-additional-refs" rows="3" placeholder="List any additional documents referenced in this report, e.g.:&#10;• Clinical Evaluation Report (CER-001)&#10;• Post-Market Surveillance Plan (PMS-001)&#10;• Usability Engineering File (UEF-001)&#10;• Design Verification &amp; Validation Records (DVP-001)"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 10: CONCLUSION ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">10 · Conclusion &amp; sign-off</div>
+          <span class="card-title-sub">ISO 14971:2019 §9 — final determination and authorized signatures</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1.25rem;">
+
+          <!-- Conclusion statement -->
+          <div class="conclusion-box" id="conclusion-box">
+            <div class="conclusion-header">
+              <div class="conclusion-icon" id="conclusion-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div class="conclusion-title">Overall Risk Management Conclusion</div>
+            </div>
+            <textarea class="conclusion-textarea" id="p-conclusion" rows="4" placeholder="Enter the final conclusion statement, e.g.:&#10;&#10;Based on the risk management activities documented in this report and the complete risk management file (RM-001 through RM-004), the overall residual risk of the [device name] has been evaluated and determined to be acceptable. All foreseeable hazards have been identified, risks estimated and evaluated, and appropriate risk control measures implemented and verified. No individual residual risk remains in the Unacceptable zone. Residual risks in the Tolerable zone have been evaluated against the clinical benefit of the device, and the benefit has been determined to outweigh the risk in each case. This device may proceed to [production / market launch]."></textarea>
+          </div>
+
+          <!-- Sign-off fields -->
+          <div>
+            <div class="form-label" style="margin-bottom:0.7rem;">Prepared and reviewed by</div>
+            <div class="signoff-grid">
+              <div class="signoff-field">
+                <div class="signoff-label">Risk Manager</div>
+                <input class="signoff-input" id="so-rm-name" placeholder="Name and title">
+                <input class="signoff-input" id="so-rm-date" type="date" style="margin-top:0.3rem">
+                <div class="signoff-sig-box" id="so-rm-sig">Awaiting signature</div>
+              </div>
+              <div class="signoff-field">
+                <div class="signoff-label">Quality Assurance</div>
+                <input class="signoff-input" id="so-qa-name" placeholder="Name and title">
+                <input class="signoff-input" id="so-qa-date" type="date" style="margin-top:0.3rem">
+                <div class="signoff-sig-box" id="so-qa-sig">Awaiting signature</div>
+              </div>
+              <div class="signoff-field">
+                <div class="signoff-label">Authorized Approver</div>
+                <input class="signoff-input" id="so-ap-name" placeholder="Name and title">
+                <input class="signoff-input" id="so-ap-date" type="date" style="margin-top:0.3rem">
+                <div class="signoff-sig-box" id="so-ap-sig">Awaiting signature</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /page-scroll -->
+
+    <!-- Footer bar -->
+    <div class="doc-footer-bar">
+      <button class="btn-save-draft" onclick="saveReport()">
+        <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Save Draft
+      </button>
+      <span class="doc-save-flash" id="saveFlash">Saved</span>
+    </div>
+
+  </main>
+
+  <script src="sidebar.js"></script>
+  <script src="approvals.js"></script>
+  <script>
+    var RPT = {};
+    var currentVerdict = null;
+
+    // ─── Persistence ──────────────────────────────────────────────────────────
+    function loadReport() {
+      try { RPT = JSON.parse(localStorage.getItem('qms_rm_report')) || {}; } catch(e) { RPT = {}; }
+    }
+
+    function saveReport() {
+      localStorage.setItem('qms_rm_report', JSON.stringify(RPT));
+      var flash = document.getElementById('saveFlash');
+      if (flash) { flash.classList.add('show'); setTimeout(function() { flash.classList.remove('show'); }, 2000); }
+    }
+
+    // ─── Field wiring ─────────────────────────────────────────────────────────
+    var FIELDS = [
+      ['f-device',              'device'],
+      ['f-rmp-ref',             'rmpRef'],
+      ['f-author',              'author'],
+      ['p-lifecycle',           'lifecycle'],
+      ['p-environments',        'environments'],
+      ['p-deviations',          'deviations'],
+      ['p-standards',           'standards'],
+      ['p-hazid-methods',       'hazidMethods'],
+      ['p-hazid-participants',  'hazidParticipants'],
+      ['p-hazid-completeness',  'hazidCompleteness'],
+      ['p-ctrl-evidence',       'ctrlEvidence'],
+      ['p-ctrl-new-risks',      'ctrlNewRisks'],
+      ['p-ctrl-verification',   'ctrlVerification'],
+      ['p-ctrl-ref',            'ctrlRef'],
+      ['p-alarp',               'alarp'],
+      ['p-benefits',            'benefits'],
+      ['p-alternatives',        'alternatives'],
+      ['p-br-determination',    'brDetermination'],
+      ['p-evidence-basis',      'evidenceBasis'],
+      ['p-overall-justification','overallJustification'],
+      ['p-competent-assessment','competentAssessment'],
+      ['p-pms-ref',             'pmsRef'],
+      ['p-pmcf-ref',            'pmcfRef'],
+      ['p-pms-data',            'pmsData'],
+      ['p-update-criteria',     'updateCriteria'],
+      ['p-review-freq',         'reviewFreq'],
+      ['p-additional-refs',     'additionalRefs'],
+      ['p-conclusion',          'conclusion'],
+      ['so-rm-name',            'soRmName'],
+      ['so-rm-date',            'soRmDate'],
+      ['so-qa-name',            'soQaName'],
+      ['so-qa-date',            'soQaDate'],
+      ['so-ap-name',            'soApName'],
+      ['so-ap-date',            'soApDate'],
+    ];
+
+    function wireFields() {
+      FIELDS.forEach(function(pair) {
+        var el = document.getElementById(pair[0]);
+        if (!el) return;
+        el.value = RPT[pair[1]] || '';
+        el.addEventListener('input', function() { RPT[pair[1]] = this.value; });
+      });
+    }
+
+    // ─── Verdict / Overall determination ─────────────────────────────────────
+    var VERDICT_CONFIG = {
+      acceptable: {
+        title: 'Overall residual risk: ACCEPTABLE',
+        text:  'The overall residual risk of this device has been evaluated and determined to be acceptable. All individual residual risks are within the acceptability criteria established in the Risk Management Plan. Clinical benefits outweigh residual risks. The device may proceed to production and market.',
+        cls:   'acceptable'
+      },
+      tolerable: {
+        title: 'Overall residual risk: ACCEPTABLE WITH JUSTIFICATION',
+        text:  'The overall residual risk is acceptable based on benefit-risk analysis. Some individual residual risks remain in the tolerable zone; these have been evaluated against the clinical benefit of the device per ISO 14971 §8.2, and the benefit has been determined to outweigh the risk. See Section 6 for the benefit-risk determination.',
+        cls:   'tolerable'
+      },
+      unacceptable: {
+        title: 'Overall residual risk: NOT YET ACCEPTABLE',
+        text:  'One or more residual risks remain unacceptable. Additional risk control measures are required before this device can proceed to production or market. This report cannot be approved until all residual risks are reduced to acceptable or tolerable levels per the Risk Management Plan.',
+        cls:   'unacceptable'
+      }
+    };
+
+    function setVerdict(v) {
+      if (RPT.approved) return;
+      currentVerdict = v;
+      RPT.verdict = v;
+
+      document.querySelectorAll('.verdict-btn').forEach(function(btn) {
+        btn.classList.remove('selected','acceptable','tolerable','unacceptable');
+      });
+      var btn = document.getElementById('vbtn-' + v);
+      if (btn) { btn.classList.add('selected', v); }
+
+      var block = document.getElementById('verdict-block');
+      var cfg = VERDICT_CONFIG[v];
+      if (block && cfg) {
+        block.className = 'determination-block ' + cfg.cls;
+        document.getElementById('verdict-block-title').textContent = cfg.title;
+        document.getElementById('verdict-block-text').textContent  = cfg.text;
+      }
+    }
+
+    function restoreVerdict() {
+      if (RPT.verdict) setVerdict(RPT.verdict);
+    }
+
+    // ─── Read risk data from other modules ───────────────────────────────────
+    function loadRiskStats() {
+      var risks = [];
+      try { risks = JSON.parse(localStorage.getItem('qms_risks')) || []; } catch(e) {}
+
+      if (risks.length === 0) return;
+
+      var plan = {};
+      try { plan = JSON.parse(localStorage.getItem('qms_risk_mgmt_plan')) || {}; } catch(e) {}
+      var low  = parseInt(plan.thresholdLow)  || 10;
+      var high = parseInt(plan.thresholdHigh) || 49;
+
+      function rpn(r) {
+        var p = (r.initialP || r.p || 1);
+        var s = (r.initialS || r.s || 1);
+        return p * s;
+      }
+      function resRpn(r) {
+        var p = (r.residualP || r.p || 1);
+        var s = (r.residualS || r.s || 1);
+        return p * s;
+      }
+      function zone(score) {
+        if (score <= low) return 'acceptable';
+        if (score > high) return 'unacceptable';
+        return 'tolerable';
+      }
+
+      var total = risks.length;
+
+      // Initial risk distribution
+      var initAcc = 0, initTol = 0, initUnacc = 0;
+      risks.forEach(function(r) { var z = zone(rpn(r)); if (z === 'acceptable') initAcc++; else if (z === 'tolerable') initTol++; else initUnacc++; });
+
+      // Residual risk distribution
+      var resAcc = 0, resTol = 0, resUnacc = 0;
+      risks.forEach(function(r) { var z = zone(resRpn(r)); if (z === 'acceptable') resAcc++; else if (z === 'tolerable') resTol++; else resUnacc++; });
+
+      // Stats
+      setText('stat-total-risks', total);
+
+      // Bars — initial
+      setBarAndCounts('init-seg-acc', 'init-seg-tol', 'init-seg-unacc', 'init-count-acc', 'init-count-tol', 'init-count-unacc', initAcc, initTol, initUnacc, total);
+
+      // Bars — residual
+      setBarAndCounts('res-seg-acc', 'res-seg-tol', 'res-seg-unacc', 'res-count-acc', 'res-count-tol', 'res-count-unacc', resAcc, resTol, resUnacc, total);
+
+      // Control type counts
+      var inh = 0, prot = 0, info = 0;
+      risks.forEach(function(r) {
+        if (Array.isArray(r.controls)) {
+          r.controls.forEach(function(c) {
+            var t = (c.type || '').toLowerCase();
+            if (t === 'inherent') inh++;
+            else if (t === 'protective') prot++;
+            else if (t === 'information') info++;
+          });
+        }
+      });
+      setText('ctrl-inherent-count', inh || '—');
+      setText('ctrl-protective-count', prot || '—');
+      setText('ctrl-info-count', info || '—');
+
+      // Sort and top-5 for initial risk table
+      var sorted = risks.slice().sort(function(a, b) { return rpn(b) - rpn(a); }).slice(0, 8);
+      var iHtml = '';
+      sorted.forEach(function(r) {
+        var score = rpn(r);
+        var z = zone(score);
+        iHtml += '<tr>' +
+          '<td><span class="ref-badge">' + esc(r.id || '—') + '</span></td>' +
+          '<td style="font-size:0.76rem">' + esc(r.hazard || r.situation || '—') + '</td>' +
+          '<td style="font-size:0.74rem;color:rgba(11,39,64,0.6)">' + esc(r.harm || '—') + '</td>' +
+          '<td style="font-weight:700;font-size:0.88rem">' + score + '</td>' +
+          '<td><span class="rl-pill ' + z + '">' + z.charAt(0).toUpperCase() + z.slice(1) + '</span></td>' +
+          '</tr>';
+      });
+      var itbody = document.getElementById('initial-risk-tbody');
+      if (itbody && iHtml) itbody.innerHTML = iHtml;
+
+      // Residual risk table
+      var rHtml = '';
+      risks.forEach(function(r) {
+        var iScore = rpn(r);
+        var rScore = resRpn(r);
+        var iz = zone(iScore);
+        var rz = zone(rScore);
+        var ctrlCount = Array.isArray(r.controls) ? r.controls.length : 0;
+        rHtml += '<tr>' +
+          '<td><span class="ref-badge">' + esc(r.id || '—') + '</span></td>' +
+          '<td style="font-size:0.76rem">' + esc(r.hazard || '—') + (r.harm ? '<br><span style="color:rgba(11,39,64,0.5);font-size:0.7rem">→ ' + esc(r.harm) + '</span>' : '') + '</td>' +
+          '<td style="font-weight:700;text-align:center">' + iScore + '</td>' +
+          '<td><span class="rl-pill ' + iz + '">' + iz.charAt(0).toUpperCase() + iz.slice(1) + '</span></td>' +
+          '<td style="text-align:center;font-size:0.76rem;color:rgba(11,39,64,0.6)">' + ctrlCount + ' control' + (ctrlCount !== 1 ? 's' : '') + '</td>' +
+          '<td style="font-weight:700;text-align:center">' + rScore + '</td>' +
+          '<td><span class="rl-pill ' + rz + '">' + rz.charAt(0).toUpperCase() + rz.slice(1) + '</span></td>' +
+          '</tr>';
+      });
+      var rtbody = document.getElementById('residual-risk-tbody');
+      if (rtbody && rHtml) rtbody.innerHTML = rHtml;
+    }
+
+    function loadHazidStats() {
+      var hazids = {};
+      try { hazids = JSON.parse(localStorage.getItem('qms_hazid')) || {}; } catch(e) {}
+      // Count answered questions and hazards
+      var answered = 0, totalHazards = 0, categories = new Set();
+      if (hazids.answers) {
+        Object.keys(hazids.answers).forEach(function(k) {
+          var a = hazids.answers[k];
+          if (a && a !== 'N/A') answered++;
+        });
+      }
+      if (hazids.entries) {
+        Object.keys(hazids.entries).forEach(function(cat) {
+          if (hazids.entries[cat] && hazids.entries[cat].length) {
+            categories.add(cat);
+            totalHazards += hazids.entries[cat].length;
+          }
+        });
+      }
+      if (totalHazards > 0) setText('stat-total-hazards', totalHazards);
+      if (categories.size > 0) setText('stat-hazard-categories', categories.size);
+      if (answered > 0) setText('stat-hazid-coverage', answered);
+    }
+
+    function loadRmpStatus() {
+      var plan = {};
+      try { plan = JSON.parse(localStorage.getItem('qms_risk_mgmt_plan')) || {}; } catch(e) {}
+      if (plan.approved) {
+        var badge = document.getElementById('rmp-status-badge');
+        if (badge) { badge.textContent = 'Approved'; badge.className = 'rd-status approved'; }
+        var rmpRef = document.getElementById('f-rmp-ref');
+        if (rmpRef && !rmpRef.value) {
+          rmpRef.value = 'RM-001 Rev ' + (plan.revision || 'A') + (plan.approvedAt ? ', Approved ' + plan.approvedAt.slice(0,10) : '');
+          RPT.rmpRef = rmpRef.value;
+        }
+        if (plan.device) {
+          var devField = document.getElementById('f-device');
+          if (devField && !devField.value) { devField.value = plan.device; RPT.device = plan.device; }
+        }
+      }
+    }
+
+    function setBarAndCounts(segAcc, segTol, segUnacc, cntAcc, cntTol, cntUnacc, acc, tol, unacc, total) {
+      if (total === 0) return;
+      var pAcc = (acc / total * 100).toFixed(1);
+      var pTol = (tol / total * 100).toFixed(1);
+      var pUnacc = (unacc / total * 100).toFixed(1);
+      setStyle(segAcc,   'width', pAcc + '%');
+      setStyle(segTol,   'width', pTol + '%');
+      setStyle(segUnacc, 'width', pUnacc + '%');
+      setText(cntAcc,   acc);
+      setText(cntTol,   tol);
+      setText(cntUnacc, unacc);
+    }
+
+    function setText(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+    function setStyle(id, prop, val) { var el = document.getElementById(id); if (el) el.style[prop] = val; }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+    // ─── Status / Approval ────────────────────────────────────────────────────
+    function updateStatus() {
+      var verBadge   = document.getElementById('docVerBadge');
+      var statusPill = document.getElementById('docStatusPill');
+      var revDisp    = document.getElementById('docRevisionDisplay');
+      var statDisp   = document.getElementById('docStatusDisplay');
+      var lockBanner = document.getElementById('doc-lock');
+      var approveBtn = document.getElementById('btn-approve');
+      var rev = RPT.revision || 'A';
+
+      if (verBadge)  verBadge.textContent  = 'Rev ' + rev;
+      if (revDisp)   revDisp.textContent   = rev;
+
+      if (RPT.approved) {
+        if (statusPill) { statusPill.className = 'status-pill approved'; statusPill.textContent = 'Approved'; }
+        if (statDisp)   statDisp.textContent = 'Approved';
+        if (lockBanner) lockBanner.style.display = '';
+        if (approveBtn) {
+          approveBtn.className = 'btn-export';
+          approveBtn.style.borderColor = 'rgba(11,39,64,0.18)';
+          approveBtn.style.color = '';
+          approveBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Initiate Revision';
+          approveBtn.onclick = initiateRevision;
+        }
+        if (window.Approvals) Approvals.renderStatusPanel('rm-report', 'doc', document.getElementById('approval-route-panel'));
+        lockFields();
+        // Sign-off boxes
+        if (RPT.signatures && RPT.signatures.length) {
+          RPT.signatures.forEach(function(sig, idx) {
+            var ids = ['so-rm-sig','so-qa-sig','so-ap-sig'];
+            var box = document.getElementById(ids[idx] || ids[0]);
+            if (box) { box.textContent = '✓ Signed: ' + sig.signerName; box.className = 'signoff-sig-box signed'; }
+          });
+        }
+      } else {
+        if (statusPill) { statusPill.className = 'status-pill draft'; statusPill.textContent = 'Draft'; }
+        if (statDisp)   statDisp.textContent = 'Draft';
+        if (lockBanner) lockBanner.style.display = 'none';
+        if (approveBtn) {
+          approveBtn.className = 'btn-export';
+          approveBtn.style.borderColor = 'rgba(16,185,129,0.3)';
+          approveBtn.style.color = '#047857';
+          approveBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Approve';
+          approveBtn.onclick = initiateApproval;
+        }
+        unlockFields();
+      }
+    }
+
+    function lockFields() {
+      document.querySelectorAll('.page-scroll input, .page-scroll textarea, .page-scroll .verdict-btn').forEach(function(el) { el.disabled = true; });
+    }
+    function unlockFields() {
+      document.querySelectorAll('.page-scroll input, .page-scroll textarea, .page-scroll .verdict-btn').forEach(function(el) { el.disabled = false; });
+    }
+
+    function initiateApproval() {
+      if (!window.Approvals) { alert('Approval module not loaded.'); return; }
+      Approvals.initiate({
+        recordType: 'rm-report', recordId: 'doc',
+        meaning: 'I have reviewed and approve this Risk Management Report as meeting the requirements of ISO 14971:2019 §9. I confirm that all risk management activities have been completed in accordance with the Risk Management Plan, the overall residual risk is acceptable, and this device may proceed to production/market.',
+        recordSnapshot: RPT,
+        onComplete: function(sigs) {
+          RPT.approved = true;
+          RPT.approvedAt  = sigs[sigs.length - 1].timestamp;
+          RPT.approvedBy  = sigs[sigs.length - 1].signerName;
+          RPT.signatures  = sigs;
+          RPT.revision    = RPT.revision || 'A';
+          saveReport();
+          updateStatus();
+        },
+        onCancel: function() {}
+      });
+    }
+
+    function initiateRevision() {
+      if (!confirm('Start a new revision? This will unlock all fields. The current approval will be preserved in revision history.')) return;
+      var hist = RPT.revHistory || [];
+      if (RPT.approved) hist.push({ revision: RPT.revision || 'A', approvedAt: RPT.approvedAt, approvedBy: RPT.approvedBy, signatures: RPT.signatures });
+      var cur = RPT.revision || 'A';
+      var next = (cur.length === 1 && cur.charCodeAt(0) < 90) ? String.fromCharCode(cur.charCodeAt(0) + 1) : cur + '1';
+      RPT.approved = false; RPT.revision = next;
+      RPT.approvedAt = null; RPT.approvedBy = null; RPT.signatures = null; RPT.revHistory = hist;
+      saveReport();
+      if (window.Approvals) Approvals.clearInstance('rm-report', 'doc');
+      updateStatus();
+    }
+
+    // ─── Export ───────────────────────────────────────────────────────────────
+    function exportReport() {
+      var lines = ['Risk Management Report', '======================', ''];
+      lines.push('Document No.: RM-004');
+      lines.push('Revision: ' + (RPT.revision || 'A'));
+      lines.push('Status: ' + (RPT.approved ? 'Approved' : 'Draft'));
+      if (RPT.device)   lines.push('Device: ' + RPT.device);
+      if (RPT.rmpRef)   lines.push('RM Plan Ref: ' + RPT.rmpRef);
+      if (RPT.author)   lines.push('Author: ' + RPT.author);
+      lines.push('\n--- 1. Scope ---');
+      if (RPT.lifecycle)     lines.push('Lifecycle: ' + RPT.lifecycle);
+      if (RPT.environments)  lines.push('Environments: ' + RPT.environments);
+      if (RPT.deviations)    lines.push('Deviations: ' + RPT.deviations);
+      if (RPT.standards)     lines.push('Standards: ' + RPT.standards);
+      lines.push('\n--- 2. Hazard Identification ---');
+      if (RPT.hazidMethods)       lines.push('Methods: ' + RPT.hazidMethods);
+      if (RPT.hazidParticipants)  lines.push('Participants: ' + RPT.hazidParticipants);
+      if (RPT.hazidCompleteness)  lines.push('Completeness: ' + RPT.hazidCompleteness);
+      lines.push('\n--- 4. Risk Controls ---');
+      if (RPT.ctrlEvidence)      lines.push('Evidence: ' + RPT.ctrlEvidence);
+      if (RPT.ctrlNewRisks)      lines.push('New risks: ' + RPT.ctrlNewRisks);
+      if (RPT.ctrlVerification)  lines.push('Verification: ' + RPT.ctrlVerification);
+      lines.push('\n--- 5. Residual Risk ---');
+      if (RPT.alarp) lines.push('ALARP justification: ' + RPT.alarp);
+      lines.push('\n--- 6. Benefit-Risk ---');
+      if (RPT.benefits)         lines.push('Benefits: ' + RPT.benefits);
+      if (RPT.alternatives)     lines.push('Alternatives: ' + RPT.alternatives);
+      if (RPT.brDetermination)  lines.push('BR determination: ' + RPT.brDetermination);
+      lines.push('\n--- 7. Overall Determination ---');
+      if (RPT.verdict)                lines.push('Verdict: ' + RPT.verdict.toUpperCase());
+      if (RPT.overallJustification)   lines.push('Justification: ' + RPT.overallJustification);
+      if (RPT.competentAssessment)    lines.push('Competent assessment: ' + RPT.competentAssessment);
+      lines.push('\n--- 8. Post-Production ---');
+      if (RPT.pmsRef)       lines.push('PMS Plan: ' + RPT.pmsRef);
+      if (RPT.pmcfRef)      lines.push('PMCF Plan: ' + RPT.pmcfRef);
+      if (RPT.pmsData)      lines.push('Data types: ' + RPT.pmsData);
+      if (RPT.updateCriteria) lines.push('Update triggers: ' + RPT.updateCriteria);
+      lines.push('\n--- 10. Conclusion ---');
+      if (RPT.conclusion) lines.push(RPT.conclusion);
+      var blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'risk-management-report-rev' + (RPT.revision || 'A') + '.txt';
+      a.click();
+    }
+
+    // ─── Init ─────────────────────────────────────────────────────────────────
+    loadReport();
+    wireFields();
+    restoreVerdict();
+    loadRiskStats();
+    loadHazidStats();
+    loadRmpStatus();
+    updateStatus();
+    initSidebar({ activePage: 'risk-management-report' });
+  </script>
+</body>
+</html>

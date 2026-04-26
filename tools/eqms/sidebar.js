@@ -92,6 +92,9 @@ const ACTIVE_MAP = {
   'risk-hub':                   'risk-management',
   'risk-management-plan':       'risk-management',
   'risk-management-procedure':  'risk-management',
+  'risk-management-report':     'risk-management',
+  'hazard-identification':      'risk-management',
+  'risk-analysis':              'risk-management',
   // → CAPA / NCR
   'capa':             'capa-ncr',
   'nonconformance':   'capa-ncr',
