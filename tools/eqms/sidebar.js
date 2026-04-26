@@ -24,7 +24,7 @@ const NAV_ITEMS = [
   {
     key: 'risk-management',
     label: 'Risk Management',
-    href: 'risk-management.html',
+    href: 'risk-management-overview.html',
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
   },
   {
@@ -88,6 +88,8 @@ const ACTIVE_MAP = {
   'validation-hub':             'design-controls',
   'design-control':             'design-controls',
   // → Risk Management
+  'risk-management-overview':   'risk-management',
+  'risk-hub':                   'risk-management',
   'risk-management-plan':       'risk-management',
   'risk-management-procedure':  'risk-management',
   // → CAPA / NCR

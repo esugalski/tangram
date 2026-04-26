@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Management — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --light-gray: #F7F8FA;
+      --white:      #FFFFFF;
+      --gray:       #D2D2D2;
+      --green:      #10B981;
+      --amber:      #F59E0B;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+      --sidebar-w:  232px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; overflow: hidden; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; margin: 1px 0.5rem; white-space: nowrap; overflow: hidden; position: relative; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.9); }
+    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; font-weight: 600; }
+    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
+    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; display: flex; }
+    .sidebar-nav-icon svg { width: 15px; height: 15px; stroke: inherit; fill: none; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); }
+
+    /* ─── APP SHELL ─── */
+    .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0 1.5rem; flex-shrink: 0; z-index: 10; }
+    .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; max-width: 380px; flex: 1; transition: border-color 0.15s; }
+    .topbar-search:focus-within { border-color: rgba(10,192,233,0.4); }
+    .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; flex-shrink: 0; }
+    .topbar-search input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 100%; }
+    .topbar-search input::placeholder { color: rgba(11,39,64,0.35); }
+    .topbar-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+    .topbar-icon-btn { width: 34px; height: 34px; border-radius: 8px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.12s; position: relative; }
+    .topbar-icon-btn:hover { background: var(--light-gray); }
+    .topbar-icon-btn svg { width: 16px; height: 16px; stroke: var(--mid-blue); fill: none; stroke-width: 2; }
+
+    /* ─── GUIDANCE BUTTON ─── */
+    .btn-guidance { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; }
+    .btn-guidance:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-guidance svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── PANEL OVERLAY ─── */
+    .panel-overlay { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+    .panel-overlay.open { pointer-events: auto; }
+    .panel-backdrop { position: absolute; inset: 0; background: rgba(11,39,64,0.15); opacity: 0; transition: opacity 0.25s; }
+    .panel-overlay.open .panel-backdrop { opacity: 1; }
+    .help-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    .panel-overlay.help-open .help-panel { transform: translateX(0); }
+    .panel-head { padding: 1.2rem 1.25rem 1rem; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .panel-head-row { display: flex; align-items: center; gap: 0.65rem; }
+    .panel-type-badge { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 4px; }
+    .panel-id { font-size: 0.95rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; flex: 1; }
+    .panel-close { width: 28px; height: 28px; border-radius: 6px; border: none; background: rgba(11,39,64,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
+    .panel-close:hover { background: rgba(11,39,64,0.12); }
+    .panel-close svg { width: 14px; height: 14px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .panel-body { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+
+    /* ─── SUPPRESSION ─── */
+    #lm-step-footer { display: none !important; }
+    #lm-toggle-root { display: none !important; }
+
+    /* ─── PRODUCT SELECTOR ─── */
+    .product-selector-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .product-selector-lbl { font-size: 0.72rem; color: rgba(11,39,64,0.42); font-weight: 500; }
+    .product-selector { display: inline-flex; align-items: center; gap: 0.45rem; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--primary); background: white; border: 1.5px solid rgba(11,39,64,0.15); border-radius: 20px; padding: 0.38rem 0.9rem; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+    .product-selector:hover { border-color: rgba(10,192,233,0.5); background: rgba(10,192,233,0.02); }
+    .product-selector svg { width: 12px; height: 12px; stroke: rgba(11,39,64,0.4); fill: none; stroke-width: 2; }
+
+    /* ─── PAGE HEADER ─── */
+    .page-heading { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; margin-bottom: 0.2rem; }
+    .page-subtitle { font-size: 0.77rem; color: rgba(11,39,64,0.44); margin-bottom: 1.25rem; }
+
+    /* ─── PROCESS FLOW ─── */
+    .flow-section { margin-bottom: 1.75rem; }
+    .section-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.75rem; }
+    .flow-section-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; }
+    .flow-strip {
+      padding: 1.1rem 1.25rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow-x: auto;
+    }
+    .flow-strip::-webkit-scrollbar { height: 4px; }
+    .flow-strip::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+    .flow-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.45rem;
+      text-decoration: none;
+      padding: 0.65rem 1.1rem;
+      border-radius: 9px;
+      border: 1.5px solid rgba(11,39,64,0.1);
+      background: var(--light-gray);
+      transition: border-color 0.15s, background 0.15s, transform 0.12s;
+      flex: 1;
+      min-width: 0;
+      cursor: pointer;
+    }
+    .flow-node:hover { border-color: rgba(10,192,233,0.4); background: rgba(10,192,233,0.03); transform: translateY(-1px); }
+    .flow-node-num { font-size: 0.56rem; font-weight: 800; letter-spacing: 0.08em; color: rgba(11,39,64,0.28); text-transform: uppercase; }
+    .flow-node-label { font-size: 0.76rem; font-weight: 700; color: var(--primary); text-align: center; line-height: 1.3; }
+    .flow-node-status { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.58rem; font-weight: 700; padding: 0.12rem 0.4rem; border-radius: 4px; }
+    .flow-status-complete { background: rgba(16,185,129,0.1); color: #047857; }
+    .flow-status-progress { background: rgba(245,158,11,0.12); color: #b45309; }
+    .flow-status-gap     { background: rgba(239,68,68,0.1); color: #dc2626; }
+    .flow-status-pending { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.4); }
+    .flow-arrow { color: rgba(11,39,64,0.18); font-size: 1rem; flex-shrink: 0; margin: 0 0.4rem; user-select: none; }
+
+    /* ─── TWO-COLUMN LAYOUT ─── */
+    .hub-body { display: flex; gap: 1.25rem; align-items: flex-start; }
+    .cards-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.85rem; }
+
+    /* ─── SECTION CARDS ─── */
+    .section-card {
+      background: white;
+      border: 1px solid rgba(11,39,64,0.08);
+      border-radius: 12px;
+      padding: 1.1rem 1.3rem;
+      display: flex;
+      gap: 1rem;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+      color: inherit;
+    }
+    .section-card:hover { border-color: rgba(10,192,233,0.3); box-shadow: 0 2px 12px rgba(10,192,233,0.06); }
+    .card-icon-wrap {
+      width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-icon-wrap svg { width: 16px; height: 16px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .card-body { flex: 1; min-width: 0; }
+    .card-header { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 0.3rem; }
+    .card-num { font-size: 0.6rem; font-weight: 700; color: rgba(11,39,64,0.28); text-transform: uppercase; letter-spacing: 0.08em; }
+    .card-title { font-size: 0.88rem; font-weight: 700; color: var(--primary); }
+    .card-what { font-size: 0.78rem; color: rgba(11,39,64,0.62); line-height: 1.55; margin-bottom: 0.5rem; }
+    .card-meta-row { display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+    .card-meta-item { flex: 1; min-width: 140px; }
+    .card-meta-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.3); margin-bottom: 0.22rem; }
+    .card-meta-text { font-size: 0.74rem; color: rgba(11,39,64,0.58); line-height: 1.5; }
+    .card-meta-text.pitfall { color: rgba(245,158,11,0.85); }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; padding-top: 0.65rem; border-top: 1px solid rgba(11,39,64,0.06); }
+    .card-status-text { font-size: 0.72rem; color: rgba(11,39,64,0.44); }
+    .card-status-text strong { color: var(--primary); font-weight: 600; }
+    .card-link-btn {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 600;
+      color: var(--aqua-dark); background: rgba(10,192,233,0.07);
+      border: 1px solid rgba(10,192,233,0.2); border-radius: 6px;
+      padding: 0.3rem 0.7rem; text-decoration: none; cursor: pointer;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .card-link-btn:hover { background: rgba(10,192,233,0.14); border-color: rgba(10,192,233,0.35); }
+    .card-link-btn svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+
+    /* ─── SUB-NAV ─── */
+    .rm-subnav { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 40px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; overflow-x: auto; flex-shrink: 0; }
+    .rm-subnav::-webkit-scrollbar { height: 0; }
+    .rm-subnav-link { font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.5); text-decoration: none; padding: 0 0.7rem; white-space: nowrap; height: 40px; display: flex; align-items: center; border-bottom: 2px solid transparent; transition: color 0.12s; }
+    .rm-subnav-link:hover { color: var(--primary); }
+    .rm-subnav-link.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <div class="app-main main">
+    <div class="topbar">
+      <div class="topbar-search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search documents, risks, products, audits…">
+      </div>
+      <div class="topbar-right">
+        <button class="btn-guidance" onclick="openHelpPanel()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Guidance
+        </button>
+      </div>
+    </div>
+
+    <!-- Risk Management Sub-Nav -->
+    <nav class="rm-subnav">
+      <a href="risk-management-overview.html" class="rm-subnav-link active">Risk Management Overview</a>
+      <a href="risk-management-plan.html" class="rm-subnav-link">Risk Plan</a>
+      <a href="risk-hub.html" class="rm-subnav-link">Hazard Identification</a>
+      <a href="risk-hub.html" class="rm-subnav-link">Risk Analysis</a>
+      <a href="risk-hub.html" class="rm-subnav-link">Risk Report</a>
+    </nav>
+
+    <div class="content-wrap">
+      <div class="main-area">
+
+        <div class="page-heading">Risk Management</div>
+        <div class="page-subtitle">Your guide to the ISO 14971 risk management process — what each phase requires, how they connect, and where to focus next.</div>
+
+        <div class="product-selector-row">
+          <span class="product-selector-lbl">Product:</span>
+          <button class="product-selector" id="productSelectorBtn" onclick="cycleProduct()">
+            <span id="productSelectorLabel">CardioSync Pro</span>
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+
+        <!-- PROCESS FLOW -->
+        <div class="flow-section">
+          <div class="section-label">Process Flow — click any stage to open it</div>
+          <div class="flow-section-wrap">
+            <div class="flow-strip" id="flowStrip">
+
+              <a href="risk-management-plan.html" class="flow-node" style="border-color:#0AC0E9;background:rgba(10,192,233,0.05);">
+                <span class="flow-node-num">01</span>
+                <span class="flow-node-label">Risk Management Plan</span>
+                <span class="flow-node-status flow-status-complete" id="fs-rmplan">Complete</span>
+              </a>
+              <span class="flow-arrow">→</span>
+
+              <a href="risk-hub.html" class="flow-node" style="border-color:#f97316;background:rgba(249,115,22,0.05);">
+                <span class="flow-node-num">02</span>
+                <span class="flow-node-label">Hazard Identification</span>
+                <span class="flow-node-status flow-status-progress" id="fs-hazard">In Progress</span>
+              </a>
+              <span class="flow-arrow">→</span>
+
+              <a href="risk-hub.html" class="flow-node" style="border-color:#ef4444;background:rgba(239,68,68,0.05);">
+                <span class="flow-node-num">03</span>
+                <span class="flow-node-label">Risk Analysis</span>
+                <span class="flow-node-status flow-status-progress" id="fs-analysis">In Progress</span>
+              </a>
+              <span class="flow-arrow">→</span>
+
+              <a href="risk-hub.html" class="flow-node" style="border-color:#10B981;background:rgba(16,185,129,0.05);">
+                <span class="flow-node-num">04</span>
+                <span class="flow-node-label">Risk Report</span>
+                <span class="flow-node-status flow-status-pending" id="fs-report">Pending</span>
+              </a>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- HUB BODY: CARDS -->
+        <div class="hub-body">
+
+          <div class="cards-col">
+            <div class="section-label">All Phases</div>
+
+            <!-- Risk Management Plan -->
+            <div class="section-card" style="border-left: 3px solid #0AC0E9;">
+              <div class="card-icon-wrap" style="background:rgba(10,192,233,0.1);">
+                <svg viewBox="0 0 24 24" style="stroke:#089bbf;">
+                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                  <rect x="9" y="3" width="6" height="4" rx="1" ry="1"/>
+                  <path d="M9 12h6M9 16h4"/>
+                </svg>
+              </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <span class="card-num">01</span>
+                  <span class="card-title">Risk Management Plan</span>
+                </div>
+                <div class="card-what">The foundational controlled document that defines how risk management will be executed throughout the device lifecycle. It sets the scope, identifies the qualified personnel responsible, establishes risk acceptability criteria, and specifies the risk management activities to be performed — all before analysis begins.</div>
+                <div class="card-meta-row">
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Why it matters</div>
+                    <div class="card-meta-text">Acceptability criteria must be defined before you evaluate your risks — not after you've seen the results. An FDA reviewer or notified body auditor will check that your criteria are grounded in state-of-the-art evidence, not adjusted to make your risk matrix look clean.</div>
+                  </div>
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Common pitfall</div>
+                    <div class="card-meta-text pitfall">Setting acceptance criteria that aren't linked to clinical evidence or relevant guidance. "Score ≤ 6 is acceptable" is meaningless without defining what each severity and probability level represents for your specific patient population.</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="card-status-text"><strong>ISO 14971 §4</strong> · Rev A Approved</span>
+                  <a href="risk-management-plan.html" class="card-link-btn">
+                    Open Risk Plan
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hazard Identification -->
+            <div class="section-card" style="border-left: 3px solid #f97316;">
+              <div class="card-icon-wrap" style="background:rgba(249,115,22,0.1);">
+                <svg viewBox="0 0 24 24" style="stroke:#c2410c;">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <span class="card-num">02</span>
+                  <span class="card-title">Hazard Identification</span>
+                </div>
+                <div class="card-what">A systematic process of identifying all foreseeable hazards associated with the device during normal use, reasonably foreseeable misuse, and fault conditions. For each hazard, you trace the sequence of events that leads to a hazardous situation, and then to the potential harm — establishing the full causal chain required by ISO 14971.</div>
+                <div class="card-meta-row">
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Why it matters</div>
+                    <div class="card-meta-text">You can only control risks you've identified. A hazard missed here is an uncontrolled risk in the field. ISO 14971 requires consideration of all foreseeable uses, all patient populations, all environmental conditions, and all reasonably foreseeable failure modes.</div>
+                  </div>
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Common pitfall</div>
+                    <div class="card-meta-text pitfall">Confusing a hazard with a hazardous situation. "Electrical energy" is a hazard. "Patient contact with a live conductor during normal use" is the hazardous situation. ISO 14971 requires both — the distinction drives how you structure your controls.</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="card-status-text"><strong>ISO 14971 §5.2</strong> · <span id="hazard-count">8 hazards logged</span></span>
+                  <a href="risk-hub.html" class="card-link-btn">
+                    Open Risk Register
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Risk Analysis -->
+            <div class="section-card" style="border-left: 3px solid #ef4444;">
+              <div class="card-icon-wrap" style="background:rgba(239,68,68,0.1);">
+                <svg viewBox="0 0 24 24" style="stroke:#dc2626;">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <path d="M3 9h18M9 3v18"/>
+                  <path d="M15 15l-3-3 3-3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <span class="card-num">03</span>
+                  <span class="card-title">Risk Analysis</span>
+                </div>
+                <div class="card-what">For each hazardous situation, estimates the probability of harm occurring and the severity of that harm to produce an initial risk estimate. Where risks exceed the acceptance criteria, risk controls are applied using the prescribed hierarchy: inherent safety by design first, then protective measures, then information for safety. Residual risk is re-evaluated after each control and verified to confirm effectiveness.</div>
+                <div class="card-meta-row">
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Why it matters</div>
+                    <div class="card-meta-text">Risk controls must be verified — a control that isn't confirmed to work doesn't reduce risk. ISO 14971 also requires you to check whether each control introduces new hazards. Every risk reduction claim needs an evidence trail.</div>
+                  </div>
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Common pitfall</div>
+                    <div class="card-meta-text pitfall">Jumping straight to controls before completing the initial risk estimate. You need a documented before-and-after comparison to demonstrate risk reduction — and to justify the final residual risk conclusion against your pre-defined criteria.</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="card-status-text"><strong>ISO 14971 §5–8</strong> · <span id="risk-status">3 risks need controls</span></span>
+                  <a href="risk-hub.html" class="card-link-btn">
+                    Open Risk Register
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Risk Report -->
+            <div class="section-card" style="border-left: 3px solid #10B981;">
+              <div class="card-icon-wrap" style="background:rgba(16,185,129,0.1);">
+                <svg viewBox="0 0 24 24" style="stroke:#047857;">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <polyline points="9 15 12 18 15 15"/>
+                  <line x1="12" y1="12" x2="12" y2="18"/>
+                </svg>
+              </div>
+              <div class="card-body">
+                <div class="card-header">
+                  <span class="card-num">04</span>
+                  <span class="card-title">Risk Report</span>
+                </div>
+                <div class="card-what">The closing artifact of the risk management file — a summary document that confirms the complete process has been executed as planned. It captures all identified hazards, the controls implemented, the residual risk evaluations, and the overall benefit-risk determination. The report is the evidence that overall residual risk is acceptable before the device enters the market.</div>
+                <div class="card-meta-row">
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Why it matters</div>
+                    <div class="card-meta-text">This is the primary risk management artifact auditors request during FDA inspections and notified body reviews. It must demonstrate that all risks have been addressed, that no risk was overlooked, and that the overall residual risk conclusion is consistent with the benefit-risk analysis.</div>
+                  </div>
+                  <div class="card-meta-item">
+                    <div class="card-meta-label">Common pitfall</div>
+                    <div class="card-meta-text pitfall">Treating the report as a one-time submission document. ISO 14971 requires the risk management file — and the report — to be maintained throughout the product lifecycle. Post-market data must be fed back in and the overall risk conclusion revisited.</div>
+                  </div>
+                </div>
+                <div class="card-footer">
+                  <span class="card-status-text"><strong>ISO 14971 §10</strong> · <span style="color:#b45309;font-weight:600;">Pending — open risks remain</span></span>
+                  <a href="risk-hub.html" class="card-link-btn">
+                    Open Risk Report
+                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /cards-col -->
+
+          <!-- Sidebar widget (hidden; content cloned into "At a glance" panel by learn-mode.js) -->
+          <div id="lm-sidebar-widget" style="display:none">
+            <div class="lm-sw">
+              <div class="lm-sw-gauge-wrap">
+                <div id="sw-gauge-pct" class="lm-sw-big">0%</div>
+                <div class="lm-sw-gauge-sub">risks at acceptable residual level</div>
+              </div>
+              <div class="lm-sw-section">
+                <div class="lm-sw-section-title">Phase status</div>
+                <div id="sw-section-bars"></div>
+              </div>
+              <div class="lm-sw-section" id="sw-gaps-section">
+                <div class="lm-sw-section-title">Open items</div>
+                <div id="sw-gaps"></div>
+              </div>
+              <div class="lm-sw-section">
+                <div class="lm-sw-section-title">Next action</div>
+                <div id="sw-next-action" style="font-size:0.68rem;color:#304F6B;line-height:1.5;"></div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /hub-body -->
+
+      </div><!-- /main-area -->
+    </div><!-- /content-wrap -->
+  </div><!-- /app-main -->
+
+  <!-- PANEL OVERLAY -->
+  <div class="panel-overlay" id="panelOverlay">
+    <div class="panel-backdrop" onclick="closeAllPanels()"></div>
+    <div class="help-panel" id="helpPanel">
+      <div class="panel-head">
+        <div class="panel-head-row">
+          <span class="panel-type-badge" style="background:rgba(10,192,233,0.1);color:#089bbf;">GUIDANCE</span>
+          <span class="panel-id">Risk Management Overview</span>
+          <button class="panel-close" onclick="closeAllPanels()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div style="font-size:0.84rem;color:#0B2740;line-height:1.65;">
+          <strong>ISO 14971:2019</strong> is the international standard for the application of risk management to medical devices. It defines a structured, iterative process that runs from initial design through the entire product lifecycle — not just through submission.
+        </div>
+        <div style="font-size:0.8rem;color:#304F6B;line-height:1.65;">
+          The four phases shown here form a closed loop: the plan sets the rules, hazard identification surfaces the risks, risk analysis and control reduces them, and the report confirms the process was completed as intended. Post-market data then feeds back into the file — reopening the loop.
+        </div>
+        <div style="background:rgba(11,39,64,0.03);border:1px solid rgba(11,39,64,0.08);border-radius:10px;padding:0.9rem 1rem;display:flex;flex-direction:column;gap:0.55rem;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(11,39,64,0.35);">The Risk Control Hierarchy (ISO 14971 §7)</div>
+          <div style="font-size:0.78rem;color:#0B2740;line-height:1.6;">
+            <span style="font-weight:700;">① Inherent safety by design</span> — eliminate the hazard at source<br>
+            <span style="font-weight:700;">② Protective measures</span> — guards, alarms, interlocks<br>
+            <span style="font-weight:700;">③ Information for safety</span> — warnings, labeling, IFU
+          </div>
+          <div style="font-size:0.72rem;color:#304F6B;line-height:1.55;">Apply in order. Do not skip to labeling when a design change could eliminate the hazard.</div>
+        </div>
+        <div style="font-size:0.8rem;color:#304F6B;line-height:1.65;">
+          The risk management file is a living collection of all records — plan, hazard analysis, risk evaluations, control verification, and the final report. It is the primary artifact auditors pull during an FDA inspection or notified body review.
+        </div>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.65rem;font-weight:700;color:#089bbf;background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.2);border-radius:5px;padding:0.18rem 0.52rem;">
+            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            ISO 14971:2019
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.65rem;font-weight:700;color:#089bbf;background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.2);border-radius:5px;padding:0.18rem 0.52rem;">
+            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            ISO/TR 24971:2020
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.65rem;font-weight:700;color:#089bbf;background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.2);border-radius:5px;padding:0.18rem 0.52rem;">
+            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            21 CFR 820.30(g)
+          </span>
+        </div>
+        <!-- Video placeholder -->
+        <div style="border:2px dashed rgba(11,39,64,0.12);border-radius:10px;background:rgba(11,39,64,0.025);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.65rem;">
+          <svg viewBox="0 0 24 24" style="width:34px;height:34px;stroke:rgba(11,39,64,0.18);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          <span style="font-size:0.74rem;font-weight:500;color:rgba(11,39,64,0.28);">Video guide coming soon</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="seed-demo.js?v=1776901546755"></script>
+  <script src="learn-mode.js?v=1776901546755"></script>
+  <script src="sidebar.js?v=1776901546755"></script>
+  <script>
+    initSidebar({ activePage: 'risk-management-overview' });
+
+    function openHelpPanel() {
+      document.getElementById('helpPanel').style.transform = '';
+      var overlay = document.getElementById('panelOverlay');
+      overlay.classList.add('open', 'help-open');
+    }
+    function closeAllPanels() {
+      var overlay = document.getElementById('panelOverlay');
+      overlay.classList.remove('open', 'help-open');
+      document.getElementById('helpPanel').style.transform = 'translateX(100%)';
+    }
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAllPanels(); });
+
+    var PRODUCTS = ['CardioSync Pro', 'CardioSync Lite', 'CardioSync Hub'];
+    var productIdx = 0;
+    function cycleProduct() {
+      productIdx = (productIdx + 1) % PRODUCTS.length;
+      document.getElementById('productSelectorLabel').textContent = PRODUCTS[productIdx];
+    }
+
+    // Populate status from localStorage risk data
+    (function() {
+      try {
+        var risks = JSON.parse(localStorage.getItem('qms_risks') || '[]');
+        if (!Array.isArray(risks)) risks = Object.values(risks);
+
+        var total = risks.length;
+        var needControl = risks.filter(function(r) { return r.initialLevel === 'high' || r.initialLevel === 'medium'; }).length;
+        var acceptable = risks.filter(function(r) { return r.residualLevel === 'low'; }).length;
+
+        if (total > 0) {
+          document.getElementById('hazard-count').textContent = total + ' hazard' + (total !== 1 ? 's' : '') + ' logged';
+          document.getElementById('risk-status').textContent = needControl + ' risk' + (needControl !== 1 ? 's' : '') + ' need' + (needControl === 1 ? 's' : '') + ' controls';
+          document.getElementById('sw-gauge-pct').textContent = Math.round(100 * acceptable / total) + '%';
+
+          // Update flow node statuses
+          if (total > 0) {
+            var hazardEl = document.getElementById('fs-hazard');
+            if (hazardEl) { hazardEl.textContent = total + ' logged'; hazardEl.className = 'flow-node-status flow-status-progress'; }
+          }
+          if (needControl === 0 && total > 0) {
+            var analysisEl = document.getElementById('fs-analysis');
+            if (analysisEl) { analysisEl.textContent = 'Complete'; analysisEl.className = 'flow-node-status flow-status-complete'; }
+            var reportEl = document.getElementById('fs-report');
+            if (reportEl) { reportEl.textContent = 'Ready'; reportEl.className = 'flow-node-status flow-status-progress'; }
+          }
+        }
+      } catch(e) {}
+
+      // Check plan status
+      try {
+        var plan = JSON.parse(localStorage.getItem('qms_risk_plan') || 'null');
+        if (plan && plan.status === 'approved') {
+          var planEl = document.getElementById('fs-rmplan');
+          if (planEl) { planEl.textContent = 'Approved'; planEl.className = 'flow-node-status flow-status-complete'; }
+        } else if (!plan) {
+          var planEl = document.getElementById('fs-rmplan');
+          if (planEl) { planEl.textContent = 'Pending'; planEl.className = 'flow-node-status flow-status-pending'; }
+        }
+      } catch(e) {}
+    })();
+  </script>
+</body>
+</html>
