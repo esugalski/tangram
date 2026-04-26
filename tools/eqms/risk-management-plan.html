@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     /* ─── SUPPRESSIONS ─── */
     #lm-step-footer { display: none !important; }
@@ -27,6 +28,27 @@
     .btn-export { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
     .btn-export:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
     .btn-export svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── EXPORT MODAL ─── */
+    .export-modal-overlay { position: fixed; inset: 0; z-index: 300; display: none; align-items: center; justify-content: center; background: rgba(11,39,64,0.2); backdrop-filter: blur(2px); }
+    .export-modal-overlay.open { display: flex; }
+    .export-modal { background: white; border-radius: 14px; box-shadow: 0 20px 60px rgba(11,39,64,0.2); padding: 1.75rem; width: 380px; max-width: calc(100vw - 2rem); }
+    .export-modal-title { font-size: 1.05rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 0.2rem; }
+    .export-modal-sub { font-size: 0.76rem; color: rgba(11,39,64,0.42); margin-bottom: 1.5rem; }
+    .export-group { margin-bottom: 1.25rem; }
+    .export-group-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 0.55rem; }
+    .export-radio-group { display: flex; gap: 0.5rem; }
+    .export-radio-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.42rem; padding: 0.55rem 0.75rem; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.5); transition: border-color 0.15s, color 0.15s, background 0.15s; user-select: none; font-family: 'Inter', sans-serif; }
+    .export-radio-btn:hover { border-color: rgba(11,39,64,0.25); color: var(--primary); }
+    .export-radio-btn.selected { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.06); }
+    .export-radio-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .export-modal-footer { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(11,39,64,0.07); }
+    .btn-export-run { display: inline-flex; align-items: center; gap: 0.45rem; background: var(--primary); color: white; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.82rem; padding: 0.6rem 1.4rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; }
+    .btn-export-run:hover { background: var(--mid-blue); transform: translateY(-1px); }
+    .btn-export-run svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-export-cancel { font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.4); background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.15s; }
+    .btn-export-cancel:hover { color: var(--primary); }
+
     .btn-guidance { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
     .btn-guidance:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
     .btn-guidance svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -184,7 +206,7 @@
         <span class="status-pill draft" id="docStatusPill">Draft</span>
       </div>
       <div class="topbar-right">
-        <button class="btn-export" onclick="exportPlan()">
+        <button class="btn-export" onclick="openExportModal()">
           <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Export
         </button>
@@ -1070,6 +1092,125 @@
     initSidebar({ activePage: 'risk-management-plan' });
     populate();
     updateStatus();
+
+    // ── Export Modal ──────────────────────────────────────────────
+    var exportFmt = 'pdf';
+    function openExportModal() { document.getElementById('exportModalOverlay').classList.add('open'); }
+    function closeExportModal() { document.getElementById('exportModalOverlay').classList.remove('open'); }
+    function selectExportFmt(fmt) {
+      exportFmt = fmt;
+      document.getElementById('expFmtPDF').classList.toggle('selected', fmt === 'pdf');
+      document.getElementById('expFmtTXT').classList.toggle('selected', fmt === 'txt');
+    }
+    function runExport() {
+      closeExportModal();
+      if (exportFmt === 'pdf') exportPlanPDF(); else exportPlan();
+    }
+
+    // ── Export PDF ────────────────────────────────────────────────
+    function exportPlanPDF() {
+      var jsPDFLib = window.jspdf.jsPDF;
+      var doc = new jsPDFLib({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+      var pageW = doc.internal.pageSize.getWidth();
+      var margin = 50, contentW = pageW - margin * 2;
+      var y = 50;
+      var today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(11, 39, 64);
+      doc.text('Risk Management Plan', margin, y); y += 26;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(100, 120, 140);
+      doc.text('Document No.: RM-001   |   Rev ' + (PLAN.revision || 'A') + '   |   ' + (PLAN.approved ? 'Approved' : 'Draft') + '   |   Exported ' + today, margin, y); y += 8;
+      doc.setDrawColor(200, 215, 230); doc.setLineWidth(0.5); doc.line(margin, y, pageW - margin, y); y += 18;
+
+      function checkPage() { if (y > 780) { doc.addPage(); y = 50; } }
+      function section(title) {
+        checkPage();
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(11, 39, 64);
+        doc.text(title, margin, y); y += 5;
+        doc.setDrawColor(10, 192, 233); doc.setLineWidth(1.5); doc.line(margin, y, margin + 40, y); y += 14;
+      }
+      function field(label, value) {
+        if (!value) return;
+        checkPage();
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(80, 100, 120);
+        doc.text(label, margin, y); y += 13;
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(11, 39, 64);
+        var lines = doc.splitTextToSize(String(value), contentW);
+        lines.forEach(function(line) { checkPage(); doc.text(line, margin, y); y += 13; });
+        y += 5;
+      }
+      function scaleList(label, levels) {
+        if (!levels || !levels.length) return;
+        checkPage();
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(80, 100, 120);
+        doc.text(label, margin, y); y += 13;
+        levels.forEach(function(l, i) {
+          checkPage();
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(11, 39, 64);
+          doc.text('  ' + (i+1) + '. ' + l.label + ' — ' + l.def, margin, y); y += 13;
+        });
+        y += 5;
+      }
+
+      section('1. Scope');
+      if (PLAN.device) field('Product / Device', PLAN.device);
+      field('Lifecycle Phases', PLAN.lifecycle);
+      field('Environments of Use', PLAN.environments);
+
+      section('2. Team');
+      field('Risk Manager', PLAN.rmLead);
+      field('Team Members', PLAN.team);
+      field('Approval Authority', PLAN.approver);
+
+      section('3. Acceptability Criteria');
+      scaleList('P1 Scale (Probability of Hazardous Situation)', PLAN.p1Levels);
+      scaleList('P2 Scale (Probability of Harm)', PLAN.p2Levels);
+      scaleList('Severity Scale', PLAN.sevLevels);
+      field('Risk Thresholds', 'Broadly Acceptable RPN ≤' + PLAN.thresholdLow + ' | Unacceptable RPN >' + PLAN.thresholdHigh);
+      field('Criteria Rationale', PLAN.criteria);
+
+      section('4. Review Cycle');
+      field('Review Frequency', PLAN.cycle);
+      field('Procedure Reference', PLAN.procRef);
+      field('Notes', PLAN.notes);
+
+      var total = doc.internal.getNumberOfPages();
+      for (var i = 1; i <= total; i++) {
+        doc.setPage(i);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(150, 170, 190);
+        doc.text('Risk Management Plan — Rev ' + (PLAN.revision || 'A') + ' — Page ' + i + ' of ' + total, margin, 825);
+        doc.text('CONFIDENTIAL', pageW - margin, 825, { align: 'right' });
+      }
+      doc.save('risk-management-plan-rev' + (PLAN.revision || 'A') + '.pdf');
+    }
   </script>
+
+  <!-- EXPORT MODAL -->
+  <div class="export-modal-overlay" id="exportModalOverlay" onclick="if(event.target===this)closeExportModal()">
+    <div class="export-modal">
+      <div class="export-modal-title">Export Risk Management Plan</div>
+      <div class="export-modal-sub">Select a format to download</div>
+      <div class="export-group">
+        <div class="export-group-label">Format</div>
+        <div class="export-radio-group">
+          <div class="export-radio-btn selected" id="expFmtPDF" onclick="selectExportFmt('pdf')">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+            PDF
+          </div>
+          <div class="export-radio-btn" id="expFmtTXT" onclick="selectExportFmt('txt')">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/><line x1="9" y1="9" x2="15" y2="9"/></svg>
+            Text (.txt)
+          </div>
+        </div>
+      </div>
+      <div class="export-modal-footer">
+        <button class="btn-export-run" onclick="runExport()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="btn-export-cancel" onclick="closeExportModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
