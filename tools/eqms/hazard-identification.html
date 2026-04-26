@@ -75,34 +75,42 @@
 
     /* ── HAZARD TABLE ── */
     .hazid-table-wrap { overflow-x: auto; border-radius: 0 0 12px 12px; }
-    .hazid-table { width: 100%; border-collapse: collapse; min-width: 640px; }
+    .hazid-table { width: 100%; border-collapse: collapse; min-width: 760px; }
     .hazid-table thead { position: sticky; top: 0; z-index: 10; }
     .hazid-table thead th { background: var(--primary); color: rgba(255,255,255,0.7); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem 0.9rem; text-align: left; border-bottom: none; white-space: nowrap; }
-    .hazid-table thead th.col-ref   { width: 72px; }
-    .hazid-table thead th.col-q     { width: 240px; }
-    .hazid-table thead th.col-resp  { width: 170px; text-align: center; }
-    .hazid-table thead th.col-notes { /* auto — takes remaining width */ }
+    .hazid-table thead th.col-ref    { width: 58px; }
+    .hazid-table thead th.col-q      { width: 270px; }
+    .hazid-table thead th.col-app    { width: 148px; text-align: center; }
+    .hazid-table thead th.col-hazard { width: 185px; }
+    .hazid-table thead th.col-act    { width: 50px; text-align: center; }
 
-    .hazid-table tbody tr { border-bottom: 1px solid rgba(11,39,64,0.055); transition: background 0.1s; }
-    .hazid-table tbody tr:last-child { border-bottom: none; }
-    .hazid-table tbody tr:hover td { background: rgba(11,39,64,0.012); }
-    .hazid-table tbody td { padding: 0.6rem 0.9rem; vertical-align: middle; }
+    /* question rows */
+    .hazid-table tbody tr.q-row { border-bottom: 1px solid rgba(11,39,64,0.055); transition: background 0.1s; }
+    .hazid-table tbody tr.q-row:hover td { background: rgba(11,39,64,0.012); }
+    .hazid-table tbody td { padding: 0.55rem 0.9rem; vertical-align: middle; }
 
-    /* sub-question indent */
+    /* hazard entry rows */
+    .hazid-table tbody tr.entry-row { border-bottom: 1px dashed rgba(11,39,64,0.06); background: rgba(10,192,233,0.018); }
+    .hazid-table tbody tr.entry-row:hover td { background: rgba(10,192,233,0.03); }
+    .hazid-table tbody tr.entry-row td { padding: 0.4rem 0.9rem; vertical-align: middle; }
+    .hazid-table tbody tr.add-row td { padding: 0.3rem 0.9rem 0.55rem; border-bottom: 1px solid rgba(11,39,64,0.055); }
+    .hazid-table tbody tr:last-child td { border-bottom: none; }
+
+    /* sub-question indent (A.2.31.x) */
     .hazid-table tbody tr.sub-row { display: none; }
     .hazid-table tbody tr.sub-row.visible { display: table-row; }
-    .hazid-table tbody tr.sub-row td.td-ref { padding-left: 1.4rem; }
-    .hazid-table tbody tr.sub-row td.td-q { padding-left: 0; }
-    .sub-indent { display: flex; align-items: flex-start; gap: 0.55rem; }
-    .sub-connector { flex-shrink: 0; margin-top: 2px; }
+    .hazid-table tbody tr.sub-row td.td-ref { padding-left: 1.3rem; }
+    .sub-indent { display: flex; align-items: flex-start; gap: 0.5rem; }
+    .sub-connector { flex-shrink: 0; margin-top: 3px; }
     .sub-connector svg { width: 12px; height: 16px; stroke: rgba(10,192,233,0.4); fill: none; stroke-width: 1.5; stroke-linecap: round; }
 
     /* ref cell */
-    .td-ref { width: 72px; }
+    .td-ref { width: 58px; }
     .ref-badge { font-size: 0.65rem; font-weight: 700; color: rgba(11,39,64,0.38); font-family: 'Inter', sans-serif; white-space: nowrap; }
+    .entry-id-badge { font-size: 0.58rem; font-weight: 800; color: rgba(10,192,233,0.75); background: rgba(10,192,233,0.1); border: 1px solid rgba(10,192,233,0.22); border-radius: 4px; padding: 0.1rem 0.4rem; white-space: nowrap; display: inline-block; letter-spacing: 0.04em; }
 
     /* question cell */
-    .td-q .q-wrap { display: flex; align-items: flex-start; gap: 0.45rem; }
+    .td-q .q-wrap { display: flex; align-items: flex-start; gap: 0.4rem; }
     .q-text { font-size: 0.78rem; color: var(--primary); line-height: 1.5; font-weight: 500; }
     .info-btn { width: 16px; height: 16px; border-radius: 50%; background: rgba(11,39,64,0.07); border: none; cursor: help; display: inline-flex; align-items: center; justify-content: center; font-size: 0.58rem; font-weight: 800; color: rgba(11,39,64,0.45); flex-shrink: 0; margin-top: 2px; transition: background 0.12s, color 0.12s; padding: 0; }
     .info-btn:hover { background: rgba(10,192,233,0.15); color: var(--aqua-dark); }
@@ -111,21 +119,38 @@
     .hazid-table tbody tr.resp-na-row td.td-q .q-text { color: rgba(11,39,64,0.35); }
     .hazid-table tbody tr.resp-na-row td.td-ref .ref-badge { color: rgba(11,39,64,0.2); }
 
-    /* response cell */
-    .td-resp { text-align: center; }
-    .resp-select { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 600; padding: 0.3rem 0.6rem; border-radius: 6px; border: 1.5px solid rgba(11,39,64,0.14); background: white; color: rgba(11,39,64,0.45); cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; text-align: center; transition: border-color 0.12s, background 0.12s, color 0.12s; min-width: 130px; width: 100%; }
+    /* applicability cell */
+    .td-app { text-align: center; }
+    .resp-select { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 600; padding: 0.3rem 0.6rem; border-radius: 6px; border: 1.5px solid rgba(11,39,64,0.14); background: white; color: rgba(11,39,64,0.45); cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; text-align: center; transition: border-color 0.12s, background 0.12s, color 0.12s; min-width: 128px; width: 100%; }
     .resp-select:focus { border-color: rgba(10,192,233,0.5); }
     .resp-select.resp-applicable { border-color: rgba(16,185,129,0.45); background: rgba(16,185,129,0.07); color: #047857; }
     .resp-select.resp-na         { border-color: rgba(11,39,64,0.15); background: rgba(11,39,64,0.04); color: rgba(11,39,64,0.38); }
 
-    /* notes cell */
-    .td-notes {}
-    .notes-input { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.76rem; color: var(--primary); border: 1.5px solid transparent; background: transparent; border-radius: 6px; padding: 0.3rem 0.45rem; resize: vertical; min-height: 32px; outline: none; transition: border-color 0.12s, background 0.12s; line-height: 1.5; }
-    .notes-input:hover { border-color: rgba(11,39,64,0.1); background: rgba(11,39,64,0.015); }
-    .notes-input:focus { border-color: rgba(10,192,233,0.45); background: white; }
-    .notes-input::placeholder { color: rgba(11,39,64,0.28); }
-    .notes-input:disabled { opacity: 0.35; cursor: not-allowed; resize: none; }
-    .notes-input:disabled:hover { border-color: transparent; background: transparent; }
+    /* hazard / situation inputs */
+    .hz-input, .si-input { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.76rem; color: var(--primary); border: 1.5px solid transparent; background: transparent; border-radius: 6px; padding: 0.28rem 0.42rem; resize: none; min-height: 30px; outline: none; transition: border-color 0.12s, background 0.12s; line-height: 1.5; }
+    .hz-input:hover, .si-input:hover { border-color: rgba(11,39,64,0.1); background: rgba(11,39,64,0.015); }
+    .hz-input:focus, .si-input:focus { border-color: rgba(10,192,233,0.45); background: white; }
+    .hz-input::placeholder, .si-input::placeholder { color: rgba(11,39,64,0.25); font-style: italic; }
+    .hz-input:disabled, .si-input:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* action cell */
+    .td-act { text-align: center; white-space: nowrap; }
+    .btn-gen-row { width: 22px; height: 22px; border-radius: 5px; border: 1px solid rgba(10,192,233,0.3); background: rgba(10,192,233,0.07); color: var(--aqua-dark); font-size: 0.65rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.12s, border-color 0.12s; padding: 0; font-weight: 700; }
+    .btn-gen-row:hover { background: rgba(10,192,233,0.15); border-color: rgba(10,192,233,0.5); }
+    .btn-gen-row.loading { opacity: 0.5; cursor: wait; }
+    .btn-add-entry { width: 22px; height: 22px; border-radius: 5px; border: 1.5px dashed rgba(11,39,64,0.22); background: transparent; color: rgba(11,39,64,0.45); font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.12s, border-color 0.12s, color 0.12s; padding: 0; margin-left: 2px; }
+    .btn-add-entry:hover { border-color: rgba(10,192,233,0.45); color: var(--aqua-dark); background: rgba(10,192,233,0.05); }
+    .btn-del-entry { width: 22px; height: 22px; border-radius: 5px; border: none; background: transparent; color: rgba(11,39,64,0.25); font-size: 0.82rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: background 0.12s, color 0.12s; padding: 0; margin-left: 2px; }
+    .btn-del-entry:hover { background: rgba(239,68,68,0.08); color: #dc2626; }
+    .btn-add-hazard-row { background: transparent; border: none; font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 600; color: rgba(11,39,64,0.38); cursor: pointer; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.15rem 0.3rem; border-radius: 5px; transition: color 0.12s, background 0.12s; }
+    .btn-add-hazard-row:hover { color: var(--aqua-dark); background: rgba(10,192,233,0.06); }
+    .btn-add-hazard-row svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+
+    /* AI generate all button */
+    .btn-gen-all { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(10,192,233,0.08); color: var(--aqua-dark); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(10,192,233,0.28); cursor: pointer; transition: background 0.15s, border-color 0.15s; white-space: nowrap; }
+    .btn-gen-all:hover { background: rgba(10,192,233,0.14); border-color: rgba(10,192,233,0.45); }
+    .btn-gen-all.loading { opacity: 0.6; cursor: wait; }
+    .btn-gen-all svg { width: 13px; height: 13px; }
 
     /* floating tooltip */
     .floating-tip {
@@ -187,6 +212,10 @@
           <span class="save-dot"></span>
           <span id="saveLabel">All changes saved</span>
         </span>
+        <button class="btn-gen-all" id="btnGenAll" onclick="generateAll()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
+          Generate All
+        </button>
         <button class="btn-export" onclick="exportCSV()">
           <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Export CSV
@@ -278,8 +307,10 @@
               <tr>
                 <th class="col-ref">Ref</th>
                 <th class="col-q">Question</th>
-                <th class="col-resp">Applicability</th>
-                <th class="col-notes">Notes / Potential Hazards</th>
+                <th class="col-app">Applicability</th>
+                <th class="col-hazard">Hazard</th>
+                <th class="col-sit">Hazardous Situation</th>
+                <th class="col-act"></th>
               </tr>
             </thead>
             <tbody id="hazidTbody"></tbody>
@@ -578,7 +609,7 @@
 
     // ─── State ───────────────────────────────────────────────────────────────
     const PRODUCTS = ['CardioSync Pro', 'NovaPulse IVD', 'OrthoFlex Implant'];
-    const STORE_KEY = 'tangram_eqms_hazid_v2';
+    const STORE_KEY = 'tangram_eqms_hazid_v3';
 
     var currentProduct = PRODUCTS[0];
     var currentFilter  = 'all';
@@ -595,16 +626,48 @@
       return d[prod];
     }
 
+    // Returns { response: '', entries: [{hazard:'', situation:''},...] }
     function getResponse(ref) {
       var pd = getProductData(currentProduct);
-      return (pd.responses && pd.responses[ref]) || { response: '', notes: '' };
+      var r  = (pd.responses && pd.responses[ref]) || {};
+      return { response: r.response || '', entries: r.entries || [] };
     }
 
-    function saveResponse(ref, field, value) {
+    function saveResponseField(ref, field, value) {
       var d = getData();
       if (!d[currentProduct]) d[currentProduct] = { responses: {} };
-      if (!d[currentProduct].responses[ref]) d[currentProduct].responses[ref] = { response: '', notes: '' };
+      if (!d[currentProduct].responses[ref]) d[currentProduct].responses[ref] = { response: '', entries: [] };
       d[currentProduct].responses[ref][field] = value;
+      d[currentProduct].lastUpdated = new Date().toISOString();
+      setData(d);
+    }
+
+    function saveEntry(ref, idx, field, value) {
+      var d = getData();
+      if (!d[currentProduct]) d[currentProduct] = { responses: {} };
+      if (!d[currentProduct].responses[ref]) d[currentProduct].responses[ref] = { response: '', entries: [] };
+      var entries = d[currentProduct].responses[ref].entries || [];
+      while (entries.length <= idx) entries.push({ hazard: '', situation: '' });
+      entries[idx][field] = value;
+      d[currentProduct].responses[ref].entries = entries;
+      d[currentProduct].lastUpdated = new Date().toISOString();
+      setData(d);
+    }
+
+    function addEntryToStore(ref) {
+      var d = getData();
+      if (!d[currentProduct]) d[currentProduct] = { responses: {} };
+      if (!d[currentProduct].responses[ref]) d[currentProduct].responses[ref] = { response: 'Applicable', entries: [] };
+      d[currentProduct].responses[ref].entries.push({ hazard: '', situation: '' });
+      d[currentProduct].lastUpdated = new Date().toISOString();
+      setData(d);
+    }
+
+    function removeEntryFromStore(ref, idx) {
+      var d = getData();
+      var entries = d[currentProduct].responses[ref].entries || [];
+      entries.splice(idx, 1);
+      d[currentProduct].responses[ref].entries = entries;
       d[currentProduct].lastUpdated = new Date().toISOString();
       setData(d);
     }
@@ -627,28 +690,38 @@
     }
 
     function applyFilter() {
-      var rows = document.querySelectorAll('#hazidTbody tr[data-ref]');
       var anyVisible = false;
-      rows.forEach(function(row) {
-        var ref    = row.dataset.ref;
-        var isMain = !row.dataset.parent;
-        var resp   = getResponse(ref).response;
-        var visible = false;
 
-        if (currentFilter === 'all')   { visible = isMain || row.classList.contains('visible'); }
-        else if (currentFilter === 'open')  { visible = resp === ''; }
-        else { visible = resp === currentFilter; }
+      // Hide/show question rows
+      document.querySelectorAll('#hazidTbody tr.q-row').forEach(function(row) {
+        var ref  = row.dataset.ref;
+        var resp = getResponse(ref).response;
 
-        // sub-rows in 'all' mode are controlled by their parent
-        if (currentFilter === 'all' && row.dataset.parent) {
+        // A.2.31.x sub-rows: controlled by parent applicability
+        var isSubQ = !!row.dataset.parent;
+        var visible;
+        if (isSubQ) {
           visible = row.classList.contains('visible');
+          if (currentFilter !== 'all' && currentFilter !== 'open') {
+            visible = visible && (resp === currentFilter);
+          } else if (currentFilter === 'open') {
+            visible = visible && (resp === '');
+          }
+        } else {
+          if      (currentFilter === 'all')  visible = true;
+          else if (currentFilter === 'open') visible = resp === '';
+          else                               visible = resp === currentFilter;
         }
 
         row.style.display = visible ? '' : 'none';
         if (visible) anyVisible = true;
+
+        // Keep entry rows and add row in sync with their question row
+        document.querySelectorAll('#hazidTbody tr[data-entry-for="' + ref + '"], #hazidTbody tr[data-add-for="' + ref + '"]').forEach(function(r) {
+          r.style.display = visible ? '' : 'none';
+        });
       });
 
-      // empty state
       var emptyRow = document.getElementById('emptyRow');
       if (emptyRow) emptyRow.style.display = anyVisible ? 'none' : '';
     }
@@ -675,65 +748,232 @@
       var val = sel.value;
       sel.className = 'resp-select' + (val === 'Applicable' ? ' resp-applicable' : val === 'Not Applicable' ? ' resp-na' : '');
 
-      saveResponse(ref, 'response', val);
+      saveResponseField(ref, 'response', val);
       flashSave();
 
-      // grey-out row
-      var row = sel.closest('tr');
-      row.classList.toggle('resp-na-row', val === 'Not Applicable');
+      var qRow = sel.closest('tr');
+      qRow.classList.toggle('resp-na-row', val === 'Not Applicable');
 
-      // lock/unlock notes
-      var notesEl = document.getElementById('notes-' + ref.replace(/\./g, '_'));
-      if (notesEl) {
-        notesEl.disabled = val === 'Not Applicable';
-        if (val === 'Not Applicable') notesEl.value = '';
-        if (val === 'Not Applicable') saveResponse(ref, 'notes', '');
+      // When switching to Applicable: ensure at least one entry exists
+      if (val === 'Applicable') {
+        var saved = getResponse(ref);
+        if (saved.entries.length === 0) addEntryToStore(ref);
       }
 
-      // if A.2.31 changed, show/hide sub-rows
+      // When switching away from Applicable: clear entries from DOM
+      if (val !== 'Applicable') {
+        document.querySelectorAll('#hazidTbody tr[data-entry-for="' + ref + '"], #hazidTbody tr[data-add-for="' + ref + '"]').forEach(function(r) { r.remove(); });
+      }
+
+      // Re-render entry rows for this question
+      rebuildEntryRows(ref, qRow);
+
+      // A.2.31 controls sub-question visibility
       if (ref === 'A.2.31') {
         toggleSubRows(val === 'Applicable');
         applyFilter();
       } else {
-        updateProgress();
         if (currentFilter !== 'all') applyFilter();
-        return;
       }
 
       updateProgress();
     }
 
-    // ─── Notes change handler ────────────────────────────────────────────────
-    function onNotesChange(el, ref) {
-      saveResponse(ref, 'notes', el.value);
+    // ─── Sub-row expansion (A.2.31.x questions) ──────────────────────────────
+    function toggleSubRows(show) {
+      document.querySelectorAll('#hazidTbody tr.q-row[data-parent="A.2.31"]').forEach(function(row) {
+        row.classList.toggle('visible', show);
+      });
+      applyFilter();
+    }
+
+    // ─── Entry row management ─────────────────────────────────────────────────
+    function rebuildEntryRows(ref, qRow) {
+      // Remove existing entry/add rows for this ref
+      document.querySelectorAll('#hazidTbody tr[data-entry-for="' + ref + '"], #hazidTbody tr[data-add-for="' + ref + '"]').forEach(function(r) { r.remove(); });
+
+      var saved = getResponse(ref);
+      if (saved.response !== 'Applicable') return;
+
+      var refSafe = ref.replace(/\./g, '_');
+      var entries = saved.entries;
+      var insertAfter = qRow;
+
+      entries.forEach(function(entry, idx) {
+        var entryTr = buildEntryRow(ref, refSafe, idx, entry, entries.length);
+        insertAfter.insertAdjacentElement('afterend', entryTr);
+        insertAfter = entryTr;
+      });
+
+      // "Add hazard" row
+      var addTr = document.createElement('tr');
+      addTr.className = 'add-row';
+      addTr.dataset.addFor = ref;
+      addTr.innerHTML =
+        '<td></td><td></td><td></td>' +
+        '<td colspan="3">' +
+          '<button class="btn-add-hazard-row" onclick="addEntry(\'' + ref + '\')">' +
+            '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+            'Add hazard' +
+          '</button>' +
+        '</td>';
+      insertAfter.insertAdjacentElement('afterend', addTr);
+    }
+
+    function buildEntryRow(ref, refSafe, idx, entry, total) {
+      var entryId = ref + '-H' + (idx + 1);
+      var tr = document.createElement('tr');
+      tr.className = 'entry-row';
+      tr.dataset.entryFor = ref;
+      tr.dataset.entryIdx = idx;
+
+      var canDelete = total > 1;
+
+      tr.innerHTML =
+        '<td class="td-ref"><span class="entry-id-badge">H' + (idx + 1) + '</span></td>' +
+        '<td class="td-q" style="color:rgba(11,39,64,0.2);font-size:0.68rem;font-style:italic;">' + escHtml(entryId) + '</td>' +
+        '<td class="td-app"></td>' +
+        '<td class="td-hazard">' +
+          '<textarea class="hz-input" rows="1" ' +
+            'id="hz-' + refSafe + '-' + idx + '" ' +
+            'placeholder="e.g. Electrical energy" ' +
+            'oninput="onHzChange(this,\'' + ref + '\',' + idx + ')">' +
+            escHtml(entry.hazard || '') +
+          '</textarea>' +
+        '</td>' +
+        '<td class="td-sit">' +
+          '<textarea class="si-input" rows="1" ' +
+            'id="si-' + refSafe + '-' + idx + '" ' +
+            'placeholder="Circumstance in which patient/user is exposed to this hazard…" ' +
+            'oninput="onSiChange(this,\'' + ref + '\',' + idx + ')">' +
+            escHtml(entry.situation || '') +
+          '</textarea>' +
+        '</td>' +
+        '<td class="td-act">' +
+          '<button class="btn-gen-row" title="Generate with AI" onclick="generateEntry(\'' + ref + '\',' + idx + ',this)">✦</button>' +
+          (canDelete ? '<button class="btn-del-entry" title="Remove" onclick="removeEntry(\'' + ref + '\',' + idx + ')">×</button>' : '') +
+        '</td>';
+
+      requestAnimationFrame(function() {
+        var hz = document.getElementById('hz-' + refSafe + '-' + idx);
+        var si = document.getElementById('si-' + refSafe + '-' + idx);
+        if (hz && hz.value) autoResize(hz);
+        if (si && si.value) autoResize(si);
+      });
+
+      return tr;
+    }
+
+    function addEntry(ref) {
+      addEntryToStore(ref);
+      var qRow = document.querySelector('#hazidTbody tr.q-row[data-ref="' + ref + '"]');
+      rebuildEntryRows(ref, qRow);
+      flashSave();
+    }
+
+    function removeEntry(ref, idx) {
+      removeEntryFromStore(ref, idx);
+      var qRow = document.querySelector('#hazidTbody tr.q-row[data-ref="' + ref + '"]');
+      rebuildEntryRows(ref, qRow);
+      flashSave();
+    }
+
+    function onHzChange(el, ref, idx) {
+      saveEntry(ref, idx, 'hazard', el.value);
+      flashSave();
+      autoResize(el);
+    }
+
+    function onSiChange(el, ref, idx) {
+      saveEntry(ref, idx, 'situation', el.value);
       flashSave();
       autoResize(el);
     }
 
     function autoResize(el) {
       el.style.height = 'auto';
-      el.style.height = Math.max(32, el.scrollHeight) + 'px';
+      el.style.height = Math.max(30, el.scrollHeight) + 'px';
     }
 
-    // ─── Sub-row expansion (A.2.31) ───────────────────────────────────────────
-    function toggleSubRows(show) {
-      document.querySelectorAll('#hazidTbody tr[data-parent="A.2.31"]').forEach(function(row) {
-        row.classList.toggle('visible', show);
+    // ─── AI generation (stubs — wire to API) ─────────────────────────────────
+    var STUB_HAZARDS = {
+      'A.2.1':  [{ hazard: 'Incorrect indication', situation: 'Device used outside intended patient population, leading to inappropriate therapy or diagnosis.' }],
+      'A.2.4':  [{ hazard: 'Toxic leachable', situation: 'Patient tissue exposed to chemical leachate if material degrades in vivo over time.' }],
+      'A.2.5':  [{ hazard: 'Electrical energy', situation: 'Patient contacts uncontrolled current if drive circuit insulation fails during use.' }, { hazard: 'Thermal energy', situation: 'Skin or tissue burn if energy dose exceeds safe threshold due to software error.' }],
+      'A.2.11': [{ hazard: 'Inaccurate measurement', situation: 'Clinician makes incorrect treatment decision based on out-of-calibration sensor output.' }],
+      'A.2.19': [{ hazard: 'Corrupted software', situation: 'Device behaves unexpectedly if unauthorized firmware update alters control algorithms.' }],
+      'A.2.32': [{ hazard: 'Undetected alarm condition', situation: 'Clinician misses critical patient event if alarm system is silenced or disconnected.' }],
+      'A.2.33': [{ hazard: 'Intentional misuse', situation: 'Safety feature bypassed by user to enable off-label use, exposing patient to uncharacterized risk.' }]
+    };
+
+    function generateEntry(ref, idx, btn) {
+      var q = QUESTIONS.find(function(q) { return q.ref === ref; });
+      if (!q) return;
+      btn.classList.add('loading');
+      btn.textContent = '…';
+
+      setTimeout(function() {
+        var stubs = STUB_HAZARDS[ref] || [{ hazard: 'See analysis', situation: 'Review device characteristics for ' + ref + ' (' + q.q.substring(0, 60) + '…) to identify specific hazardous situations.' }];
+        var stub  = stubs[idx % stubs.length];
+
+        saveEntry(ref, idx, 'hazard', stub.hazard);
+        saveEntry(ref, idx, 'situation', stub.situation);
+        flashSave();
+
+        var refSafe = ref.replace(/\./g, '_');
+        var hzEl = document.getElementById('hz-' + refSafe + '-' + idx);
+        var siEl = document.getElementById('si-' + refSafe + '-' + idx);
+        if (hzEl) { hzEl.value = stub.hazard;    autoResize(hzEl); }
+        if (siEl) { siEl.value = stub.situation;  autoResize(siEl); }
+
+        btn.classList.remove('loading');
+        btn.textContent = '✦';
+      }, 600);
+    }
+
+    function generateAll() {
+      var btn = document.getElementById('btnGenAll');
+      btn.classList.add('loading');
+      btn.textContent = '… Generating';
+
+      var applicable = QUESTIONS.filter(function(q) {
+        return getResponse(q.ref).response === 'Applicable';
       });
+
+      var idx = 0;
+      function next() {
+        if (idx >= applicable.length) {
+          btn.classList.remove('loading');
+          btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg> Generate All';
+          updateProgress();
+          return;
+        }
+        var q = applicable[idx++];
+        var saved = getResponse(q.ref);
+        // Only populate empty entries
+        saved.entries.forEach(function(entry, eIdx) {
+          if (!entry.hazard && !entry.situation) {
+            var rowBtn = document.querySelector('#hazidTbody tr[data-entry-for="' + q.ref + '"][data-entry-idx="' + eIdx + '"] .btn-gen-row');
+            if (rowBtn) generateEntry(q.ref, eIdx, rowBtn);
+          }
+        });
+        setTimeout(next, 150);
+      }
+      next();
     }
 
     // ─── Progress ────────────────────────────────────────────────────────────
     function updateProgress() {
-      var isA231Yes = getResponse('A.2.31').response === 'Applicable';
+      var isA231App = getResponse('A.2.31').response === 'Applicable';
       var mainQs = QUESTIONS.filter(function(q) { return !q.parent; });
       var subQs  = QUESTIONS.filter(function(q) { return q.parent === 'A.2.31'; });
-      var total  = mainQs.length + (isA231Yes ? subQs.length : 0);
+      var total  = mainQs.length + (isA231App ? subQs.length : 0);
 
       var nApp = 0, nNA = 0;
       QUESTIONS.forEach(function(q) {
-        if (q.parent && !isA231Yes) return;
+        if (q.parent && !isA231App) return;
         var r = getResponse(q.ref).response;
-        if (r === 'Applicable')     nApp++;
+        if (r === 'Applicable')      nApp++;
         else if (r === 'Not Applicable') nNA++;
       });
 
@@ -752,79 +992,86 @@
       var tbody = document.getElementById('hazidTbody');
       tbody.innerHTML = '';
 
+      var a231App = getResponse('A.2.31').response === 'Applicable';
+
       QUESTIONS.forEach(function(q) {
-        var saved   = getResponse(q.ref);
-        var resp    = saved.response;
-        var notes   = saved.notes;
-        var idSafe  = q.ref.replace(/\./g, '_');
-        var isSub   = !!q.parent;
-        var isNA    = resp === 'Not Applicable';
-        var a231Yes = getResponse('A.2.31').response === 'Applicable';
-
-        var tr = document.createElement('tr');
-        tr.dataset.ref = q.ref;
-        if (isSub) {
-          tr.className = 'sub-row' + (a231Yes ? ' visible' : '');
-          tr.dataset.parent = q.parent;
-        }
-        if (isNA) tr.classList.add('resp-na-row');
-
+        var saved    = getResponse(q.ref);
+        var resp     = saved.response;
+        var isSub    = !!q.parent;
+        var isNA     = resp === 'Not Applicable';
+        var refSafe  = q.ref.replace(/\./g, '_');
         var respClass = resp === 'Applicable' ? ' resp-applicable' : resp === 'Not Applicable' ? ' resp-na' : '';
-        var tipId = 'tip-' + idSafe;
 
-        var subIconHtml = isSub ? '<div class="sub-indent"><span class="sub-connector"><svg viewBox="0 0 12 16"><path d="M2 0 v8 q0 4 4 4 h6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
+        // ── Question row ──
+        var qTr = document.createElement('tr');
+        qTr.className = 'q-row' + (isNA ? ' resp-na-row' : '');
+        qTr.dataset.ref = q.ref;
+        if (isSub) {
+          qTr.classList.add('sub-row');
+          if (a231App) qTr.classList.add('visible');
+          qTr.dataset.parent = q.parent;
+        }
+
+        var subIconHtml  = isSub ? '<div class="sub-indent"><span class="sub-connector"><svg viewBox="0 0 12 16"><path d="M2 0 v8 q0 4 4 4 h6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
         var subCloseHtml = isSub ? '</div>' : '';
 
-        tr.innerHTML =
-          '<td class="td-ref">' +
-            '<span class="ref-badge">' + q.ref + '</span>' +
-          '</td>' +
+        qTr.innerHTML =
+          '<td class="td-ref"><span class="ref-badge">' + q.ref + '</span></td>' +
           '<td class="td-q">' +
             subIconHtml +
             '<div class="q-wrap">' +
-              '<span class="q-text">' + q.q + '</span>' +
+              '<span class="q-text">' + escHtml(q.q) + '</span>' +
               '<button class="info-btn" data-tip="' + encodeURIComponent(q.tip) + '" ' +
                 'onmouseenter="showTip(event,this)" onmouseleave="hideTip()" ' +
                 'onclick="event.preventDefault()" aria-label="Factors to consider">i</button>' +
             '</div>' +
             subCloseHtml +
           '</td>' +
-          '<td class="td-resp">' +
+          '<td class="td-app">' +
             '<select class="resp-select' + respClass + '" ' +
               'onchange="onRespChange(this,\'' + q.ref + '\')" ' +
               'aria-label="Response for ' + q.ref + '">' +
               '<option value="">—</option>' +
-              '<option value="Applicable"'     + (resp==='Applicable'     ? ' selected' : '') + '>Applicable</option>' +
-              '<option value="Not Applicable"' + (resp==='Not Applicable' ? ' selected' : '') + '>Not Applicable</option>' +
+              '<option value="Applicable"'     + (resp === 'Applicable'     ? ' selected' : '') + '>Applicable</option>' +
+              '<option value="Not Applicable"' + (resp === 'Not Applicable' ? ' selected' : '') + '>Not Applicable</option>' +
             '</select>' +
           '</td>' +
-          '<td class="td-notes">' +
-            '<textarea class="notes-input" id="notes-' + idSafe + '" ' +
-              'placeholder="Describe potential hazard(s)…" rows="1" ' +
-              (isNA ? 'disabled ' : '') +
-              'oninput="onNotesChange(this,\'' + q.ref + '\')">' +
-              (isNA ? '' : escHtml(notes)) +
-            '</textarea>' +
-          '</td>';
+          '<td class="td-hazard"></td>' +
+          '<td class="td-sit"></td>' +
+          '<td class="td-act"></td>';
 
-        tbody.appendChild(tr);
+        tbody.appendChild(qTr);
 
-        // auto-size on next paint
-        if (notes && !isNo) {
-          (function(ref) {
-            requestAnimationFrame(function() {
-              var el = document.getElementById('notes-' + ref.replace(/\./g, '_'));
-              if (el) autoResize(el);
-            });
-          })(q.ref);
+        // ── Entry rows (only for Applicable questions) ──
+        if (resp === 'Applicable') {
+          var entries = saved.entries.length > 0 ? saved.entries : [{ hazard: '', situation: '' }];
+          if (saved.entries.length === 0) addEntryToStore(q.ref);
+
+          entries.forEach(function(entry, idx) {
+            tbody.appendChild(buildEntryRow(q.ref, refSafe, idx, entry, entries.length));
+          });
+
+          // Add hazard row
+          var addTr = document.createElement('tr');
+          addTr.className = 'add-row';
+          addTr.dataset.addFor = q.ref;
+          addTr.innerHTML =
+            '<td></td><td></td><td></td>' +
+            '<td colspan="3">' +
+              '<button class="btn-add-hazard-row" onclick="addEntry(\'' + q.ref + '\')">' +
+                '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+                'Add hazard' +
+              '</button>' +
+            '</td>';
+          tbody.appendChild(addTr);
         }
       });
 
-      // empty state row
+      // Empty state
       var emptyTr = document.createElement('tr');
       emptyTr.id = 'emptyRow';
       emptyTr.style.display = 'none';
-      emptyTr.innerHTML = '<td colspan="4">No questions match this filter.</td>';
+      emptyTr.innerHTML = '<td colspan="6" style="text-align:center;padding:2.5rem 1rem;color:rgba(11,39,64,0.35);font-size:0.8rem;">No questions match this filter.</td>';
       tbody.appendChild(emptyTr);
 
       updateProgress();
@@ -832,7 +1079,7 @@
     }
 
     function escHtml(str) {
-      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     // ─── Tooltip ─────────────────────────────────────────────────────────────
