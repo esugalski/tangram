@@ -146,12 +146,6 @@
     .btn-add-hazard-row:hover { color: var(--aqua-dark); background: rgba(10,192,233,0.06); }
     .btn-add-hazard-row svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
 
-    /* AI generate all button */
-    .btn-gen-all { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(10,192,233,0.08); color: var(--aqua-dark); font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(10,192,233,0.28); cursor: pointer; transition: background 0.15s, border-color 0.15s; white-space: nowrap; }
-    .btn-gen-all:hover { background: rgba(10,192,233,0.14); border-color: rgba(10,192,233,0.45); }
-    .btn-gen-all.loading { opacity: 0.6; cursor: wait; }
-    .btn-gen-all svg { width: 13px; height: 13px; }
-
     /* floating tooltip */
     .floating-tip {
       position: fixed; display: none; z-index: 9999;
@@ -192,26 +186,6 @@
     .save-indicator.saved  { color: #059669; }
     .save-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
-    /* toast */
-    .toast {
-      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(8px);
-      background: var(--primary); color: rgba(255,255,255,0.92);
-      font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; line-height: 1.5;
-      padding: 0.65rem 1.1rem 0.65rem 0.9rem; border-radius: 10px;
-      box-shadow: 0 8px 28px rgba(11,39,64,0.28), 0 2px 8px rgba(11,39,64,0.18);
-      display: flex; align-items: flex-start; gap: 0.65rem; max-width: 420px;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.22s ease, transform 0.22s ease;
-      z-index: 9999;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-    .toast-icon { flex-shrink: 0; margin-top: 1px; }
-    .toast-icon svg { width: 15px; height: 15px; stroke: var(--aqua); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .toast-body { flex: 1; }
-    .toast-title { font-weight: 700; color: white; margin-bottom: 0.1rem; }
-    .toast-msg { color: rgba(255,255,255,0.7); }
-    .toast-close { flex-shrink: 0; background: transparent; border: none; cursor: pointer; color: rgba(255,255,255,0.4); font-size: 1rem; line-height: 1; padding: 0; margin-top: -1px; transition: color 0.12s; }
-    .toast-close:hover { color: rgba(255,255,255,0.8); }
   </style>
 </head>
 <body>
@@ -233,10 +207,6 @@
           <span class="save-dot"></span>
           <span id="saveLabel">All changes saved</span>
         </span>
-        <button class="btn-gen-all" id="btnGenAll" onclick="generateAll()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
-          Generate All
-        </button>
         <button class="btn-export" onclick="exportCSV()">
           <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Export CSV
@@ -1162,59 +1132,6 @@
     }
 
     // ─── Toast ───────────────────────────────────────────────────────────────
-    var toastTimer = null;
-    function showToast(title, msg) {
-      var el = document.getElementById('appToast');
-      document.getElementById('toastTitle').textContent = title;
-      document.getElementById('toastMsg').textContent   = msg;
-      el.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(dismissToast, 4500);
-    }
-    function dismissToast() {
-      document.getElementById('appToast').classList.remove('show');
-    }
-
-    function generateAll() {
-      var btn = document.getElementById('btnGenAll');
-
-      var applicable = QUESTIONS.filter(function(q) {
-        return getResponse(q.ref).response === 'Applicable';
-      });
-
-      if (applicable.length === 0) {
-        showToast(
-          'No applicable questions yet.',
-          'Set at least one question to Applicable, then Generate All will fill in hazards and situations for you.'
-        );
-        return;
-      }
-
-      btn.classList.add('loading');
-      btn.textContent = '… Generating';
-
-      var idx = 0;
-      function next() {
-        if (idx >= applicable.length) {
-          btn.classList.remove('loading');
-          btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg> Generate All';
-          updateProgress();
-          return;
-        }
-        var q = applicable[idx++];
-        var saved = getResponse(q.ref);
-        // Only populate empty entries
-        saved.entries.forEach(function(entry, eIdx) {
-          if (!entry.hazard && !entry.situation) {
-            var rowBtn = document.querySelector('#hazidTbody tr[data-entry-for="' + q.ref + '"][data-entry-idx="' + eIdx + '"] .btn-gen-row');
-            if (rowBtn) generateEntry(q.ref, eIdx, rowBtn);
-          }
-        });
-        setTimeout(next, 150);
-      }
-      next();
-    }
-
     // ─── Progress ────────────────────────────────────────────────────────────
     function updateProgress() {
       var isA231App = getResponse('A.2.31').response === 'Applicable';
@@ -1402,15 +1319,6 @@
 
   </script>
 
-  <!-- ── TOAST — outside .main to avoid overflow:hidden clipping ── -->
-  <div class="toast" id="appToast" role="status" aria-live="polite">
-    <span class="toast-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
-    <span class="toast-body">
-      <div class="toast-title" id="toastTitle"></div>
-      <div class="toast-msg" id="toastMsg"></div>
-    </span>
-    <button class="toast-close" onclick="dismissToast()" aria-label="Dismiss">×</button>
-  </div>
 
 </body>
 </html>
