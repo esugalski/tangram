@@ -917,14 +917,223 @@
     }
 
     // ─── AI generation (stubs — wire to API) ─────────────────────────────────
+    // Hazards drawn from ISO 14971:2019 Table C.1 categories:
+    // energy (electrical, mechanical, thermal, radiation, pressure/fluidic),
+    // biological (infection, pyrogenic, immune), chemical (toxicity,
+    // flammability, degradation), operational (incorrect/delayed output),
+    // information (labeling, IFU).
     var STUB_HAZARDS = {
-      'A.2.1':  [{ hazard: 'Incorrect indication', situation: 'Device used outside intended patient population, leading to inappropriate therapy or diagnosis.' }],
-      'A.2.4':  [{ hazard: 'Toxic leachable', situation: 'Patient tissue exposed to chemical leachate if material degrades in vivo over time.' }],
-      'A.2.5':  [{ hazard: 'Electrical energy', situation: 'Patient contacts uncontrolled current if drive circuit insulation fails during use.' }, { hazard: 'Thermal energy', situation: 'Skin or tissue burn if energy dose exceeds safe threshold due to software error.' }],
-      'A.2.11': [{ hazard: 'Inaccurate measurement', situation: 'Clinician makes incorrect treatment decision based on out-of-calibration sensor output.' }],
-      'A.2.19': [{ hazard: 'Corrupted software', situation: 'Device behaves unexpectedly if unauthorized firmware update alters control algorithms.' }],
-      'A.2.32': [{ hazard: 'Undetected alarm condition', situation: 'Clinician misses critical patient event if alarm system is silenced or disconnected.' }],
-      'A.2.33': [{ hazard: 'Intentional misuse', situation: 'Safety feature bypassed by user to enable off-label use, exposing patient to uncharacterized risk.' }]
+      'A.2.1':  [
+        { hazard: 'Operational — incorrect output', situation: 'Device applied to patient population outside its intended use, delivering therapy parameters not validated for that group.' },
+        { hazard: 'Information — inadequate labeling', situation: 'Contraindicated patient population not clearly stated on labeling, leading operator to use device inappropriately.' }
+      ],
+      'A.2.2':  [
+        { hazard: 'Mechanical energy — penetration/cutting', situation: 'Sharp implant edges lacerate surrounding tissue during implantation if placement force exceeds design limits.' },
+        { hazard: 'Biological — infection', situation: 'Bacteria introduced at implant site during surgical placement, leading to implant-associated infection.' },
+        { hazard: 'Chemical — cytotoxicity', situation: 'Leachable chemical from implant material causes local tissue necrosis over chronic contact period.' }
+      ],
+      'A.2.3':  [
+        { hazard: 'Biological — infection', situation: 'Inadequately disinfected contact surface transmits pathogen to patient during routine use.' },
+        { hazard: 'Chemical — allergic reaction', situation: 'Sensitizing material (e.g. latex, nickel) in contact surface triggers Type IV hypersensitivity in susceptible patient.' },
+        { hazard: 'Thermal energy — burns', situation: 'Contact surface temperature exceeds safe limit due to component failure, causing skin burn.' }
+      ],
+      'A.2.4':  [
+        { hazard: 'Chemical — cytotoxicity', situation: 'Leachable substance from polymer component reaches systemic circulation if material degrades in vivo.' },
+        { hazard: 'Chemical — allergic reaction', situation: 'Material contains known allergen (e.g. residual monomer) causing hypersensitivity reaction on patient contact.' },
+        { hazard: 'Biological — infection', situation: 'Non-sterile raw material introduces microbial contamination into finished device.' }
+      ],
+      'A.2.5':  [
+        { hazard: 'Electrical energy — electric shock', situation: 'Patient contacts applied part at unsafe leakage current level if insulation degrades or protective earth is lost.' },
+        { hazard: 'Thermal energy — hyperthermia / burns', situation: 'Tissue burn at application site if delivered energy dose exceeds safe limit due to control circuit failure.' },
+        { hazard: 'Non-ionizing radiation — tissue damage', situation: 'Adjacent tissue receives unintended radiation dose if beam is misdirected or output is uncontrolled.' }
+      ],
+      'A.2.6':  [
+        { hazard: 'Chemical — toxicity', situation: 'Incorrect substance is delivered to patient if device labels or connectors are confusable with similar products.' },
+        { hazard: 'Operational — incorrect output (dose)', situation: 'Overdose delivered if flow-rate calculation contains software error or pump is miscalibrated.' },
+        { hazard: 'Chemical — drug interaction', situation: 'Substance reacts with co-administered medication, producing toxic by-product at delivery site.' }
+      ],
+      'A.2.7':  [
+        { hazard: 'Biological — infection (viral)', situation: 'Insufficiently inactivated virus in processed biological material is transfused or transplanted to recipient.' },
+        { hazard: 'Biological — pyrogenic reaction', situation: 'Endotoxin contamination of processed material triggers systemic inflammatory response in patient.' }
+      ],
+      'A.2.8':  [
+        { hazard: 'Biological — infection', situation: 'Loss of sterile barrier integrity before use allows microbial contamination of device applied to patient.' },
+        { hazard: 'Chemical — residual sterilant toxicity', situation: 'Ethylene oxide residue above safe limit causes tissue irritation or systemic toxicity in patient.' },
+        { hazard: 'Operational — device failure', situation: 'Sterilization process damages device function, causing incorrect output during subsequent use.' }
+      ],
+      'A.2.9':  [
+        { hazard: 'Chemical — residual disinfectant toxicity', situation: 'Inadequate rinsing leaves disinfectant residue that contacts patient mucosa or open wound.' },
+        { hazard: 'Biological — infection', situation: 'Cleaning process does not remove biofilm, leaving viable organisms on device surface for next patient.' },
+        { hazard: 'Operational — device failure', situation: 'Incompatible cleaning agent degrades critical component, causing device malfunction during use.' }
+      ],
+      'A.2.10': [
+        { hazard: 'Thermal energy — hyperthermia / hypothermia', situation: 'Patient core temperature drifts outside safe range if device heating/cooling system is uncontrolled.' },
+        { hazard: 'Pressure / fluidic energy — pressure injury', situation: 'Patient sustains barotrauma if device alters airway or chamber pressure beyond physiological limit.' },
+        { hazard: 'Chemical — hypoxia', situation: 'Reduction of ambient oxygen concentration by device operation impairs patient or operator respiration.' }
+      ],
+      'A.2.11': [
+        { hazard: 'Operational — diagnostic error (incorrect output)', situation: 'Clinician makes incorrect treatment decision based on measurement value that drifted due to inadequate calibration.' },
+        { hazard: 'Operational — missed diagnosis (false negative)', situation: 'Out-of-range sensor fails to detect critical physiological change, delaying intervention.' },
+        { hazard: 'Information — inadequate calibration instructions', situation: 'Ambiguous IFU leads operator to perform calibration incorrectly, resulting in systematic measurement error.' }
+      ],
+      'A.2.12': [
+        { hazard: 'Operational — diagnostic error (algorithm failure)', situation: 'Software algorithm produces incorrect clinical conclusion from valid input data, leading to wrong treatment.' },
+        { hazard: 'Operational — missed diagnosis (false negative)', situation: 'Algorithm trained on non-representative data fails to detect condition in specific patient subgroup.' },
+        { hazard: 'Operational — false positive', situation: 'Clinician initiates unnecessary or harmful intervention based on incorrectly flagged output.' }
+      ],
+      'A.2.13': [
+        { hazard: 'Electrical energy — electromagnetic interference', situation: 'Device emits RF energy that disrupts implanted pacemaker or defibrillator in adjacent patient.' },
+        { hazard: 'Chemical — drug interaction', situation: 'Device-delivered substance interacts with concurrently administered medication, producing toxic effect.' },
+        { hazard: 'Operational — incorrect therapy', situation: 'Incompatible combination of device and co-therapy produces unintended clinical outcome not characterized in validation.' }
+      ],
+      'A.2.14': [
+        { hazard: 'Electrical energy — electromagnetic interference (EMC)', situation: 'Unintended radiated emissions interfere with critical equipment in the same clinical environment.' },
+        { hazard: 'Thermal energy — unintended heating', situation: 'Heat dissipated by device raises ambient temperature, degrading performance of co-located equipment.' },
+        { hazard: 'Chemical — toxic material release', situation: 'Chemical by-product or off-gas from device operation contaminates clinical environment or patient breathing zone.' }
+      ],
+      'A.2.15': [
+        { hazard: 'Operational — device failure (environmental degradation)', situation: 'Humidity ingress causes internal short circuit, resulting in uncontrolled energy delivery to patient.' },
+        { hazard: 'Electrical energy — electromagnetic susceptibility', situation: 'External RF field corrupts device control signals, producing incorrect output without operator awareness.' },
+        { hazard: 'Operational — incorrect output (temperature effect)', situation: 'Device operated outside specified temperature range delivers inaccurate dose due to component drift.' }
+      ],
+      'A.2.16': [
+        { hazard: 'Electrical energy — electromagnetic interference (EMC emission)', situation: 'Device radiated emissions exceed IEC 60601-1-2 limits, interfering with monitoring equipment in same room.' },
+        { hazard: 'Chemical — environmental contamination', situation: 'Exhaust or waste product from device operation contaminates air or water supply in clinical facility.' }
+      ],
+      'A.2.17': [
+        { hazard: 'Chemical — toxicity (wrong consumable)', situation: 'Operator uses non-specified consumable containing incompatible chemistry, exposing patient to toxic substance.' },
+        { hazard: 'Mechanical energy — incompatibility', situation: 'Non-validated accessory fails mechanically during use, releasing fragments into patient fluid path.' },
+        { hazard: 'Operational — incorrect output', situation: 'Out-of-specification consumable causes device to deliver incorrect therapeutic parameter.' }
+      ],
+      'A.2.18': [
+        { hazard: 'Operational — incorrect output (calibration drift)', situation: 'Device operated beyond maintenance interval produces measurement or delivery error due to component wear.' },
+        { hazard: 'Biological — infection (inadequate decontamination)', situation: 'Device is serviced without proper decontamination, exposing service technician to patient-derived pathogen.' },
+        { hazard: 'Mechanical energy — structural failure', situation: 'Critical mechanical component fails in service because scheduled maintenance was not performed.' }
+      ],
+      'A.2.19': [
+        { hazard: 'Operational — incorrect output (software error)', situation: 'Undetected software defect causes device to compute or deliver incorrect parameter under specific input conditions.' },
+        { hazard: 'Operational — device failure (corrupted firmware)', situation: 'Unauthorized or failed firmware update renders device inoperable or causes uncontrolled behavior.' },
+        { hazard: 'Information — unauthorized data modification', situation: 'Cybersecurity vulnerability allows attacker to alter device configuration remotely, changing therapy delivery.' }
+      ],
+      'A.2.20': [
+        { hazard: 'Information — unauthorized data modification', situation: 'Unsecured network port allows unauthorized user to alter patient data or device settings remotely.' },
+        { hazard: 'Operational — incorrect treatment (corrupted data)', situation: 'Data exported through unprotected interface is modified in transit, causing clinician to act on wrong values.' }
+      ],
+      'A.2.21': [
+        { hazard: 'Operational — incorrect treatment (data corruption)', situation: 'Storage medium failure corrupts critical patient parameters, causing clinician to use incorrect therapy settings.' },
+        { hazard: 'Information — data loss', situation: 'Power interruption without data protection results in loss of patient records required for safe clinical decision-making.' }
+      ],
+      'A.2.22': [
+        { hazard: 'Chemical — degradation products', situation: 'Expired material produces toxic degradation products that contact patient tissue during use.' },
+        { hazard: 'Biological — loss of sterility', situation: 'Sterile barrier degrades before stated shelf life due to storage condition excursion, exposing patient to contaminated device.' },
+        { hazard: 'Operational — device failure (component aging)', situation: 'Battery or capacitor beyond specified shelf life fails to deliver required energy during use.' }
+      ],
+      'A.2.23': [
+        { hazard: 'Mechanical energy — fatigue failure', situation: 'Cyclic loading causes structural failure of load-bearing component after extended use period, releasing fragments.' },
+        { hazard: 'Chemical — cumulative toxicity', situation: 'Chronic leaching of substance from implanted material exceeds safe systemic exposure limit over device lifetime.' },
+        { hazard: 'Biological — chronic inflammation', situation: 'Long-term degradation of implant material stimulates persistent foreign-body reaction, damaging adjacent tissue.' }
+      ],
+      'A.2.24': [
+        { hazard: 'Mechanical energy — crushing / compression', situation: 'Device applies excessive compressive force to patient tissue if mechanical stop or force-limit function fails.' },
+        { hazard: 'Mechanical energy — penetration / shearing', situation: 'Structural overload causes component fracture, producing sharp fragment that penetrates patient tissue.' },
+        { hazard: 'Mechanical energy — vibration', situation: 'Prolonged vibration transmitted to operator causes musculoskeletal fatigue, increasing handling errors.' }
+      ],
+      'A.2.25': [
+        { hazard: 'Mechanical energy — structural failure (fatigue)', situation: 'Component fails at end of design lifetime while device is still in service, causing uncontrolled behavior.' },
+        { hazard: 'Electrical energy — loss of power (battery depletion)', situation: 'Battery exhausted before therapy cycle completes, interrupting life-sustaining treatment.' },
+        { hazard: 'Chemical — material degradation (aging)', situation: 'Polymer component embrittles over time and fractures during normal handling, releasing particles.' }
+      ],
+      'A.2.26': [
+        { hazard: 'Biological — infection (reuse of single-use device)', situation: 'Reprocessed single-use device retains viable pathogens not eliminated by reprocessing, infecting subsequent patient.' },
+        { hazard: 'Mechanical energy — structural failure (reuse)', situation: 'Reused single-use device fails mechanically during second use because it was not designed for multiple cycles.' },
+        { hazard: 'Chemical — cytotoxicity (reprocessing residuals)', situation: 'Chemical reprocessing agent remains on device surface above safe limit, causing tissue irritation in next patient.' }
+      ],
+      'A.2.27': [
+        { hazard: 'Chemical — environmental contamination', situation: 'Improper disposal of device containing hazardous materials contaminates clinical waste stream or environment.' },
+        { hazard: 'Biological — infection (contaminated disposed device)', situation: 'Improperly discarded device retains patient-derived biological material, posing infection risk to waste handlers.' },
+        { hazard: 'Mechanical energy — physical injury', situation: 'Sharp components on discarded device injure waste-handling personnel during disposal.' }
+      ],
+      'A.2.28': [
+        { hazard: 'Operational — incorrect output (installation error)', situation: 'Device installed incorrectly (e.g. inverted transducer) produces systematically wrong output without indication.' },
+        { hazard: 'Electrical energy — electric shock', situation: 'Protective earth connection omitted during installation exposes patient or operator to unsafe leakage current.' },
+        { hazard: 'Mechanical energy — injury during installation', situation: 'Heavy or unwieldy device component injures installer if safe installation method is not specified in IFU.' }
+      ],
+      'A.2.29': [
+        { hazard: 'Operational — incorrect output (incompatible accessory)', situation: 'Non-validated accessory causes device to deliver parameter outside characterized range without alarming.' },
+        { hazard: 'Mechanical energy — mechanical failure', situation: 'Mechanically incompatible component fractures under normal use load, releasing debris.' },
+        { hazard: 'Electrical energy — electric shock', situation: 'Accessory with incorrect input rating connected to device creates unsafe leakage path to patient.' }
+      ],
+      'A.2.30': [
+        { hazard: 'Operational — use error (untrained operator)', situation: 'Operator unfamiliar with device incorrectly sets therapy parameter, delivering unsafe dose to patient.' },
+        { hazard: 'Information — inadequate IFU', situation: 'Instructions insufficient for operators without specialized training, increasing probability of critical use error.' }
+      ],
+      'A.2.31': [
+        { hazard: 'Operational — use error (UI confusion)', situation: 'Ambiguous control layout leads operator to activate unintended function, delivering incorrect therapy.' },
+        { hazard: 'Information — inadequate labeling', situation: 'Similar-appearing controls or displays are mistaken for each other, resulting in incorrect device configuration.' }
+      ],
+      'A.2.31.1': [
+        { hazard: 'Operational — use error (misread display)', situation: 'Operator misreads displayed value due to poor contrast or small font, entering incorrect therapy parameter.' },
+        { hazard: 'Information — inadequate labeling (unclear markings)', situation: 'Unlabeled or ambiguous control is operated incorrectly by first-time user, changing unintended setting.' }
+      ],
+      'A.2.31.2': [
+        { hazard: 'Operational — maintenance error', situation: 'Service technician incorrectly reassembles device after access for servicing due to confusing component arrangement.' },
+        { hazard: 'Biological — infection (improper decontamination)', situation: 'Difficult-to-clean surfaces are inadequately decontaminated before service, exposing technician to pathogens.' }
+      ],
+      'A.2.31.3': [
+        { hazard: 'Operational — incorrect output (wrong accessory)', situation: 'Accessories with similar connectors are interchanged, causing device to receive incompatible input or deliver wrong output.' },
+        { hazard: 'Chemical — toxicity (wrong substance)', situation: 'Confusable fluid-path accessories cause wrong substance to be routed to patient.' }
+      ],
+      'A.2.31.4': [
+        { hazard: 'Electrical energy — electric shock (overvoltage)', situation: 'Overvoltage applied to unprotected input damages insulation, creating shock hazard to patient or operator.' },
+        { hazard: 'Operational — device failure (electrical overstress)', situation: 'Voltage transient destroys safety-critical component, causing device to output uncontrolled energy.' }
+      ],
+      'A.2.31.5': [
+        { hazard: 'Operational — use error (incorrect control direction)', situation: 'Operator moves control in intuitive direction that actually increases risk parameter due to non-standard mapping.' },
+        { hazard: 'Mechanical energy — unintended movement', situation: 'Unexpected motorized movement injures patient or operator if direction-of-motion convention is unclear.' }
+      ],
+      'A.2.31.6': [
+        { hazard: 'Operational — incorrect output (startup without initialization)', situation: 'Device powers on in last-used state rather than safe default, delivering unintended parameter to patient.' },
+        { hazard: 'Operational — therapy interruption (improper shutdown)', situation: 'Operator abruptly interrupts power during active therapy, leaving device in undefined state for next use.' }
+      ],
+      'A.2.31.7': [
+        { hazard: 'Operational — incorrect output (stale data)', situation: 'Device recalls previous patient\'s settings at startup, and operator proceeds without verifying parameters for current patient.' },
+        { hazard: 'Information — data integrity (corrupted settings)', situation: 'Memory corruption stores invalid configuration that is silently applied on next power-up.' }
+      ],
+      'A.2.31.8': [
+        { hazard: 'Mechanical energy — physical injury (forceful disconnect)', situation: 'Operator uses excessive force to disconnect accessory not clearly identified as requiring specific release mechanism.' },
+        { hazard: 'Operational — interrupted therapy (accidental disconnection)', situation: 'Critical accessory is inadvertently disconnected during care activity because connection is not secured or alarmed.' }
+      ],
+      'A.2.31.9': [
+        { hazard: 'Operational — missed critical event (alarm disabled)', situation: 'Clinician silences alarm to reduce nuisance alarms and fails to re-enable it, missing subsequent critical event.' },
+        { hazard: 'Information — inadequate alarm specification', situation: 'Alarm threshold defaults are not appropriate for the patient population, resulting in systematic under- or over-alarming.' }
+      ],
+      'A.2.32': [
+        { hazard: 'Operational — missed alarm (alarm not perceived)', situation: 'Auditory alarm is not detected in a noisy clinical environment, delaying response to critical patient condition.' },
+        { hazard: 'Operational — alarm fatigue (nuisance alarms)', situation: 'High false-alarm rate causes staff to disable or ignore alarms, masking true safety-critical events.' }
+      ],
+      'A.2.33': [
+        { hazard: 'Operational — off-label use (safety feature bypass)', situation: 'User deliberately disables safety interlock to enable use case not authorized by manufacturer, exposing patient to uncharacterized risk.' },
+        { hazard: 'Information — inadequate contraindication labeling', situation: 'Contraindications are insufficiently prominent, enabling foreseeable misuse that manufacturer did not intend to permit.' }
+      ],
+      'A.2.34': [
+        { hazard: 'Biological — infection (contaminated biological component)', situation: 'Human-derived tissue component carries undetected pathogen that infects recipient after device implantation.' },
+        { hazard: 'Chemical — extractables into drug product', situation: 'Leachable chemical from device component migrates into co-packaged drug, altering potency or introducing toxicant.' },
+        { hazard: 'Chemical — drug-device interaction', situation: 'Drug adsorbs onto device fluid-path material, reducing delivered dose below therapeutic threshold.' }
+      ],
+      'A.2.35': [
+        { hazard: 'Biological — infection (failed sterile barrier)', situation: 'Packaging breach not detected by operator results in use of non-sterile device on patient.' },
+        { hazard: 'Information — inadequate labeling (missing sterility indicator)', situation: 'Absence of sterility indicator or expiry date prevents operator from confirming sterile status before use.' }
+      ],
+      'A.2.36': [
+        { hazard: 'Biological — implant-associated infection', situation: 'Implantable component becomes colonized by biofilm-forming organisms, causing peri-implant infection.' },
+        { hazard: 'Chemical — corrosion products', situation: 'Metal implant component corrodes in vivo, releasing ions that cause local cytotoxicity or systemic sensitization.' },
+        { hazard: 'Mechanical energy — in vivo fracture', situation: 'Implanted component fractures under physiological loading, producing sharp fragment that damages surrounding tissue.' }
+      ],
+      'A.2.37': [
+        { hazard: 'Ionizing radiation — radiation exposure', situation: 'Operator or patient receives unintended radiation dose if shielding fails or exposure time is uncontrolled.' },
+        { hazard: 'Chemical — hazardous material toxicity', situation: 'Accidental release of hazardous substance during handling, filling, or disposal exposes user to toxic agent.' },
+        { hazard: 'Chemical — environmental contamination', situation: 'Improper disposal of radioactive or hazardous component contaminates facility waste stream.' }
+      ]
     };
 
     function generateEntry(ref, idx, btn) {
