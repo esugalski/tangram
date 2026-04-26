@@ -173,6 +173,19 @@
     .form-input:disabled { opacity: 0.65; cursor: not-allowed; }
     .form-field { display: flex; flex-direction: column; gap: 0.3rem; }
     .form-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.35); }
+    .rmp-src-badge { font-size: 0.58rem; font-weight: 700; color: rgba(22,163,74,0.8); background: rgba(22,163,74,0.07); border: 1px solid rgba(22,163,74,0.2); border-radius: 3px; padding: 0.05rem 0.35rem; margin-left: 0.45rem; text-decoration: none; white-space: nowrap; }
+    .rmp-src-badge:hover { background: rgba(22,163,74,0.14); }
+    .readiness-card { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+    .readiness-title { font-size: 0.72rem; font-weight: 700; color: var(--primary); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.65rem; }
+    .readiness-list { display: flex; flex-direction: column; gap: 0.35rem; }
+    .readiness-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.74rem; color: var(--primary); }
+    .readiness-item .ri-icon { font-size: 0.78rem; width: 16px; text-align: center; flex-shrink: 0; }
+    .readiness-item.ok   .ri-icon { color: rgba(22,163,74,0.9); }
+    .readiness-item.warn .ri-icon { color: rgba(202,138,4,0.9); }
+    .readiness-item.err  .ri-icon { color: rgba(239,68,68,0.9); }
+    .readiness-item.ok   { color: rgba(11,39,64,0.7); }
+    .readiness-item.warn { color: rgba(154,100,0,0.85); }
+    .readiness-item.err  { color: rgba(180,30,30,0.85); }
   </style>
 </head>
 <body>
@@ -259,6 +272,9 @@
           </div>
         </div>
       </div>
+
+      <!-- ── REPORT READINESS CHECKLIST ── -->
+      <div id="reportReadinessCard" class="readiness-card" style="display:none;"></div>
 
       <!-- ── SECTION 1: SCOPE OF RISK MANAGEMENT ACTIVITIES ── -->
       <div class="card">
@@ -832,101 +848,112 @@
       if (RPT.verdict) setVerdict(RPT.verdict);
     }
 
+    // ─── Risk scoring helpers (mirror ra_risks_v2 schema) ────────────────────
+    function rptPLevel(p1, p2) {
+      if (!p1 || !p2) return 0;
+      var raw = p1 * p2;
+      if (raw === 1) return 1;
+      if (raw <= 4)  return 2;
+      if (raw <= 9)  return 3;
+      if (raw <= 16) return 4;
+      return 5;
+    }
+    function rptRiskScore(p1, p2, s) {
+      var pl = rptPLevel(p1, p2);
+      if (!pl || !s) return null;
+      return pl * s;
+    }
+    function rptZone(score) {
+      if (score === null) return null;
+      if (score <= 4)  return 'acceptable';
+      if (score <= 14) return 'tolerable';
+      return 'unacceptable';
+    }
+
     // ─── Read risk data from other modules ───────────────────────────────────
     function loadRiskStats() {
       var risks = [];
-      try { risks = JSON.parse(localStorage.getItem('qms_risks')) || []; } catch(e) {}
+      try {
+        var stored = JSON.parse(localStorage.getItem('ra_risks_v2')) || {};
+        risks = stored.risks || [];
+      } catch(e) {}
 
       if (risks.length === 0) return;
 
-      var plan = {};
-      try { plan = JSON.parse(localStorage.getItem('qms_risk_mgmt_plan')) || {}; } catch(e) {}
-      var low  = parseInt(plan.thresholdLow)  || 10;
-      var high = parseInt(plan.thresholdHigh) || 49;
-
-      function rpn(r) {
-        var p = (r.initialP || r.p || 1);
-        var s = (r.initialS || r.s || 1);
-        return p * s;
-      }
-      function resRpn(r) {
-        var p = (r.residualP || r.p || 1);
-        var s = (r.residualS || r.s || 1);
-        return p * s;
-      }
-      function zone(score) {
-        if (score <= low) return 'acceptable';
-        if (score > high) return 'unacceptable';
-        return 'tolerable';
-      }
-
       var total = risks.length;
+      setText('stat-total-risks', total);
 
       // Initial risk distribution
       var initAcc = 0, initTol = 0, initUnacc = 0;
-      risks.forEach(function(r) { var z = zone(rpn(r)); if (z === 'acceptable') initAcc++; else if (z === 'tolerable') initTol++; else initUnacc++; });
+      risks.forEach(function(r) {
+        var sc = rptRiskScore(r.p1, r.p2, r.s);
+        var z  = rptZone(sc);
+        if (z === 'acceptable') initAcc++;
+        else if (z === 'tolerable') initTol++;
+        else if (z === 'unacceptable') initUnacc++;
+      });
 
       // Residual risk distribution
       var resAcc = 0, resTol = 0, resUnacc = 0;
-      risks.forEach(function(r) { var z = zone(resRpn(r)); if (z === 'acceptable') resAcc++; else if (z === 'tolerable') resTol++; else resUnacc++; });
-
-      // Stats
-      setText('stat-total-risks', total);
-
-      // Bars — initial
-      setBarAndCounts('init-seg-acc', 'init-seg-tol', 'init-seg-unacc', 'init-count-acc', 'init-count-tol', 'init-count-unacc', initAcc, initTol, initUnacc, total);
-
-      // Bars — residual
-      setBarAndCounts('res-seg-acc', 'res-seg-tol', 'res-seg-unacc', 'res-count-acc', 'res-count-tol', 'res-count-unacc', resAcc, resTol, resUnacc, total);
-
-      // Control type counts
-      var inh = 0, prot = 0, info = 0;
       risks.forEach(function(r) {
-        if (Array.isArray(r.controls)) {
-          r.controls.forEach(function(c) {
-            var t = (c.type || '').toLowerCase();
-            if (t === 'inherent') inh++;
-            else if (t === 'protective') prot++;
-            else if (t === 'information') info++;
-          });
-        }
+        var sc = rptRiskScore(r.rp1, r.rp2, r.rs);
+        var z  = rptZone(sc);
+        if (z === 'acceptable') resAcc++;
+        else if (z === 'tolerable') resTol++;
+        else if (z === 'unacceptable') resUnacc++;
       });
-      setText('ctrl-inherent-count', inh || '—');
-      setText('ctrl-protective-count', prot || '—');
-      setText('ctrl-info-count', info || '—');
 
-      // Sort and top-5 for initial risk table
-      var sorted = risks.slice().sort(function(a, b) { return rpn(b) - rpn(a); }).slice(0, 8);
+      setBarAndCounts('init-seg-acc', 'init-seg-tol', 'init-seg-unacc', 'init-count-acc', 'init-count-tol', 'init-count-unacc', initAcc, initTol, initUnacc, total);
+      setBarAndCounts('res-seg-acc',  'res-seg-tol',  'res-seg-unacc',  'res-count-acc',  'res-count-tol',  'res-count-unacc',  resAcc,  resTol,  resUnacc,  total);
+
+      // Control type counts (uses controlType field added in Phase 4)
+      var inh = 0, prot = 0, info = 0, des = 0;
+      risks.forEach(function(r) {
+        var t = (r.controlType || '');
+        if (t === 'inherent-safety')     inh++;
+        else if (t === 'protective-measures') prot++;
+        else if (t === 'info-for-safety')     info++;
+        else if (t === 'design-requirement')  des++;
+      });
+      setText('ctrl-inherent-count',   inh  || '—');
+      setText('ctrl-protective-count', prot || '—');
+      setText('ctrl-info-count',       info || '—');
+
+      // Top-8 initial risks table
+      var sorted = risks.slice().sort(function(a, b) {
+        return (rptRiskScore(b.p1, b.p2, b.s) || 0) - (rptRiskScore(a.p1, a.p2, a.s) || 0);
+      }).slice(0, 8);
       var iHtml = '';
       sorted.forEach(function(r) {
-        var score = rpn(r);
-        var z = zone(score);
+        var score = rptRiskScore(r.p1, r.p2, r.s);
+        var z = rptZone(score);
+        if (z === null) z = 'tolerable';
         iHtml += '<tr>' +
           '<td><span class="ref-badge">' + esc(r.id || '—') + '</span></td>' +
-          '<td style="font-size:0.76rem">' + esc(r.hazard || r.situation || '—') + '</td>' +
-          '<td style="font-size:0.74rem;color:rgba(11,39,64,0.6)">' + esc(r.harm || '—') + '</td>' +
-          '<td style="font-weight:700;font-size:0.88rem">' + score + '</td>' +
+          '<td style="font-size:0.76rem">' + esc(r.hazard || '—') + '</td>' +
+          '<td style="font-size:0.74rem;color:rgba(11,39,64,0.6)">' + esc(r.possibleHarm || '—') + '</td>' +
+          '<td style="font-weight:700;font-size:0.88rem">' + (score !== null ? score : '—') + '</td>' +
           '<td><span class="rl-pill ' + z + '">' + z.charAt(0).toUpperCase() + z.slice(1) + '</span></td>' +
           '</tr>';
       });
       var itbody = document.getElementById('initial-risk-tbody');
       if (itbody && iHtml) itbody.innerHTML = iHtml;
 
-      // Residual risk table
+      // Residual risk table (all risks)
       var rHtml = '';
       risks.forEach(function(r) {
-        var iScore = rpn(r);
-        var rScore = resRpn(r);
-        var iz = zone(iScore);
-        var rz = zone(rScore);
-        var ctrlCount = Array.isArray(r.controls) ? r.controls.length : 0;
+        var iScore = rptRiskScore(r.p1,  r.p2,  r.s);
+        var rScore = rptRiskScore(r.rp1, r.rp2, r.rs);
+        var iz = rptZone(iScore); if (!iz) iz = 'tolerable';
+        var rz = rptZone(rScore); if (!rz) rz = 'tolerable';
+        var ctrlLabel = r.controlType ? r.controlType.replace(/-/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}) : '—';
         rHtml += '<tr>' +
           '<td><span class="ref-badge">' + esc(r.id || '—') + '</span></td>' +
-          '<td style="font-size:0.76rem">' + esc(r.hazard || '—') + (r.harm ? '<br><span style="color:rgba(11,39,64,0.5);font-size:0.7rem">→ ' + esc(r.harm) + '</span>' : '') + '</td>' +
-          '<td style="font-weight:700;text-align:center">' + iScore + '</td>' +
+          '<td style="font-size:0.76rem">' + esc(r.hazard || '—') + (r.possibleHarm ? '<br><span style="color:rgba(11,39,64,0.5);font-size:0.7rem">→ ' + esc(r.possibleHarm) + '</span>' : '') + '</td>' +
+          '<td style="font-weight:700;text-align:center">' + (iScore !== null ? iScore : '—') + '</td>' +
           '<td><span class="rl-pill ' + iz + '">' + iz.charAt(0).toUpperCase() + iz.slice(1) + '</span></td>' +
-          '<td style="text-align:center;font-size:0.76rem;color:rgba(11,39,64,0.6)">' + ctrlCount + ' control' + (ctrlCount !== 1 ? 's' : '') + '</td>' +
-          '<td style="font-weight:700;text-align:center">' + rScore + '</td>' +
+          '<td style="font-size:0.72rem;color:rgba(11,39,64,0.6)">' + esc(ctrlLabel) + '</td>' +
+          '<td style="font-weight:700;text-align:center">' + (rScore !== null ? rScore : '—') + '</td>' +
           '<td><span class="rl-pill ' + rz + '">' + rz.charAt(0).toUpperCase() + rz.slice(1) + '</span></td>' +
           '</tr>';
       });
@@ -935,45 +962,88 @@
     }
 
     function loadHazidStats() {
-      var hazids = {};
-      try { hazids = JSON.parse(localStorage.getItem('qms_hazid')) || {}; } catch(e) {}
-      // Count answered questions and hazards
-      var answered = 0, totalHazards = 0, categories = new Set();
-      if (hazids.answers) {
-        Object.keys(hazids.answers).forEach(function(k) {
-          var a = hazids.answers[k];
-          if (a && a !== 'N/A') answered++;
-        });
-      }
-      if (hazids.entries) {
-        Object.keys(hazids.entries).forEach(function(cat) {
-          if (hazids.entries[cat] && hazids.entries[cat].length) {
-            categories.add(cat);
-            totalHazards += hazids.entries[cat].length;
+      var hazidData = {};
+      try { hazidData = JSON.parse(localStorage.getItem('tangram_eqms_hazid_v3')) || {}; } catch(e) {}
+
+      var answered = 0, totalHazards = 0, linkedToRA = 0;
+      var refs = new Set();
+
+      // Collect RA hazidRef values for linkage count
+      var raLinked = new Set();
+      try {
+        var raData = JSON.parse(localStorage.getItem('ra_risks_v2')) || {};
+        (raData.risks || []).forEach(function(r) { if (r.hazidRef) raLinked.add(r.hazidRef); });
+      } catch(e) {}
+
+      Object.keys(hazidData).forEach(function(prod) {
+        if (prod.startsWith('_')) return;
+        var prodData = hazidData[prod] || {};
+        Object.keys(prodData.responses || {}).forEach(function(ref) {
+          var resp = prodData.responses[ref];
+          if (resp.response === 'Applicable') {
+            answered++;
+            refs.add(ref);
+            (resp.entries || []).forEach(function(entry) {
+              totalHazards++;
+              if (entry.id && raLinked.has(entry.id)) linkedToRA++;
+            });
+          } else if (resp.response === 'Not Applicable') {
+            answered++;
           }
         });
-      }
+      });
+
       if (totalHazards > 0) setText('stat-total-hazards', totalHazards);
-      if (categories.size > 0) setText('stat-hazard-categories', categories.size);
-      if (answered > 0) setText('stat-hazid-coverage', answered);
+      if (refs.size > 0)    setText('stat-hazard-categories', refs.size);
+      if (answered > 0)     setText('stat-hazid-coverage', answered);
     }
 
     function loadRmpStatus() {
       var plan = {};
       try { plan = JSON.parse(localStorage.getItem('qms_risk_mgmt_plan')) || {}; } catch(e) {}
-      if (plan.approved) {
-        var badge = document.getElementById('rmp-status-badge');
-        if (badge) { badge.textContent = 'Approved'; badge.className = 'rd-status approved'; }
-        var rmpRef = document.getElementById('f-rmp-ref');
-        if (rmpRef && !rmpRef.value) {
-          rmpRef.value = 'RM-001 Rev ' + (plan.revision || 'A') + (plan.approvedAt ? ', Approved ' + plan.approvedAt.slice(0,10) : '');
-          RPT.rmpRef = rmpRef.value;
-        }
-        if (plan.device) {
-          var devField = document.getElementById('f-device');
-          if (devField && !devField.value) { devField.value = plan.device; RPT.device = plan.device; }
+
+      // Always attempt to auto-fill from RMP if fields are empty
+      function autoFill(elementId, rptKey, value) {
+        if (!value) return;
+        var el = document.getElementById(elementId);
+        if (el && !el.value) {
+          el.value = value;
+          RPT[rptKey] = value;
+          // Add a subtle source badge next to the label
+          var label = el.closest('.form-field') && el.closest('.form-field').querySelector('label');
+          if (label && !label.querySelector('.rmp-src-badge')) {
+            var badge = document.createElement('a');
+            badge.href = 'risk-management-plan.html';
+            badge.className = 'rmp-src-badge';
+            badge.textContent = '↳ from RMP';
+            badge.title = 'Auto-filled from Risk Management Plan';
+            label.appendChild(badge);
+          }
         }
       }
+
+      if (plan.approved) {
+        var statusBadge = document.getElementById('rmp-status-badge');
+        if (statusBadge) { statusBadge.textContent = 'Approved'; statusBadge.className = 'rd-status approved'; }
+        var rmpRefVal = 'RM-001 Rev ' + (plan.revision || 'A') + (plan.approvedAt ? ', Approved ' + plan.approvedAt.slice(0,10) : '');
+        autoFill('f-rmp-ref', 'rmpRef', rmpRefVal);
+      }
+
+      autoFill('f-device', 'device', plan.device);
+
+      // Build lifecycle string from plan.lifecycle array or string
+      var lifecycleVal = '';
+      if (plan.lifecycle) {
+        lifecycleVal = Array.isArray(plan.lifecycle) ? plan.lifecycle.join(', ') : plan.lifecycle;
+      }
+      autoFill('p-lifecycle', 'lifecycle', lifecycleVal);
+
+      // Build environments string
+      var envVal = '';
+      if (plan.environments) {
+        envVal = Array.isArray(plan.environments) ? plan.environments.join(', ') : plan.environments;
+      }
+      autoFill('p-environments', 'environments', envVal);
     }
 
     function setBarAndCounts(segAcc, segTol, segUnacc, cntAcc, cntTol, cntUnacc, acc, tol, unacc, total) {
@@ -1127,6 +1197,90 @@
       a.click();
     }
 
+    function buildReadinessChecklist() {
+      var card = document.getElementById('reportReadinessCard');
+      if (!card) return;
+      var items = [];
+
+      // Check 1: RMP approved
+      var plan = {};
+      try { plan = JSON.parse(localStorage.getItem('qms_risk_mgmt_plan')) || {}; } catch(e) {}
+      if (plan.approved) {
+        items.push({ ok: true,  text: 'Risk Management Plan approved' });
+      } else {
+        items.push({ ok: false, warn: true, text: 'Risk Management Plan not yet approved — <a href="risk-management-plan.html" style="font-weight:700;color:inherit;">Complete RMP ↗</a>' });
+      }
+
+      // Check 2: HazID coverage
+      var hazidData = {};
+      try { hazidData = JSON.parse(localStorage.getItem('tangram_eqms_hazid_v3')) || {}; } catch(e) {}
+      var totalHazids = 0, answered = 0;
+      Object.keys(hazidData).forEach(function(p) {
+        if (p.startsWith('_')) return;
+        Object.keys((hazidData[p] || {}).responses || {}).forEach(function(ref) {
+          totalHazids++;
+          if ((hazidData[p].responses[ref].response || '') !== '') answered++;
+        });
+      });
+      if (totalHazids > 0 && answered === totalHazids) {
+        items.push({ ok: true,  text: 'All hazard identification questions answered (' + answered + '/' + totalHazids + ')' });
+      } else if (totalHazids > 0) {
+        items.push({ ok: false, warn: true, text: answered + ' of ' + totalHazids + ' hazard ID questions answered — <a href="hazard-identification.html" style="font-weight:700;color:inherit;">Complete HazID ↗</a>' });
+      } else {
+        items.push({ ok: false, warn: true, text: 'No hazard identification data found — <a href="hazard-identification.html" style="font-weight:700;color:inherit;">Start HazID ↗</a>' });
+      }
+
+      // Check 3: All applicable hazards imported to RA
+      var raData = {};
+      try { raData = JSON.parse(localStorage.getItem('ra_risks_v2')) || {}; } catch(e) {}
+      var raRisks = raData.risks || [];
+      var linked = new Set(raRisks.map(function(r) { return r.hazidRef; }).filter(Boolean));
+      var unlinked = 0;
+      Object.keys(hazidData).forEach(function(p) {
+        if (p.startsWith('_')) return;
+        Object.keys((hazidData[p] || {}).responses || {}).forEach(function(ref) {
+          var resp = hazidData[p].responses[ref];
+          if (resp.response === 'Applicable') {
+            (resp.entries || []).forEach(function(e) { if (e.id && !linked.has(e.id)) unlinked++; });
+          }
+        });
+      });
+      if (unlinked === 0 && raRisks.length > 0) {
+        items.push({ ok: true, text: 'All applicable hazards linked to Risk Analysis' });
+      } else if (unlinked > 0) {
+        items.push({ ok: false, warn: true, text: unlinked + ' applicable hazard' + (unlinked !== 1 ? 's' : '') + ' not yet imported to Risk Analysis' });
+      }
+
+      // Check 4: Design controls have linked DIs
+      var noLinkedDI = raRisks.filter(function(r) { return r.controlType === 'design-requirement' && !r.linkedDI; }).length;
+      if (noLinkedDI > 0) {
+        items.push({ ok: false, warn: true, text: noLinkedDI + ' design-type control' + (noLinkedDI !== 1 ? 's' : '') + ' without a linked Design Input' });
+      } else if (raRisks.some(function(r) { return r.controlType === 'design-requirement'; })) {
+        items.push({ ok: true, text: 'All design controls have linked Design Inputs' });
+      }
+
+      // Check 5: No unacceptable residual risks
+      var unacRes = raRisks.filter(function(r) { return rptZone(rptRiskScore(r.rp1, r.rp2, r.rs)) === 'unacceptable'; }).length;
+      if (unacRes > 0) {
+        items.push({ ok: false, err: true, text: unacRes + ' risk' + (unacRes !== 1 ? 's' : '') + ' with unacceptable residual level — requires justification' });
+      } else if (raRisks.length > 0) {
+        items.push({ ok: true, text: 'All scored residual risks are Acceptable or ALARP' });
+      }
+
+      if (items.length === 0) { card.style.display = 'none'; return; }
+
+      var allOk = items.every(function(i) { return i.ok; });
+      var html = '<div class="readiness-title">Report Readiness — ' + (allOk ? '✓ Ready to complete' : 'Action items') + '</div><div class="readiness-list">';
+      items.forEach(function(i) {
+        var cls = i.ok ? 'ok' : i.err ? 'err' : 'warn';
+        var icon = i.ok ? '✓' : i.err ? '✗' : '⚠';
+        html += '<div class="readiness-item ' + cls + '"><span class="ri-icon">' + icon + '</span><span>' + i.text + '</span></div>';
+      });
+      html += '</div>';
+      card.innerHTML = html;
+      card.style.display = '';
+    }
+
     // ─── Init ─────────────────────────────────────────────────────────────────
     initSidebar({ activePage: 'risk-management' });
     loadReport();
@@ -1135,6 +1289,7 @@
     loadRiskStats();
     loadHazidStats();
     loadRmpStatus();
+    buildReadinessChecklist();
     updateStatus();
   </script>
 </body>

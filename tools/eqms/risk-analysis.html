@@ -102,6 +102,12 @@
     /* ── SECTION NOTE ── */
     .section-note { font-size: 0.76rem; color: rgba(11,39,64,0.55); line-height: 1.65; padding: 0.7rem 0.9rem; background: rgba(10,192,233,0.04); border: 1px solid rgba(10,192,233,0.16); border-radius: 8px; margin-bottom: 1rem; }
 
+    /* ── RMP BANNER ── */
+    .rmp-banner { font-size: 0.74rem; line-height: 1.5; padding: 0.55rem 0.9rem; border-radius: 8px; margin-bottom: 1rem; }
+    .rmp-banner-ok   { color: rgba(22,163,74,0.9); background: rgba(22,163,74,0.07); border: 1px solid rgba(22,163,74,0.22); }
+    .rmp-banner-warn { color: rgba(202,138,4,0.9); background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.28); }
+    .rmp-banner a.rmp-banner-link { color: inherit; font-weight: 700; text-decoration: underline; }
+
     /* ── RISK ANALYSIS TABLE ── */
     .ra-table-wrap { overflow-x: auto; border-radius: 0 0 12px 12px; }
     .ra-table { width: 100%; border-collapse: collapse; min-width: 1360px; }
@@ -183,10 +189,49 @@
     .empty-icon svg { width: 18px; height: 18px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 1.5; }
 
     /* add row footer */
-    .table-footer { padding: 0.6rem 0.9rem; border-top: 1px solid rgba(11,39,64,0.06); }
+    .table-footer { padding: 0.6rem 0.9rem; border-top: 1px solid rgba(11,39,64,0.06); display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
     .btn-add-row { background: transparent; border: 1.5px dashed rgba(11,39,64,0.22); color: rgba(11,39,64,0.55); font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 0.38rem 0.85rem; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.12s; }
     .btn-add-row:hover { background: rgba(10,192,233,0.04); border-color: rgba(10,192,233,0.4); color: var(--aqua-dark); }
     .btn-add-row svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+    .btn-import-hazid { background: transparent; border: 1.5px solid rgba(10,192,233,0.3); color: var(--aqua-dark); font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 0.38rem 0.85rem; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: all 0.12s; }
+    .btn-import-hazid:hover { background: rgba(10,192,233,0.07); border-color: var(--aqua); }
+    .btn-import-hazid svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ── HAZID IMPORT MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; z-index: 500; background: rgba(11,39,64,0.45); display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    .hazid-modal { background: #fff; border-radius: 14px; width: 100%; max-width: 680px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(11,39,64,0.22); }
+    .hazid-modal-head { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.2rem 0.75rem; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .hazid-modal-title { font-size: 0.88rem; font-weight: 700; color: var(--navy); }
+    .hazid-modal-close { background: none; border: none; font-size: 1.3rem; color: rgba(11,39,64,0.4); cursor: pointer; padding: 0 0.25rem; line-height: 1; }
+    .hazid-modal-close:hover { color: var(--navy); }
+    .hazid-modal-body { padding: 0.8rem 1.2rem; overflow-y: auto; flex: 1; }
+    .hazid-modal-desc { font-size: 0.74rem; color: rgba(11,39,64,0.55); margin-bottom: 0.8rem; line-height: 1.55; }
+    .hazid-modal-foot { display: flex; align-items: center; justify-content: flex-end; gap: 0.6rem; padding: 0.75rem 1.2rem; border-top: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .hazid-import-count { font-size: 0.72rem; color: rgba(11,39,64,0.5); margin-right: auto; }
+    .btn-modal-cancel { background: none; border: 1px solid rgba(11,39,64,0.18); color: rgba(11,39,64,0.6); font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600; padding: 0.38rem 0.85rem; border-radius: 6px; cursor: pointer; }
+    .btn-modal-import { background: var(--aqua); border: none; color: #fff; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 700; padding: 0.38rem 0.9rem; border-radius: 6px; cursor: pointer; transition: opacity 0.12s; }
+    .btn-modal-import:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-modal-import:not(:disabled):hover { opacity: 0.85; }
+    .hazid-import-table { width: 100%; border-collapse: collapse; font-size: 0.73rem; }
+    .hazid-import-table th { text-align: left; font-weight: 700; color: rgba(11,39,64,0.45); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.35rem 0.6rem; border-bottom: 1px solid rgba(11,39,64,0.1); }
+    .hazid-import-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid rgba(11,39,64,0.05); color: var(--navy); vertical-align: top; }
+    .hazid-import-table tr:last-child td { border-bottom: none; }
+    .hazid-import-row:hover td { background: rgba(10,192,233,0.04); }
+    .hazid-import-row.selected td { background: rgba(10,192,233,0.07); }
+    .hi-id-badge { font-size: 0.6rem; font-weight: 800; color: rgba(10,192,233,0.75); background: rgba(10,192,233,0.1); border: 1px solid rgba(10,192,233,0.22); border-radius: 4px; padding: 0.1rem 0.4rem; white-space: nowrap; }
+    .hazid-src-badge { font-size: 0.6rem; font-weight: 700; color: rgba(10,192,233,0.8); background: rgba(10,192,233,0.08); border: 1px solid rgba(10,192,233,0.22); border-radius: 4px; padding: 0.1rem 0.45rem; text-decoration: none; white-space: nowrap; }
+    .hazid-src-badge:hover { background: rgba(10,192,233,0.15); }
+    .di-link-area { display: flex; align-items: center; gap: 0.5rem; min-height: 28px; }
+    .btn-create-di { background: rgba(10,192,233,0.08); border: 1.5px dashed rgba(10,192,233,0.4); color: var(--aqua-dark); font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 700; padding: 0.32rem 0.75rem; border-radius: 6px; cursor: pointer; transition: all 0.12s; }
+    .btn-create-di:hover { background: rgba(10,192,233,0.14); }
+    .di-nav-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; font-weight: 700; color: rgba(22,163,74,0.85); background: rgba(22,163,74,0.08); border: 1px solid rgba(22,163,74,0.25); border-radius: 5px; padding: 0.2rem 0.55rem; text-decoration: none; white-space: nowrap; }
+    .di-nav-badge:hover { background: rgba(22,163,74,0.15); }
+    .health-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.55rem 0.9rem 0; }
+    .health-chip { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.67rem; font-weight: 600; padding: 0.22rem 0.55rem; border-radius: 20px; white-space: nowrap; }
+    .health-chip.ok   { color: rgba(22,163,74,0.9);  background: rgba(22,163,74,0.08);  border: 1px solid rgba(22,163,74,0.2); }
+    .health-chip.warn { color: rgba(202,138,4,0.9);  background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); }
+    .health-chip.err  { color: rgba(239,68,68,0.9);  background: rgba(239,68,68,0.06);  border: 1px solid rgba(239,68,68,0.2); }
+    .hazid-empty-msg { text-align: center; padding: 2rem 1rem; font-size: 0.78rem; color: rgba(11,39,64,0.38); }
 
     /* ── PANEL OVERLAY (shared) ── */
     .panel-overlay { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
@@ -396,6 +441,9 @@
         Estimate initial risk for each hazardous situation (<strong>ISO 14971:2019 §5.5</strong>), then define a risk control measure and re-score residual risk after controls are applied (<strong>§7.1–7.4</strong>). Click a row's Risk ID to open the full detail panel for rationale and residual estimation.
       </div>
 
+      <!-- ── RMP BANNER ── -->
+      <div id="rmpBanner" class="rmp-banner" style="display:none;"></div>
+
       <!-- ── TABLE CARD ── -->
       <div class="card" style="margin-bottom:1.5rem;">
         <div class="card-head">
@@ -439,16 +487,42 @@
             <tbody id="raTbody"></tbody>
           </table>
         </div>
+        <!-- ── LINKAGE HEALTH BAR ── -->
+        <div id="healthBar" class="health-bar" style="display:none;"></div>
+
         <div class="table-footer">
           <button class="btn-add-row" onclick="addRisk()">
             <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add Risk Row
+          </button>
+          <button class="btn-import-hazid" onclick="openHazidImportModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Import from Hazard ID
           </button>
         </div>
       </div>
 
     </div><!-- /page-scroll -->
   </main>
+
+  <!-- ── HAZID IMPORT MODAL ── -->
+  <div class="modal-overlay" id="hazidImportOverlay" onclick="closeHazidImportModal(event)" style="display:none;">
+    <div class="hazid-modal" onclick="event.stopPropagation()">
+      <div class="hazid-modal-head">
+        <div class="hazid-modal-title">Import Hazards from Hazard Identification</div>
+        <button class="hazid-modal-close" onclick="closeHazidImportModal()">×</button>
+      </div>
+      <div class="hazid-modal-body">
+        <p class="hazid-modal-desc">Select applicable hazard entries to import as Risk Analysis rows. Only unlinked entries are shown.</p>
+        <div id="hazidImportList"></div>
+      </div>
+      <div class="hazid-modal-foot">
+        <span id="hazidImportCount" class="hazid-import-count"></span>
+        <button class="btn-modal-cancel" onclick="closeHazidImportModal()">Cancel</button>
+        <button class="btn-modal-import" id="btnDoImport" onclick="doHazidImport()" disabled>Import Selected</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ── ROW DETAIL PANEL OVERLAY ── -->
   <div class="panel-overlay" id="rowPanelOverlay" onclick="closeRowPanel(event)">
@@ -459,6 +533,7 @@
           <div class="row-panel-id" id="rpId">RA-001</div>
           <div class="row-panel-badge-wrap">
             <span class="lvl-badge empty" id="rpLvlBadge">—</span>
+            <a id="rpHazidBadge" href="hazard-identification.html" class="hazid-src-badge" style="display:none;" title="View source in Hazard Identification"></a>
           </div>
           <button class="panel-close" onclick="closeRowPanel()">
             <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -637,8 +712,22 @@
           <div class="pf-section-head">Risk Control <span class="iso-tag" style="font-size:0.55rem;font-weight:600;color:rgba(10,192,233,0.7);background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.18);border-radius:3px;padding:0.05rem 0.32rem;letter-spacing:0.03em;margin-left:0.3rem;">ISO 14971 §7.1</span></div>
           <div style="display:flex;flex-direction:column;gap:0.6rem;">
             <div>
+              <div class="pf-label">Control Type <span style="font-weight:400;color:rgba(11,39,64,0.4);">(ISO 14971 §7.1 hierarchy)</span></div>
+              <select class="pf-select" id="rpControlType" onchange="rpControlTypeChange(this.value)">
+                <option value="">— Select type —</option>
+                <option value="inherent-safety">Inherent Safety by Design</option>
+                <option value="protective-measures">Protective Measures</option>
+                <option value="info-for-safety">Information for Safety</option>
+                <option value="design-requirement">Design Requirement (links to Design Inputs)</option>
+              </select>
+            </div>
+            <div>
               <div class="pf-label">Risk Control Measure</div>
               <textarea class="pf-textarea" id="rpRiskControl" rows="3" placeholder="Describe the risk control measure applied (inherent safety by design, protective measures, information for safety)" oninput="rpFieldChange('riskControl', this.value)"></textarea>
+            </div>
+            <div id="rpDiLinkWrap" style="display:none;">
+              <div class="pf-label">Linked Design Input</div>
+              <div id="rpDiLinkArea" class="di-link-area"></div>
             </div>
           </div>
         </div>
@@ -779,8 +868,10 @@
   <script>
     // ── Constants ──────────────────────────────────────────────────
     const PRODUCTS = ['CardioSync Pro', 'NeuroStim 7', 'PulseGuard IV'];
-    const PROB_LABELS = ['—', 'Incredible', 'Remote', 'Occasional', 'Probable', 'Frequent'];
-    const SEV_LABELS  = ['—', 'Negligible', 'Minor', 'Serious', 'Critical', 'Catastrophic'];
+    let PROB_LABELS = ['—', 'Incredible', 'Remote', 'Occasional', 'Probable', 'Frequent'];
+    let SEV_LABELS  = ['—', 'Negligible', 'Minor', 'Serious', 'Critical', 'Catastrophic'];
+    let PROB_DEFS   = ['', '', '', '', '', ''];
+    let SEV_DEFS    = ['', '', '', '', '', ''];
     const STORAGE_KEY = 'ra_risks_v2';
     const STORAGE_KEY_V1 = 'ra_risks_v1';
 
@@ -823,6 +914,65 @@
       return 'unac';
     }
 
+    // ── RMP Labels ────────────────────────────────────────────────
+    function loadRmpLabels() {
+      try {
+        var plan = JSON.parse(localStorage.getItem('qms_risk_mgmt_plan')) || null;
+        if (plan && plan.p1Levels && plan.p1Levels.length >= 5) {
+          PROB_LABELS = ['—'].concat(plan.p1Levels.map(function(l) { return l.label || String(l); }));
+          PROB_DEFS   = [''].concat(plan.p1Levels.map(function(l) { return l.def || ''; }));
+        }
+        if (plan && plan.sevLevels && plan.sevLevels.length >= 5) {
+          SEV_LABELS = ['—'].concat(plan.sevLevels.map(function(l) { return l.label || String(l); }));
+          SEV_DEFS   = [''].concat(plan.sevLevels.map(function(l) { return l.def || ''; }));
+        }
+        showRmpBanner(plan);
+        return plan;
+      } catch(e) {
+        showRmpBanner(null);
+        return null;
+      }
+    }
+
+    function showRmpBanner(plan) {
+      var el = document.getElementById('rmpBanner');
+      if (!el) return;
+      if (!plan) {
+        el.className = 'rmp-banner rmp-banner-warn';
+        el.innerHTML = '⚠ Risk Management Plan not configured — using default risk scale labels.';
+        el.style.display = '';
+        return;
+      }
+      var rev = plan.revision ? 'Rev ' + plan.revision : '';
+      var approvedAt = plan.approvedAt ? new Date(plan.approvedAt).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '';
+      if (plan.approved) {
+        var refStr = ['RM-001', rev, approvedAt ? 'Approved ' + approvedAt : ''].filter(Boolean).join(', ');
+        el.className = 'rmp-banner rmp-banner-ok';
+        el.innerHTML = '↳ Risk scale labels sourced from <strong>' + esc(refStr) + '</strong> &mdash; <a href="risk-management-plan.html" class="rmp-banner-link">Risk Management Plan ↗</a>';
+      } else {
+        var refStr = ['RM-001', rev].filter(Boolean).join(' ');
+        el.className = 'rmp-banner rmp-banner-warn';
+        el.innerHTML = '⚠ Risk Management Plan (' + esc(refStr) + ') is not yet approved — risk scale labels may not be final. <a href="risk-management-plan.html" class="rmp-banner-link">View RMP ↗</a>';
+      }
+      el.style.display = '';
+    }
+
+    function populateRatingSelects() {
+      function updateSelect(id, labels, defs) {
+        var sel = document.getElementById(id);
+        if (!sel) return;
+        for (var i = 1; i <= 5; i++) {
+          var opt = sel.querySelector('option[value="' + i + '"]');
+          if (opt) {
+            opt.textContent = i + ' — ' + (labels[i] || i);
+            if (defs && defs[i]) opt.title = defs[i];
+          }
+        }
+      }
+      ['rpP1','rpP2','rpResP1','rpResP2'].forEach(function(id) { updateSelect(id, PROB_LABELS, PROB_DEFS); });
+      ['rpS','rpResS'].forEach(function(id)                     { updateSelect(id, SEV_LABELS,  SEV_DEFS);  });
+    }
+
     // ── Data ──────────────────────────────────────────────────────
     let risks = [];
     let nextId = 1;
@@ -835,6 +985,9 @@
       if (!('rp2Rationale' in r)) r.rp2Rationale = '';
       if (!('rs' in r)) r.rs = 0;
       if (!('rsRationale' in r)) r.rsRationale = '';
+      if (!('hazidRef' in r)) r.hazidRef = '';
+      if (!('controlType' in r)) r.controlType = '';
+      if (!('linkedDI' in r)) r.linkedDI = '';
       return r;
     }
 
@@ -890,7 +1043,7 @@
     }
 
     function addRisk() {
-      risks.push({ id: makeId(), hazard: '', hazSituation: '', seqEvents: '', possibleHarm: '', harmCat: '', p1: 0, p1Rationale: '', p2: 0, p2Rationale: '', s: 0, sRationale: '', notes: '', riskControl: '', rp1: 0, rp1Rationale: '', rp2: 0, rp2Rationale: '', rs: 0, rsRationale: '' });
+      risks.push({ id: makeId(), hazard: '', hazSituation: '', seqEvents: '', possibleHarm: '', harmCat: '', p1: 0, p1Rationale: '', p2: 0, p2Rationale: '', s: 0, sRationale: '', notes: '', riskControl: '', controlType: '', linkedDI: '', hazidRef: '', rp1: 0, rp1Rationale: '', rp2: 0, rp2Rationale: '', rs: 0, rsRationale: '' });
       saveData();
       renderTable();
       updateProgress();
@@ -1080,6 +1233,57 @@
       document.getElementById('ctUnac').textContent  = unac;
       document.getElementById('pgTotal').textContent = `${scored} initial · ${residualScored} residual / ${total} total`;
       renderMatrix();
+      updateHealthBar();
+    }
+
+    function updateHealthBar() {
+      const bar = document.getElementById('healthBar');
+      if (!bar) return;
+      if (risks.length === 0) { bar.style.display = 'none'; return; }
+
+      const chips = [];
+
+      // Count applicable HazID entries not yet linked
+      var unlinkedHazid = 0;
+      try {
+        var hazidData = JSON.parse(localStorage.getItem('tangram_eqms_hazid_v3')) || {};
+        var linked = new Set(risks.map(r => r.hazidRef).filter(Boolean));
+        Object.keys(hazidData).forEach(function(prod) {
+          if (prod.startsWith('_')) return;
+          Object.keys((hazidData[prod] || {}).responses || {}).forEach(function(ref) {
+            var resp = hazidData[prod].responses[ref];
+            if (resp.response !== 'Applicable') return;
+            (resp.entries || []).forEach(function(e) { if (e.id && !linked.has(e.id)) unlinkedHazid++; });
+          });
+        });
+      } catch(e) {}
+
+      if (unlinkedHazid > 0) {
+        chips.push(`<span class="health-chip warn">⚠ ${unlinkedHazid} hazard${unlinkedHazid !== 1 ? 's' : ''} not yet imported from Hazard ID</span>`);
+      } else {
+        chips.push(`<span class="health-chip ok">✓ All applicable hazards linked</span>`);
+      }
+
+      // Design controls without linked DI
+      const noLinkedDI = risks.filter(r => r.controlType === 'design-requirement' && !r.linkedDI).length;
+      if (noLinkedDI > 0) {
+        chips.push(`<span class="health-chip warn">⚠ ${noLinkedDI} design control${noLinkedDI !== 1 ? 's' : ''} without linked Design Input</span>`);
+      }
+
+      // Unacceptable residual risks
+      const unacRes = risks.filter(r => riskLevel(riskScore(r.rp1, r.rp2, r.rs)) === 'Unacceptable').length;
+      if (unacRes > 0) {
+        chips.push(`<span class="health-chip err">✗ ${unacRes} risk${unacRes !== 1 ? 's' : ''} with Unacceptable residual level</span>`);
+      } else if (risks.some(r => riskScore(r.rp1, r.rp2, r.rs) !== null)) {
+        chips.push(`<span class="health-chip ok">✓ No unacceptable residual risks</span>`);
+      }
+
+      if (chips.length > 0) {
+        bar.innerHTML = chips.join('');
+        bar.style.display = 'flex';
+      } else {
+        bar.style.display = 'none';
+      }
     }
 
     // ── Mini risk matrix ──────────────────────────────────────────
@@ -1145,12 +1349,24 @@
       document.getElementById('rpSRat').value             = r.sRationale || '';
       document.getElementById('rpNotes').value            = r.notes || '';
       document.getElementById('rpRiskControl').value      = r.riskControl || '';
+      document.getElementById('rpControlType').value      = r.controlType || '';
+      syncDiLinkArea(r);
       document.getElementById('rpResP1').value            = r.rp1 || 0;
       document.getElementById('rpResP1Rat').value         = r.rp1Rationale || '';
       document.getElementById('rpResP2').value            = r.rp2 || 0;
       document.getElementById('rpResP2Rat').value         = r.rp2Rationale || '';
       document.getElementById('rpResS').value             = r.rs || 0;
       document.getElementById('rpResSRat').value          = r.rsRationale || '';
+      // HazID source badge
+      var hazidBadge = document.getElementById('rpHazidBadge');
+      if (hazidBadge) {
+        if (r.hazidRef) {
+          hazidBadge.textContent = '↳ ' + r.hazidRef;
+          hazidBadge.style.display = '';
+        } else {
+          hazidBadge.style.display = 'none';
+        }
+      }
       syncPanelScore();
       syncPanelResScore();
       document.getElementById('rowPanelOverlay').classList.add('open', 'row-open');
@@ -1320,9 +1536,198 @@
       URL.revokeObjectURL(url);
     }
 
+    // ── Control Type & Design Input Linkage ──────────────────────
+    function rpControlTypeChange(value) {
+      if (!activePanelId) return;
+      const r = risks.find(r => r.id === activePanelId);
+      if (!r) return;
+      r.controlType = value;
+      saveData();
+      syncDiLinkArea(r);
+    }
+
+    function syncDiLinkArea(r) {
+      var wrap = document.getElementById('rpDiLinkWrap');
+      var area = document.getElementById('rpDiLinkArea');
+      if (!wrap || !area) return;
+      if (r.controlType === 'design-requirement') {
+        wrap.style.display = '';
+        if (r.linkedDI) {
+          area.innerHTML = '<a href="design-inputs.html" class="di-nav-badge" title="Open linked Design Input">↗ ' + esc(r.linkedDI) + '</a>';
+        } else {
+          area.innerHTML = '<button class="btn-create-di" onclick="createLinkedDI()">+ Create Design Input</button>';
+        }
+      } else {
+        wrap.style.display = 'none';
+      }
+    }
+
+    function createLinkedDI() {
+      if (!activePanelId) return;
+      const r = risks.find(r => r.id === activePanelId);
+      if (!r) return;
+
+      // Load DI store
+      var diData = [];
+      try { diData = JSON.parse(localStorage.getItem('qms_design_inputs')) || []; } catch(e) {}
+      if (!Array.isArray(diData)) diData = [];
+
+      // Find next DI ID
+      var maxN = 0;
+      diData.forEach(function(d) {
+        var m = d.id && d.id.match(/DI-(\d+)/);
+        if (m) maxN = Math.max(maxN, parseInt(m[1], 10));
+      });
+      var newDiId = 'DI-' + String(maxN + 1).padStart(3, '0');
+
+      // Create new DI entry (must include type:'di' for design-inputs.html loader)
+      var newDi = {
+        type: 'di',
+        typeBadge: 'DESIGN INPUT',
+        typeCls: 'type-di',
+        id: newDiId,
+        statement: r.riskControl || '',
+        category: '',
+        regulatory: '',
+        passFail: '',
+        tentative: false,
+        tracesTo: [],
+        tracedBy: [],
+        notes: '',
+        originType: 'risk-control',
+        originRef: r.id,
+        riskRef: r.id,
+        status: 'draft',
+        version: 1,
+        history: [],
+        createdAt: new Date().toISOString()
+      };
+      diData.push(newDi);
+      localStorage.setItem('qms_design_inputs', JSON.stringify(diData));
+
+      // Link back from RA row
+      r.linkedDI = newDiId;
+      saveData();
+      syncDiLinkArea(r);
+    }
+
+    // ── HazID Import Modal ────────────────────────────────────────
+    var selectedHazidEntries = [];
+
+    function openHazidImportModal() {
+      selectedHazidEntries = [];
+      var overlay = document.getElementById('hazidImportOverlay');
+      var list = document.getElementById('hazidImportList');
+
+      // Collect already-imported hazidRef values from RA
+      var linked = new Set(risks.map(function(r) { return r.hazidRef; }).filter(Boolean));
+
+      // Read all Applicable entries from HazID store
+      var available = [];
+      try {
+        var hazidData = JSON.parse(localStorage.getItem('tangram_eqms_hazid_v3')) || {};
+        Object.keys(hazidData).forEach(function(prod) {
+          if (prod.startsWith('_')) return;
+          var prodData = hazidData[prod] || {};
+          Object.keys(prodData.responses || {}).forEach(function(ref) {
+            var resp = prodData.responses[ref];
+            if (resp.response !== 'Applicable') return;
+            (resp.entries || []).forEach(function(entry) {
+              if (!entry.id) return;
+              if (linked.has(entry.id)) return;
+              available.push({ id: entry.id, hazard: entry.hazard, situation: entry.situation, ref: ref, product: prod });
+            });
+          });
+        });
+      } catch(e) {}
+
+      if (available.length === 0) {
+        list.innerHTML = '<div class="hazid-empty-msg">No unlinked applicable hazard entries found.<br>Add hazards in <a href="hazard-identification.html" style="color:var(--aqua-dark);font-weight:700;">Hazard Identification ↗</a> first.</div>';
+      } else {
+        var html = '<table class="hazid-import-table"><thead><tr><th style="width:28px;"></th><th>ID</th><th>Hazard</th><th>Hazardous Situation</th><th>Question</th></tr></thead><tbody>';
+        available.forEach(function(e) {
+          html += '<tr class="hazid-import-row" data-id="' + esc(e.id) + '" onclick="toggleHazidRow(this,\'' + esc(e.id) + '\')">' +
+            '<td><input type="checkbox" class="hazid-chk" style="accent-color:var(--aqua);cursor:pointer;" /></td>' +
+            '<td><span class="hi-id-badge">' + esc(e.id) + '</span></td>' +
+            '<td style="max-width:160px;word-break:break-word;">' + esc(e.hazard || '—') + '</td>' +
+            '<td style="max-width:220px;word-break:break-word;">' + esc(e.situation || '—') + '</td>' +
+            '<td style="color:rgba(11,39,64,0.4);font-size:0.65rem;">' + esc(e.ref) + '</td>' +
+          '</tr>';
+        });
+        html += '</tbody></table>';
+        list.innerHTML = html;
+      }
+
+      updateImportCount();
+      overlay.style.display = 'flex';
+    }
+
+    function toggleHazidRow(tr, id) {
+      var chk = tr.querySelector('.hazid-chk');
+      chk.checked = !chk.checked;
+      tr.classList.toggle('selected', chk.checked);
+      if (chk.checked) {
+        if (!selectedHazidEntries.includes(id)) selectedHazidEntries.push(id);
+      } else {
+        selectedHazidEntries = selectedHazidEntries.filter(function(x) { return x !== id; });
+      }
+      updateImportCount();
+    }
+
+    function updateImportCount() {
+      var n = selectedHazidEntries.length;
+      document.getElementById('hazidImportCount').textContent = n > 0 ? n + ' selected' : '';
+      document.getElementById('btnDoImport').disabled = n === 0;
+    }
+
+    function closeHazidImportModal(e) {
+      if (e && e.target !== document.getElementById('hazidImportOverlay')) return;
+      document.getElementById('hazidImportOverlay').style.display = 'none';
+      selectedHazidEntries = [];
+    }
+
+    function doHazidImport() {
+      if (selectedHazidEntries.length === 0) return;
+
+      // Build lookup for selected entries
+      var lookup = {};
+      try {
+        var hazidData = JSON.parse(localStorage.getItem('tangram_eqms_hazid_v3')) || {};
+        Object.keys(hazidData).forEach(function(prod) {
+          if (prod.startsWith('_')) return;
+          var prodData = hazidData[prod] || {};
+          Object.keys(prodData.responses || {}).forEach(function(ref) {
+            (prodData.responses[ref].entries || []).forEach(function(entry) {
+              if (entry.id) lookup[entry.id] = entry;
+            });
+          });
+        });
+      } catch(e) {}
+
+      var firstId = null;
+      selectedHazidEntries.forEach(function(hid) {
+        var entry = lookup[hid];
+        if (!entry) return;
+        var newId = makeId();
+        if (!firstId) firstId = newId;
+        risks.push({ id: newId, hazard: entry.hazard || '', hazSituation: entry.situation || '', hazidRef: hid, seqEvents: '', possibleHarm: '', harmCat: '', p1: 0, p1Rationale: '', p2: 0, p2Rationale: '', s: 0, sRationale: '', notes: '', riskControl: '', controlType: '', linkedDI: '', rp1: 0, rp1Rationale: '', rp2: 0, rp2Rationale: '', rs: 0, rsRationale: '' });
+      });
+
+      saveData();
+      renderTable();
+      updateProgress();
+      document.getElementById('hazidImportOverlay').style.display = 'none';
+      selectedHazidEntries = [];
+
+      // Open the first imported row's panel
+      if (firstId) setTimeout(function() { openRowPanel(firstId); }, 120);
+    }
+
     // ── Init ──────────────────────────────────────────────────────
     (function init() {
       if (typeof initSidebar === 'function') initSidebar({ activePage: 'risk-management' });
+      loadRmpLabels();
+      populateRatingSelects();
       loadData();
       renderTable();
       updateProgress();

@@ -163,6 +163,8 @@
     .origin-badge.un { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
     .origin-badge.regulatory { background: rgba(99,102,241,0.1); color: #4338ca; }
     .origin-badge.risk-control { background: rgba(245,158,11,0.12); color: #b45309; }
+    .origin-badge.ra-backlink { text-decoration: none; cursor: pointer; }
+    .origin-badge.ra-backlink:hover { background: rgba(245,158,11,0.22); }
     .origin-badge.unset { background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.38); font-style: italic; }
 
     /* ─── ORIGIN FIELD IN PANEL ─── */
@@ -1052,7 +1054,7 @@
         { v: 'regulatory', label: 'Regulatory' },
         { v: 'risk-control', label: 'Risk Control' }
       ].map(o => `<option value="${o.v}" ${o.v === originTypeVal ? 'selected' : ''}>${o.label}</option>`).join('');
-      const refLabels = { un: { label: 'UN ID', placeholder: 'e.g. UN-001' }, regulatory: { label: 'Citation', placeholder: 'e.g. 21 CFR 820.30(f)' }, 'risk-control': { label: 'FMEA / Hazard ID', placeholder: 'e.g. FMEA-003' } };
+      const refLabels = { un: { label: 'UN ID', placeholder: 'e.g. UN-001' }, regulatory: { label: 'Citation', placeholder: 'e.g. 21 CFR 820.30(f)' }, 'risk-control': { label: 'Risk Analysis ID', placeholder: 'e.g. RA-003' } };
       const refLabel = originTypeVal ? (refLabels[originTypeVal]?.label || 'Reference') : 'Reference';
       const refPlaceholder = originTypeVal ? (refLabels[originTypeVal]?.placeholder || '') : '';
       const refHidden = originTypeVal ? '' : 'style="display:none"';
@@ -1094,7 +1096,15 @@
       if (item.originType) {
         const originLabels = { un: 'User Need', regulatory: 'Regulatory', 'risk-control': 'Risk Control' };
         const originLabel = originLabels[item.originType] || item.originType;
-        html += `<div class="panel-field"><div class="panel-field-label">Origin</div><div class="field-locked">${escHtml(originLabel)}${item.originRef ? ` — ${escHtml(item.originRef)}` : ''}</div></div>`;
+        let originRefHtml = '';
+        if (item.originRef) {
+          if (item.originType === 'risk-control' && /^RA-\d+/.test(item.originRef)) {
+            originRefHtml = ` — <a href="risk-analysis.html" style="color:var(--amber);font-weight:700;text-decoration:underline;" title="View source risk">← ${escHtml(item.originRef)} ↗</a>`;
+          } else {
+            originRefHtml = ` — ${escHtml(item.originRef)}`;
+          }
+        }
+        html += `<div class="panel-field"><div class="panel-field-label">Origin</div><div class="field-locked">${escHtml(originLabel)}${originRefHtml}</div></div>`;
       }
       if (item.tracesTo && item.tracesTo.length) {
         const pills = item.tracesTo.map(t => `<span class="panel-link-pill">${escHtml(t)}</span>`).join('');
@@ -1128,7 +1138,7 @@
 
     // ── ORIGIN REF FIELD TOGGLE ───────────────────────────────────────────
     function updateOriginRefField(sel) {
-      const refLabels = { un: { label: 'UN ID', placeholder: 'e.g. UN-001' }, regulatory: { label: 'Citation', placeholder: 'e.g. 21 CFR 820.30(f)' }, 'risk-control': { label: 'FMEA / Hazard ID', placeholder: 'e.g. FMEA-003' } };
+      const refLabels = { un: { label: 'UN ID', placeholder: 'e.g. UN-001' }, regulatory: { label: 'Citation', placeholder: 'e.g. 21 CFR 820.30(f)' }, 'risk-control': { label: 'Risk Analysis ID', placeholder: 'e.g. RA-003' } };
       const group = document.getElementById('originRefGroup');
       const labelEl = document.getElementById('originRefLabel');
       const inputEl = document.getElementById('originRefInput');
@@ -1187,7 +1197,13 @@
       const r = item.originRef || '';
       if (t === 'un') return `<span class="origin-badge un">● ${escHtml(r || 'UN')}</span>`;
       if (t === 'regulatory') return `<span class="origin-badge regulatory">⚖ ${escHtml(r ? (r.length > 14 ? r.slice(0,14)+'…' : r) : 'Reg')}</span>`;
-      if (t === 'risk-control') return `<span class="origin-badge risk-control">⚠ ${escHtml(r || 'FMEA')}</span>`;
+      if (t === 'risk-control') {
+        // If originRef is an RA row ID (e.g. RA-003), make it a clickable backlink
+        if (r && /^RA-\d+/.test(r)) {
+          return `<a href="risk-analysis.html" class="origin-badge risk-control ra-backlink" title="View source risk in Risk Analysis">← ${escHtml(r)}</a>`;
+        }
+        return `<span class="origin-badge risk-control">⚠ ${escHtml(r || 'Risk Control')}</span>`;
+      }
       return `<span class="origin-badge unset">— origin</span>`;
     }
 

@@ -108,6 +108,8 @@
     .td-ref { width: 58px; }
     .ref-badge { font-size: 0.65rem; font-weight: 700; color: rgba(11,39,64,0.38); font-family: 'Inter', sans-serif; white-space: nowrap; }
     .entry-id-badge { font-size: 0.58rem; font-weight: 800; color: rgba(10,192,233,0.75); background: rgba(10,192,233,0.1); border: 1px solid rgba(10,192,233,0.22); border-radius: 4px; padding: 0.1rem 0.4rem; white-space: nowrap; display: inline-block; letter-spacing: 0.04em; }
+    .ra-link-badge { display: inline-block; margin-top: 0.25rem; font-size: 0.55rem; font-weight: 700; color: rgba(22,163,74,0.85); background: rgba(22,163,74,0.08); border: 1px solid rgba(22,163,74,0.25); border-radius: 4px; padding: 0.08rem 0.35rem; text-decoration: none; white-space: nowrap; letter-spacing: 0.03em; }
+    .ra-link-badge:hover { background: rgba(22,163,74,0.15); }
 
     /* question cell */
     .td-q .q-wrap { display: flex; align-items: flex-start; gap: 0.4rem; }
@@ -611,6 +613,34 @@
     }
     function setData(d) { localStorage.setItem(STORE_KEY, JSON.stringify(d)); }
 
+    function allocateHazidId() {
+      var d = getData();
+      var n = d._nextHazidId || 1;
+      d._nextHazidId = n + 1;
+      setData(d);
+      return 'HI-' + String(n).padStart(3, '0');
+    }
+
+    function migrateHazidIds() {
+      var d = getData();
+      var counter = d._nextHazidId || 1;
+      var changed = false;
+      PRODUCTS.forEach(function(prod) {
+        if (!d[prod] || !d[prod].responses) return;
+        Object.keys(d[prod].responses).forEach(function(ref) {
+          var entries = d[prod].responses[ref].entries || [];
+          entries.forEach(function(entry) {
+            if (!entry.id) {
+              entry.id = 'HI-' + String(counter).padStart(3, '0');
+              counter++;
+              changed = true;
+            }
+          });
+        });
+      });
+      if (changed || !d._nextHazidId) { d._nextHazidId = counter; setData(d); }
+    }
+
     function getProductData(prod) {
       var d = getData();
       if (!d[prod]) d[prod] = { responses: {} };
@@ -649,7 +679,7 @@
       var d = getData();
       if (!d[currentProduct]) d[currentProduct] = { responses: {} };
       if (!d[currentProduct].responses[ref]) d[currentProduct].responses[ref] = { response: 'Applicable', entries: [] };
-      d[currentProduct].responses[ref].entries.push({ hazard: '', situation: '' });
+      d[currentProduct].responses[ref].entries.push({ id: allocateHazidId(), hazard: '', situation: '' });
       d[currentProduct].lastUpdated = new Date().toISOString();
       setData(d);
     }
@@ -812,7 +842,7 @@
     }
 
     function buildEntryRow(ref, refSafe, idx, entry, total) {
-      var entryId = ref + '-H' + (idx + 1);
+      var stableId = entry.id || ('H' + (idx + 1));
       var tr = document.createElement('tr');
       tr.className = 'entry-row';
       tr.dataset.entryFor = ref;
@@ -820,9 +850,18 @@
 
       var canDelete = total > 1;
 
+      // Check if this entry has been imported into Risk Analysis
+      var raLink = '';
+      try {
+        var raData = JSON.parse(localStorage.getItem('ra_risks_v2')) || {};
+        var raRisks = raData.risks || [];
+        var linked = raRisks.find(function(r) { return r.hazidRef === stableId; });
+        if (linked) raLink = '<a href="risk-analysis.html" class="ra-link-badge" title="View in Risk Analysis">→ ' + escHtml(linked.id) + '</a>';
+      } catch(e) {}
+
       tr.innerHTML =
-        '<td class="td-ref"><span class="entry-id-badge">H' + (idx + 1) + '</span></td>' +
-        '<td class="td-q" style="color:rgba(11,39,64,0.2);font-size:0.68rem;font-style:italic;">' + escHtml(entryId) + '</td>' +
+        '<td class="td-ref"><span class="entry-id-badge">' + escHtml(stableId) + '</span>' + raLink + '</td>' +
+        '<td class="td-q" style="color:rgba(11,39,64,0.2);font-size:0.68rem;font-style:italic;">' + escHtml(ref) + '</td>' +
         '<td class="td-app"></td>' +
         '<td class="td-hazard">' +
           '<textarea class="hz-input" rows="1" ' +
@@ -1214,8 +1253,11 @@
 
         // ── Entry rows (only for Applicable questions) ──
         if (resp === 'Applicable') {
-          var entries = saved.entries.length > 0 ? saved.entries : [{ hazard: '', situation: '' }];
-          if (saved.entries.length === 0) addEntryToStore(q.ref);
+          if (saved.entries.length === 0) {
+            addEntryToStore(q.ref);
+            saved = getResponse(q.ref);
+          }
+          var entries = saved.entries;
 
           entries.forEach(function(entry, idx) {
             tbody.appendChild(buildEntryRow(q.ref, refSafe, idx, entry, entries.length));
@@ -1315,6 +1357,7 @@
 
     // ─── Init ─────────────────────────────────────────────────────────────────
     initSidebar({ activePage: 'risk-management' });
+    migrateHazidIds();
     renderTable();
 
   </script>
