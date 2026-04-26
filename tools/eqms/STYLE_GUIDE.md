@@ -273,35 +273,7 @@ The unified white card that wraps doc-cover metadata + table header + requiremen
 
 ## 9. Page Accent Band
 
-A 4 px full-width gradient stripe that anchors the top of every main content area. It runs edge-to-edge below the sub-nav and signals the visual boundary between navigation chrome and working content. The aqua→indigo gradient ties every page back to the platform's primary action color while providing forward motion (left-to-right energy).
-
-```
-┌─────────────────────────────────────────────────┐
-│  TOPBAR (white, 58 px)                          │
-├─────────────────────────────────────────────────┤
-│  SUB-NAV (white, 40 px)                         │
-├─────────────────────────────────────────────────┤  ← border-bottom 1px rgba(11,39,64,0.08)
-│████████████████ accent band (4 px) ████████████ │  ← aqua → #6366f1 gradient
-├─────────────────────────────────────────────────┤
-│  CONTENT AREA                                   │
-└─────────────────────────────────────────────────┘
-```
-
-### On hub / overview pages (Design Controls, Risk Management, etc.)
-
-Add a dedicated `.page-accent-band` element as a **direct child of `.app-main`**, immediately after the sub-nav and before `.content-wrap`:
-
-```html
-<div class="page-accent-band"></div>
-```
-
-```css
-.page-accent-band {
-  height: 4px;
-  background: linear-gradient(90deg, var(--aqua), #6366f1);
-  flex-shrink: 0;
-}
-```
+A 4 px full-width gradient stripe used **only on document pages** (pages with `.doc-cover`). Do not add this element to hub/overview pages — those pages use the Module Header Band (§6) instead, and the accent band creates unwanted visual noise between the sub-nav and content.
 
 ### On document pages (pages with `.doc-cover`)
 
@@ -597,7 +569,6 @@ When creating a new eQMS tool page:
 - [ ] Use the sidebar + main + topbar shell structure
 - [ ] Topbar-right: `[ Export ] [ Approve ] [ Guidance ]` — nothing else
 - [ ] Add `<div class="module-header"><span class="module-header-title">Module Name</span></div>` between topbar and sub-nav (hub/overview pages)
-- [ ] Add `<div class="page-accent-band"></div>` between sub-nav and `.content-wrap` (hub/overview pages only; doc pages use `doc-cover::before`)
 - [ ] Add `btn-guidance` → opens `#helpPanel` with page-specific explanation (what it is, regulatory context, best practices, video placeholder)
 - [ ] Guidance panel replaces any `#intro-slot`, `renderIntro()`, or `.learn-only` explainer elements — suppress those with CSS if present
 - [ ] Wrap doc-cover + section-head + table in `.doc-page-card`
