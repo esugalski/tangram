@@ -333,6 +333,26 @@
     .btn-approve:hover { border-color: rgba(16,185,129,0.55); background: rgba(16,185,129,0.05); }
     .btn-approve svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
+    /* ─── EXPORT MODAL ─── */
+    .export-modal-overlay { position: fixed; inset: 0; z-index: 300; display: none; align-items: center; justify-content: center; background: rgba(11,39,64,0.2); backdrop-filter: blur(2px); }
+    .export-modal-overlay.open { display: flex; }
+    .export-modal { background: white; border-radius: 14px; box-shadow: 0 20px 60px rgba(11,39,64,0.2); padding: 1.75rem; width: 380px; max-width: calc(100vw - 2rem); }
+    .export-modal-title { font-size: 1.05rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; margin-bottom: 0.2rem; }
+    .export-modal-sub { font-size: 0.76rem; color: rgba(11,39,64,0.42); margin-bottom: 1.5rem; }
+    .export-group { margin-bottom: 1.25rem; }
+    .export-group-label { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.38); margin-bottom: 0.55rem; }
+    .export-radio-group { display: flex; gap: 0.5rem; }
+    .export-radio-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.42rem; padding: 0.55rem 0.75rem; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 8px; cursor: pointer; font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.5); transition: border-color 0.15s, color 0.15s, background 0.15s; user-select: none; font-family: 'Inter', sans-serif; }
+    .export-radio-btn:hover { border-color: rgba(11,39,64,0.25); color: var(--primary); }
+    .export-radio-btn.selected { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.06); }
+    .export-radio-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .export-modal-footer { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(11,39,64,0.07); }
+    .btn-export-run { display: inline-flex; align-items: center; gap: 0.45rem; background: var(--primary); color: white; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.82rem; padding: 0.6rem 1.4rem; border-radius: 8px; border: none; cursor: pointer; transition: background 0.15s, transform 0.15s; }
+    .btn-export-run:hover { background: var(--mid-blue); transform: translateY(-1px); }
+    .btn-export-run svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-export-cancel { font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.4); background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; transition: color 0.15s; }
+    .btn-export-cancel:hover { color: var(--primary); }
+
     /* ── DOC LOCK BANNER ── */
     .doc-lock-banner { background: rgba(16,185,129,0.07); border-bottom: 1px solid rgba(16,185,129,0.18); color: #047857; font-size: 0.76rem; font-weight: 500; padding: 0.55rem 1.5rem; display: flex; align-items: center; gap: 0.55rem; flex-shrink: 0; }
     .doc-lock-banner svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
@@ -377,13 +397,9 @@
           <span class="save-dot"></span>
           <span id="saveLabel">All changes saved</span>
         </span>
-        <button class="btn-export" onclick="exportCSV()">
+        <button class="btn-export" onclick="openExportModal()">
           <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export CSV
-        </button>
-        <button class="btn-export" onclick="exportPDF()">
-          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          Export PDF
+          Export
         </button>
         <button class="btn-approve" id="btn-approve" onclick="initiateApproval()">
           <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -1615,6 +1631,20 @@
       document.getElementById('productSelectorLabel').textContent = PRODUCTS[productIdx];
     }
 
+    // ── Export Modal ──────────────────────────────────────────────
+    let exportFmt = 'pdf';
+    function openExportModal() { document.getElementById('exportModalOverlay').classList.add('open'); }
+    function closeExportModal() { document.getElementById('exportModalOverlay').classList.remove('open'); }
+    function selectExportFmt(fmt) {
+      exportFmt = fmt;
+      document.getElementById('expFmtPDF').classList.toggle('selected', fmt === 'pdf');
+      document.getElementById('expFmtCSV').classList.toggle('selected', fmt === 'csv');
+    }
+    function runExport() {
+      closeExportModal();
+      if (exportFmt === 'pdf') exportPDF(); else exportCSV();
+    }
+
     // ── Export CSV ────────────────────────────────────────────────
     function exportCSV() {
       const headers = ['Risk ID','Hazard','Hazardous Situation','Sequence of Events','Possible Harm','Harm Category','P1','P1 Rationale','P2','P2 Rationale','P Level','S','S Rationale','Risk Score','Risk Level','Notes','Risk Control','Res P1','Res P1 Rationale','Res P2','Res P2 Rationale','Res P Level','Res S','Res S Rationale','Residual Score','Residual Level'];
@@ -2048,5 +2078,33 @@
       updateProgress();
     })();
   </script>
+
+  <!-- EXPORT MODAL -->
+  <div class="export-modal-overlay" id="exportModalOverlay" onclick="if(event.target===this)closeExportModal()">
+    <div class="export-modal">
+      <div class="export-modal-title">Export Risk Analysis</div>
+      <div class="export-modal-sub">Select a format to download</div>
+      <div class="export-group">
+        <div class="export-group-label">Format</div>
+        <div class="export-radio-group">
+          <div class="export-radio-btn selected" id="expFmtPDF" onclick="selectExportFmt('pdf')">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+            PDF
+          </div>
+          <div class="export-radio-btn" id="expFmtCSV" onclick="selectExportFmt('csv')">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="8 13 10 13 10 17 8 17"/><line x1="13" y1="13" x2="16" y2="17"/><line x1="13" y1="17" x2="16" y2="13"/></svg>
+            CSV
+          </div>
+        </div>
+      </div>
+      <div class="export-modal-footer">
+        <button class="btn-export-run" onclick="runExport()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="btn-export-cancel" onclick="closeExportModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
