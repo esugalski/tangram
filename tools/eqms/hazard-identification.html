@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hazard Identification — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css">
+  <style>
+    /* ── SUPPRESSIONS ── */
+    #lm-step-footer { display: none !important; }
+    #lm-toggle-root { display: none !important; }
+    #lm-step-banner { display: none !important; }
+
+    /* ── MODULE HEADER ── */
+    .module-header { background: var(--primary); height: 46px; display: flex; align-items: center; padding: 0 1.5rem; flex-shrink: 0; }
+    .module-header-title { font-size: 0.84rem; font-weight: 700; color: white; letter-spacing: -0.01em; }
+
+    /* ── SUBNAV ── */
+    .rm-subnav { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 40px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; overflow-x: auto; flex-shrink: 0; }
+    .rm-subnav::-webkit-scrollbar { height: 0; }
+    .rm-subnav-back { display: flex; align-items: center; gap: 0.35rem; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.45); text-decoration: none; padding: 0 0.9rem 0 0; border-right: 1px solid rgba(11,39,64,0.1); margin-right: 0.75rem; white-space: nowrap; transition: color 0.12s; flex-shrink: 0; }
+    .rm-subnav-back:hover { color: var(--aqua-dark); }
+    .rm-subnav-back svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .rm-subnav-link { font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.5); text-decoration: none; padding: 0 0.7rem; white-space: nowrap; height: 40px; display: flex; align-items: center; border-bottom: 2px solid transparent; transition: color 0.12s; }
+    .rm-subnav-link:hover { color: var(--primary); }
+    .rm-subnav-link.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+
+    /* ── TOPBAR EXTRAS ── */
+    .topbar-left { display: flex; align-items: center; gap: 0.65rem; flex: 1; min-width: 0; }
+    .btn-export { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
+    .btn-export:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-export svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-guidance { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
+    .btn-guidance:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-guidance svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ── PRODUCT SELECTOR ── */
+    .product-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+    .product-label { font-size: 0.7rem; font-weight: 500; color: rgba(11,39,64,0.42); white-space: nowrap; }
+    .product-selector { display: inline-flex; align-items: center; gap: 0.45rem; font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--primary); background: white; border: 1.5px solid rgba(11,39,64,0.15); border-radius: 20px; padding: 0.38rem 0.9rem; cursor: pointer; transition: border-color 0.12s, background 0.12s; }
+    .product-selector:hover { border-color: rgba(10,192,233,0.5); background: rgba(10,192,233,0.02); }
+    .product-selector svg { width: 12px; height: 12px; stroke: rgba(11,39,64,0.4); fill: none; stroke-width: 2; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+    .progress-track { flex: 1; height: 6px; border-radius: 3px; background: rgba(11,39,64,0.07); overflow: hidden; display: flex; }
+    .progress-seg { height: 100%; transition: width 0.3s ease; }
+    .progress-seg.yes   { background: var(--green); }
+    .progress-seg.maybe { background: var(--amber); }
+    .progress-seg.no    { background: rgba(11,39,64,0.18); }
+    .progress-counts { display: flex; gap: 1rem; flex-shrink: 0; }
+    .progress-count { display: flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; font-weight: 600; }
+    .progress-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .progress-dot.yes   { background: var(--green); }
+    .progress-dot.maybe { background: var(--amber); }
+    .progress-dot.no    { background: rgba(11,39,64,0.3); }
+    .progress-total { font-size: 0.7rem; color: rgba(11,39,64,0.42); font-weight: 500; white-space: nowrap; }
+
+    /* ── FILTER TABS ── */
+    .filter-row { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+    .filter-label { font-size: 0.7rem; font-weight: 600; color: rgba(11,39,64,0.38); text-transform: uppercase; letter-spacing: 0.08em; margin-right: 0.2rem; white-space: nowrap; }
+    .filter-tab { font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 0.28rem 0.75rem; border-radius: 20px; border: 1.5px solid rgba(11,39,64,0.12); background: transparent; color: rgba(11,39,64,0.5); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+    .filter-tab:hover { border-color: rgba(11,39,64,0.22); color: var(--primary); background: rgba(11,39,64,0.03); }
+    .filter-tab.active { border-color: rgba(11,39,64,0.35); background: var(--primary); color: white; }
+    .filter-tab.f-yes.active   { border-color: #10B981; background: rgba(16,185,129,0.1); color: #047857; }
+    .filter-tab.f-maybe.active { border-color: #F59E0B; background: rgba(245,158,11,0.1); color: #b45309; }
+    .filter-tab.f-no.active    { border-color: rgba(11,39,64,0.25); background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.55); }
+    .filter-tab.f-open.active  { border-color: rgba(10,192,233,0.5); background: rgba(10,192,233,0.08); color: var(--aqua-dark); }
+
+    /* ── SECTION NOTE ── */
+    .section-note { font-size: 0.76rem; color: rgba(11,39,64,0.55); line-height: 1.65; padding: 0.7rem 0.9rem; background: rgba(10,192,233,0.04); border: 1px solid rgba(10,192,233,0.16); border-radius: 8px; margin-bottom: 1rem; }
+
+    /* ── HAZARD TABLE ── */
+    .hazid-table-wrap { overflow-x: auto; border-radius: 0 0 12px 12px; }
+    .hazid-table { width: 100%; border-collapse: collapse; min-width: 640px; }
+    .hazid-table thead { position: sticky; top: 0; z-index: 10; }
+    .hazid-table thead th { background: var(--primary); color: rgba(255,255,255,0.7); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem 0.9rem; text-align: left; border-bottom: none; white-space: nowrap; }
+    .hazid-table thead th.col-ref   { width: 72px; }
+    .hazid-table thead th.col-q     { min-width: 280px; }
+    .hazid-table thead th.col-resp  { width: 130px; text-align: center; }
+    .hazid-table thead th.col-notes { width: 260px; }
+
+    .hazid-table tbody tr { border-bottom: 1px solid rgba(11,39,64,0.055); transition: background 0.1s; }
+    .hazid-table tbody tr:last-child { border-bottom: none; }
+    .hazid-table tbody tr:hover td { background: rgba(11,39,64,0.012); }
+    .hazid-table tbody td { padding: 0.6rem 0.9rem; vertical-align: middle; }
+
+    /* sub-question indent */
+    .hazid-table tbody tr.sub-row { display: none; }
+    .hazid-table tbody tr.sub-row.visible { display: table-row; }
+    .hazid-table tbody tr.sub-row td.td-ref { padding-left: 1.4rem; }
+    .hazid-table tbody tr.sub-row td.td-q { padding-left: 0; }
+    .sub-indent { display: flex; align-items: flex-start; gap: 0.55rem; }
+    .sub-connector { flex-shrink: 0; margin-top: 2px; }
+    .sub-connector svg { width: 12px; height: 16px; stroke: rgba(10,192,233,0.4); fill: none; stroke-width: 1.5; stroke-linecap: round; }
+
+    /* ref cell */
+    .td-ref { width: 72px; }
+    .ref-badge { font-size: 0.65rem; font-weight: 700; color: rgba(11,39,64,0.38); font-family: 'Inter', sans-serif; white-space: nowrap; }
+
+    /* question cell */
+    .td-q .q-wrap { display: flex; align-items: flex-start; gap: 0.45rem; }
+    .q-text { font-size: 0.78rem; color: var(--primary); line-height: 1.5; font-weight: 500; }
+    .info-btn { width: 16px; height: 16px; border-radius: 50%; background: rgba(11,39,64,0.07); border: none; cursor: help; display: inline-flex; align-items: center; justify-content: center; font-size: 0.58rem; font-weight: 800; color: rgba(11,39,64,0.45); flex-shrink: 0; margin-top: 2px; transition: background 0.12s, color 0.12s; padding: 0; }
+    .info-btn:hover { background: rgba(10,192,233,0.15); color: var(--aqua-dark); }
+
+    /* grayed-out row (answered No) */
+    .hazid-table tbody tr.resp-no-row td.td-q .q-text { color: rgba(11,39,64,0.35); }
+    .hazid-table tbody tr.resp-no-row td.td-ref .ref-badge { color: rgba(11,39,64,0.2); }
+
+    /* response cell */
+    .td-resp { text-align: center; }
+    .resp-select { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 600; padding: 0.3rem 0.55rem; border-radius: 6px; border: 1.5px solid rgba(11,39,64,0.14); background: white; color: rgba(11,39,64,0.45); cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; text-align: center; transition: border-color 0.12s, background 0.12s, color 0.12s; min-width: 90px; }
+    .resp-select:focus { border-color: rgba(10,192,233,0.5); }
+    .resp-select.resp-yes   { border-color: rgba(16,185,129,0.45); background: rgba(16,185,129,0.07); color: #047857; }
+    .resp-select.resp-no    { border-color: rgba(11,39,64,0.15); background: rgba(11,39,64,0.04); color: rgba(11,39,64,0.38); }
+    .resp-select.resp-maybe { border-color: rgba(245,158,11,0.45); background: rgba(245,158,11,0.07); color: #b45309; }
+
+    /* notes cell */
+    .td-notes {}
+    .notes-input { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.76rem; color: var(--primary); border: 1.5px solid transparent; background: transparent; border-radius: 6px; padding: 0.3rem 0.45rem; resize: vertical; min-height: 32px; outline: none; transition: border-color 0.12s, background 0.12s; line-height: 1.5; }
+    .notes-input:hover { border-color: rgba(11,39,64,0.1); background: rgba(11,39,64,0.015); }
+    .notes-input:focus { border-color: rgba(10,192,233,0.45); background: white; }
+    .notes-input::placeholder { color: rgba(11,39,64,0.28); }
+    .notes-input:disabled { opacity: 0.35; cursor: not-allowed; resize: none; }
+    .notes-input:disabled:hover { border-color: transparent; background: transparent; }
+
+    /* floating tooltip */
+    .floating-tip {
+      position: fixed; display: none; z-index: 9999;
+      background: var(--primary); color: rgba(255,255,255,0.85);
+      font-family: 'Inter', sans-serif; font-size: 0.68rem; line-height: 1.65;
+      padding: 0.7rem 0.9rem; border-radius: 9px; max-width: 300px;
+      box-shadow: 0 6px 24px rgba(11,39,64,0.3), 0 2px 8px rgba(11,39,64,0.2);
+      pointer-events: none;
+    }
+    .floating-tip strong { color: white; display: block; margin-bottom: 0.3rem; font-size: 0.7rem; }
+
+    /* help panel */
+    .panel-overlay { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+    .panel-overlay.open { pointer-events: auto; }
+    .panel-backdrop { position: absolute; inset: 0; background: rgba(11,39,64,0.15); opacity: 0; transition: opacity 0.25s; }
+    .panel-overlay.open .panel-backdrop { opacity: 1; }
+    .help-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    .panel-overlay.help-open .help-panel { transform: translateX(0); }
+    .panel-head { padding: 1.2rem 1.25rem 1rem; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .panel-head-row { display: flex; align-items: center; gap: 0.65rem; }
+    .panel-id { font-size: 0.95rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; flex: 1; }
+    .panel-close { width: 28px; height: 28px; border-radius: 6px; border: none; background: rgba(11,39,64,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
+    .panel-close:hover { background: rgba(11,39,64,0.12); }
+    .panel-close svg { width: 14px; height: 14px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .panel-body { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+    .panel-section-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.4rem; }
+    .panel-p { font-size: 0.78rem; color: rgba(11,39,64,0.65); line-height: 1.65; }
+    .panel-p strong { color: var(--primary); font-weight: 600; }
+
+    /* empty state */
+    .empty-row td { text-align: center; padding: 2.5rem 1rem; color: rgba(11,39,64,0.35); font-size: 0.8rem; }
+
+    /* save indicator */
+    .save-indicator { font-size: 0.68rem; color: rgba(11,39,64,0.3); display: flex; align-items: center; gap: 0.3rem; margin-left: auto; transition: color 0.3s; }
+    .save-indicator.saving { color: var(--aqua-dark); }
+    .save-indicator.saved  { color: #059669; }
+    .save-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar-root"></aside>
+
+  <main class="main">
+
+    <!-- ── TOPBAR ── -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, risks, products…">
+        </div>
+      </div>
+      <div class="topbar-right">
+        <span class="save-indicator" id="saveIndicator">
+          <span class="save-dot"></span>
+          <span id="saveLabel">All changes saved</span>
+        </span>
+        <button class="btn-export" onclick="exportCSV()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+        <button class="btn-guidance" onclick="openHelpPanel()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Guidance
+        </button>
+      </div>
+    </header>
+
+    <!-- ── MODULE HEADER ── -->
+    <div class="module-header">
+      <span class="module-header-title">Risk Management</span>
+    </div>
+
+    <!-- ── SUBNAV ── -->
+    <nav class="rm-subnav">
+      <a href="risk-management-overview.html" class="rm-subnav-back">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Risk Management Overview
+      </a>
+      <a href="risk-management-plan.html" class="rm-subnav-link">Risk Management Plan</a>
+      <a href="hazard-identification.html" class="rm-subnav-link active">Hazard Identification</a>
+      <a href="#" class="rm-subnav-link">Risk Analysis</a>
+      <a href="#" class="rm-subnav-link">Risk Management Report</a>
+    </nav>
+
+    <!-- ── SCROLLABLE CONTENT ── -->
+    <div class="page-scroll">
+
+      <!-- ── HEADER CARD (product + progress + filters) ── -->
+      <div class="card" style="margin-bottom:1rem;">
+        <div class="card-body" style="padding:1rem 1.1rem 0.85rem;">
+
+          <!-- Product selector -->
+          <div class="product-row">
+            <span class="product-label">Product:</span>
+            <button class="product-selector" id="productSelectorBtn" onclick="cycleProduct()">
+              <span id="productSelectorLabel">CardioSync Pro</span>
+              <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+
+          <!-- Progress bar -->
+          <div class="progress-row">
+            <div class="progress-track">
+              <div class="progress-seg yes"   id="pgYes"   style="width:0%"></div>
+              <div class="progress-seg maybe" id="pgMaybe" style="width:0%"></div>
+              <div class="progress-seg no"    id="pgNo"    style="width:0%"></div>
+            </div>
+            <div class="progress-counts">
+              <span class="progress-count"><span class="progress-dot yes"></span><span id="ctYes">0</span> Yes</span>
+              <span class="progress-count"><span class="progress-dot maybe"></span><span id="ctMaybe">0</span> Maybe</span>
+              <span class="progress-count"><span class="progress-dot no"></span><span id="ctNo">0</span> No</span>
+            </div>
+            <span class="progress-total" id="pgTotal">0 / 37 answered</span>
+          </div>
+
+          <!-- Filters -->
+          <div class="filter-row">
+            <span class="filter-label">Show:</span>
+            <button class="filter-tab active" data-filter="all"    onclick="setFilter('all')">All</button>
+            <button class="filter-tab f-open"  data-filter="open"   onclick="setFilter('open')">Unanswered</button>
+            <button class="filter-tab f-yes"   data-filter="Yes"    onclick="setFilter('Yes')">Yes</button>
+            <button class="filter-tab f-maybe" data-filter="Maybe"  onclick="setFilter('Maybe')">Maybe</button>
+            <button class="filter-tab f-no"    data-filter="No"     onclick="setFilter('No')">No</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── SECTION NOTE ── -->
+      <div class="section-note">
+        Answer each question from ISO/TR 24971 Annex A to identify characteristics of this device that could affect safety. For each <strong>"Yes"</strong> or <strong>"Maybe"</strong>, describe the potential hazard(s) in the Notes column — this data will populate the Risk Analysis. Sub-questions under A.2.31 expand automatically when the parent is answered "Yes".
+      </div>
+
+      <!-- ── TABLE CARD ── -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-head">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--aqua);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            ISO/TR 24971 Annex A — Hazard Identification Checklist
+          </div>
+          <span class="card-title-sub">Hover the ⓘ icon for factors to consider</span>
+        </div>
+        <div class="hazid-table-wrap">
+          <table class="hazid-table" id="hazidTable">
+            <thead>
+              <tr>
+                <th class="col-ref">Ref</th>
+                <th class="col-q">Question</th>
+                <th class="col-resp">Response</th>
+                <th class="col-notes">Notes / Potential Hazards</th>
+              </tr>
+            </thead>
+            <tbody id="hazidTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /page-scroll -->
+  </main>
+
+  <!-- ── FLOATING TOOLTIP ── -->
+  <div class="floating-tip" id="floatingTip"></div>
+
+  <!-- ── HELP PANEL ── -->
+  <div class="panel-overlay" id="panelOverlay" onclick="closeAllPanels(event)">
+    <div class="panel-backdrop"></div>
+    <div class="help-panel" id="helpPanel">
+      <div class="panel-head">
+        <div class="panel-head-row">
+          <div class="panel-id">Hazard Identification</div>
+          <button class="panel-close" onclick="closeAllPanels()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div>
+          <div class="panel-section-title">Purpose</div>
+          <p class="panel-p">This checklist implements ISO/TR 24971 Annex A — a structured series of questions to identify all device characteristics that could affect safety. It is an informative (non-mandatory) guide that complements the normative requirements of ISO 14971:2019.</p>
+        </div>
+        <div>
+          <div class="panel-section-title">How to use</div>
+          <p class="panel-p"><strong>Yes</strong> — This characteristic applies. Describe the specific hazard(s) in the Notes column.<br><br><strong>Maybe</strong> — Potentially applicable or requires further investigation. Capture what you know so far.<br><br><strong>No</strong> — Not applicable to this device. The row will dim and the Notes field will lock.</p>
+        </div>
+        <div>
+          <div class="panel-section-title">Downstream use</div>
+          <p class="panel-p">All "Yes" and "Maybe" responses — along with their notes — are stored in a structured format that flows into the Risk Analysis table. Export to CSV at any time for records or team review.</p>
+        </div>
+        <div>
+          <div class="panel-section-title">Completeness</div>
+          <p class="panel-p">ISO/TR 24971 notes this list is <strong>neither exhaustive nor representative of all devices</strong>. Add device-specific questions as needed and skip questions that are clearly not relevant. Document your rationale in the Notes column.</p>
+        </div>
+        <div>
+          <div class="panel-section-title">Reference</div>
+          <p class="panel-p">ISO/TR 24971:2020 Annex A (informative) — "Identification of hazards and characteristics related to safety" · ISO 14971:2019 §5.4</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="sidebar.js"></script>
+  <script>
+
+    // ─── Question data ───────────────────────────────────────────────────────
+    const QUESTIONS = [
+      {
+        ref: 'A.2.1',
+        q: 'What is the intended use and how is the medical device to be used?',
+        tip: 'Consider: (1) role relative to diagnosis, prevention, monitoring, treatment, or alleviation of disease/injury; investigation, replacement, or support of anatomy; control of conception; (2) indications for use (patient population, user profile, use environment); (3) contra-indications; (4) whether device sustains or supports life; (5) whether special intervention is needed in case of failure; (6) whether a security breach can degrade performance or availability; (7) whether unauthorized access or loss of data can affect safety.'
+      },
+      {
+        ref: 'A.2.2',
+        q: 'Is the medical device intended to be implanted?',
+        tip: 'Consider: location of implantation; patient population characteristics (age, weight, physical activity); effect of ageing on implant performance; expected lifetime of implant; reversibility; whether implant can be modified or configured while implanted; access connection method (physical or wireless).'
+      },
+      {
+        ref: 'A.2.3',
+        q: 'Is the medical device intended to be in contact with the patient or other persons?',
+        tip: 'Consider: nature of intended contact (surface contact, invasive contact, or implantation); period and frequency of contact for each contact type.'
+      },
+      {
+        ref: 'A.2.4',
+        q: 'What materials or components are utilized in the medical device or are used with, or are in contact with, the medical device?',
+        tip: 'Consider: compatibility with relevant substances; compatibility with tissues or body fluids; whether safety-relevant characteristics are known; whether materials of animal origin are used (see ISO 10993-1 Annex B and ISO 22442 series).'
+      },
+      {
+        ref: 'A.2.5',
+        q: 'Is energy delivered to or extracted from the patient?',
+        tip: 'Consider: type of energy transferred; control, quality, quantity, intensity, and duration; whether energy levels are higher than those currently used for similar devices.'
+      },
+      {
+        ref: 'A.2.6',
+        q: 'Are substances delivered to or extracted from the patient?',
+        tip: 'Consider: whether substance is delivered or extracted; single substance or range of substances; maximum and minimum transfer rates and their control.'
+      },
+      {
+        ref: 'A.2.7',
+        q: 'Are biological materials processed by the medical device for subsequent reuse, transfusion or transplantation?',
+        tip: 'Consider: type of process and substance(s) processed — e.g. auto-transfusion, dialysis, blood component or cell therapy processing.'
+      },
+      {
+        ref: 'A.2.8',
+        q: 'Is the medical device supplied sterile or intended to be sterilized by the user, or are other microbiological controls applicable?',
+        tip: 'Consider: single use vs. reuse packaging; shelf-life issues; limitations on number of reuse cycles; method of product sterilization; impact of sterilization methods not intended by the manufacturer.'
+      },
+      {
+        ref: 'A.2.9',
+        q: 'Is the medical device intended to be routinely cleaned and disinfected by the user?',
+        tip: 'Consider: types of cleaning or disinfecting agents; limitations on number of cleaning cycles; how device design influences effectiveness of routine cleaning; effect of agents on device safety or performance.'
+      },
+      {
+        ref: 'A.2.10',
+        q: 'Does the medical device modify the patient environment?',
+        tip: 'Consider effects on: temperature, humidity, atmospheric gas composition, pressure, and light.'
+      },
+      {
+        ref: 'A.2.11',
+        q: 'Are measurements taken?',
+        tip: 'Consider: variables measured; accuracy and precision; whether measurement apparatus or data can be compromised; need for calibration and maintenance.'
+      },
+      {
+        ref: 'A.2.12',
+        q: 'Is the medical device interpretative?',
+        tip: 'Consider: whether conclusions are presented from input or acquired data; algorithms used; confidence limits; unintended applications of data or algorithms; unauthorized manipulation or changes to algorithms and data.'
+      },
+      {
+        ref: 'A.2.13',
+        q: 'Is the medical device intended for use in conjunction with other medical devices, medicines or other medical technologies?',
+        tip: 'Consider: which other devices/medicines/technologies are involved; potential interaction problems (e.g. device impacting performance of other devices); whether the patient follows therapy instructions.'
+      },
+      {
+        ref: 'A.2.14',
+        q: 'Are there unwanted outputs of energy or substances?',
+        tip: 'Energy: noise/vibration, heat, radiation (ionizing, non-ionizing, UV/visible/IR), contact temperatures, leakage currents, electric/magnetic fields. Substances: manufacturing/cleaning/testing residuals with physiological effects; chemical discharge; waste products; body fluids.'
+      },
+      {
+        ref: 'A.2.15',
+        q: 'Is the medical device susceptible to environmental influences?',
+        tip: 'Consider: operational, transport, and storage environments; light, temperature, humidity, vibrations, spillage; susceptibility to power/cooling supply variations; electromagnetic interference.'
+      },
+      {
+        ref: 'A.2.16',
+        q: 'Does the medical device influence the environment?',
+        tip: 'Consider: effects on power and cooling supplies; emission of toxic materials; generation of electromagnetic disturbance.'
+      },
+      {
+        ref: 'A.2.17',
+        q: 'Does the medical device require consumables or accessories?',
+        tip: 'Consider: specifications for consumables/accessories; any restrictions placed on users in their selection.'
+      },
+      {
+        ref: 'A.2.18',
+        q: 'Is maintenance or calibration necessary?',
+        tip: 'Consider: user vs. specialist maintenance/calibration; special substances or equipment needed; traceability of calibrator values to higher-order reference; how to determine when maintenance/recalibration is needed; how to verify calibration remains acceptable.'
+      },
+      {
+        ref: 'A.2.19',
+        q: 'Does the medical device contain software?',
+        tip: 'Consider: whether software is intended to be installed, verified, modified, or exchanged by user or specialist; authenticity of software updates.'
+      },
+      {
+        ref: 'A.2.20',
+        q: 'Does the medical device allow access to information?',
+        tip: 'Consider: accessible Ethernet ports, USB ports, serial ports, and removable hard drives.'
+      },
+      {
+        ref: 'A.2.21',
+        q: 'Does the medical device store data critical to patient care?',
+        tip: 'Consider: possibility of data modification or corruption; unauthorized access to data; consequences for patients.'
+      },
+      {
+        ref: 'A.2.22',
+        q: 'Does the medical device have a restricted shelf life?',
+        tip: 'Consider: whether device can deteriorate over time; impact of storage conditions and primary packaging; communication of expiry date; possibility of use after expiry; disposal of expired devices.'
+      },
+      {
+        ref: 'A.2.23',
+        q: 'Are there any delayed or long-term use effects?',
+        tip: 'Consider: ergonomic and cumulative effects. Examples include corroding pumps, mechanical fatigue, loosening of straps and attachments, vibration effects, label wear, and long-term material degradation.'
+      },
+      {
+        ref: 'A.2.24',
+        q: 'To what mechanical forces will the medical device be subjected?',
+        tip: 'Consider: whether the forces to which the device will be subjected are under user control or controlled by interaction with other persons.'
+      },
+      {
+        ref: 'A.2.25',
+        q: 'What determines the lifetime of the medical device?',
+        tip: 'Consider: battery depletion; deterioration of materials; component failure due to ageing, wear, fatigue, or repeated use; availability of spare parts.'
+      },
+      {
+        ref: 'A.2.26',
+        q: 'Is the medical device intended for single use?',
+        tip: 'Consider: whether device self-destructs after use; whether it is obvious to the user that the device has been used.'
+      },
+      {
+        ref: 'A.2.27',
+        q: 'Is safe decommissioning or disposal of the medical device necessary?',
+        tip: 'Consider: waste products during disposal; presence of hazardous materials (toxic chemical or biological agents); recyclability; proper sanitization and removal of sensitive data; data removal and retention policies.'
+      },
+      {
+        ref: 'A.2.28',
+        q: 'Does installation or use of the medical device require special training or special skills?',
+        tip: 'Consider: complexity and novelty of device; knowledge, skills, and abilities of persons installing, maintaining, or using the device; need for training, education, competence assessment, certification, or qualification.'
+      },
+      {
+        ref: 'A.2.29',
+        q: 'How will information for safety be provided?',
+        tip: 'Consider: whether information goes directly to end user or involves third parties (installers, care providers, HCPs, lab directors, pharmacists); training implications; commissioning and transfer; whether re-training or re-certification of users or service personnel would be indicated.'
+      },
+      {
+        ref: 'A.2.30',
+        q: 'Are new manufacturing processes established or introduced?',
+        tip: 'Consider: application of new or innovative technology; changes in scale of production; changes in contract manufacturing, suppliers, and vendors.'
+      },
+      {
+        ref: 'A.2.31',
+        q: 'Is successful application of the medical device dependent on the usability of the user interface?',
+        tip: 'Parent question for usability. Answer "Yes" to expand 9 sub-questions (A.2.31.1–A.2.31.9) covering use error, distractions, connecting parts, control interface, information display, menu control, user knowledge/skills, special-needs users, and unauthorized actions.'
+      },
+      {
+        ref: 'A.2.31.1',
+        q: 'Can the user interface design features contribute to use error?',
+        tip: 'Consider: controls and indicators; symbols used; ergonomic features; physical design and layout; hierarchy of operation; software menus; visibility of warnings; audibility of alarms; standardisation of colour coding. See IEC 62366-1 and IEC 60601-1-8.',
+        parent: 'A.2.31'
+      },
+      {
+        ref: 'A.2.31.2',
+        q: 'Is the medical device used in an environment where distractions can cause use error?',
+        tip: 'Consider: consequence of use error; whether distractions are commonplace; infrequent disturbances; repetitive stress reducing user awareness or attention.',
+        parent: 'A.2.31'
+      },
+      {
+        ref: 'A.2.31.3',
+        q: 'Does the medical device have connecting parts or accessories?',
+        tip: 'Consider: possibility of wrong connections; similarity to other products\' connections; connection force; feedback on connection integrity; over- and under-tightening.',
+        parent: 'A.2.31'
+      },
+      {
+        ref: 'A.2.31.4',
+        q: 'Does the medical device have a control interface?',
+        tip: 'Consider: spacing, coding, grouping, mapping, modes of feedback, blunders, slips, control differentiation, visibility, direction of activation or change, continuous vs. discrete controls, reversibility of settings or actions.',
+        parent: 'A.2.31'
+      },
+      {
+        ref: 'A.2.31.5',
+        q: 'Does the medical device display information?',
+        tip: 'Consider: visibility in various environments; orientation; visual capabilities of users; clarity of presented information; units; colour coding; accessibility of critical information.',
+        parent: 'A.2.31'
+      },
+      {
+        ref: 'A.2.31.6',
+        q: 'Is the medical device controlled by a menu?',
+        tip: 'Consider: complexity and number of layers; awareness of state; location of settings; navigation method; number of steps per action; sequence clarity and memorization problems; importance of control function relative to accessibility.',
+        parent: 'A.2.31'
+      },
+      {
+        ref: 'A.2.31.7',
+        q: 'Is the successful use of the medical device dependent on a user\'s knowledge, skills and abilities?',
+        tip: 'Consider: intended users, mental and physical abilities, skill and training; use environment and ergonomic aspects; capability of intended users to control device use; personal characteristics affecting interaction. See IEC TR 62366-2.',
+        parent: 'A.2.31'
+      },
+      {
+        ref: 'A.2.31.8',
+        q: 'Will the medical device be used by persons with specific needs?',
+        tip: 'Consider: users with special characteristics (disabled persons, elderly, children) who may need assistance; wide-ranging skill levels; differing cultural backgrounds and expectations that could affect appropriate application.',
+        parent: 'A.2.31'
+      },
+      {
+        ref: 'A.2.31.9',
+        q: 'Can the user interface be used to initiate unauthorised actions?',
+        tip: 'Consider: whether the interface allows entry into restricted-access operation mode (maintenance/special use) increasing use error risk; whether the user becomes aware of having entered such a mode.',
+        parent: 'A.2.31'
+      },
+      {
+        ref: 'A.2.32',
+        q: 'Does the medical device include an alarm system?',
+        tip: 'Consider: risk of false alarms; missing alarms; disconnected alarm systems; unreliable remote alarm systems; user\'s ability to understand how the alarm system works. See IEC 60601-1-8.'
+      },
+      {
+        ref: 'A.2.33',
+        q: 'In what ways might the medical device be misused (deliberately or not)?',
+        tip: 'Consider: incorrect use of connectors; disabling safety features or alarms; neglect of manufacturer\'s recommended maintenance; unauthorized access to device or device functions.'
+      },
+      {
+        ref: 'A.2.34',
+        q: 'Is the medical device intended to be mobile or portable?',
+        tip: 'Consider: need for grips, handles, wheels, or brakes; mechanical stability and durability requirements.'
+      },
+      {
+        ref: 'A.2.35',
+        q: 'Does the use of the medical device depend on essential performance?',
+        tip: 'Consider: characteristics of output of life-supporting devices; operation of an alarm. See IEC 60601-1 for essential performance of medical electrical equipment and systems.'
+      },
+      {
+        ref: 'A.2.36',
+        q: 'Does the medical device have a degree of autonomy?',
+        tip: 'Consider: awareness of user when device generates error/alarm/failure; awareness when intervention is required; ability to intervene in or abort autonomous actions; ability to select and perform corrective actions. See IEC TR 60601-4-1.'
+      },
+      {
+        ref: 'A.2.37',
+        q: 'Does the medical device produce an output that is used as an input in determining clinical action?',
+        tip: 'Consider: whether incorrect or delayed outputs can result in direct or indirect risks to patients — e.g. incorrect diagnosis leading to delayed or omitted therapy. See Annex H of ISO/TR 24971 for IVD guidance.'
+      }
+    ];
+
+    // ─── State ───────────────────────────────────────────────────────────────
+    const PRODUCTS = ['CardioSync Pro', 'NovaPulse IVD', 'OrthoFlex Implant'];
+    const STORE_KEY = 'tangram_eqms_hazid_v1';
+
+    var currentProduct = PRODUCTS[0];
+    var currentFilter  = 'all';
+    var saveTimer      = null;
+
+    function getData() {
+      try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch(e) { return {}; }
+    }
+    function setData(d) { localStorage.setItem(STORE_KEY, JSON.stringify(d)); }
+
+    function getProductData(prod) {
+      var d = getData();
+      if (!d[prod]) d[prod] = { responses: {} };
+      return d[prod];
+    }
+
+    function getResponse(ref) {
+      var pd = getProductData(currentProduct);
+      return (pd.responses && pd.responses[ref]) || { response: '', notes: '' };
+    }
+
+    function saveResponse(ref, field, value) {
+      var d = getData();
+      if (!d[currentProduct]) d[currentProduct] = { responses: {} };
+      if (!d[currentProduct].responses[ref]) d[currentProduct].responses[ref] = { response: '', notes: '' };
+      d[currentProduct].responses[ref][field] = value;
+      d[currentProduct].lastUpdated = new Date().toISOString();
+      setData(d);
+    }
+
+    // ─── Product cycling ─────────────────────────────────────────────────────
+    function cycleProduct() {
+      var idx = PRODUCTS.indexOf(currentProduct);
+      currentProduct = PRODUCTS[(idx + 1) % PRODUCTS.length];
+      document.getElementById('productSelectorLabel').textContent = currentProduct;
+      renderTable();
+    }
+
+    // ─── Filters ─────────────────────────────────────────────────────────────
+    function setFilter(f) {
+      currentFilter = f;
+      document.querySelectorAll('.filter-tab').forEach(function(t) {
+        t.classList.toggle('active', t.dataset.filter === f);
+      });
+      applyFilter();
+    }
+
+    function applyFilter() {
+      var rows = document.querySelectorAll('#hazidTbody tr[data-ref]');
+      var anyVisible = false;
+      rows.forEach(function(row) {
+        var ref    = row.dataset.ref;
+        var isMain = !row.dataset.parent;
+        var resp   = getResponse(ref).response;
+        var visible = false;
+
+        if (currentFilter === 'all')   { visible = isMain || row.classList.contains('visible'); }
+        else if (currentFilter === 'open')  { visible = resp === ''; }
+        else { visible = resp === currentFilter; }
+
+        // sub-rows in 'all' mode are controlled by their parent
+        if (currentFilter === 'all' && row.dataset.parent) {
+          visible = row.classList.contains('visible');
+        }
+
+        row.style.display = visible ? '' : 'none';
+        if (visible) anyVisible = true;
+      });
+
+      // empty state
+      var emptyRow = document.getElementById('emptyRow');
+      if (emptyRow) emptyRow.style.display = anyVisible ? 'none' : '';
+    }
+
+    // ─── Save indicator ──────────────────────────────────────────────────────
+    function flashSave() {
+      var el = document.getElementById('saveIndicator');
+      var lbl = document.getElementById('saveLabel');
+      el.className = 'save-indicator saving';
+      lbl.textContent = 'Saving…';
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function() {
+        el.className = 'save-indicator saved';
+        lbl.textContent = 'All changes saved';
+        setTimeout(function() {
+          el.className = 'save-indicator';
+          lbl.textContent = 'All changes saved';
+        }, 1500);
+      }, 500);
+    }
+
+    // ─── Response change handler ─────────────────────────────────────────────
+    function onRespChange(sel, ref) {
+      var val = sel.value;
+      sel.className = 'resp-select' + (val === 'Yes' ? ' resp-yes' : val === 'No' ? ' resp-no' : val === 'Maybe' ? ' resp-maybe' : '');
+
+      saveResponse(ref, 'response', val);
+      flashSave();
+
+      // grey-out row
+      var row = sel.closest('tr');
+      row.classList.toggle('resp-no-row', val === 'No');
+
+      // lock/unlock notes
+      var notesEl = document.getElementById('notes-' + ref.replace(/\./g, '_'));
+      if (notesEl) {
+        notesEl.disabled = val === 'No';
+        if (val === 'No') notesEl.value = '';
+        if (val === 'No') saveResponse(ref, 'notes', '');
+      }
+
+      // if A.2.31 changed, show/hide sub-rows
+      if (ref === 'A.2.31') {
+        toggleSubRows(val === 'Yes');
+        applyFilter();
+      } else {
+        updateProgress();
+        if (currentFilter !== 'all') applyFilter();
+        return;
+      }
+
+      updateProgress();
+    }
+
+    // ─── Notes change handler ────────────────────────────────────────────────
+    function onNotesChange(el, ref) {
+      saveResponse(ref, 'notes', el.value);
+      flashSave();
+      autoResize(el);
+    }
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.max(32, el.scrollHeight) + 'px';
+    }
+
+    // ─── Sub-row expansion (A.2.31) ───────────────────────────────────────────
+    function toggleSubRows(show) {
+      document.querySelectorAll('#hazidTbody tr[data-parent="A.2.31"]').forEach(function(row) {
+        row.classList.toggle('visible', show);
+      });
+    }
+
+    // ─── Progress ────────────────────────────────────────────────────────────
+    function updateProgress() {
+      var isA231Yes = getResponse('A.2.31').response === 'Yes';
+      var mainQs = QUESTIONS.filter(function(q) { return !q.parent; });
+      var subQs  = QUESTIONS.filter(function(q) { return q.parent === 'A.2.31'; });
+      var total  = mainQs.length + (isA231Yes ? subQs.length : 0);
+
+      var nYes = 0, nNo = 0, nMaybe = 0;
+      QUESTIONS.forEach(function(q) {
+        if (q.parent && !isA231Yes) return;
+        var r = getResponse(q.ref).response;
+        if (r === 'Yes')   nYes++;
+        else if (r === 'No')    nNo++;
+        else if (r === 'Maybe') nMaybe++;
+      });
+
+      var answered = nYes + nNo + nMaybe;
+      var pct = total > 0 ? 100 / total : 0;
+
+      document.getElementById('pgYes').style.width   = (nYes   * pct) + '%';
+      document.getElementById('pgMaybe').style.width = (nMaybe * pct) + '%';
+      document.getElementById('pgNo').style.width    = (nNo    * pct) + '%';
+      document.getElementById('ctYes').textContent   = nYes;
+      document.getElementById('ctMaybe').textContent = nMaybe;
+      document.getElementById('ctNo').textContent    = nNo;
+      document.getElementById('pgTotal').textContent = answered + ' / ' + total + ' answered';
+    }
+
+    // ─── Render table ────────────────────────────────────────────────────────
+    function renderTable() {
+      var tbody = document.getElementById('hazidTbody');
+      tbody.innerHTML = '';
+
+      QUESTIONS.forEach(function(q) {
+        var saved  = getResponse(q.ref);
+        var resp   = saved.response;
+        var notes  = saved.notes;
+        var idSafe = q.ref.replace(/\./g, '_');
+        var isSub  = !!q.parent;
+        var isNo   = resp === 'No';
+        var a231Yes = getResponse('A.2.31').response === 'Yes';
+
+        var tr = document.createElement('tr');
+        tr.dataset.ref = q.ref;
+        if (isSub) {
+          tr.className = 'sub-row' + (a231Yes ? ' visible' : '');
+          tr.dataset.parent = q.parent;
+        }
+        if (isNo) tr.classList.add('resp-no-row');
+
+        var respClass = resp === 'Yes' ? ' resp-yes' : resp === 'No' ? ' resp-no' : resp === 'Maybe' ? ' resp-maybe' : '';
+        var tipId = 'tip-' + idSafe;
+
+        var subIconHtml = isSub ? '<div class="sub-indent"><span class="sub-connector"><svg viewBox="0 0 12 16"><path d="M2 0 v8 q0 4 4 4 h6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
+        var subCloseHtml = isSub ? '</div>' : '';
+
+        tr.innerHTML =
+          '<td class="td-ref">' +
+            '<span class="ref-badge">' + q.ref + '</span>' +
+          '</td>' +
+          '<td class="td-q">' +
+            subIconHtml +
+            '<div class="q-wrap">' +
+              '<span class="q-text">' + q.q + '</span>' +
+              '<button class="info-btn" data-tip="' + encodeURIComponent(q.tip) + '" ' +
+                'onmouseenter="showTip(event,this)" onmouseleave="hideTip()" ' +
+                'onclick="event.preventDefault()" aria-label="Factors to consider">i</button>' +
+            '</div>' +
+            subCloseHtml +
+          '</td>' +
+          '<td class="td-resp">' +
+            '<select class="resp-select' + respClass + '" ' +
+              'onchange="onRespChange(this,\'' + q.ref + '\')" ' +
+              'aria-label="Response for ' + q.ref + '">' +
+              '<option value="">—</option>' +
+              '<option value="Yes"'   + (resp==='Yes'   ? ' selected' : '') + '>Yes</option>' +
+              '<option value="No"'    + (resp==='No'    ? ' selected' : '') + '>No</option>' +
+              '<option value="Maybe"' + (resp==='Maybe' ? ' selected' : '') + '>Maybe</option>' +
+            '</select>' +
+          '</td>' +
+          '<td class="td-notes">' +
+            '<textarea class="notes-input" id="notes-' + idSafe + '" ' +
+              'placeholder="Describe potential hazard(s)…" rows="1" ' +
+              (isNo ? 'disabled ' : '') +
+              'oninput="onNotesChange(this,\'' + q.ref + '\')">' +
+              (isNo ? '' : escHtml(notes)) +
+            '</textarea>' +
+          '</td>';
+
+        tbody.appendChild(tr);
+
+        // auto-size on next paint
+        if (notes && !isNo) {
+          (function(ref) {
+            requestAnimationFrame(function() {
+              var el = document.getElementById('notes-' + ref.replace(/\./g, '_'));
+              if (el) autoResize(el);
+            });
+          })(q.ref);
+        }
+      });
+
+      // empty state row
+      var emptyTr = document.createElement('tr');
+      emptyTr.id = 'emptyRow';
+      emptyTr.style.display = 'none';
+      emptyTr.innerHTML = '<td colspan="4">No questions match this filter.</td>';
+      tbody.appendChild(emptyTr);
+
+      updateProgress();
+      applyFilter();
+    }
+
+    function escHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ─── Tooltip ─────────────────────────────────────────────────────────────
+    var tipEl = document.getElementById('floatingTip');
+
+    function showTip(e, btn) {
+      var text = decodeURIComponent(btn.dataset.tip);
+      tipEl.textContent = text;
+      tipEl.style.display = 'block';
+      moveTip(e);
+    }
+    function moveTip(e) {
+      var w = tipEl.offsetWidth || 300, h = tipEl.offsetHeight || 80;
+      var x = e.clientX + 14, y = e.clientY - 10;
+      if (x + w > window.innerWidth  - 12) x = e.clientX - w - 14;
+      if (y + h > window.innerHeight - 12) y = window.innerHeight - h - 12;
+      if (y < 8) y = 8;
+      tipEl.style.left = x + 'px';
+      tipEl.style.top  = y + 'px';
+    }
+    function hideTip() { tipEl.style.display = 'none'; }
+    document.addEventListener('mousemove', function(e) {
+      if (tipEl.style.display !== 'none') moveTip(e);
+    });
+
+    // ─── Export CSV ───────────────────────────────────────────────────────────
+    function exportCSV() {
+      var isA231Yes = getResponse('A.2.31').response === 'Yes';
+      var rows = [['Reference','Question','Response','Notes','Product','Exported']];
+      var now  = new Date().toISOString();
+
+      QUESTIONS.forEach(function(q) {
+        if (q.parent && !isA231Yes) return;
+        var r = getResponse(q.ref);
+        rows.push([
+          q.ref,
+          '"' + q.q.replace(/"/g, '""') + '"',
+          r.response || '—',
+          '"' + (r.notes || '').replace(/"/g, '""') + '"',
+          '"' + currentProduct + '"',
+          now
+        ]);
+      });
+
+      var csv = rows.map(function(r) { return r.join(','); }).join('\n');
+      var blob = new Blob([csv], { type: 'text/csv' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'hazard-identification-' + currentProduct.replace(/\s+/g,'-').toLowerCase() + '.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // ─── Help panel ───────────────────────────────────────────────────────────
+    function openHelpPanel() {
+      document.getElementById('panelOverlay').classList.add('open', 'help-open');
+    }
+    function closeAllPanels(e) {
+      if (e && e.target !== document.getElementById('panelOverlay') && e.target !== document.querySelector('.panel-backdrop')) return;
+      document.getElementById('panelOverlay').classList.remove('open', 'help-open');
+    }
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') document.getElementById('panelOverlay').classList.remove('open', 'help-open'); });
+
+    // ─── Init ─────────────────────────────────────────────────────────────────
+    initSidebar({ activePage: 'risk-management' });
+    renderTable();
+
+  </script>
+</body>
+</html>
