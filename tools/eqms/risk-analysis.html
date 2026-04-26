@@ -866,8 +866,11 @@
           ? `<span class="lvl-badge ${cls}">${lv}</span>`
           : `<span class="lvl-badge empty">—</span>`;
       }
-      // update p-select coloring
+      // update p-select values and coloring
       const selects = row.querySelectorAll('.p-select');
+      selects[0].value     = r.p1 || 0;
+      selects[1].value     = r.p2 || 0;
+      selects[2].value     = r.s  || 0;
       selects[0].className = `p-select${r.p1 ? ' set' : ''}`;
       selects[1].className = `p-select${r.p2 ? ' set' : ''}`;
       selects[2].className = `p-select${r.s  ? ' set' : ''}`;
