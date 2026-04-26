@@ -1,257 +1,600 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Risk Management — Tangram eQMS</title>
+  <title>Risk Management Plan — Tangram eQMS</title>
   <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="qms-shared.css?v=1776901546755">
   <style>
-    .view-tabs { display: flex; gap: 0.25rem; background: white; border-bottom: 1px solid rgba(11,39,64,0.08); padding: 0 1.25rem; }
-    .view-tab { border: none; background: transparent; font-family: inherit; font-size: 0.78rem; font-weight: 600; color: rgba(11,39,64,0.52); padding: 0.7rem 0.9rem; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
-    .view-tab:hover { color: var(--primary); }
-    .view-tab.active { color: var(--aqua-dark); border-bottom-color: var(--aqua); }
+    /* ─── SUPPRESSIONS ─── */
+    #lm-step-footer { display: none !important; }
+    #lm-toggle-root { display: none !important; }
+    #intro-slot      { display: none !important; }
+    .learn-only      { display: none !important; }
 
-    .tab-content { flex: 1; overflow: hidden; display: none; min-height: 0; flex-direction: column; }
-    .tab-content.active { display: flex; }
+    /* ─── TOPBAR EXTRAS ─── */
+    .topbar-left { display: flex; align-items: center; gap: 0.65rem; flex: 1; min-width: 0; }
+    .ver-badge { font-size: 0.68rem; font-weight: 700; background: rgba(11,39,64,0.07); border: 1px solid rgba(11,39,64,0.12); color: var(--mid-blue); padding: 0.2rem 0.6rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
+    .status-pill { font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .status-pill.draft    { background: rgba(10,192,233,0.1);  color: var(--aqua-dark); }
+    .status-pill.approved { background: rgba(16,185,129,0.12); color: #059669; }
 
-    /* Soft gate banner */
-    .soft-gate-banner {
-      display: flex; align-items: flex-start; gap: 0.7rem;
-      background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3);
-      border-radius: 0; padding: 0.7rem 1.25rem;
-      font-size: 0.79rem; color: #92400e; line-height: 1.55;
-      flex-shrink: 0;
-    }
-    .soft-gate-banner svg { width: 15px; height: 15px; stroke: #d97706; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; margin-top: 0.1rem; }
-    .soft-gate-banner a { color: #b45309; font-weight: 600; text-decoration: none; }
-    .soft-gate-banner a:hover { text-decoration: underline; }
-    .soft-gate-dismiss { margin-left: auto; font-size: 0.7rem; font-weight: 600; color: #b45309; background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; }
+    /* ─── ACTION BUTTONS ─── */
+    .btn-export { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
+    .btn-export:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-export svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-guidance { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
+    .btn-guidance:hover { border-color: var(--aqua); color: var(--aqua-dark); background: rgba(10,192,233,0.04); }
+    .btn-guidance svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-    /* Plan form */
-    .plan-approval-bar { display: flex; align-items: center; gap: 1rem; padding: 0.85rem 1.25rem; background: white; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
-    .plan-status-pill { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.7rem; border-radius: 4px; }
-    .plan-status-pill.draft { background: rgba(245,158,11,0.12); color: #b45309; }
-    .plan-status-pill.approved { background: rgba(16,185,129,0.12); color: #047857; }
-    .plan-status-pill svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    /* ─── MODULE SUBNAV ─── */
+    .rm-subnav { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 40px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; overflow-x: auto; flex-shrink: 0; }
+    .rm-subnav::-webkit-scrollbar { height: 0; }
+    .rm-subnav-back { display: flex; align-items: center; gap: 0.35rem; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.45); text-decoration: none; padding: 0 0.9rem 0 0; border-right: 1px solid rgba(11,39,64,0.1); margin-right: 0.75rem; white-space: nowrap; transition: color 0.12s; flex-shrink: 0; }
+    .rm-subnav-back:hover { color: var(--aqua-dark); }
+    .rm-subnav-back svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .rm-subnav-link { font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.5); text-decoration: none; padding: 0 0.7rem; white-space: nowrap; height: 40px; display: flex; align-items: center; border-bottom: 2px solid transparent; transition: color 0.12s; }
+    .rm-subnav-link:hover { color: var(--primary); }
+    .rm-subnav-link.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
 
-    /* List column cards */
-    .risk-card { padding: 0.7rem 0.85rem; border-radius: 8px; cursor: pointer; border: 1.5px solid transparent; margin-bottom: 0.25rem; transition: background 0.1s; }
-    .risk-card:hover { background: rgba(11,39,64,0.03); }
-    .risk-card.selected { background: rgba(10,192,233,0.06); border-color: rgba(10,192,233,0.25); }
-    .risk-card-top { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.25rem; }
-    .risk-card-id { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; color: rgba(11,39,64,0.45); background: rgba(11,39,64,0.06); padding: 0.08rem 0.4rem; border-radius: 3px; }
-    .risk-card-title { font-size: 0.78rem; font-weight: 600; color: var(--primary); line-height: 1.35; }
-    .risk-card-meta { display: flex; align-items: center; gap: 0.4rem; }
+    /* ─── DOC COVER ─── */
+    .doc-cover { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 14px; padding: 2rem 2.25rem; margin-bottom: 1.5rem; position: relative; overflow: hidden; }
+    .doc-cover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ef4444, #f97316 40%, #0AC0E9); }
+    .doc-cover-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+    .doc-cover-meta { display: flex; flex-direction: column; gap: 0.25rem; text-align: right; flex-shrink: 0; }
+    .doc-cover-meta-row { font-size: 0.7rem; color: rgba(11,39,64,0.4); white-space: nowrap; }
+    .doc-cover-meta-row strong { color: var(--primary); font-weight: 600; }
+    .doc-company { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.5rem; }
+    .doc-name { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 0.35rem; }
+    .doc-subtitle { font-size: 0.82rem; color: rgba(11,39,64,0.5); line-height: 1.5; max-width: 480px; }
+    .doc-cover-divider { height: 1px; background: rgba(11,39,64,0.08); margin: 1.5rem 0; }
+    .doc-field { display: flex; flex-direction: column; gap: 0.2rem; }
+    .doc-field-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.3); }
+    .doc-field-input { font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; font-family: 'Inter', sans-serif; background: var(--light-gray); outline: none; transition: border-color 0.15s; width: 100%; }
+    .doc-field-input:focus { border-color: var(--aqua); background: white; }
 
-    /* Risk level swatch */
-    .risk-level { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.03em; padding: 0.1rem 0.38rem; border-radius: 3px; text-transform: uppercase; }
-    .risk-level.low { background: rgba(16,185,129,0.12); color: #047857; }
-    .risk-level.medium { background: rgba(245,158,11,0.14); color: #b45309; }
-    .risk-level.high { background: rgba(239,68,68,0.14); color: #dc2626; }
-    .risk-level.neg { background: rgba(11,39,64,0.08); color: rgba(11,39,64,0.55); }
+    /* ─── SCALE TABLES ─── */
+    .scale-table { width: 100%; border-collapse: collapse; }
+    .scale-table thead th { text-align: left; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.42); padding: 0.4rem 0.75rem; border-bottom: 1.5px solid rgba(11,39,64,0.08); }
+    .scale-table thead th.col-level { width: 48px; text-align: center; }
+    .scale-table thead th.col-label { width: 140px; }
+    .scale-table tbody td { padding: 0.25rem 0.5rem; border-bottom: 1px solid rgba(11,39,64,0.04); vertical-align: middle; }
+    .scale-table tbody tr:last-child td { border-bottom: none; }
+    .scale-table tbody tr:hover td { background: rgba(11,39,64,0.015); }
+    .level-num { text-align: center; font-size: 0.72rem; font-weight: 800; color: rgba(11,39,64,0.3); padding: 0.25rem 0 !important; }
+    .label-input, .def-input { font-family: 'Inter', sans-serif; font-size: 0.78rem; border: 1.5px solid transparent; background: transparent; outline: none; padding: 0.28rem 0.4rem; border-radius: 5px; width: 100%; transition: border-color 0.12s, background 0.12s; }
+    .label-input { font-weight: 600; color: var(--primary); }
+    .def-input { color: rgba(11,39,64,0.65); }
+    .label-input:hover, .def-input:hover { background: rgba(11,39,64,0.025); border-color: rgba(11,39,64,0.1); }
+    .label-input:focus, .def-input:focus { background: white; border-color: var(--aqua); }
+    .label-input:disabled, .def-input:disabled { opacity: 0.7; cursor: not-allowed; background: transparent; border-color: transparent; }
 
-    /* Risk matrix */
-    .matrix-wrap { padding: 1.5rem; }
-    .matrix-grid { display: grid; grid-template-columns: 70px repeat(5, 1fr); gap: 3px; max-width: 720px; margin-bottom: 1rem; }
-    .matrix-cell { min-height: 72px; padding: 0.35rem 0.4rem; border-radius: 5px; font-size: 0.72rem; position: relative; }
-    .matrix-cell.header { background: transparent; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; color: rgba(11,39,64,0.55); display: flex; align-items: center; justify-content: center; text-transform: uppercase; min-height: 26px; padding: 0.25rem; text-align: center; }
-    .matrix-cell.header-left { background: transparent; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; color: rgba(11,39,64,0.55); display: flex; align-items: center; justify-content: flex-end; padding-right: 0.5rem; text-transform: uppercase; }
-    .matrix-cell.low { background: rgba(16,185,129,0.14); }
-    .matrix-cell.medium { background: rgba(245,158,11,0.18); }
-    .matrix-cell.high { background: rgba(239,68,68,0.18); }
-    .matrix-cell-count { position: absolute; top: 4px; right: 6px; font-size: 0.7rem; font-weight: 700; color: var(--primary); background: white; padding: 0.08rem 0.36rem; border-radius: 4px; }
-    .matrix-cell-dots { display: flex; flex-wrap: wrap; gap: 3px; padding: 0.3rem 0.15rem; }
-    .matrix-cell-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); opacity: 0.55; }
-    .matrix-legend { display: flex; gap: 1rem; align-items: center; font-size: 0.72rem; color: rgba(11,39,64,0.55); margin-top: 0.65rem; flex-wrap: wrap; }
+    /* ─── THRESHOLD + ZONE CARDS ─── */
+    .zone-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .zone-card { border-radius: 10px; padding: 0.85rem 1rem; border: 1.5px solid; }
+    .zone-card.acceptable   { border-color: rgba(16,185,129,0.28); background: rgba(16,185,129,0.04); }
+    .zone-card.tolerable    { border-color: rgba(245,158,11,0.28); background: rgba(245,158,11,0.04); }
+    .zone-card.unacceptable { border-color: rgba(239,68,68,0.28);  background: rgba(239,68,68,0.04); }
+    .zone-swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 0.35rem; vertical-align: middle; flex-shrink: 0; }
+    .zone-card.acceptable   .zone-swatch { background: rgba(16,185,129,0.7); }
+    .zone-card.tolerable    .zone-swatch { background: rgba(245,158,11,0.75); }
+    .zone-card.unacceptable .zone-swatch { background: rgba(239,68,68,0.7); }
+    .zone-title { font-size: 0.74rem; font-weight: 700; margin-bottom: 0.3rem; display: flex; align-items: center; }
+    .zone-card.acceptable   .zone-title { color: #047857; }
+    .zone-card.tolerable    .zone-title { color: #b45309; }
+    .zone-card.unacceptable .zone-title { color: #dc2626; }
+    .zone-desc { font-size: 0.68rem; line-height: 1.6; color: rgba(11,39,64,0.58); margin-bottom: 0.45rem; }
+    .zone-range { font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 4px; display: inline-block; }
+    .zone-card.acceptable   .zone-range { background: rgba(16,185,129,0.12); color: #047857; }
+    .zone-card.tolerable    .zone-range { background: rgba(245,158,11,0.12); color: #b45309; }
+    .zone-card.unacceptable .zone-range { background: rgba(239,68,68,0.12); color: #dc2626; }
+
+    .threshold-row { display: flex; align-items: flex-end; gap: 1.5rem; padding: 1rem 1.1rem; background: rgba(11,39,64,0.025); border-radius: 10px; border: 1px solid rgba(11,39,64,0.07); margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .threshold-field { display: flex; flex-direction: column; gap: 0.25rem; }
+    .threshold-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.4); }
+    .threshold-input { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 800; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.15); border-radius: 7px; padding: 0.4rem 0.65rem; width: 90px; outline: none; text-align: center; transition: border-color 0.15s; }
+    .threshold-input:focus { border-color: var(--aqua); }
+    .threshold-input:disabled { opacity: 0.7; cursor: not-allowed; }
+    .threshold-sep { font-size: 0.78rem; color: rgba(11,39,64,0.35); align-self: center; padding-bottom: 2px; }
+    .threshold-note { font-size: 0.7rem; color: rgba(11,39,64,0.45); line-height: 1.55; flex: 1; min-width: 200px; }
+
+    /* ─── RPN CALCULATOR ─── */
+    .rpn-card-head-formula { font-size: 0.72rem; color: rgba(11,39,64,0.5); font-weight: 500; margin-left: 0.5rem; }
+    .rpn-selectors { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .rpn-selector-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .rpn-selector-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.45); }
+    .rpn-selector-sub { font-size: 0.58rem; color: rgba(11,39,64,0.35); margin-top: -0.2rem; }
+    .rating-group { display: flex; gap: 0.2rem; }
+    .rating-btn { flex: 1; font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 700; padding: 0.4rem 0.2rem; border: 1.5px solid rgba(11,39,64,0.1); background: white; border-radius: 6px; cursor: pointer; transition: all 0.12s; text-align: center; }
+    .rating-btn:hover { border-color: rgba(10,192,233,0.45); background: rgba(10,192,233,0.03); }
+    .rating-btn.selected { background: var(--aqua); color: white; border-color: var(--aqua); box-shadow: 0 2px 6px rgba(10,192,233,0.3); }
+    .rating-row-labels { display: flex; gap: 0.2rem; margin-top: 0.15rem; }
+    .rating-row-labels span { flex: 1; font-size: 0.55rem; color: rgba(11,39,64,0.35); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 1px; }
+
+    .rpn-result { display: flex; align-items: center; gap: 1.1rem; padding: 0.9rem 1rem; border-radius: 10px; background: rgba(11,39,64,0.03); border: 1px solid rgba(11,39,64,0.07); margin-bottom: 1.25rem; }
+    .rpn-score { font-size: 2.2rem; font-weight: 800; color: var(--primary); letter-spacing: -0.05em; line-height: 1; min-width: 56px; }
+    .rpn-result-info { display: flex; flex-direction: column; gap: 0.2rem; }
+    .rpn-formula-text { font-size: 0.7rem; color: rgba(11,39,64,0.4); font-weight: 500; }
+    .rpn-zone-pill { font-size: 0.72rem; font-weight: 700; padding: 0.3rem 0.75rem; border-radius: 20px; margin-left: auto; white-space: nowrap; }
+    .rpn-zone-pill.acceptable   { background: rgba(16,185,129,0.12); color: #047857; }
+    .rpn-zone-pill.tolerable    { background: rgba(245,158,11,0.12);  color: #b45309; }
+    .rpn-zone-pill.unacceptable { background: rgba(239,68,68,0.12);   color: #dc2626; }
+    .rpn-zone-pill.none         { background: rgba(11,39,64,0.06);    color: rgba(11,39,64,0.42); }
+
+    /* ─── RPN MATRIX ─── */
+    .matrix-outer { overflow-x: auto; }
+    .rpn-matrix-grid { display: grid; grid-template-columns: 72px repeat(5, 1fr); gap: 3px; min-width: 440px; }
+    .rmc { border-radius: 5px; min-height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.3rem 0.2rem; position: relative; transition: filter 0.15s; }
+    .rmc.hdr { background: transparent; min-height: 30px; padding: 0.2rem; }
+    .rmc.hdr-left { background: transparent; min-height: 58px; justify-content: center; align-items: flex-end; padding-right: 0.5rem; }
+    .rmc-hdr-num  { font-size: 0.62rem; font-weight: 800; color: rgba(11,39,64,0.5); letter-spacing: 0.04em; text-align: center; }
+    .rmc-hdr-lbl  { font-size: 0.54rem; color: rgba(11,39,64,0.38); text-align: center; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .rmc-row-pp   { font-size: 0.52rem; font-weight: 700; color: rgba(11,39,64,0.32); letter-spacing: 0.04em; text-transform: uppercase; text-align: right; line-height: 1.3; }
+    .rmc-row-val  { font-size: 0.64rem; font-weight: 700; color: rgba(11,39,64,0.55); text-align: right; }
+    .rmc.zone-acceptable   { background: rgba(16,185,129,0.16); }
+    .rmc.zone-tolerable    { background: rgba(245,158,11,0.2); }
+    .rmc.zone-unacceptable { background: rgba(239,68,68,0.18); }
+    .rmc.zone-none         { background: rgba(11,39,64,0.04); }
+    .rmc-score { font-size: 0.7rem; font-weight: 700; color: rgba(11,39,64,0.65); }
+    .rmc.highlighted { outline: 2.5px solid var(--primary); outline-offset: -2px; z-index: 2; }
+    .rmc.highlighted .rmc-score { color: var(--primary); }
+    .rmc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--primary); margin-top: 3px; }
+
+    .matrix-legend { display: flex; gap: 1.1rem; align-items: center; font-size: 0.7rem; color: rgba(11,39,64,0.55); margin-top: 0.65rem; flex-wrap: wrap; }
     .matrix-legend-swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; vertical-align: middle; margin-right: 0.3rem; }
 
-    /* Risk detail form */
-    .detail-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
-    .rating-group { display: flex; gap: 0.28rem; margin-top: 0.3rem; }
-    .rating-btn { flex: 1; font-family: inherit; font-size: 0.7rem; font-weight: 700; padding: 0.38rem; border: 1.5px solid rgba(11,39,64,0.1); background: white; border-radius: 6px; cursor: pointer; transition: all 0.12s; }
-    .rating-btn:hover { border-color: rgba(10,192,233,0.45); }
-    .rating-btn.selected { background: var(--aqua); color: white; border-color: var(--aqua); }
-    .rating-label { font-size: 0.6rem; color: rgba(11,39,64,0.45); text-align: center; margin-top: 0.15rem; }
+    /* ─── HELP PANEL ─── */
+    .panel-overlay { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+    .panel-overlay.open { pointer-events: auto; }
+    .panel-backdrop { position: absolute; inset: 0; background: rgba(11,39,64,0.15); opacity: 0; transition: opacity 0.25s; }
+    .panel-overlay.open .panel-backdrop { opacity: 1; }
+    .help-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 420px; background: white; box-shadow: -8px 0 32px rgba(11,39,64,0.12); display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); }
+    .panel-overlay.help-open .help-panel { transform: translateX(0); }
+    .panel-head { padding: 1.2rem 1.25rem 1rem; border-bottom: 1px solid rgba(11,39,64,0.08); flex-shrink: 0; }
+    .panel-head-row { display: flex; align-items: center; gap: 0.65rem; }
+    .panel-type-badge { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 4px; }
+    .panel-id { font-size: 0.95rem; font-weight: 800; color: var(--primary); letter-spacing: -0.01em; flex: 1; }
+    .panel-close { width: 28px; height: 28px; border-radius: 6px; border: none; background: rgba(11,39,64,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
+    .panel-close:hover { background: rgba(11,39,64,0.12); }
+    .panel-close svg { width: 14px; height: 14px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+    .panel-body { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem; }
+    .panel-body::-webkit-scrollbar { width: 4px; }
+    .panel-body::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
 
-    .control-card { background: rgba(11,39,64,0.02); border: 1px solid rgba(11,39,64,0.07); border-radius: 8px; padding: 0.75rem 0.85rem; margin-bottom: 0.5rem; }
-    .control-card-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.76rem; font-weight: 600; color: var(--primary); }
-    .control-type-pill { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.06em; padding: 0.1rem 0.4rem; border-radius: 3px; text-transform: uppercase; margin-left: auto; }
-    .control-type-pill.inherent { background: rgba(16,185,129,0.12); color: #047857; }
-    .control-type-pill.protective { background: rgba(99,102,241,0.12); color: #4338ca; }
-    .control-type-pill.info { background: rgba(245,158,11,0.12); color: #b45309; }
-
-    .control-hierarchy-note { background: rgba(10,192,233,0.04); border: 1px solid rgba(10,192,233,0.18); border-radius: 7px; padding: 0.5rem 0.7rem; font-size: 0.72rem; color: var(--mid-blue); line-height: 1.55; margin-bottom: 0.55rem; }
-
-    .residual-compare { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.85rem; align-items: center; padding: 0.85rem; background: rgba(11,39,64,0.025); border-radius: 9px; }
-    .residual-box { text-align: center; }
-    .residual-box-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(11,39,64,0.5); margin-bottom: 0.3rem; }
-    .residual-box-value { font-size: 1rem; font-weight: 800; color: var(--primary); letter-spacing: -0.02em; }
-    .residual-arrow { color: rgba(11,39,64,0.35); font-size: 1.4rem; }
-
-    /* Risk report */
-    .report-section { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 11px; padding: 1.1rem 1.25rem; margin-bottom: 1.25rem; }
-    .report-section h2 { font-size: 0.92rem; font-weight: 700; color: var(--primary); letter-spacing: -0.01em; margin-bottom: 0.5rem; }
-    .report-section p { font-size: 0.8rem; color: var(--mid-blue); line-height: 1.65; margin-bottom: 0.7rem; }
-    .report-section .data-table { margin-top: 0.7rem; }
+    /* ─── SECTION INTRO NOTE ─── */
+    .section-note { font-size: 0.76rem; color: rgba(11,39,64,0.55); line-height: 1.65; margin-bottom: 1rem; padding: 0.7rem 0.9rem; background: rgba(10,192,233,0.04); border: 1px solid rgba(10,192,233,0.16); border-radius: 8px; }
   </style>
 </head>
 <body>
   <aside class="sidebar" id="sidebar-root"></aside>
 
   <main class="main">
+    <!-- Topbar -->
     <header class="topbar">
-      <div class="topbar-title">
-        <span class="topbar-crumb">Design Inputs</span>
-        <span class="topbar-sep">/</span>
-        Risk Management
+      <div class="topbar-left">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search documents, risks, products…">
+        </div>
+        <span class="ver-badge" id="docVerBadge">Rev A</span>
+        <span class="status-pill draft" id="docStatusPill">Draft</span>
       </div>
       <div class="topbar-right">
-        <button class="btn-primary" onclick="newRisk()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New risk</button>
+        <button class="btn-export" onclick="exportPlan()">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="btn-export" id="btn-approve" onclick="initiateApproval()" style="border-color:rgba(16,185,129,0.3);color:#047857;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Approve
+        </button>
+        <button class="btn-guidance" onclick="openHelpPanel()">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Guidance
+        </button>
       </div>
     </header>
 
-    <!-- Soft gate warning (guided mode only) -->
-    <div id="soft-gate-warning" style="display:none;">
-      <div class="soft-gate-banner">
-        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <div>Risk records should be governed by an approved Risk Management Procedure. If you haven't set that up yet, <a href="risk-management-procedure.html">go to Risk Management Procedure →</a>. You can continue here, but close this gap before any regulatory review.</div>
-        <button class="soft-gate-dismiss" onclick="dismissSoftGate()">Dismiss</button>
-      </div>
+    <!-- Module sub-nav -->
+    <nav class="rm-subnav">
+      <a href="risk-management-overview.html" class="rm-subnav-back">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Risk Management Overview
+      </a>
+      <a href="risk-management-plan.html" class="rm-subnav-link active">Risk Management Plan</a>
+      <a href="#" class="rm-subnav-link">Hazard Identification</a>
+      <a href="#" class="rm-subnav-link">Risk Analysis</a>
+      <a href="#" class="rm-subnav-link">Risk Management Report</a>
+    </nav>
+
+    <!-- Approved lock banner -->
+    <div class="doc-lock-banner" id="doc-lock" style="display:none;">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      This plan is approved. Fields are locked. Use "Initiate Revision" to start a new draft.
     </div>
 
-    <div class="view-tabs">
-      <button class="view-tab active" data-tab="plan" onclick="setTab('plan')">Risk management plan</button>
-      <button class="view-tab" data-tab="register" onclick="setTab('register')">Risk register</button>
-      <button class="view-tab" data-tab="matrix" onclick="setTab('matrix')">Matrix</button>
-      <button class="view-tab" data-tab="report" onclick="setTab('report')">Risk management report</button>
-    </div>
+    <div id="approval-route-panel"></div>
 
-    <!-- PLAN TAB -->
-    <div class="tab-content active" data-tab-content="plan">
-      <div class="doc-approval-bar">
-        <div class="proc-status-pill draft" id="proc-status-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev A</div>
-        <div style="flex:1;"></div>
-        <div id="approval-route-panel"></div>
-        <button class="btn-approve" id="approve-btn" onclick="initiateApproval()"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve</button>
+    <!-- Scrollable document body -->
+    <div class="page-scroll">
+
+      <!-- Document cover -->
+      <div class="doc-cover">
+        <div class="doc-cover-top">
+          <div>
+            <div class="doc-company">Tangram MedTech</div>
+            <div class="doc-name">Risk Management Plan</div>
+            <div class="doc-subtitle">Device-specific plan per ISO 14971:2019 §4 — defines scope, team, risk acceptability criteria, and review cycle. Must be approved before hazard identification begins.</div>
+          </div>
+          <div class="doc-cover-meta">
+            <div class="doc-cover-meta-row">Document No. <strong>RM-001</strong></div>
+            <div class="doc-cover-meta-row">Revision <strong id="docRevisionDisplay">A</strong></div>
+            <div class="doc-cover-meta-row">Status <strong id="docStatusDisplay">Draft</strong></div>
+          </div>
+        </div>
+        <div class="doc-cover-divider"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="doc-field">
+            <div class="doc-field-label">Product / device</div>
+            <input class="doc-field-input" id="f-device" placeholder="Device name and configuration">
+          </div>
+          <div class="doc-field">
+            <div class="doc-field-label">Risk Manager</div>
+            <input class="doc-field-input" id="f-rm-lead-doc" placeholder="Name and title">
+          </div>
+        </div>
       </div>
-      <div class="doc-lock-banner" id="doc-lock" style="display:none;"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> This plan is approved. Fields are locked. Use "Initiate Revision" to start a new draft.</div>
-      <div class="page-scroll">
-        <div id="intro-slot-plan"></div>
-        <div class="card">
-          <div class="card-head"><div class="card-title">1 · Scope</div></div>
-          <div class="card-body">
-            <div class="form-field">
+
+      <!-- ── SECTION 1: SCOPE ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">1 · Scope</div>
+          <span class="card-title-sub">ISO 14971:2019 §4.2(a)</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0.85rem;">
+          <div class="form-field">
+            <div class="field-label-row">
               <label class="form-label">Device and configuration covered</label>
-              <textarea class="form-textarea" id="p-scope" data-ai rows="2" placeholder="Which device, configurations, variants, and accessories are in scope for this risk management file."></textarea>
+              <button class="btn-generate" onclick="AIAssist.gen('p-scope')">✦ Generate</button>
             </div>
-            <div class="form-field">
+            <textarea class="form-textarea" id="p-scope" rows="2" placeholder="Which device, configurations, variants, and accessories are in scope for this risk management file."></textarea>
+          </div>
+          <div class="form-field">
+            <div class="field-label-row">
               <label class="form-label">Lifecycle phases covered</label>
-              <textarea class="form-textarea" id="p-lifecycle" data-ai rows="2" placeholder="e.g. Concept through post-market. Include design, manufacturing, distribution, use, maintenance, and disposal."></textarea>
+              <button class="btn-generate" onclick="AIAssist.gen('p-lifecycle')">✦ Generate</button>
             </div>
-            <div class="form-field">
+            <textarea class="form-textarea" id="p-lifecycle" rows="2" placeholder="e.g. Concept through post-market. Include design, manufacturing, distribution, use, maintenance, and disposal."></textarea>
+          </div>
+          <div class="form-field">
+            <div class="field-label-row">
               <label class="form-label">Intended use environments</label>
-              <textarea class="form-textarea" id="p-environments" data-ai rows="2" placeholder="Clinical settings, home use, operating room, etc. Context of use affects hazard identification."></textarea>
+              <button class="btn-generate" onclick="AIAssist.gen('p-environments')">✦ Generate</button>
             </div>
+            <textarea class="form-textarea" id="p-environments" rows="2" placeholder="Clinical settings, home use, operating room, etc. Context of use affects hazard identification."></textarea>
           </div>
         </div>
+      </div>
 
-        <div class="card">
-          <div class="card-head"><div class="card-title">2 · Risk management team</div></div>
-          <div class="card-body">
-            <div class="form-field">
-              <label class="form-label">Risk manager (responsible person)</label>
-              <input class="form-input" id="p-rm-lead" placeholder="Name, title — accountable for maintaining the risk management file">
-            </div>
-            <div class="form-field">
+      <!-- ── SECTION 2: TEAM ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">2 · Risk management team</div>
+          <span class="card-title-sub">ISO 14971:2019 §4.2(b)</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0.85rem;">
+          <div class="form-field">
+            <label class="form-label">Risk manager (responsible person)</label>
+            <input class="form-input" id="p-rm-lead" placeholder="Name, title — accountable for maintaining the risk management file">
+          </div>
+          <div class="form-field">
+            <div class="field-label-row">
               <label class="form-label">Team members and roles</label>
-              <textarea class="form-textarea" id="p-team" data-ai rows="3" placeholder="e.g.&#10;Jane Smith (Design Eng.) — hazard identification and control design&#10;Carlos Reyes (QA) — risk file maintenance and review&#10;Dr. Kim (Clinical) — severity and clinical harm assessment"></textarea>
+              <button class="btn-generate" onclick="AIAssist.gen('p-team')">✦ Generate</button>
             </div>
-            <div class="form-field">
-              <label class="form-label">Approval authority</label>
-              <input class="form-input" id="p-approver" placeholder="Who must approve changes to the risk management plan">
-            </div>
+            <textarea class="form-textarea" id="p-team" rows="3" placeholder="e.g.&#10;Jane Smith (Design Eng.) — hazard identification and control design&#10;Carlos Reyes (QA) — risk file maintenance and review&#10;Dr. Kim (Clinical) — severity and clinical harm assessment"></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Approval authority</label>
+            <input class="form-input" id="p-approver" placeholder="Who must approve changes to the risk management plan">
           </div>
         </div>
+      </div>
 
-        <div class="card">
-          <div class="card-head"><div class="card-title">3 · Risk acceptability criteria</div></div>
-          <div class="card-body">
-            <div class="form-field">
-              <label class="form-label">Severity scale (1–5 definition)</label>
-              <textarea class="form-textarea" id="p-sev-scale" data-ai rows="4" placeholder="Define what each severity level means for this device:&#10;1 – Negligible: no injury or inconvenience&#10;2 – Minor: temporary, reversible injury&#10;3 – Moderate: requires medical intervention&#10;4 – Serious: permanent impairment, hospitalization&#10;5 – Catastrophic: life-threatening or fatal"></textarea>
-            </div>
-            <div class="form-field">
-              <label class="form-label">Probability scale (1–5 definition)</label>
-              <textarea class="form-textarea" id="p-prob-scale" data-ai rows="4" placeholder="Define probability levels for this device's production volume and use:&#10;1 – Improbable: &lt;1 per 1,000,000 uses&#10;2 – Remote: 1 per 100,000 to 1,000,000&#10;3 – Occasional: 1 per 10,000 to 100,000&#10;4 – Probable: 1 per 1,000 to 10,000&#10;5 – Frequent: &gt;1 per 1,000 uses"></textarea>
-            </div>
-            <div class="form-field">
-              <label class="form-label">Risk acceptability thresholds</label>
-              <textarea class="form-textarea" id="p-criteria" data-ai rows="3" placeholder="e.g. Low (score 1–4): broadly acceptable; Medium (5–14): reduce as far as practicable; High (15–25): unacceptable unless residual risk is outweighed by medical benefit and ALARP demonstrated."></textarea>
-            </div>
+      <!-- ── SECTION 3: RISK ACCEPTABILITY CRITERIA ── -->
+
+      <!-- 3a: Section intro card -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">3 · Risk acceptability criteria</div>
+          <span class="card-title-sub">ISO 14971:2019 §4.2(c–d) and ISO/TR 24971</span>
+        </div>
+        <div class="card-body">
+          <div class="section-note">
+            Define your severity, P1, and P2 scales and risk acceptability thresholds below. Per ISO 14971 §4, these criteria must be established — and this plan approved — <strong>before hazard identification begins</strong>. Thresholds must be grounded in state-of-the-art guidance for your device type, not adjusted to make risks look acceptable after the fact.
+          </div>
+          <div style="font-size:0.76rem;color:rgba(11,39,64,0.55);line-height:1.6;">
+            <strong style="color:var(--primary);">Risk Profile Number (RPN)</strong> = Severity × P1 × P2, where P1 is the probability of the hazardous situation occurring and P2 is the conditional probability of harm given the hazardous situation (ISO/TR 24971 §B.3). Maximum RPN = 5 × 5 × 5 = <strong style="color:var(--primary);">125</strong>.
           </div>
         </div>
+      </div>
 
-        <div class="card">
-          <div class="card-head"><div class="card-title">4 · Review cycle and references</div></div>
-          <div class="card-body">
-            <div class="form-field">
+      <!-- 3b: P1 Table -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">P1 — Probability of hazardous situation occurring</div>
+          <span class="card-title-sub">ISO/TR 24971 §B.3 — probability that the sequence of events leads to a hazardous situation</span>
+        </div>
+        <div class="card-body tight">
+          <table class="scale-table">
+            <thead>
+              <tr>
+                <th class="col-level">Level</th>
+                <th class="col-label">Label</th>
+                <th>Definition</th>
+              </tr>
+            </thead>
+            <tbody id="p1-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3c: P2 Table -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">P2 — Probability of harm given hazardous situation</div>
+          <span class="card-title-sub">ISO/TR 24971 §B.3 — conditional probability that harm results once the hazardous situation has occurred</span>
+        </div>
+        <div class="card-body tight">
+          <table class="scale-table">
+            <thead>
+              <tr>
+                <th class="col-level">Level</th>
+                <th class="col-label">Label</th>
+                <th>Definition</th>
+              </tr>
+            </thead>
+            <tbody id="p2-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3d: Severity Table -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Severity of harm</div>
+          <span class="card-title-sub">ISO 14971:2019 Annex C — magnitude of possible harm to the patient, user, or third party</span>
+        </div>
+        <div class="card-body tight">
+          <table class="scale-table">
+            <thead>
+              <tr>
+                <th class="col-level">Level</th>
+                <th class="col-label">Label</th>
+                <th>Definition</th>
+              </tr>
+            </thead>
+            <tbody id="sev-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 3e: Thresholds + Zone descriptions + Interactive RPN Matrix -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Risk acceptability thresholds &amp; RPN matrix</div>
+          <span class="card-title-sub">Set boundaries below — the matrix updates live</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:1.25rem;">
+
+          <!-- Zone descriptions -->
+          <div class="zone-grid">
+            <div class="zone-card acceptable">
+              <div class="zone-title"><span class="zone-swatch"></span>Broadly Acceptable</div>
+              <div class="zone-desc">Risk is so low it is considered negligible. No further reduction required; document as acceptable. (ISO 14971 §4.2 — below the negligible criterion.)</div>
+              <span class="zone-range" id="zone-acc-range">RPN 1–10</span>
+            </div>
+            <div class="zone-card tolerable">
+              <div class="zone-title"><span class="zone-swatch"></span>Tolerable — Investigate Further</div>
+              <div class="zone-desc">Risk may be tolerable if benefit outweighs risk and it cannot be reduced further. Apply ALARP/AFAP; document justification. (ISO 14971 §4.2, ISO/TR 24971.)</div>
+              <span class="zone-range" id="zone-tol-range">RPN 11–49</span>
+            </div>
+            <div class="zone-card unacceptable">
+              <div class="zone-title"><span class="zone-swatch"></span>Unacceptable</div>
+              <div class="zone-desc">Risk is intolerable. Mandatory controls required. Cannot proceed to market without additional risk reduction or benefit-risk analysis per ISO 14971 §8.</div>
+              <span class="zone-range" id="zone-unacc-range">RPN &gt;49</span>
+            </div>
+          </div>
+
+          <!-- Threshold inputs -->
+          <div class="threshold-row">
+            <div class="threshold-field">
+              <div class="threshold-label">Broadly Acceptable — max RPN</div>
+              <input type="number" class="threshold-input" id="p-threshold-low" value="10" min="1" max="124">
+            </div>
+            <div class="threshold-sep">···</div>
+            <div class="threshold-field">
+              <div class="threshold-label">Unacceptable — min RPN</div>
+              <input type="number" class="threshold-input" id="p-threshold-high" value="49" min="2" max="125">
+            </div>
+            <div class="threshold-note">
+              Adjust these thresholds to match your organization's risk policy. Everything at or below the first value is green; everything above the second is red; everything in between is amber. The matrix below updates instantly.
+            </div>
+          </div>
+
+          <!-- RPN Calculator header -->
+          <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(11,39,64,0.38);">Interactive RPN Calculator — select scores to preview a risk combination</div>
+
+          <!-- Rating selectors -->
+          <div class="rpn-selectors">
+            <div class="rpn-selector-group">
+              <div class="rpn-selector-label">Severity (S)</div>
+              <div class="rpn-selector-sub">Magnitude of harm</div>
+              <div class="rating-group" id="rg-S">
+                <button class="rating-btn" data-rating="S" data-val="1" onclick="setRating('S',1)">1</button>
+                <button class="rating-btn" data-rating="S" data-val="2" onclick="setRating('S',2)">2</button>
+                <button class="rating-btn" data-rating="S" data-val="3" onclick="setRating('S',3)">3</button>
+                <button class="rating-btn" data-rating="S" data-val="4" onclick="setRating('S',4)">4</button>
+                <button class="rating-btn" data-rating="S" data-val="5" onclick="setRating('S',5)">5</button>
+              </div>
+              <div class="rating-row-labels" id="sev-labels-row"></div>
+            </div>
+            <div class="rpn-selector-group">
+              <div class="rpn-selector-label">P1 — Hazardous Situation</div>
+              <div class="rpn-selector-sub">Probability it occurs</div>
+              <div class="rating-group" id="rg-P1">
+                <button class="rating-btn" data-rating="P1" data-val="1" onclick="setRating('P1',1)">1</button>
+                <button class="rating-btn" data-rating="P1" data-val="2" onclick="setRating('P1',2)">2</button>
+                <button class="rating-btn" data-rating="P1" data-val="3" onclick="setRating('P1',3)">3</button>
+                <button class="rating-btn" data-rating="P1" data-val="4" onclick="setRating('P1',4)">4</button>
+                <button class="rating-btn" data-rating="P1" data-val="5" onclick="setRating('P1',5)">5</button>
+              </div>
+              <div class="rating-row-labels" id="p1-labels-row"></div>
+            </div>
+            <div class="rpn-selector-group">
+              <div class="rpn-selector-label">P2 — Harm Given Situation</div>
+              <div class="rpn-selector-sub">Conditional probability of harm</div>
+              <div class="rating-group" id="rg-P2">
+                <button class="rating-btn" data-rating="P2" data-val="1" onclick="setRating('P2',1)">1</button>
+                <button class="rating-btn" data-rating="P2" data-val="2" onclick="setRating('P2',2)">2</button>
+                <button class="rating-btn" data-rating="P2" data-val="3" onclick="setRating('P2',3)">3</button>
+                <button class="rating-btn" data-rating="P2" data-val="4" onclick="setRating('P2',4)">4</button>
+                <button class="rating-btn" data-rating="P2" data-val="5" onclick="setRating('P2',5)">5</button>
+              </div>
+              <div class="rating-row-labels" id="p2-labels-row"></div>
+            </div>
+          </div>
+
+          <!-- RPN result readout -->
+          <div class="rpn-result">
+            <div class="rpn-score" id="rpn-score-val">—</div>
+            <div class="rpn-result-info">
+              <div style="font-size:0.64rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(11,39,64,0.35);">Risk Profile Number</div>
+              <div class="rpn-formula-text" id="rpn-formula-text">S × P1 × P2 = ?</div>
+            </div>
+            <span class="rpn-zone-pill none" id="rpn-zone-pill">Select all three scores</span>
+          </div>
+
+          <!-- RPN Matrix -->
+          <div>
+            <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(11,39,64,0.38);margin-bottom:0.6rem;">Risk Profile Matrix — Severity × Combined P1×P2</div>
+            <div class="matrix-outer">
+              <div class="rpn-matrix-grid" id="rpn-matrix-grid"></div>
+            </div>
+            <div class="matrix-legend">
+              <span><span class="matrix-legend-swatch" style="background:rgba(16,185,129,0.6);"></span>Broadly Acceptable</span>
+              <span><span class="matrix-legend-swatch" style="background:rgba(245,158,11,0.65);"></span>Tolerable — Investigate Further</span>
+              <span><span class="matrix-legend-swatch" style="background:rgba(239,68,68,0.55);"></span>Unacceptable</span>
+              <span style="margin-left:auto;font-size:0.64rem;color:rgba(11,39,64,0.4);">Y-axis = P1×P2 combined · X-axis = Severity · Cell shows representative RPN</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 3f: Narrative criteria -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">3f · Acceptability criteria rationale</div>
+          <span class="card-title-sub">ISO 14971:2019 §4.2(c) — document the basis for threshold selections</span>
+        </div>
+        <div class="card-body">
+          <div class="form-field">
+            <div class="field-label-row">
+              <label class="form-label">Rationale and state-of-the-art reference</label>
+              <button class="btn-generate" onclick="AIAssist.gen('p-criteria')">✦ Generate</button>
+            </div>
+            <textarea class="form-textarea" id="p-criteria" rows="4" placeholder="Document the basis for your threshold selections. Reference state-of-the-art guidance (e.g., ISO/TR 24971, device-class-specific standards) and clinical context. Note that criteria must be established before risk analysis begins (ISO 14971 §4) and cannot be adjusted after risks are known."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 4: REVIEW CYCLE ── -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">4 · Review cycle &amp; references</div>
+          <span class="card-title-sub">ISO 14971:2019 §4.2(e) and §9</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0.85rem;">
+          <div class="form-field">
+            <div class="field-label-row">
               <label class="form-label">Review triggers and cycle</label>
-              <textarea class="form-textarea" id="p-cycle" data-ai rows="2" placeholder="e.g. Each design phase gate; following design changes; after post-market feedback indicating new hazards; annually during production."></textarea>
+              <button class="btn-generate" onclick="AIAssist.gen('p-cycle')">✦ Generate</button>
             </div>
-            <div class="form-field">
-              <label class="form-label">Reference to Risk Management Procedure</label>
-              <input class="form-input" id="p-proc-ref" placeholder="e.g. SOP-RM-001 Rev A — Risk Management Procedure">
-            </div>
-            <div class="form-field">
-              <label class="form-label">Notes</label>
-              <textarea class="form-textarea" id="p-notes" rows="2" placeholder="Additional context, constraints, or documentation references."></textarea>
-            </div>
+            <textarea class="form-textarea" id="p-cycle" rows="2" placeholder="e.g. Each design phase gate; following design changes; after post-market feedback indicating new hazards; annually during production."></textarea>
+          </div>
+          <div class="form-field">
+            <label class="form-label">Reference to Risk Management Procedure</label>
+            <input class="form-input" id="p-proc-ref" placeholder="e.g. SOP-RM-001 Rev A — Risk Management Procedure">
+          </div>
+          <div class="form-field">
+            <label class="form-label">Notes</label>
+            <textarea class="form-textarea" id="p-notes" rows="2" placeholder="Additional context, constraints, or documentation references."></textarea>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- REGISTER TAB -->
-    <div class="tab-content" data-tab-content="register">
-      <div id="intro-slot-register" style="padding: 0.25rem 1.5rem 0;"></div>
-      <div class="content-cols">
-        <div class="list-col">
-          <div class="list-col-head">
-            <input class="list-col-search" id="search" placeholder="Search risks…" oninput="renderList()">
-          </div>
-          <div class="list-col-body" id="list-body"></div>
-        </div>
-        <div class="detail-col">
-          <div class="detail-placeholder" id="placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><h2>Select a risk</h2><p>Pick a row on the left, or click "New risk" to start a hazard analysis entry.</p></div>
-          <div class="detail-pane" id="pane" style="display:none;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MATRIX TAB -->
-    <div class="tab-content" data-tab-content="matrix">
-      <div class="page-scroll">
-        <div id="intro-slot-matrix"></div>
-        <div class="card">
-          <div class="card-head"><div class="card-title">Risk matrix — initial (before controls)</div></div>
-          <div class="card-body"><div id="matrix-initial"></div></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><div class="card-title">Risk matrix — residual (after controls)</div></div>
-          <div class="card-body"><div id="matrix-residual"></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- REPORT TAB -->
-    <div class="tab-content" data-tab-content="report">
-      <div class="page-scroll" id="report-host"></div>
-    </div>
+    </div><!-- /page-scroll -->
   </main>
+
+  <!-- ── GUIDANCE PANEL ── -->
+  <div class="panel-overlay" id="panelOverlay">
+    <div class="panel-backdrop" onclick="closeAllPanels()"></div>
+    <div class="help-panel" id="helpPanel">
+      <div class="panel-head">
+        <div class="panel-head-row">
+          <span class="panel-type-badge" style="background:rgba(10,192,233,0.1);color:#089bbf;">GUIDANCE</span>
+          <span class="panel-id">Risk Management Plan</span>
+          <button class="panel-close" onclick="closeAllPanels()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div style="font-size:0.84rem;color:#0B2740;line-height:1.65;">
+          <strong>ISO 14971:2019 §4</strong> requires that a risk management plan be prepared and maintained for each medical device. It must be approved before hazard identification begins — you cannot define acceptability criteria after you've seen the risks.
+        </div>
+        <div style="background:rgba(11,39,64,0.03);border:1px solid rgba(11,39,64,0.08);border-radius:10px;padding:0.9rem 1rem;display:flex;flex-direction:column;gap:0.55rem;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(11,39,64,0.35);">Required plan elements (§4.2)</div>
+          <div style="font-size:0.78rem;color:#0B2740;line-height:1.65;">
+            <span style="color:#0AC0E9;font-weight:700;">a)</span> Scope of the risk management activities<br>
+            <span style="color:#0AC0E9;font-weight:700;">b)</span> Assignment of responsibilities and authorities<br>
+            <span style="color:#0AC0E9;font-weight:700;">c)</span> Requirements for review of risk management activities<br>
+            <span style="color:#0AC0E9;font-weight:700;">d)</span> Criteria for risk acceptability — including overall residual risk<br>
+            <span style="color:#0AC0E9;font-weight:700;">e)</span> Method for evaluating overall residual risk acceptability
+          </div>
+        </div>
+        <div style="background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:0.9rem 1rem;">
+          <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#b45309;margin-bottom:0.5rem;">P1 × P2 framework (ISO/TR 24971 §B.3)</div>
+          <div style="font-size:0.76rem;color:#0B2740;line-height:1.65;">
+            <strong>P1</strong> = probability that a sequence of events leads to a hazardous situation<br>
+            <strong>P2</strong> = conditional probability that harm results once the hazardous situation has occurred<br>
+            <strong>POH</strong> = P1 × P2 (probability of harm)<br>
+            <strong>RPN</strong> = Severity × P1 × P2 (max 125)
+          </div>
+          <div style="font-size:0.72rem;color:#92400e;margin-top:0.5rem;line-height:1.55;">Note: ISO/TR 24971 clarifies that ALARP is a <em>process</em>, not a region. The middle zone is properly characterized as "Tolerable — Investigate Further."</div>
+        </div>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.65rem;font-weight:700;color:#089bbf;background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.2);border-radius:5px;padding:0.18rem 0.52rem;">
+            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            ISO 14971:2019 §4
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.65rem;font-weight:700;color:#089bbf;background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.2);border-radius:5px;padding:0.18rem 0.52rem;">
+            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            ISO/TR 24971:2020
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:0.3rem;font-size:0.65rem;font-weight:700;color:#089bbf;background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.2);border-radius:5px;padding:0.18rem 0.52rem;">
+            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            21 CFR 820.30(g)
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js?v=1776901546755"></script>
@@ -261,140 +604,359 @@
   <script src="sidebar.js?v=1776901546755"></script>
   <script>
     'use strict';
-    const KEY = 'qms_risks';
-    const PLAN_KEY = 'qms_risk_mgmt_plan';
-    const SEV_LABELS = ['Negligible','Minor','Moderate','Serious','Catastrophic'];
-    const PROB_LABELS = ['Improbable','Remote','Occasional','Probable','Frequent'];
+    var PLAN_KEY = 'qms_risk_mgmt_plan';
 
-    let RISKS = load();
-    let PLAN = loadPlan();
-    let currentId = null;
+    var DEFAULT_P1 = [
+      { label: 'Improbable', def: 'Requires multiple simultaneous independent failures; < 1 per 1,000,000 uses' },
+      { label: 'Remote',     def: 'Requires unusual component failure or sequence of events; 1 per 100,000 – 1,000,000 uses' },
+      { label: 'Occasional', def: 'Could occur during normal use; 1 per 10,000 – 100,000 uses' },
+      { label: 'Probable',   def: 'Likely during normal use; 1 per 1,000 – 10,000 uses' },
+      { label: 'Frequent',   def: 'Expected to occur regularly; > 1 per 1,000 uses' }
+    ];
+    var DEFAULT_P2 = [
+      { label: 'Improbable', def: 'Harm extremely unlikely even when hazardous situation occurs; < 1% of occurrences result in harm' },
+      { label: 'Remote',     def: 'Harm possible but unlikely; 1%–10% of occurrences result in harm' },
+      { label: 'Occasional', def: 'Harm occurs in some cases; 10%–50% of occurrences result in harm' },
+      { label: 'Probable',   def: 'Harm is the likely outcome when hazardous situation occurs; 50%–90% of occurrences' },
+      { label: 'Frequent',   def: 'Harm almost certain to occur; > 90% of occurrences result in harm' }
+    ];
+    var DEFAULT_SEV = [
+      { label: 'Negligible',   def: 'No injury or inconvenience; no medical intervention required' },
+      { label: 'Minor',        def: 'Temporary reversible injury; first-aid or minor medical attention may be needed, no lasting effects' },
+      { label: 'Moderate',     def: 'Reversible injury requiring professional medical intervention; no permanent impairment' },
+      { label: 'Serious',      def: 'Irreversible injury or permanent impairment; hospitalization required' },
+      { label: 'Catastrophic', def: 'Life-threatening injury, permanent severe impairment, or death' }
+    ];
 
-    function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; } }
+    // RPN calculator state (not persisted)
+    var selS = null, selP1 = null, selP2 = null;
+
+    var PLAN = loadPlan();
+
     function loadPlan() {
       try {
         var d = JSON.parse(localStorage.getItem(PLAN_KEY));
-        return d || { scope:'', lifecycle:'', environments:'', rmLead:'', team:'', approver:'', sevScale:'', probScale:'', criteria:'', cycle:'', procRef:'', notes:'', approved: false, revision:'A', approvedAt:null, approvedBy:null, signatures:null, revHistory:[] };
-      } catch(e) {
-        return { scope:'', lifecycle:'', environments:'', rmLead:'', team:'', approver:'', sevScale:'', probScale:'', criteria:'', cycle:'', procRef:'', notes:'', approved: false, revision:'A', approvedAt:null, approvedBy:null, signatures:null, revHistory:[] };
+        if (!d) return makeDefaults();
+        if (!d.p1Levels  || d.p1Levels.length  < 5) d.p1Levels  = JSON.parse(JSON.stringify(DEFAULT_P1));
+        if (!d.p2Levels  || d.p2Levels.length  < 5) d.p2Levels  = JSON.parse(JSON.stringify(DEFAULT_P2));
+        if (!d.sevLevels || d.sevLevels.length < 5) d.sevLevels = JSON.parse(JSON.stringify(DEFAULT_SEV));
+        if (d.thresholdLow  == null) d.thresholdLow  = 10;
+        if (d.thresholdHigh == null) d.thresholdHigh = 49;
+        if (!d.revHistory) d.revHistory = [];
+        return d;
+      } catch(e) { return makeDefaults(); }
+    }
+
+    function makeDefaults() {
+      return {
+        device: '', rmLeadDoc: '',
+        scope: '', lifecycle: '', environments: '',
+        rmLead: '', team: '', approver: '',
+        p1Levels:  JSON.parse(JSON.stringify(DEFAULT_P1)),
+        p2Levels:  JSON.parse(JSON.stringify(DEFAULT_P2)),
+        sevLevels: JSON.parse(JSON.stringify(DEFAULT_SEV)),
+        thresholdLow: 10, thresholdHigh: 49,
+        criteria: '', cycle: '', procRef: '', notes: '',
+        approved: false, revision: 'A',
+        approvedAt: null, approvedBy: null, signatures: null, revHistory: []
+      };
+    }
+
+    function save() { localStorage.setItem(PLAN_KEY, JSON.stringify(PLAN)); }
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    // ── Populate ─────────────────────────────────────────────────────────────
+    function populate() {
+      setVal('f-device',      PLAN.device     || '');
+      setVal('f-rm-lead-doc', PLAN.rmLeadDoc  || '');
+      setVal('p-scope',       PLAN.scope      || '');
+      setVal('p-lifecycle',   PLAN.lifecycle  || '');
+      setVal('p-environments',PLAN.environments|| '');
+      setVal('p-rm-lead',     PLAN.rmLead     || '');
+      setVal('p-team',        PLAN.team       || '');
+      setVal('p-approver',    PLAN.approver   || '');
+      setVal('p-threshold-low',  PLAN.thresholdLow);
+      setVal('p-threshold-high', PLAN.thresholdHigh);
+      setVal('p-criteria',    PLAN.criteria   || '');
+      setVal('p-cycle',       PLAN.cycle      || '');
+      setVal('p-proc-ref',    PLAN.procRef    || '');
+      setVal('p-notes',       PLAN.notes      || '');
+
+      renderScaleTable('p1-table-body',  PLAN.p1Levels,  'p1');
+      renderScaleTable('p2-table-body',  PLAN.p2Levels,  'p2');
+      renderScaleTable('sev-table-body', PLAN.sevLevels, 'sev');
+      updateLabelRows();
+      renderRPNMatrix();
+      wireInputs();
+    }
+
+    function setVal(id, val) {
+      var el = document.getElementById(id);
+      if (el) el.value = val;
+    }
+
+    // ── Scale tables ──────────────────────────────────────────────────────────
+    function renderScaleTable(tbodyId, levels, prefix) {
+      var tbody = document.getElementById(tbodyId);
+      if (!tbody) return;
+      var locked = PLAN.approved;
+      var html = '';
+      for (var i = 0; i < 5; i++) {
+        var lev = (levels && levels[i]) ? levels[i] : { label: '', def: '' };
+        html += '<tr>' +
+          '<td class="level-num">' + (i + 1) + '</td>' +
+          '<td><input type="text" class="label-input" value="' + esc(lev.label) + '"' +
+            ' data-prefix="' + prefix + '" data-idx="' + i + '" data-field="label"' +
+            ' oninput="onTableInput(this)"' + (locked ? ' disabled' : '') + '></td>' +
+          '<td><input type="text" class="def-input" value="' + esc(lev.def) + '"' +
+            ' data-prefix="' + prefix + '" data-idx="' + i + '" data-field="def"' +
+            ' oninput="onTableInput(this)"' + (locked ? ' disabled' : '') + '></td>' +
+        '</tr>';
       }
-    }
-    function save() { localStorage.setItem(KEY, JSON.stringify(RISKS)); }
-    function savePlanData() { localStorage.setItem(PLAN_KEY, JSON.stringify(PLAN)); }
-    function esc(s) { return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-    function newId() {
-      var n = 1;
-      Object.keys(RISKS).forEach(function(id){ var m = id.match(/^RISK-(\d+)$/); if (m) n = Math.max(n, parseInt(m[1],10)+1); });
-      return 'RISK-' + String(n).padStart(3,'0');
+      tbody.innerHTML = html;
     }
 
-    function scoreLevel(sev, prob) {
-      if (!sev || !prob) return null;
-      var score = sev * prob;
-      if (score >= 15) return 'high';
-      if (score >= 5)  return 'medium';
-      return 'low';
-    }
-    function levelLabel(l) { return l === 'high' ? 'High' : l === 'medium' ? 'Medium' : l === 'low' ? 'Low' : '—'; }
-
-    // ── Soft gate ──────────────────────────────────────────────────────────
-    function checkSoftGate() {
-      if (!LearnMode.isGuided()) return;
-      if (sessionStorage.getItem('qms_gate_dismissed_risk_mgmt_plan')) return;
-      try {
-        var proc = JSON.parse(localStorage.getItem('qms_proc_risk_mgmt'));
-        if (proc && proc.approved) return;
-      } catch(e) {}
-      document.getElementById('soft-gate-warning').style.display = 'block';
+    function onTableInput(el) {
+      var prefix = el.getAttribute('data-prefix');
+      var idx    = parseInt(el.getAttribute('data-idx'));
+      var field  = el.getAttribute('data-field');
+      var key    = prefix === 'p1' ? 'p1Levels' : prefix === 'p2' ? 'p2Levels' : 'sevLevels';
+      PLAN[key][idx][field] = el.value;
+      save();
+      // Update label rows in the calculator if a label changed
+      if (field === 'label') updateLabelRows();
     }
 
-    function dismissSoftGate() {
-      sessionStorage.setItem('qms_gate_dismissed_risk_mgmt_plan', '1');
-      document.getElementById('soft-gate-warning').style.display = 'none';
+    // ── Label rows under rating buttons ──────────────────────────────────────
+    function updateLabelRows() {
+      renderLabelRow('sev-labels-row', PLAN.sevLevels);
+      renderLabelRow('p1-labels-row',  PLAN.p1Levels);
+      renderLabelRow('p2-labels-row',  PLAN.p2Levels);
     }
 
-    // ── Tabs ──
-    function setTab(name) {
-      document.querySelectorAll('.view-tab').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab') === name); });
-      document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab-content') === name); });
-      if (name === 'matrix') renderMatrices();
-      if (name === 'report') renderReport();
-      if (name === 'plan') renderPlanIntro();
+    function renderLabelRow(rowId, levels) {
+      var row = document.getElementById(rowId);
+      if (!row) return;
+      var html = '';
+      for (var i = 0; i < 5; i++) {
+        var lbl = (levels && levels[i] && levels[i].label) ? levels[i].label : String(i + 1);
+        html += '<span title="' + esc(lbl) + '">' + esc(lbl.slice(0, 7)) + '</span>';
+      }
+      row.innerHTML = html;
     }
 
-    // ── Plan tab ───────────────────────────────────────────────────────────
-    function renderPlanIntro() {
-      var slot = document.getElementById('intro-slot-plan');
-      if (!slot) return;
-      slot.innerHTML = LearnMode.introCard({
-        id: 'risk-mgmt-plan',
-        tag: 'ISO 14971 §4 Risk management plan',
-        title: 'The Risk Management Plan: your device-specific commitment',
-        what: 'The plan documents what you will do for this specific device: which lifecycle phases are covered, who is on the team, how you define severity and probability, and what score triggers unacceptable risk. It references your Risk Management Procedure but is device-specific. Approve it before generating any risk analysis entries.',
-        why: 'ISO 14971 §4 requires a plan before hazard identification begins. Without it, your criteria for "acceptable risk" don\'t exist yet — there\'s nothing to evaluate against. Auditors treat a missing plan as a system-level nonconformity.',
-        standards: ['ISO 14971:2019 §4', 'ISO/TR 24971 §4 (Guidance)', 'EU MDR Annex I §3']
+    // ── RPN Matrix ────────────────────────────────────────────────────────────
+    var BUCKETS = [
+      { label: '17–25', rep: 20, min: 17, max: 25 },
+      { label: '9–16',  rep: 12, min: 9,  max: 16 },
+      { label: '5–8',   rep: 6,  min: 5,  max: 8  },
+      { label: '2–4',   rep: 3,  min: 2,  max: 4  },
+      { label: '1',     rep: 1,  min: 1,  max: 1  }
+    ];
+
+    function getZone(score) {
+      var low  = parseInt(PLAN.thresholdLow)  || 10;
+      var high = parseInt(PLAN.thresholdHigh) || 49;
+      if (score <= low)  return 'acceptable';
+      if (score >  high) return 'unacceptable';
+      return 'tolerable';
+    }
+
+    function getHighlightCell() {
+      if (selP1 == null || selP2 == null) return { row: -1, col: -1 };
+      var pp = selP1 * selP2;
+      var row = -1;
+      for (var ri = 0; ri < BUCKETS.length; ri++) {
+        if (pp >= BUCKETS[ri].min && pp <= BUCKETS[ri].max) { row = ri; break; }
+      }
+      return { row: row, col: selS != null ? selS - 1 : -1 };
+    }
+
+    function renderRPNMatrix() {
+      var grid = document.getElementById('rpn-matrix-grid');
+      if (!grid) return;
+
+      var hl = getHighlightCell();
+      var html = '';
+
+      // Corner + severity headers
+      html += '<div class="rmc hdr"></div>';
+      for (var s = 1; s <= 5; s++) {
+        var sevLbl = (PLAN.sevLevels && PLAN.sevLevels[s-1]) ? PLAN.sevLevels[s-1].label : ('S' + s);
+        html += '<div class="rmc hdr">' +
+          '<div class="rmc-hdr-num">S' + s + '</div>' +
+          '<div class="rmc-hdr-lbl">' + esc(sevLbl.slice(0, 9)) + '</div>' +
+        '</div>';
+      }
+
+      // Data rows
+      for (var ri = 0; ri < BUCKETS.length; ri++) {
+        var b = BUCKETS[ri];
+        html += '<div class="rmc hdr-left">' +
+          '<div style="text-align:right;">' +
+            '<div class="rmc-row-pp">P1×P2</div>' +
+            '<div class="rmc-row-val">' + b.label + '</div>' +
+          '</div>' +
+        '</div>';
+        for (var ci = 0; ci < 5; ci++) {
+          var sv = ci + 1;
+          var repRPN = b.rep * sv;
+          var zone = getZone(repRPN);
+          var isHl = (ri === hl.row && ci === hl.col);
+          html += '<div class="rmc zone-' + zone + (isHl ? ' highlighted' : '') + '">' +
+            '<span class="rmc-score">' + repRPN + '</span>' +
+            (isHl ? '<span class="rmc-dot"></span>' : '') +
+          '</div>';
+        }
+      }
+
+      grid.innerHTML = html;
+    }
+
+    // ── RPN Calculator ────────────────────────────────────────────────────────
+    function setRating(which, val) {
+      if (which === 'S')  selS  = val;
+      if (which === 'P1') selP1 = val;
+      if (which === 'P2') selP2 = val;
+
+      document.querySelectorAll('[data-rating="' + which + '"]').forEach(function(btn) {
+        btn.classList.toggle('selected', parseInt(btn.getAttribute('data-val')) === val);
+      });
+
+      updateRPNResult();
+      renderRPNMatrix();
+    }
+
+    function updateRPNResult() {
+      var scoreEl   = document.getElementById('rpn-score-val');
+      var formulaEl = document.getElementById('rpn-formula-text');
+      var pillEl    = document.getElementById('rpn-zone-pill');
+      if (!scoreEl) return;
+
+      if (selS == null || selP1 == null || selP2 == null) {
+        scoreEl.textContent   = '—';
+        if (formulaEl) formulaEl.textContent = 'S × P1 × P2 = ?';
+        if (pillEl) { pillEl.textContent = 'Select all three scores'; pillEl.className = 'rpn-zone-pill none'; }
+        return;
+      }
+
+      var score = selS * selP1 * selP2;
+      scoreEl.textContent = score;
+      var low  = parseInt(PLAN.thresholdLow)  || 10;
+      var high = parseInt(PLAN.thresholdHigh) || 49;
+
+      var zone, label;
+      if (score <= low)  { zone = 'acceptable';   label = 'Broadly Acceptable'; }
+      else if (score > high) { zone = 'unacceptable'; label = 'Unacceptable'; }
+      else               { zone = 'tolerable';    label = 'Tolerable — Investigate Further'; }
+
+      var sevLbl = (PLAN.sevLevels && PLAN.sevLevels[selS-1]) ? PLAN.sevLevels[selS-1].label : 'S' + selS;
+      var p1Lbl  = (PLAN.p1Levels  && PLAN.p1Levels[selP1-1]) ? PLAN.p1Levels[selP1-1].label  : 'P1-' + selP1;
+      var p2Lbl  = (PLAN.p2Levels  && PLAN.p2Levels[selP2-1]) ? PLAN.p2Levels[selP2-1].label  : 'P2-' + selP2;
+      if (formulaEl) formulaEl.textContent = sevLbl + ' (S' + selS + ') × ' + p1Lbl + ' (P1-' + selP1 + ') × ' + p2Lbl + ' (P2-' + selP2 + ') = ' + score;
+      if (pillEl) { pillEl.textContent = label; pillEl.className = 'rpn-zone-pill ' + zone; }
+    }
+
+    // ── Zone range display ────────────────────────────────────────────────────
+    function updateZoneRanges() {
+      var low  = parseInt(PLAN.thresholdLow)  || 10;
+      var high = parseInt(PLAN.thresholdHigh) || 49;
+      var acc  = document.getElementById('zone-acc-range');
+      var tol  = document.getElementById('zone-tol-range');
+      var unacc = document.getElementById('zone-unacc-range');
+      if (acc)   acc.textContent  = 'RPN 1–' + low;
+      if (tol)   tol.textContent  = 'RPN ' + (low + 1) + '–' + high;
+      if (unacc) unacc.textContent = 'RPN >' + high;
+    }
+
+    // ── Wire inputs ───────────────────────────────────────────────────────────
+    function wireInputs() {
+      wire('f-device',       'device');
+      wire('f-rm-lead-doc',  'rmLeadDoc');
+      wire('p-scope',        'scope');
+      wire('p-lifecycle',    'lifecycle');
+      wire('p-environments', 'environments');
+      wire('p-rm-lead',      'rmLead');
+      wire('p-team',         'team');
+      wire('p-approver',     'approver');
+      wire('p-criteria',     'criteria');
+      wire('p-cycle',        'cycle');
+      wire('p-proc-ref',     'procRef');
+      wire('p-notes',        'notes');
+
+      var lowEl  = document.getElementById('p-threshold-low');
+      var highEl = document.getElementById('p-threshold-high');
+      if (lowEl) lowEl.addEventListener('input', function() {
+        var v = parseInt(this.value);
+        if (!isNaN(v) && v >= 1 && v < 125) {
+          PLAN.thresholdLow = v; save(); updateZoneRanges(); renderRPNMatrix(); updateRPNResult();
+        }
+      });
+      if (highEl) highEl.addEventListener('input', function() {
+        var v = parseInt(this.value);
+        if (!isNaN(v) && v >= 2 && v <= 125) {
+          PLAN.thresholdHigh = v; save(); updateZoneRanges(); renderRPNMatrix(); updateRPNResult();
+        }
       });
     }
 
-    function fillPlanForm() {
-      var fields = {
-        'p-scope': PLAN.scope || '',
-        'p-lifecycle': PLAN.lifecycle || '',
-        'p-environments': PLAN.environments || '',
-        'p-rm-lead': PLAN.rmLead || '',
-        'p-team': PLAN.team || '',
-        'p-approver': PLAN.approver || '',
-        'p-sev-scale': PLAN.sevScale || '',
-        'p-prob-scale': PLAN.probScale || '',
-        'p-criteria': PLAN.criteria || '',
-        'p-cycle': PLAN.cycle || '',
-        'p-proc-ref': PLAN.procRef || '',
-        'p-notes': PLAN.notes || ''
-      };
-      Object.keys(fields).forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el) el.value = fields[id];
-      });
-      updatePlanStatus();
+    function wire(id, key) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener('input', function() { PLAN[key] = this.value; save(); });
     }
 
-    function wirePlanInputs() {
-      var map = {
-        'p-scope': 'scope', 'p-lifecycle': 'lifecycle', 'p-environments': 'environments',
-        'p-rm-lead': 'rmLead', 'p-team': 'team', 'p-approver': 'approver',
-        'p-sev-scale': 'sevScale', 'p-prob-scale': 'probScale', 'p-criteria': 'criteria',
-        'p-cycle': 'cycle', 'p-proc-ref': 'procRef', 'p-notes': 'notes'
-      };
-      Object.keys(map).forEach(function(id) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.addEventListener('input', function() {
-          PLAN[map[id]] = el.value;
-          savePlanData();
-        });
-      });
-    }
-
+    // ── Status / Approval ─────────────────────────────────────────────────────
     function updateStatus() {
-      var pill = document.getElementById('proc-status-pill');
-      var btn = document.getElementById('approve-btn');
-      var lock = document.getElementById('doc-lock');
-      if (!pill) return;
+      var verBadge  = document.getElementById('docVerBadge');
+      var statusPill = document.getElementById('docStatusPill');
+      var revDisp   = document.getElementById('docRevisionDisplay');
+      var statDisp  = document.getElementById('docStatusDisplay');
+      var lockBanner = document.getElementById('doc-lock');
+      var approveBtn = document.getElementById('btn-approve');
       var rev = PLAN.revision || 'A';
+
+      if (verBadge)  verBadge.textContent  = 'Rev ' + rev;
+      if (revDisp)   revDisp.textContent   = rev;
+
       if (PLAN.approved) {
-        pill.className = 'proc-status-pill approved';
-        pill.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approved · Rev ' + rev;
-        if (btn) { btn.className = 'btn-revise'; btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Initiate Revision'; btn.onclick = initiateRevision; }
-        if (lock) lock.style.display = '';
-        lockFields();
+        if (statusPill) { statusPill.className = 'status-pill approved'; statusPill.textContent = 'Approved'; }
+        if (statDisp)   statDisp.textContent = 'Approved';
+        if (lockBanner) lockBanner.style.display = '';
+        if (approveBtn) {
+          approveBtn.className = 'btn-export';
+          approveBtn.style.borderColor = 'rgba(11,39,64,0.18)';
+          approveBtn.style.color = '';
+          approveBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Initiate Revision';
+          approveBtn.onclick = initiateRevision;
+        }
         if (window.Approvals) Approvals.renderStatusPanel('risk-mgmt-plan', 'doc', document.getElementById('approval-route-panel'));
+        lockFields();
       } else {
-        pill.className = 'proc-status-pill draft';
-        pill.innerHTML = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev ' + rev;
-        if (btn) { btn.className = 'btn-approve'; btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Approve'; btn.onclick = initiateApproval; }
-        if (lock) lock.style.display = 'none';
+        if (statusPill) { statusPill.className = 'status-pill draft'; statusPill.textContent = 'Draft'; }
+        if (statDisp)   statDisp.textContent = 'Draft';
+        if (lockBanner) lockBanner.style.display = 'none';
+        if (approveBtn) {
+          approveBtn.className = 'btn-export';
+          approveBtn.style.borderColor = 'rgba(16,185,129,0.3)';
+          approveBtn.style.color = '#047857';
+          approveBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Approve';
+          approveBtn.onclick = initiateApproval;
+        }
         unlockFields();
       }
+    }
+
+    function lockFields() {
+      document.querySelectorAll('.page-scroll .form-input, .page-scroll .form-textarea, .page-scroll .doc-field-input, .page-scroll .label-input, .page-scroll .def-input, .page-scroll .threshold-input').forEach(function(el) { el.disabled = true; });
+    }
+    function unlockFields() {
+      document.querySelectorAll('.page-scroll .form-input, .page-scroll .form-textarea, .page-scroll .doc-field-input, .page-scroll .label-input, .page-scroll .def-input, .page-scroll .threshold-input').forEach(function(el) { el.disabled = false; });
     }
 
     function initiateApproval() {
@@ -404,11 +966,13 @@
         meaning: 'I have reviewed and approve this Risk Management Plan as meeting the requirements of ISO 14971:2019 §4 and 21 CFR 820.30(g).',
         recordSnapshot: PLAN,
         onComplete: function(sigs) {
-          PLAN.approved = true; PLAN.approvedAt = sigs[sigs.length-1].timestamp;
-          PLAN.approvedBy = sigs[sigs.length-1].signerName; PLAN.signatures = sigs;
+          PLAN.approved = true;
+          PLAN.approvedAt = sigs[sigs.length - 1].timestamp;
+          PLAN.approvedBy = sigs[sigs.length - 1].signerName;
+          PLAN.signatures = sigs;
           PLAN.revision = PLAN.revision || 'A';
-          savePlanData();
-          if (typeof LearnMode !== 'undefined') { try { LearnMode.markStepComplete('risk-mgmt-plan'); } catch(e) {} }
+          save();
+          try { LearnMode.markStepComplete('risk-mgmt-plan'); } catch(e) {}
           updateStatus();
         },
         onCancel: function() {}
@@ -416,396 +980,95 @@
     }
 
     function initiateRevision() {
-      if (!confirm('Start a new revision? This will unlock all fields for editing. The current approval will be preserved in revision history.')) return;
+      if (!confirm('Start a new revision? This will unlock all fields. The current approval will be preserved in revision history.')) return;
       var hist = PLAN.revHistory || [];
-      if (PLAN.approved) hist.push({ revision: PLAN.revision||'A', approvedAt: PLAN.approvedAt, approvedBy: PLAN.approvedBy, signatures: PLAN.signatures });
-      var cur = PLAN.revision || 'A'; var code = cur.charCodeAt(0);
-      var next = (cur.length === 1 && code < 90) ? String.fromCharCode(code + 1) : cur + '1';
-      PLAN.approved = false; PLAN.revision = next; PLAN.approvedAt = null;
-      PLAN.approvedBy = null; PLAN.signatures = null; PLAN.revHistory = hist;
-      savePlanData();
+      if (PLAN.approved) hist.push({ revision: PLAN.revision || 'A', approvedAt: PLAN.approvedAt, approvedBy: PLAN.approvedBy, signatures: PLAN.signatures });
+      var cur = PLAN.revision || 'A';
+      var next = (cur.length === 1 && cur.charCodeAt(0) < 90) ? String.fromCharCode(cur.charCodeAt(0) + 1) : cur + '1';
+      PLAN.approved = false; PLAN.revision = next;
+      PLAN.approvedAt = null; PLAN.approvedBy = null; PLAN.signatures = null; PLAN.revHistory = hist;
+      save();
       if (window.Approvals) Approvals.clearInstance('risk-mgmt-plan', 'doc');
       updateStatus();
+      renderScaleTable('p1-table-body',  PLAN.p1Levels,  'p1');
+      renderScaleTable('p2-table-body',  PLAN.p2Levels,  'p2');
+      renderScaleTable('sev-table-body', PLAN.sevLevels, 'sev');
     }
 
-    function lockFields() {
-      document.querySelectorAll('[data-tab-content="plan"] .form-input, [data-tab-content="plan"] .form-textarea, [data-tab-content="plan"] .form-select').forEach(function(el){ el.disabled = true; });
-    }
-    function unlockFields() {
-      document.querySelectorAll('[data-tab-content="plan"] .form-input, [data-tab-content="plan"] .form-textarea, [data-tab-content="plan"] .form-select').forEach(function(el){ el.disabled = false; });
-    }
-
-    // ── List / Register ──
-    function renderList() {
-      var q = (document.getElementById('search') ? document.getElementById('search').value : '').toLowerCase();
-      var host = document.getElementById('list-body');
-      var list = Object.values(RISKS).filter(function(r){
-        if (!q) return true;
-        return (r.hazard+' '+r.situation+' '+r.harm+' '+r.id).toLowerCase().indexOf(q) !== -1;
-      });
-      list.sort(function(a,b){ return a.id < b.id ? -1 : 1; });
-
-      if (!list.length) {
-        host.innerHTML = '<div class="list-empty"><div class="list-empty-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="list-empty-title">No risks yet</div><div class="list-empty-body">Start by capturing a hazard — e.g. "electrical shock," "software freeze," "battery leakage."</div></div>';
-        return;
-      }
-      host.innerHTML = list.map(function(r){
-        var sel = r.id === currentId ? ' selected' : '';
-        var initLevel = scoreLevel(r.initialSeverity, r.initialProbability);
-        var resLevel  = scoreLevel(r.residualSeverity || r.initialSeverity, r.residualProbability || r.initialProbability);
-        return '<div class="risk-card'+sel+'" onclick="openRisk(\''+r.id+'\')">' +
-          '<div class="risk-card-top"><span class="risk-card-id">'+esc(r.id)+'</span>' +
-            '<span class="risk-card-meta">' +
-              '<span class="risk-level '+(initLevel||'neg')+'">'+levelLabel(initLevel)+'</span>' +
-              '<span style="color:rgba(11,39,64,0.3);font-size:0.68rem;">→</span>' +
-              '<span class="risk-level '+(resLevel||'neg')+'">'+levelLabel(resLevel)+'</span>' +
-            '</span>' +
-          '</div>' +
-          '<div class="risk-card-title">'+esc(r.hazard || 'Untitled hazard')+'</div>' +
-        '</div>';
-      }).join('');
-    }
-
-    function newRisk() {
-      setTab('register');
-      var id = newId();
-      RISKS[id] = {
-        id: id, hazard: '', situation: '', harm: '',
-        initialSeverity: null, initialProbability: null,
-        controls: [],
-        residualSeverity: null, residualProbability: null,
-        verification: '', notes: '', trace: ''
-      };
-      save();
-      renderList();
-      openRisk(id);
+    // ── Export ────────────────────────────────────────────────────────────────
+    function exportPlan() {
+      var lines = ['Risk Management Plan', '=====================', ''];
+      lines.push('Document No.: RM-001');
+      lines.push('Revision: ' + (PLAN.revision || 'A'));
+      lines.push('Status: ' + (PLAN.approved ? 'Approved' : 'Draft'));
+      if (PLAN.device)    lines.push('Product: ' + PLAN.device);
+      if (PLAN.rmLeadDoc) lines.push('Risk Manager: ' + PLAN.rmLeadDoc);
+      lines.push('\n--- 1. Scope ---');
+      if (PLAN.scope)        lines.push(PLAN.scope);
+      if (PLAN.lifecycle)    lines.push('\nLifecycle: ' + PLAN.lifecycle);
+      if (PLAN.environments) lines.push('\nEnvironments: ' + PLAN.environments);
+      lines.push('\n--- 2. Team ---');
+      if (PLAN.rmLead)   lines.push('Risk Manager: ' + PLAN.rmLead);
+      if (PLAN.team)     lines.push('Team:\n' + PLAN.team);
+      if (PLAN.approver) lines.push('Approval authority: ' + PLAN.approver);
+      lines.push('\n--- 3. Acceptability Criteria ---');
+      lines.push('\nP1 Scale:');
+      PLAN.p1Levels.forEach(function(l, i) { lines.push('  ' + (i+1) + '. ' + l.label + ' — ' + l.def); });
+      lines.push('\nP2 Scale:');
+      PLAN.p2Levels.forEach(function(l, i) { lines.push('  ' + (i+1) + '. ' + l.label + ' — ' + l.def); });
+      lines.push('\nSeverity Scale:');
+      PLAN.sevLevels.forEach(function(l, i) { lines.push('  ' + (i+1) + '. ' + l.label + ' — ' + l.def); });
+      lines.push('\nThresholds: Broadly Acceptable RPN ≤' + PLAN.thresholdLow + ' | Unacceptable RPN >' + PLAN.thresholdHigh);
+      if (PLAN.criteria) lines.push('\nRationale:\n' + PLAN.criteria);
+      lines.push('\n--- 4. Review Cycle ---');
+      if (PLAN.cycle)   lines.push(PLAN.cycle);
+      if (PLAN.procRef) lines.push('Procedure ref: ' + PLAN.procRef);
+      if (PLAN.notes)   lines.push('Notes: ' + PLAN.notes);
+      var blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'risk-management-plan-rev' + (PLAN.revision || 'A') + '.txt';
+      a.click();
+      URL.revokeObjectURL(a.href);
     }
 
-    function openRisk(id) {
-      currentId = id;
-      document.getElementById('placeholder').style.display = 'none';
-      document.getElementById('pane').style.display = 'flex';
-      renderDetail();
-      renderList();
+    // ── Help panel ────────────────────────────────────────────────────────────
+    function openHelpPanel() {
+      document.getElementById('helpPanel').style.transform = '';
+      document.getElementById('panelOverlay').classList.add('open', 'help-open');
     }
-
-    function renderDetail() {
-      var r = RISKS[currentId]; if (!r) return;
-      var host = document.getElementById('pane');
-      var initLevel = scoreLevel(r.initialSeverity, r.initialProbability);
-      var resLevel = scoreLevel(r.residualSeverity, r.residualProbability);
-
-      host.innerHTML =
-        '<div class="detail-pane-head" style="display:flex;align-items:flex-start;gap:0.7rem;">' +
-          '<span class="item-card-id" style="font-size:0.72rem;padding:0.2rem 0.55rem;">'+esc(r.id)+'</span>' +
-          '<input class="form-input" id="f-hazard" placeholder="Hazard (e.g. electrical energy)" value="'+esc(r.hazard)+'" oninput="updateField(\'hazard\',this.value)" style="flex:1;font-weight:600;font-size:0.92rem;">' +
-          '<button class="btn-icon danger" onclick="deleteRisk()" title="Delete"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
-        '</div>' +
-
-        '<div class="card"><div class="card-head"><div class="card-title">1 · Hazardous situation &amp; harm</div></div><div class="card-body">' +
-          '<div class="learn-only" style="margin-bottom:0.6rem;">' + LearnMode.hint('ISO 14971 uses a chain: Hazard (a potential source, e.g. "high voltage") → Hazardous situation (sequence of events that exposes someone, e.g. "insulation fails while user holds device") → Harm (injury, e.g. "burn or electrocution"). Write each one.') + '</div>' +
-          '<div class="form-field" style="margin-bottom:0.75rem;"><div class="field-label-row"><label class="form-label">Hazardous situation</label>' + AIAssist.genBtn('f-situation', 'aiSituation()') + '</div><textarea class="form-textarea" id="f-situation" rows="2" oninput="updateField(\'situation\',this.value)" placeholder="The sequence of events that exposes someone to the hazard.">'+esc(r.situation)+'</textarea></div>' +
-          '<div class="form-field"><label class="form-label">Harm</label><input class="form-input" id="f-harm" placeholder="What injury or damage could result?" value="'+esc(r.harm)+'" oninput="updateField(\'harm\',this.value)"></div>' +
-        '</div></div>' +
-
-        '<div class="card"><div class="card-head"><div class="card-title">2 · Initial risk estimate</div><span class="card-title-sub">Before controls</span></div><div class="card-body">' +
-          '<div class="detail-row">' +
-            '<div><div class="form-label">Severity of harm</div>' + ratingGroup('initialSeverity', r.initialSeverity, SEV_LABELS) + '</div>' +
-            '<div><div class="form-label">Probability of occurrence</div>' + ratingGroup('initialProbability', r.initialProbability, PROB_LABELS) + '</div>' +
-          '</div>' +
-          (initLevel ? '<div style="margin-top:0.7rem;"><span class="risk-level '+initLevel+'" style="font-size:0.72rem;padding:0.18rem 0.55rem;">Initial risk: '+levelLabel(initLevel)+' ('+ (r.initialSeverity*r.initialProbability) +')</span></div>' : '') +
-        '</div></div>' +
-
-        '<div class="card"><div class="card-head"><div class="card-title">3 · Risk controls</div><button class="add-row-btn" onclick="addControl()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add control</button></div>' +
-          '<div class="card-body">' +
-            '<div class="control-hierarchy-note learn-only"><strong>ISO 14971 §7.1 control hierarchy:</strong> <b>1) Inherent safety by design</b> (eliminate the hazard entirely) → <b>2) Protective measures</b> (alarms, guards, redundancy) → <b>3) Information for safety</b> (warnings, training, labeling). Try options in that order.</div>' +
-            '<div id="controls-host"></div>' +
-          '</div>' +
-        '</div>' +
-
-        '<div class="card"><div class="card-head"><div class="card-title">4 · Residual risk</div><span class="card-title-sub">After controls</span></div><div class="card-body">' +
-          '<div class="detail-row">' +
-            '<div><div class="form-label">Severity (after controls)</div>' + ratingGroup('residualSeverity', r.residualSeverity, SEV_LABELS) + '</div>' +
-            '<div><div class="form-label">Probability (after controls)</div>' + ratingGroup('residualProbability', r.residualProbability, PROB_LABELS) + '</div>' +
-          '</div>' +
-
-          (initLevel && resLevel ? '<div class="residual-compare" style="margin-top:0.8rem;">' +
-            '<div class="residual-box"><div class="residual-box-label">Initial</div><div class="residual-box-value"><span class="risk-level '+initLevel+'">'+levelLabel(initLevel)+'</span></div></div>' +
-            '<div class="residual-arrow">→</div>' +
-            '<div class="residual-box"><div class="residual-box-label">Residual</div><div class="residual-box-value"><span class="risk-level '+resLevel+'">'+levelLabel(resLevel)+'</span></div></div>' +
-          '</div>' : '') +
-
-          '<div class="form-field" style="margin-top:0.85rem;"><div class="field-label-row"><label class="form-label">Verification of control effectiveness</label>' + AIAssist.genBtn('f-verification', 'aiVerification()') + '</div><textarea class="form-textarea" id="f-verification" rows="2" oninput="updateField(\'verification\',this.value)" placeholder="Reference test report, protocol, or inspection that proves each control works (e.g. TR-045, DV-012).">'+esc(r.verification)+'</textarea></div>' +
-          '<div class="form-field" style="margin-top:0.6rem;"><label class="form-label">Traceability to design inputs / outputs</label><input class="form-input" id="f-trace" placeholder="e.g. DI-014, DO-022" value="'+esc(r.trace)+'" oninput="updateField(\'trace\',this.value)"></div>' +
-          '<div class="form-field" style="margin-top:0.6rem;"><div class="field-label-row"><label class="form-label">Notes / risk-benefit rationale</label>' + AIAssist.genBtn('f-notes', 'aiRiskNotes()') + '</div><textarea class="form-textarea" id="f-notes" rows="2" oninput="updateField(\'notes\',this.value)">'+esc(r.notes)+'</textarea></div>' +
-        '</div></div>';
-
-      renderControls();
+    function closeAllPanels() {
+      document.getElementById('panelOverlay').classList.remove('open', 'help-open');
+      document.getElementById('helpPanel').style.transform = 'translateX(100%)';
     }
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeAllPanels(); });
 
-    function updateField(name, val) {
-      if (!currentId) return;
-      RISKS[currentId][name] = val;
-      save();
-      if (name === 'hazard') renderList();
-    }
-
-    function ratingGroup(field, currentVal, labels) {
-      var html = '<div class="rating-group">';
-      for (var i = 1; i <= 5; i++) {
-        var sel = currentVal === i ? ' selected' : '';
-        html += '<button class="rating-btn'+sel+'" onclick="setRating(\''+field+'\','+i+')">'+i+'</button>';
-      }
-      html += '</div><div class="rating-label">1 = '+esc(labels[0])+' · 5 = '+esc(labels[4])+'</div>';
-      return html;
-    }
-
-    function setRating(field, val) {
-      if (!currentId) return;
-      RISKS[currentId][field] = val;
-      save();
-      renderDetail();
-      renderList();
-    }
-
-    function addControl() {
-      if (!currentId) return;
-      RISKS[currentId].controls.push({ type: 'inherent', desc: '', impact: '' });
-      save();
-      renderControls();
-    }
-    function removeControl(i) {
-      RISKS[currentId].controls.splice(i, 1);
-      save();
-      renderControls();
-    }
-    function updateControl(i, field, val) { RISKS[currentId].controls[i][field] = val; save(); }
-
-    function renderControls() {
-      var host = document.getElementById('controls-host');
-      var list = RISKS[currentId].controls || [];
-      if (!list.length) {
-        host.innerHTML = '<div class="subtle" style="padding:0.6rem 0.2rem;">No controls yet. Click "Add control" to document a mitigation.</div>';
-        return;
-      }
-      host.innerHTML = list.map(function(c, i) {
-        var typeMap = { inherent: 'Inherent safety', protective: 'Protective measure', info: 'Information for safety' };
-        return '<div class="control-card">' +
-          '<div class="control-card-head">' +
-            '<span>Control '+(i+1)+'</span>' +
-            '<span class="control-type-pill '+c.type+'">'+esc(typeMap[c.type]||c.type)+'</span>' +
-            '<button class="btn-icon danger" onclick="removeControl('+i+')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>' +
-          '</div>' +
-          '<div class="form-field" style="margin-bottom:0.45rem;"><label class="form-label">Type</label><select class="form-select" onchange="updateControl('+i+',\'type\',this.value)">' +
-            ['inherent','protective','info'].map(function(t){ return '<option value="'+t+'"'+(c.type===t?' selected':'')+'>'+esc(typeMap[t])+'</option>'; }).join('') +
-          '</select></div>' +
-          '<div class="form-field" style="margin-bottom:0.45rem;"><label class="form-label">Description</label><input class="form-input" placeholder="Specific control measure" value="'+esc(c.desc||'')+'" oninput="updateControl('+i+',\'desc\',this.value)"></div>' +
-          '<div class="form-field"><label class="form-label">Expected impact (what it reduces: severity, probability, or both)</label><input class="form-input" placeholder="e.g. Reduces probability by 2 levels via redundant sensor" value="'+esc(c.impact||'')+'" oninput="updateControl('+i+',\'impact\',this.value)"></div>' +
-        '</div>';
-      }).join('');
-    }
-
-    function deleteRisk() {
-      if (!currentId) return;
-      if (!confirm('Delete ' + currentId + '?')) return;
-      delete RISKS[currentId];
-      save();
-      currentId = null;
-      document.getElementById('pane').style.display = 'none';
-      document.getElementById('placeholder').style.display = 'flex';
-      renderList();
-    }
-
-    // ── Matrix ──
-    function renderMatrices() {
-      document.getElementById('intro-slot-matrix').innerHTML = LearnMode.introCard({
-        id: 'risk-matrix',
-        tag: 'ISO 14971 §5 Risk estimation',
-        title: 'Reading the risk matrix',
-        what: 'Each cell plots risks at a severity × probability combination. Green = broadly acceptable. Amber = reduce as far as practicable. Red = unacceptable without risk/benefit justification.',
-        why: 'Your acceptance criteria (defined in the Risk Management Plan) determine where those color boundaries sit — this app uses a common 1×5 / 2×5 / 3×5 split. Adjust in your Risk Management Plan if your organization uses different thresholds.',
-        standards: ['ISO 14971:2019 §5', 'ISO/TR 24971 §5 (Guidance)']
-      });
-      document.getElementById('matrix-initial').innerHTML = buildMatrix('initial');
-      document.getElementById('matrix-residual').innerHTML = buildMatrix('residual');
-    }
-
-    function buildMatrix(kind) {
-      var counts = {};
-      var risks = Object.values(RISKS);
-      risks.forEach(function(r) {
-        var s = kind === 'initial' ? r.initialSeverity : r.residualSeverity;
-        var p = kind === 'initial' ? r.initialProbability : r.residualProbability;
-        if (!s || !p) return;
-        var key = s+'-'+p;
-        counts[key] = (counts[key] || 0) + 1;
-      });
-
-      var html = '<div class="matrix-grid">';
-      html += '<div class="matrix-cell header-left">Prob ↓ / Sev →</div>';
-      for (var s = 1; s <= 5; s++) html += '<div class="matrix-cell header">S'+s+'<br><span style="font-size:0.55rem;font-weight:500;opacity:0.8;">'+esc(SEV_LABELS[s-1])+'</span></div>';
-
-      for (var p = 5; p >= 1; p--) {
-        html += '<div class="matrix-cell header-left">P'+p+'<br><span style="font-size:0.55rem;font-weight:500;opacity:0.8;">'+esc(PROB_LABELS[p-1])+'</span></div>';
-        for (var sv = 1; sv <= 5; sv++) {
-          var level = scoreLevel(sv, p);
-          var n = counts[sv+'-'+p] || 0;
-          var dots = '<div class="matrix-cell-dots">' + (new Array(Math.min(n, 10)+1).join('<span class="matrix-cell-dot"></span>')) + '</div>';
-          html += '<div class="matrix-cell '+level+'">'+ (n ? '<div class="matrix-cell-count">'+n+'</div>'+dots : '') +'</div>';
-        }
-      }
-      html += '</div>';
-      html += '<div class="matrix-legend">' +
-        '<span><span class="matrix-legend-swatch" style="background:rgba(16,185,129,0.5);"></span>Low (1–4) · broadly acceptable</span>' +
-        '<span><span class="matrix-legend-swatch" style="background:rgba(245,158,11,0.6);"></span>Medium (5–14) · reduce as far as practicable</span>' +
-        '<span><span class="matrix-legend-swatch" style="background:rgba(239,68,68,0.55);"></span>High (15–25) · unacceptable without justification</span>' +
-      '</div>';
-      return html;
-    }
-
-    // ── Report ──
-    function renderReport() {
-      var host = document.getElementById('report-host');
-      var risks = Object.values(RISKS);
-      var total = risks.length;
-      var rated = risks.filter(function(r){ return r.initialSeverity && r.initialProbability; });
-      var afterControls = rated.filter(function(r){ return r.residualSeverity && r.residualProbability; });
-      var initHigh = rated.filter(function(r){ return scoreLevel(r.initialSeverity, r.initialProbability) === 'high'; }).length;
-      var resHigh  = afterControls.filter(function(r){ return scoreLevel(r.residualSeverity, r.residualProbability) === 'high'; }).length;
-
-      var html = '<div id="intro-slot-report"></div>' +
-        '<div class="kpi-row">' +
-          '<div class="kpi-tile"><div class="kpi-tile-label">Risks identified</div><div class="kpi-tile-value">'+total+'</div><div class="kpi-tile-sub">In risk register</div></div>' +
-          '<div class="kpi-tile"><div class="kpi-tile-label">With initial estimate</div><div class="kpi-tile-value">'+rated.length+'</div><div class="kpi-tile-sub">Severity × probability set</div></div>' +
-          '<div class="kpi-tile"><div class="kpi-tile-label">High-risk (initial)</div><div class="kpi-tile-value" style="color:#dc2626;">'+initHigh+'</div><div class="kpi-tile-sub">Score ≥ 15</div></div>' +
-          '<div class="kpi-tile"><div class="kpi-tile-label">High-risk (residual)</div><div class="kpi-tile-value" style="color:'+(resHigh?'#dc2626':'#047857')+';">'+resHigh+'</div><div class="kpi-tile-sub">After controls</div></div>' +
-        '</div>';
-
-      html += '<div class="report-section"><h2>1. Scope &amp; acceptance criteria</h2>' +
-        '<p>'+ esc(PLAN.scope || 'Risk management plan scope not yet documented. Go to the Plan tab.') +'</p>' +
-        '<p><strong>Acceptance criteria:</strong> '+ esc(PLAN.criteria || 'Not yet documented.') +'</p>' +
-        '<p><strong>Review cycle:</strong> '+ esc(PLAN.cycle || 'Not yet documented.') +'</p>' +
-      '</div>';
-
-      html += '<div class="report-section"><h2>2. Risk register summary</h2>' +
-        '<p>All identified hazards, their initial and residual risk scores, and the controls applied.</p>' +
-        '<table class="data-table"><thead><tr><th>ID</th><th>Hazard</th><th>Harm</th><th>Initial</th><th>Controls</th><th>Residual</th></tr></thead><tbody>' +
-        risks.map(function(r){
-          var il = scoreLevel(r.initialSeverity, r.initialProbability);
-          var rl = scoreLevel(r.residualSeverity, r.residualProbability);
-          return '<tr>' +
-            '<td class="id-cell">'+esc(r.id)+'</td>' +
-            '<td>'+esc(r.hazard)+'</td>' +
-            '<td>'+esc(r.harm)+'</td>' +
-            '<td>'+ (il ? '<span class="risk-level '+il+'">'+levelLabel(il)+'</span>' : '—') +'</td>' +
-            '<td>'+ (r.controls||[]).length +'</td>' +
-            '<td>'+ (rl ? '<span class="risk-level '+rl+'">'+levelLabel(rl)+'</span>' : '—') +'</td>' +
-          '</tr>';
-        }).join('') +
-        (risks.length ? '' : '<tr><td colspan="6" style="text-align:center;color:rgba(11,39,64,0.35);">No risks yet.</td></tr>') +
-        '</tbody></table>' +
-      '</div>';
-
-      html += '<div class="report-section"><h2>3. Overall residual risk evaluation</h2>' +
-        (resHigh ? '<div class="banner warning"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg><div>'+resHigh+' risk(s) remain high after controls. Document a risk/benefit analysis for each, or develop additional mitigations.</div></div>' : '<div class="banner success"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>No high residual risks. Overall residual risk is broadly acceptable given current acceptance criteria.</div>') +
-      '</div>';
-
-      html += '<div class="report-section"><h2>4. Risk management activities</h2>' +
-        '<p>Per ISO 14971 §4, risk management is an ongoing activity. This report should be updated at each design review, following changes, and whenever new hazards are identified from post-market feedback (complaints, field experience).</p>' +
-      '</div>';
-
-      host.innerHTML = html;
-
-      var rIntro = document.getElementById('intro-slot-report');
-      if (rIntro) rIntro.innerHTML = LearnMode.introCard({
-        id: 'risk-report',
-        tag: 'ISO 14971 §9',
-        title: 'The risk management report',
-        what: 'A single artefact that demonstrates the risk management process was executed: plan in place, risks identified, controlled, verified, residual risk evaluated, and overall risk/benefit concluded. This report accompanies the Technical File / DHF.',
-        why: 'Without it, you can\'t close a design review or a regulatory submission. The FDA / Notified Body will specifically ask for it.',
-        standards: ['ISO 14971:2019 §9', 'MDR 2017/745 Annex I §3']
-      });
-    }
-
-    // ── Init ──
-    document.addEventListener('qms-learn-mode-changed', function(){
-      if (currentId) renderDetail();
-      var reportHost = document.getElementById('report-host');
-      if (reportHost && reportHost.innerHTML) renderReport();
-      renderRegisterIntro();
-    });
-
-    function renderRegisterIntro() {
-      var slot = document.getElementById('intro-slot-register');
-      if (!slot) return;
-      slot.innerHTML = LearnMode.introCard({
-        id: 'risk-register',
-        tag: 'ISO 14971 §5–§7 Risk management',
-        title: 'Your risk register — the heart of ISO 14971',
-        what: 'A register is a living list of every hazard your device could create, paired with the situations that expose people to them, the harms that result, and the controls that reduce the risk. Each row captures one hazard end-to-end: identify it → score it (severity × probability) before controls → add controls → re-score residual risk → accept or iterate.',
-        why: 'Risk analysis isn\'t paperwork you do once — FDA and EU MDR expect evidence that you identified risks before design was locked, that you reduced them as far as practicable, and that you keep updating the register when complaints or changes reveal new ones. ISO 14971 uses specific vocabulary — hazard, hazardous situation, harm — keep them distinct on each row. Follow the control hierarchy: (1) inherent safety by design → (2) protective measures → (3) information for safety.',
-        standards: ['ISO 14971:2019 §5–§7', 'ISO/TR 24971 (Guidance)', 'FDA 21 CFR 820.30(g)', 'EU MDR Annex I §3']
-      });
-    }
-
-    // ── AI prompt builders ────────────────────────────────────────────────
+    // ── AI Assist ─────────────────────────────────────────────────────────────
     AIAssist.register('p-scope', function() {
-      var c = AIAssist.ctxLines();
-      return 'Write the "Scope" section of a Risk Management Plan per ISO 14971.\n\nContext:\n' + c + '\n\nRequirements:\n- State which device model(s), configurations, accessories, and variants are in scope\n- 2–3 sentences, plain prose\n- Do not include a heading';
+      return AIAssist.ctxLines() + '\n\nWrite the "Scope" section of a Risk Management Plan per ISO 14971. State which device model(s), configurations, accessories, and variants are in scope. 2–3 sentences, plain prose. No heading.';
     });
     AIAssist.register('p-lifecycle', function() {
-      var c = AIAssist.ctxLines();
-      return 'Write the "Lifecycle phases covered" section of a Risk Management Plan per ISO 14971.\n\nContext:\n' + c + '\n\nRequirements:\n- List all lifecycle phases covered (concept, design, development, manufacturing, distribution, clinical use, servicing, decommissioning, disposal)\n- Note that post-production information is included per ISO 14971 §9\n- 2–3 sentences\n- Do not include a heading';
+      return AIAssist.ctxLines() + '\n\nWrite the "Lifecycle phases covered" section of a Risk Management Plan per ISO 14971. List all lifecycle phases (concept, design, development, manufacturing, distribution, clinical use, servicing, decommissioning). Note post-production per ISO 14971 §9. 2–3 sentences. No heading.';
     });
     AIAssist.register('p-environments', function() {
-      var c = AIAssist.ctxLines();
-      return 'Write the "Intended use environments" section of a Risk Management Plan.\n\nContext:\n' + c + '\n\nRequirements:\n- Describe the physical and clinical settings where the device will be used\n- Include relevant environmental factors (electromagnetic, temperature, humidity, user expertise)\n- Be specific to the device type and intended use\n- 2–3 sentences\n- Do not include a heading';
+      return AIAssist.ctxLines() + '\n\nWrite the "Intended use environments" section of a Risk Management Plan. Describe physical and clinical settings; include relevant environmental factors (electromagnetic, temperature, humidity, user expertise). 2–3 sentences. No heading.';
     });
     AIAssist.register('p-team', function() {
-      var c = AIAssist.ctxLines();
-      return 'Write the "Risk management team members and roles" section of a Risk Management Plan per ISO 14971.\n\nContext:\n' + c + '\n\nRequirements:\n- List typical roles needed for a cross-functional risk team (engineering, QA, clinical/regulatory, manufacturing)\n- For each role, briefly describe their responsibility in the risk management process\n- Format as a list with role name and responsibility\n- Use placeholder names if needed (e.g. [Engineering Lead])\n- Do not include a heading';
-    });
-    AIAssist.register('p-sev-scale', function() {
-      var c = AIAssist.ctxLines();
-      return 'Write a 5-level severity scale definition for a medical device Risk Management Plan per ISO 14971.\n\nContext:\n' + c + '\n\nRequirements:\n- Define severity levels 1 through 5\n- Each level should describe the clinical harm magnitude specific to this device type\n- Use medically meaningful language (negligible, minor reversible, moderate requiring intervention, serious permanent, catastrophic/fatal)\n- Format as a numbered list\n- Do not include a heading';
-    });
-    AIAssist.register('p-prob-scale', function() {
-      var c = AIAssist.ctxLines();
-      return 'Write a 5-level probability of occurrence scale for a medical device Risk Management Plan per ISO 14971.\n\nContext:\n' + c + '\n\nRequirements:\n- Define probability levels 1 through 5\n- Express each level as a qualitative description AND a quantitative range (per device use, per year, or per lot)\n- Be appropriate for the device type and expected production/use volume\n- Format as a numbered list\n- Do not include a heading';
+      return AIAssist.ctxLines() + '\n\nWrite the "Risk management team members and roles" for a Risk Management Plan per ISO 14971. List typical cross-functional roles (engineering, QA, clinical/regulatory, manufacturing) with brief responsibilities. Format as list. Use placeholder names (e.g. [Engineering Lead]). No heading.';
     });
     AIAssist.register('p-criteria', function() {
-      var c = AIAssist.ctxLines();
-      return 'Write the "Risk acceptability thresholds" for a 5×5 risk matrix in a medical device Risk Management Plan.\n\nContext:\n' + c + '\n\nRequirements:\n- Define Low, Medium, and High risk zones with score ranges (score = severity × probability, range 1–25)\n- For each zone, state the required action (broadly acceptable / ALARP / unacceptable)\n- Reference the benefit-risk analysis requirement for residual high risks per ISO 14971 §8\n- 3–5 sentences or a brief structured description\n- Do not include a heading';
+      var ctx = AIAssist.ctxLines();
+      var low  = PLAN.thresholdLow  || 10;
+      var high = PLAN.thresholdHigh || 49;
+      return ctx + '\nRPN thresholds: Broadly Acceptable ≤' + low + ', Unacceptable >' + high + '\n\nWrite the narrative justification for these risk acceptability threshold choices. Reference state-of-the-art guidance (ISO/TR 24971, device class, patient population). Note per ISO 14971 §4 that criteria must be established before risk analysis begins. 3–5 sentences. No heading.';
     });
     AIAssist.register('p-cycle', function() {
-      var c = AIAssist.ctxLines();
-      return 'Write the "Review triggers and cycle" for a medical device Risk Management Plan.\n\nContext:\n' + c + '\n\nRequirements:\n- List specific triggers that require a risk file update (design changes, post-market signals, CAPA findings, design phase gates, post-market surveillance results)\n- State the minimum periodic review frequency\n- Reference ISO 14971 §9 (production and post-production information)\n- 3–5 sentences or a brief list\n- Do not include a heading';
+      return AIAssist.ctxLines() + '\n\nWrite the "Review triggers and cycle" for a Risk Management Plan. List specific triggers (design changes, post-market signals, CAPA findings, design phase gates, post-market surveillance). State minimum periodic review frequency. Reference ISO 14971 §9. 3–5 sentences or brief list. No heading.';
     });
 
-    // Dynamic risk detail prompt builders
-    function aiSituation() {
-      var r = RISKS[currentId] || {};
-      var c = AIAssist.ctxLines();
-      return 'Write a "Hazardous situation" description for an ISO 14971 risk register entry.\n\nContext:\n' + c + '\nHazard: ' + (r.hazard || 'not specified') + '\nPotential harm: ' + (r.harm || 'not specified') + '\n\nRequirements:\n- Describe the foreseeable sequence of events that could lead from the hazard to the harm\n- Follow ISO 14971 vocabulary: Hazard → Hazardous situation → Harm\n- 1–2 sentences, specific and concrete\n- Do not include a heading';
-    }
-    function aiVerification() {
-      var r = RISKS[currentId] || {};
-      var c = AIAssist.ctxLines();
-      return 'Write a "Verification of control effectiveness" note for an ISO 14971 risk register entry.\n\nContext:\n' + c + '\nHazard: ' + (r.hazard || 'not specified') + '\nHazardous situation: ' + (r.situation || 'not specified') + '\n\nRequirements:\n- Describe what evidence or testing would confirm the risk controls are effective\n- Reference appropriate verification methods (test protocol, inspection, analysis, review)\n- Note that actual test report numbers should be filled in once testing is complete (use placeholder format like TR-XXX)\n- 1–2 sentences\n- Do not include a heading';
-    }
-    function aiRiskNotes() {
-      var r = RISKS[currentId] || {};
-      var c = AIAssist.ctxLines();
-      return 'Write "Notes / risk-benefit rationale" for a medical device risk register entry.\n\nContext:\n' + c + '\nHazard: ' + (r.hazard || 'not specified') + '\n\nRequirements:\n- If residual risk remains, briefly articulate why the medical benefit outweighs the risk\n- Note any assumptions, limitations, or special considerations for this hazard\n- Reference ISO 14971 §8 benefit-risk framework if applicable\n- 1–3 sentences\n- Do not include a heading';
-    }
-
+    // ── Init ──────────────────────────────────────────────────────────────────
     initSidebar({ activePage: 'risk-management-plan' });
-    fillPlanForm();
-    wirePlanInputs();
-    renderPlanIntro();
-    renderRegisterIntro();
-    renderList();
-    checkSoftGate();
+    populate();
     updateStatus();
   </script>
 </body>
