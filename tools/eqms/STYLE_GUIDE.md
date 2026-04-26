@@ -491,6 +491,7 @@ Add these to the `<style>` block on any Design Controls page to suppress guided-
 ```css
 #lm-step-footer { display: none !important; }  /* guided-mode "done exploring" footer */
 #lm-toggle-root { display: none !important; }  /* guided/power mode toggle */
+#lm-step-banner { display: none !important; }  /* guided-mode step banner (dark band, injected between topbar and content) */
 ```
 
 ---
