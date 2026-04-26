@@ -213,7 +213,64 @@ The unified white card that wraps doc-cover metadata + table header + requiremen
 
 ---
 
-## 8. Requirements Table
+## 8. Page Accent Band
+
+A 4 px full-width gradient stripe that anchors the top of every main content area. It runs edge-to-edge below the sub-nav and signals the visual boundary between navigation chrome and working content. The aqua→indigo gradient ties every page back to the platform's primary action color while providing forward motion (left-to-right energy).
+
+```
+┌─────────────────────────────────────────────────┐
+│  TOPBAR (white, 58 px)                          │
+├─────────────────────────────────────────────────┤
+│  SUB-NAV (white, 40 px)                         │
+├─────────────────────────────────────────────────┤  ← border-bottom 1px rgba(11,39,64,0.08)
+│████████████████ accent band (4 px) ████████████ │  ← aqua → #6366f1 gradient
+├─────────────────────────────────────────────────┤
+│  CONTENT AREA                                   │
+└─────────────────────────────────────────────────┘
+```
+
+### On hub / overview pages (Design Controls, Risk Management, etc.)
+
+Add a dedicated `.page-accent-band` element as a **direct child of `.app-main`**, immediately after the sub-nav and before `.content-wrap`:
+
+```html
+<div class="page-accent-band"></div>
+```
+
+```css
+.page-accent-band {
+  height: 4px;
+  background: linear-gradient(90deg, var(--aqua), #6366f1);
+  flex-shrink: 0;
+}
+```
+
+### On document pages (pages with `.doc-cover`)
+
+The band is implemented as a `::before` pseudo-element on `.doc-cover` — do **not** add a separate `.page-accent-band` div to those pages:
+
+```css
+.doc-cover::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--aqua), #6366f1);
+}
+```
+
+### Gradient stops
+
+| Stop | Value | Role |
+|------|-------|------|
+| Left (0%) | `var(--aqua)` = `#0AC0E9` | Primary action color |
+| Right (100%) | `#6366f1` | Indigo accent |
+
+Never change the direction or swap the stops — consistent directionality reinforces the platform's left-to-right reading flow.
+
+---
+
+## 9. Requirements Table
 
 ```css
 .list-table-wrap { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px; overflow: hidden; }
@@ -251,7 +308,7 @@ The unified white card that wraps doc-cover metadata + table header + requiremen
 
 ---
 
-## 9. Slide-in Panels (420px)
+## 10. Slide-in Panels (420px)
 
 All panels share the same overlay + slide-in infrastructure. Never create a full-page modal for detail views — use a panel.
 
@@ -303,7 +360,7 @@ The footer is hidden by default; shown with `.dirty` when unsaved changes exist.
 
 ---
 
-## 10. Sidebar
+## 11. Sidebar
 
 The sidebar is rendered by `sidebar.js` via `initSidebar({ activePage: 'page-id' })`. Do not hardcode sidebar HTML — call the JS initializer.
 
@@ -316,7 +373,7 @@ The sidebar is rendered by `sidebar.js` via `initSidebar({ activePage: 'page-id'
 
 ---
 
-## 11. At a Glance Widget (Sidebar Panel)
+## 12. At a Glance Widget (Sidebar Panel)
 
 Rendered by `renderSidebarWidget()` on each page into `#lm-sidebar-widget`. The widget is copied into the guided-mode At a Glance panel by `learn-mode.js`.
 
@@ -354,7 +411,7 @@ The donut is generated as an inline SVG string using the `stroke-dasharray` tech
 
 ---
 
-## 12. Shared JS Infrastructure
+## 13. Shared JS Infrastructure
 
 | File | Purpose |
 |------|---------|
@@ -383,7 +440,7 @@ The donut is generated as an inline SVG string using the `stroke-dasharray` tech
 
 ---
 
-## 13. Interaction Conventions
+## 14. Interaction Conventions
 
 | Pattern | Rule |
 |---------|------|
@@ -397,7 +454,7 @@ The donut is generated as an inline SVG string using the `stroke-dasharray` tech
 
 ---
 
-## 14. Page-level Suppressions (Design Controls pages)
+## 15. Page-level Suppressions (Design Controls pages)
 
 Add these to the `<style>` block on any Design Controls page to suppress guided-mode chrome that doesn't belong there:
 
@@ -408,7 +465,7 @@ Add these to the `<style>` block on any Design Controls page to suppress guided-
 
 ---
 
-## 15. Guidance Panel Content Principle
+## 16. Guidance Panel Content Principle
 
 **All page-level explanatory, educational, and regulatory context belongs in the Guidance panel — never inline on the page body.**
 
@@ -474,13 +531,14 @@ Leave the JS functions in place (removing them risks errors if `learn-mode.js` s
 
 ---
 
-## 16. New Page Checklist
+## 17. New Page Checklist
 
 When creating a new eQMS tool page:
 
 - [ ] Copy `:root` variables block verbatim
 - [ ] Use the sidebar + main + topbar shell structure
 - [ ] Topbar-right: `[ Export ] [ Approve ] [ Guidance ]` — nothing else
+- [ ] Add `<div class="page-accent-band"></div>` between sub-nav and `.content-wrap` (hub/overview pages only; doc pages use `doc-cover::before`)
 - [ ] Add `btn-guidance` → opens `#helpPanel` with page-specific explanation (what it is, regulatory context, best practices, video placeholder)
 - [ ] Guidance panel replaces any `#intro-slot`, `renderIntro()`, or `.learn-only` explainer elements — suppress those with CSS if present
 - [ ] Wrap doc-cover + section-head + table in `.doc-page-card`
