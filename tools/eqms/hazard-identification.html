@@ -66,10 +66,9 @@
     .filter-tab { font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 0.28rem 0.75rem; border-radius: 20px; border: 1.5px solid rgba(11,39,64,0.12); background: transparent; color: rgba(11,39,64,0.5); cursor: pointer; transition: all 0.12s; white-space: nowrap; }
     .filter-tab:hover { border-color: rgba(11,39,64,0.22); color: var(--primary); background: rgba(11,39,64,0.03); }
     .filter-tab.active { border-color: rgba(11,39,64,0.35); background: var(--primary); color: white; }
-    .filter-tab.f-yes.active   { border-color: #10B981; background: rgba(16,185,129,0.1); color: #047857; }
-    .filter-tab.f-maybe.active { border-color: #F59E0B; background: rgba(245,158,11,0.1); color: #b45309; }
-    .filter-tab.f-no.active    { border-color: rgba(11,39,64,0.25); background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.55); }
-    .filter-tab.f-open.active  { border-color: rgba(10,192,233,0.5); background: rgba(10,192,233,0.08); color: var(--aqua-dark); }
+    .filter-tab.f-app.active  { border-color: #10B981; background: rgba(16,185,129,0.1); color: #047857; }
+    .filter-tab.f-na.active   { border-color: rgba(11,39,64,0.25); background: rgba(11,39,64,0.06); color: rgba(11,39,64,0.55); }
+    .filter-tab.f-open.active { border-color: rgba(10,192,233,0.5); background: rgba(10,192,233,0.08); color: var(--aqua-dark); }
 
     /* ── SECTION NOTE ── */
     .section-note { font-size: 0.76rem; color: rgba(11,39,64,0.55); line-height: 1.65; padding: 0.7rem 0.9rem; background: rgba(10,192,233,0.04); border: 1px solid rgba(10,192,233,0.16); border-radius: 8px; margin-bottom: 1rem; }
@@ -80,9 +79,9 @@
     .hazid-table thead { position: sticky; top: 0; z-index: 10; }
     .hazid-table thead th { background: var(--primary); color: rgba(255,255,255,0.7); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem 0.9rem; text-align: left; border-bottom: none; white-space: nowrap; }
     .hazid-table thead th.col-ref   { width: 72px; }
-    .hazid-table thead th.col-q     { min-width: 280px; }
-    .hazid-table thead th.col-resp  { width: 130px; text-align: center; }
-    .hazid-table thead th.col-notes { width: 260px; }
+    .hazid-table thead th.col-q     { width: 240px; }
+    .hazid-table thead th.col-resp  { width: 170px; text-align: center; }
+    .hazid-table thead th.col-notes { /* auto — takes remaining width */ }
 
     .hazid-table tbody tr { border-bottom: 1px solid rgba(11,39,64,0.055); transition: background 0.1s; }
     .hazid-table tbody tr:last-child { border-bottom: none; }
@@ -108,17 +107,16 @@
     .info-btn { width: 16px; height: 16px; border-radius: 50%; background: rgba(11,39,64,0.07); border: none; cursor: help; display: inline-flex; align-items: center; justify-content: center; font-size: 0.58rem; font-weight: 800; color: rgba(11,39,64,0.45); flex-shrink: 0; margin-top: 2px; transition: background 0.12s, color 0.12s; padding: 0; }
     .info-btn:hover { background: rgba(10,192,233,0.15); color: var(--aqua-dark); }
 
-    /* grayed-out row (answered No) */
-    .hazid-table tbody tr.resp-no-row td.td-q .q-text { color: rgba(11,39,64,0.35); }
-    .hazid-table tbody tr.resp-no-row td.td-ref .ref-badge { color: rgba(11,39,64,0.2); }
+    /* grayed-out row (Not Applicable) */
+    .hazid-table tbody tr.resp-na-row td.td-q .q-text { color: rgba(11,39,64,0.35); }
+    .hazid-table tbody tr.resp-na-row td.td-ref .ref-badge { color: rgba(11,39,64,0.2); }
 
     /* response cell */
     .td-resp { text-align: center; }
-    .resp-select { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 600; padding: 0.3rem 0.55rem; border-radius: 6px; border: 1.5px solid rgba(11,39,64,0.14); background: white; color: rgba(11,39,64,0.45); cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; text-align: center; transition: border-color 0.12s, background 0.12s, color 0.12s; min-width: 90px; }
+    .resp-select { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 600; padding: 0.3rem 0.6rem; border-radius: 6px; border: 1.5px solid rgba(11,39,64,0.14); background: white; color: rgba(11,39,64,0.45); cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; text-align: center; transition: border-color 0.12s, background 0.12s, color 0.12s; min-width: 130px; width: 100%; }
     .resp-select:focus { border-color: rgba(10,192,233,0.5); }
-    .resp-select.resp-yes   { border-color: rgba(16,185,129,0.45); background: rgba(16,185,129,0.07); color: #047857; }
-    .resp-select.resp-no    { border-color: rgba(11,39,64,0.15); background: rgba(11,39,64,0.04); color: rgba(11,39,64,0.38); }
-    .resp-select.resp-maybe { border-color: rgba(245,158,11,0.45); background: rgba(245,158,11,0.07); color: #b45309; }
+    .resp-select.resp-applicable { border-color: rgba(16,185,129,0.45); background: rgba(16,185,129,0.07); color: #047857; }
+    .resp-select.resp-na         { border-color: rgba(11,39,64,0.15); background: rgba(11,39,64,0.04); color: rgba(11,39,64,0.38); }
 
     /* notes cell */
     .td-notes {}
@@ -236,14 +234,12 @@
           <!-- Progress bar -->
           <div class="progress-row">
             <div class="progress-track">
-              <div class="progress-seg yes"   id="pgYes"   style="width:0%"></div>
-              <div class="progress-seg maybe" id="pgMaybe" style="width:0%"></div>
-              <div class="progress-seg no"    id="pgNo"    style="width:0%"></div>
+              <div class="progress-seg yes" id="pgApp" style="width:0%"></div>
+              <div class="progress-seg no"  id="pgNA"  style="width:0%"></div>
             </div>
             <div class="progress-counts">
-              <span class="progress-count"><span class="progress-dot yes"></span><span id="ctYes">0</span> Yes</span>
-              <span class="progress-count"><span class="progress-dot maybe"></span><span id="ctMaybe">0</span> Maybe</span>
-              <span class="progress-count"><span class="progress-dot no"></span><span id="ctNo">0</span> No</span>
+              <span class="progress-count"><span class="progress-dot yes"></span><span id="ctApp">0</span> Applicable</span>
+              <span class="progress-count"><span class="progress-dot no"></span><span id="ctNA">0</span> Not Applicable</span>
             </div>
             <span class="progress-total" id="pgTotal">0 / 37 answered</span>
           </div>
@@ -251,11 +247,10 @@
           <!-- Filters -->
           <div class="filter-row">
             <span class="filter-label">Show:</span>
-            <button class="filter-tab active" data-filter="all"    onclick="setFilter('all')">All</button>
-            <button class="filter-tab f-open"  data-filter="open"   onclick="setFilter('open')">Unanswered</button>
-            <button class="filter-tab f-yes"   data-filter="Yes"    onclick="setFilter('Yes')">Yes</button>
-            <button class="filter-tab f-maybe" data-filter="Maybe"  onclick="setFilter('Maybe')">Maybe</button>
-            <button class="filter-tab f-no"    data-filter="No"     onclick="setFilter('No')">No</button>
+            <button class="filter-tab active" data-filter="all"          onclick="setFilter('all')">All</button>
+            <button class="filter-tab f-open"  data-filter="open"         onclick="setFilter('open')">Unanswered</button>
+            <button class="filter-tab f-app"   data-filter="Applicable"   onclick="setFilter('Applicable')">Applicable</button>
+            <button class="filter-tab f-na"    data-filter="Not Applicable" onclick="setFilter('Not Applicable')">Not Applicable</button>
           </div>
 
         </div>
@@ -263,7 +258,7 @@
 
       <!-- ── SECTION NOTE ── -->
       <div class="section-note">
-        Answer each question from ISO/TR 24971 Annex A to identify characteristics of this device that could affect safety. For each <strong>"Yes"</strong> or <strong>"Maybe"</strong>, describe the potential hazard(s) in the Notes column — this data will populate the Risk Analysis. Sub-questions under A.2.31 expand automatically when the parent is answered "Yes".
+        Answer each question from ISO/TR 24971 Annex A to identify characteristics of this device that could affect safety. For each <strong>"Applicable"</strong> response, describe the potential hazard(s) in the Notes column — this data will populate the Risk Analysis. Sub-questions under A.2.31 expand automatically when the parent is marked "Applicable".
       </div>
 
       <!-- ── TABLE CARD ── -->
@@ -283,7 +278,7 @@
               <tr>
                 <th class="col-ref">Ref</th>
                 <th class="col-q">Question</th>
-                <th class="col-resp">Response</th>
+                <th class="col-resp">Applicability</th>
                 <th class="col-notes">Notes / Potential Hazards</th>
               </tr>
             </thead>
@@ -317,11 +312,11 @@
         </div>
         <div>
           <div class="panel-section-title">How to use</div>
-          <p class="panel-p"><strong>Yes</strong> — This characteristic applies. Describe the specific hazard(s) in the Notes column.<br><br><strong>Maybe</strong> — Potentially applicable or requires further investigation. Capture what you know so far.<br><br><strong>No</strong> — Not applicable to this device. The row will dim and the Notes field will lock.</p>
+          <p class="panel-p"><strong>Applicable</strong> — This characteristic applies to the device. Describe the specific hazard(s) in the Notes column.<br><br><strong>Not Applicable</strong> — This characteristic does not apply to this device. The row will dim and the Notes field will lock.</p>
         </div>
         <div>
           <div class="panel-section-title">Downstream use</div>
-          <p class="panel-p">All "Yes" and "Maybe" responses — along with their notes — are stored in a structured format that flows into the Risk Analysis table. Export to CSV at any time for records or team review.</p>
+          <p class="panel-p">All "Applicable" responses — along with their notes — are stored in a structured format that flows into the Risk Analysis table. Export to CSV at any time for records or team review.</p>
         </div>
         <div>
           <div class="panel-section-title">Completeness</div>
@@ -583,7 +578,7 @@
 
     // ─── State ───────────────────────────────────────────────────────────────
     const PRODUCTS = ['CardioSync Pro', 'NovaPulse IVD', 'OrthoFlex Implant'];
-    const STORE_KEY = 'tangram_eqms_hazid_v1';
+    const STORE_KEY = 'tangram_eqms_hazid_v2';
 
     var currentProduct = PRODUCTS[0];
     var currentFilter  = 'all';
@@ -678,26 +673,26 @@
     // ─── Response change handler ─────────────────────────────────────────────
     function onRespChange(sel, ref) {
       var val = sel.value;
-      sel.className = 'resp-select' + (val === 'Yes' ? ' resp-yes' : val === 'No' ? ' resp-no' : val === 'Maybe' ? ' resp-maybe' : '');
+      sel.className = 'resp-select' + (val === 'Applicable' ? ' resp-applicable' : val === 'Not Applicable' ? ' resp-na' : '');
 
       saveResponse(ref, 'response', val);
       flashSave();
 
       // grey-out row
       var row = sel.closest('tr');
-      row.classList.toggle('resp-no-row', val === 'No');
+      row.classList.toggle('resp-na-row', val === 'Not Applicable');
 
       // lock/unlock notes
       var notesEl = document.getElementById('notes-' + ref.replace(/\./g, '_'));
       if (notesEl) {
-        notesEl.disabled = val === 'No';
-        if (val === 'No') notesEl.value = '';
-        if (val === 'No') saveResponse(ref, 'notes', '');
+        notesEl.disabled = val === 'Not Applicable';
+        if (val === 'Not Applicable') notesEl.value = '';
+        if (val === 'Not Applicable') saveResponse(ref, 'notes', '');
       }
 
       // if A.2.31 changed, show/hide sub-rows
       if (ref === 'A.2.31') {
-        toggleSubRows(val === 'Yes');
+        toggleSubRows(val === 'Applicable');
         applyFilter();
       } else {
         updateProgress();
@@ -729,29 +724,26 @@
 
     // ─── Progress ────────────────────────────────────────────────────────────
     function updateProgress() {
-      var isA231Yes = getResponse('A.2.31').response === 'Yes';
+      var isA231Yes = getResponse('A.2.31').response === 'Applicable';
       var mainQs = QUESTIONS.filter(function(q) { return !q.parent; });
       var subQs  = QUESTIONS.filter(function(q) { return q.parent === 'A.2.31'; });
       var total  = mainQs.length + (isA231Yes ? subQs.length : 0);
 
-      var nYes = 0, nNo = 0, nMaybe = 0;
+      var nApp = 0, nNA = 0;
       QUESTIONS.forEach(function(q) {
         if (q.parent && !isA231Yes) return;
         var r = getResponse(q.ref).response;
-        if (r === 'Yes')   nYes++;
-        else if (r === 'No')    nNo++;
-        else if (r === 'Maybe') nMaybe++;
+        if (r === 'Applicable')     nApp++;
+        else if (r === 'Not Applicable') nNA++;
       });
 
-      var answered = nYes + nNo + nMaybe;
+      var answered = nApp + nNA;
       var pct = total > 0 ? 100 / total : 0;
 
-      document.getElementById('pgYes').style.width   = (nYes   * pct) + '%';
-      document.getElementById('pgMaybe').style.width = (nMaybe * pct) + '%';
-      document.getElementById('pgNo').style.width    = (nNo    * pct) + '%';
-      document.getElementById('ctYes').textContent   = nYes;
-      document.getElementById('ctMaybe').textContent = nMaybe;
-      document.getElementById('ctNo').textContent    = nNo;
+      document.getElementById('pgApp').style.width = (nApp * pct) + '%';
+      document.getElementById('pgNA').style.width  = (nNA  * pct) + '%';
+      document.getElementById('ctApp').textContent = nApp;
+      document.getElementById('ctNA').textContent  = nNA;
       document.getElementById('pgTotal').textContent = answered + ' / ' + total + ' answered';
     }
 
@@ -761,13 +753,13 @@
       tbody.innerHTML = '';
 
       QUESTIONS.forEach(function(q) {
-        var saved  = getResponse(q.ref);
-        var resp   = saved.response;
-        var notes  = saved.notes;
-        var idSafe = q.ref.replace(/\./g, '_');
-        var isSub  = !!q.parent;
-        var isNo   = resp === 'No';
-        var a231Yes = getResponse('A.2.31').response === 'Yes';
+        var saved   = getResponse(q.ref);
+        var resp    = saved.response;
+        var notes   = saved.notes;
+        var idSafe  = q.ref.replace(/\./g, '_');
+        var isSub   = !!q.parent;
+        var isNA    = resp === 'Not Applicable';
+        var a231Yes = getResponse('A.2.31').response === 'Applicable';
 
         var tr = document.createElement('tr');
         tr.dataset.ref = q.ref;
@@ -775,9 +767,9 @@
           tr.className = 'sub-row' + (a231Yes ? ' visible' : '');
           tr.dataset.parent = q.parent;
         }
-        if (isNo) tr.classList.add('resp-no-row');
+        if (isNA) tr.classList.add('resp-na-row');
 
-        var respClass = resp === 'Yes' ? ' resp-yes' : resp === 'No' ? ' resp-no' : resp === 'Maybe' ? ' resp-maybe' : '';
+        var respClass = resp === 'Applicable' ? ' resp-applicable' : resp === 'Not Applicable' ? ' resp-na' : '';
         var tipId = 'tip-' + idSafe;
 
         var subIconHtml = isSub ? '<div class="sub-indent"><span class="sub-connector"><svg viewBox="0 0 12 16"><path d="M2 0 v8 q0 4 4 4 h6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
@@ -802,17 +794,16 @@
               'onchange="onRespChange(this,\'' + q.ref + '\')" ' +
               'aria-label="Response for ' + q.ref + '">' +
               '<option value="">—</option>' +
-              '<option value="Yes"'   + (resp==='Yes'   ? ' selected' : '') + '>Yes</option>' +
-              '<option value="No"'    + (resp==='No'    ? ' selected' : '') + '>No</option>' +
-              '<option value="Maybe"' + (resp==='Maybe' ? ' selected' : '') + '>Maybe</option>' +
+              '<option value="Applicable"'     + (resp==='Applicable'     ? ' selected' : '') + '>Applicable</option>' +
+              '<option value="Not Applicable"' + (resp==='Not Applicable' ? ' selected' : '') + '>Not Applicable</option>' +
             '</select>' +
           '</td>' +
           '<td class="td-notes">' +
             '<textarea class="notes-input" id="notes-' + idSafe + '" ' +
               'placeholder="Describe potential hazard(s)…" rows="1" ' +
-              (isNo ? 'disabled ' : '') +
+              (isNA ? 'disabled ' : '') +
               'oninput="onNotesChange(this,\'' + q.ref + '\')">' +
-              (isNo ? '' : escHtml(notes)) +
+              (isNA ? '' : escHtml(notes)) +
             '</textarea>' +
           '</td>';
 
@@ -869,7 +860,7 @@
 
     // ─── Export CSV ───────────────────────────────────────────────────────────
     function exportCSV() {
-      var isA231Yes = getResponse('A.2.31').response === 'Yes';
+      var isA231Yes = getResponse('A.2.31').response === 'Applicable';
       var rows = [['Reference','Question','Response','Notes','Product','Exported']];
       var now  = new Date().toISOString();
 
