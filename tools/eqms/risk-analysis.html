@@ -90,6 +90,11 @@
     .matrix-dot.dot-acc  { background: #047857; }
     .matrix-dot.dot-alarp{ background: #b45309; }
     .matrix-dot.dot-unac { background: #dc2626; }
+    /* Residual dots: outlined ring */
+    .matrix-dot.dot-ring { background: transparent !important; border-width: 2px; box-shadow: none; }
+    .matrix-dot.dot-ring.dot-acc  { border-color: #047857; }
+    .matrix-dot.dot-ring.dot-alarp{ border-color: #b45309; }
+    .matrix-dot.dot-ring.dot-unac { border-color: #dc2626; }
     .matrix-x-row { display: flex; padding-left: 18px; gap: 2px; }
     .matrix-x-label { width: 26px; font-size: 0.55rem; font-weight: 700; color: rgba(11,39,64,0.38); text-align: center; margin-top: 3px; }
     .matrix-x-title { font-size: 0.55rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(11,39,64,0.35); text-align: center; padding-left: 18px; margin-top: 2px; }
@@ -99,18 +104,34 @@
 
     /* ── RISK ANALYSIS TABLE ── */
     .ra-table-wrap { overflow-x: auto; border-radius: 0 0 12px 12px; }
-    .ra-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    .ra-table { width: 100%; border-collapse: collapse; min-width: 1360px; }
     .ra-table thead { position: sticky; top: 0; z-index: 10; }
     .ra-table thead th { background: var(--primary); color: rgba(255,255,255,0.7); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem 0.9rem; text-align: left; border-bottom: none; white-space: nowrap; }
     .ra-table thead th.col-id   { width: 72px; }
-    .ra-table thead th.col-hz   { width: 160px; }
-    .ra-table thead th.col-sit  { width: 200px; }
-    .ra-table thead th.col-harm { width: 170px; }
-    .ra-table thead th.col-p    { width: 54px; text-align: center; }
-    .ra-table thead th.col-s    { width: 54px; text-align: center; }
-    .ra-table thead th.col-score{ width: 60px; text-align: center; }
-    .ra-table thead th.col-lvl  { width: 100px; text-align: center; }
+    .ra-table thead th.col-hz   { width: 150px; }
+    .ra-table thead th.col-sit  { width: 180px; }
+    .ra-table thead th.col-harm { width: 150px; }
+    .ra-table thead th.col-p    { width: 48px; text-align: center; }
+    .ra-table thead th.col-s    { width: 48px; text-align: center; }
+    .ra-table thead th.col-score{ width: 56px; text-align: center; }
+    .ra-table thead th.col-lvl  { width: 90px; text-align: center; }
+    .ra-table thead th.col-rc   { width: 170px; border-left: 3px solid rgba(10,192,233,0.25); }
+    .ra-table thead th.col-resp { width: 48px; text-align: center; border-left: 3px solid rgba(16,185,129,0.2); }
+    .ra-table thead th.col-resp-inner { width: 48px; text-align: center; }
+    .ra-table thead th.col-res-score { width: 56px; text-align: center; }
+    .ra-table thead th.col-res-lvl   { width: 90px; text-align: center; }
     .ra-table thead th.col-act  { width: 52px; text-align: center; }
+
+    /* Column group header row */
+    .ra-table thead tr.col-group-row th { padding: 0.28rem 0.9rem; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .col-group-blank   { background: var(--primary); color: transparent; }
+    .col-group-initial { background: rgba(11,39,64,0.85); color: rgba(255,255,255,0.55); text-align: center; }
+    .col-group-rc      { background: rgba(10,192,233,0.18); color: rgba(10,192,233,0.9); text-align: center; border-left: 3px solid rgba(10,192,233,0.25); }
+    .col-group-residual{ background: rgba(16,185,129,0.18); color: rgba(16,185,129,0.9); text-align: center; border-left: 3px solid rgba(16,185,129,0.2); }
+
+    /* Separator border for RC and residual cells */
+    .ra-table tbody td.td-rc  { border-left: 3px solid rgba(10,192,233,0.15); }
+    .ra-table tbody td.td-rp-first { border-left: 3px solid rgba(16,185,129,0.15); }
 
     .ra-table tbody tr { border-bottom: 1px solid rgba(11,39,64,0.055); transition: background 0.1s; }
     .ra-table tbody tr:hover td { background: rgba(11,39,64,0.012); }
@@ -183,7 +204,8 @@
     .panel-close { width: 28px; height: 28px; border-radius: 6px; border: none; background: rgba(11,39,64,0.06); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; flex-shrink: 0; }
     .panel-close:hover { background: rgba(11,39,64,0.12); }
     .panel-close svg { width: 14px; height: 14px; stroke: var(--primary); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-    .row-panel-score-strip { display: flex; align-items: center; gap: 0.75rem; font-size: 0.72rem; color: rgba(11,39,64,0.45); }
+    .row-panel-score-strip { display: flex; align-items: center; gap: 0.6rem; font-size: 0.68rem; color: rgba(11,39,64,0.45); flex-wrap: wrap; }
+    .score-strip-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(11,39,64,0.35); flex-basis: 100%; margin-bottom: -0.2rem; }
     .score-strip-item { display: flex; align-items: center; gap: 0.3rem; }
     .score-strip-val { font-weight: 700; color: var(--primary); }
     .score-strip-times { color: rgba(11,39,64,0.3); font-size: 0.68rem; }
@@ -371,7 +393,7 @@
 
       <!-- ── SECTION NOTE ── -->
       <div class="section-note">
-        Estimate the risk for each hazardous situation identified in the previous step. Set <strong>P1</strong> (probability of the hazardous situation), <strong>P2</strong> (probability of harm occurring given the situation), and <strong>S</strong> (severity of potential harm). Risk score = combined P × S per <strong>ISO 14971:2019 §5.5</strong>. Click a row's ID to open the full detail panel and record rationale for each estimate.
+        Estimate initial risk for each hazardous situation (<strong>ISO 14971:2019 §5.5</strong>), then define a risk control measure and re-score residual risk after controls are applied (<strong>§7.1–7.4</strong>). Click a row's Risk ID to open the full detail panel for rationale and residual estimation.
       </div>
 
       <!-- ── TABLE CARD ── -->
@@ -381,13 +403,20 @@
             <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--aqua);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;">
               <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/>
             </svg>
-            Risk Analysis — ISO 14971:2019 §5.5
+            Risk Analysis &amp; Controls — ISO 14971:2019 §5.5, §7
           </div>
           <span class="card-title-sub" id="rowCount">0 risks</span>
         </div>
         <div class="ra-table-wrap">
           <table class="ra-table" id="raTable">
             <thead>
+              <tr class="col-group-row">
+                <th class="col-group-blank" colspan="4"></th>
+                <th class="col-group-initial" colspan="5">Initial Risk</th>
+                <th class="col-group-rc" colspan="1">Risk Control</th>
+                <th class="col-group-residual" colspan="5">Residual Risk</th>
+                <th class="col-group-blank" colspan="1"></th>
+              </tr>
               <tr>
                 <th class="col-id">Risk ID</th>
                 <th class="col-hz">Hazard</th>
@@ -398,6 +427,12 @@
                 <th class="col-s">S</th>
                 <th class="col-score">Score</th>
                 <th class="col-lvl">Level</th>
+                <th class="col-rc">Control Measure</th>
+                <th class="col-resp">rP1</th>
+                <th class="col-resp-inner">rP2</th>
+                <th class="col-resp-inner">rS</th>
+                <th class="col-res-score">Res Score</th>
+                <th class="col-res-lvl">Res Level</th>
                 <th class="col-act"></th>
               </tr>
             </thead>
@@ -430,6 +465,7 @@
           </button>
         </div>
         <div class="row-panel-score-strip" id="rpScoreStrip">
+          <span class="score-strip-label">Initial</span>
           <span class="score-strip-item">P1: <span class="score-strip-val" id="rpP1Val">—</span></span>
           <span class="score-strip-times">×</span>
           <span class="score-strip-item">P2: <span class="score-strip-val" id="rpP2Val">—</span></span>
@@ -439,6 +475,18 @@
           <span class="score-strip-item">S: <span class="score-strip-val" id="rpSVal">—</span></span>
           <span class="score-strip-times">=</span>
           <span class="score-strip-item">Score: <span class="score-strip-val" id="rpScoreVal">—</span></span>
+        </div>
+        <div class="row-panel-score-strip" id="rpResScoreStrip" style="margin-top:0.2rem;">
+          <span class="score-strip-label">Residual</span>
+          <span class="score-strip-item">P1: <span class="score-strip-val" id="rpResP1Val">—</span></span>
+          <span class="score-strip-times">×</span>
+          <span class="score-strip-item">P2: <span class="score-strip-val" id="rpResP2Val">—</span></span>
+          <span class="score-strip-times">=</span>
+          <span class="score-strip-item">P: <span class="score-strip-val" id="rpResPVal">—</span></span>
+          <span class="score-strip-times">×</span>
+          <span class="score-strip-item">S: <span class="score-strip-val" id="rpResSVal">—</span></span>
+          <span class="score-strip-times">=</span>
+          <span class="score-strip-item">Score: <span class="score-strip-val" id="rpResScoreVal">—</span></span>
         </div>
       </div>
       <div class="row-panel-body">
@@ -582,6 +630,88 @@
           <textarea class="pf-textarea" id="rpNotes" rows="2" placeholder="Any additional context, references, or conditions affecting this risk estimate" oninput="rpFieldChange('notes', this.value)"></textarea>
         </div>
 
+        <div class="pf-divider"></div>
+
+        <!-- Risk Control -->
+        <div>
+          <div class="pf-section-head">Risk Control <span class="iso-tag" style="font-size:0.55rem;font-weight:600;color:rgba(10,192,233,0.7);background:rgba(10,192,233,0.08);border:1px solid rgba(10,192,233,0.18);border-radius:3px;padding:0.05rem 0.32rem;letter-spacing:0.03em;margin-left:0.3rem;">ISO 14971 §7.1</span></div>
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <div>
+              <div class="pf-label">Risk Control Measure</div>
+              <textarea class="pf-textarea" id="rpRiskControl" rows="3" placeholder="Describe the risk control measure applied (inherent safety by design, protective measures, information for safety)" oninput="rpFieldChange('riskControl', this.value)"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="pf-divider"></div>
+
+        <!-- Residual Risk -->
+        <div>
+          <div class="pf-section-head">Residual Risk Estimation <span class="iso-tag" style="font-size:0.55rem;font-weight:600;color:rgba(16,185,129,0.8);background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:3px;padding:0.05rem 0.32rem;letter-spacing:0.03em;margin-left:0.3rem;">ISO 14971 §7.4</span></div>
+          <div class="p-block" style="border-color:rgba(16,185,129,0.15);background:rgba(16,185,129,0.02);">
+            <!-- Res P1 -->
+            <div class="p-row">
+              <div class="p-selector-col">
+                <div class="p-selector-label">rP1</div>
+                <select class="pf-num-select" id="rpResP1" onchange="rpResChange()" style="border-color:rgba(16,185,129,0.3);">
+                  <option value="0">—</option>
+                  <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                </select>
+              </div>
+              <div class="p-rationale-col">
+                <div class="pf-label">Residual P1 Rationale — after control</div>
+                <textarea class="pf-textarea" id="rpResP1Rat" rows="2" placeholder="How does the risk control reduce the probability of the hazardous situation?" oninput="rpFieldChange('rp1Rationale', this.value)" style="min-height:52px;"></textarea>
+              </div>
+            </div>
+            <!-- Res P2 -->
+            <div class="p-row">
+              <div class="p-selector-col">
+                <div class="p-selector-label">rP2</div>
+                <select class="pf-num-select" id="rpResP2" onchange="rpResChange()" style="border-color:rgba(16,185,129,0.3);">
+                  <option value="0">—</option>
+                  <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                </select>
+              </div>
+              <div class="p-rationale-col">
+                <div class="pf-label">Residual P2 Rationale — after control</div>
+                <textarea class="pf-textarea" id="rpResP2Rat" rows="2" placeholder="How does the control reduce likelihood of harm once the situation occurs?" oninput="rpFieldChange('rp2Rationale', this.value)" style="min-height:52px;"></textarea>
+              </div>
+            </div>
+            <!-- Combined Res P -->
+            <div class="p-combined-row">
+              <span class="p-combined-label">Combined Res P = rP1 × rP2 → P level</span>
+              <span class="p-combined-val" id="rpResPCombined">—</span>
+              <span class="p-combined-sub" id="rpResPCombinedSub"></span>
+            </div>
+            <!-- Res S -->
+            <div class="p-row">
+              <div class="p-selector-col">
+                <div class="p-selector-label">rS</div>
+                <select class="pf-num-select" id="rpResS" onchange="rpResChange()" style="border-color:rgba(16,185,129,0.3);">
+                  <option value="0">—</option>
+                  <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+                </select>
+              </div>
+              <div class="p-rationale-col">
+                <div class="pf-label">Residual S Rationale</div>
+                <textarea class="pf-textarea" id="rpResSRat" rows="2" placeholder="Severity is usually unchanged by controls; document if the control reduces harm severity" oninput="rpFieldChange('rsRationale', this.value)" style="min-height:52px;"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Residual score summary -->
+        <div class="score-summary" style="border-color:rgba(16,185,129,0.2);background:rgba(16,185,129,0.03);">
+          <div class="score-summary-main">
+            <div class="score-summary-label">Residual Risk Score (rP × rS)</div>
+            <div class="score-summary-val empty" id="rpResScoreBig">—</div>
+            <div class="score-summary-eq" id="rpResScoreEq"></div>
+          </div>
+          <div>
+            <span class="lvl-badge empty" id="rpResLvlBadge">Not scored</span>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -651,7 +781,8 @@
     const PRODUCTS = ['CardioSync Pro', 'NeuroStim 7', 'PulseGuard IV'];
     const PROB_LABELS = ['—', 'Incredible', 'Remote', 'Occasional', 'Probable', 'Frequent'];
     const SEV_LABELS  = ['—', 'Negligible', 'Minor', 'Serious', 'Critical', 'Catastrophic'];
-    const STORAGE_KEY = 'ra_risks_v1';
+    const STORAGE_KEY = 'ra_risks_v2';
+    const STORAGE_KEY_V1 = 'ra_risks_v1';
 
     // ── Risk scoring functions ─────────────────────────────────────
     function pLevel(p1, p2) {
@@ -696,13 +827,33 @@
     let risks = [];
     let nextId = 1;
 
+    function ensureResidualFields(r) {
+      if (!('riskControl' in r)) r.riskControl = '';
+      if (!('rp1' in r)) r.rp1 = 0;
+      if (!('rp1Rationale' in r)) r.rp1Rationale = '';
+      if (!('rp2' in r)) r.rp2 = 0;
+      if (!('rp2Rationale' in r)) r.rp2Rationale = '';
+      if (!('rs' in r)) r.rs = 0;
+      if (!('rsRationale' in r)) r.rsRationale = '';
+      return r;
+    }
+
     function loadData() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
           const d = JSON.parse(saved);
-          risks = d.risks || [];
+          risks = (d.risks || []).map(ensureResidualFields);
           nextId = d.nextId || risks.length + 1;
+          return;
+        }
+        // Migrate v1 data if present
+        const v1 = localStorage.getItem(STORAGE_KEY_V1);
+        if (v1) {
+          const d = JSON.parse(v1);
+          risks = (d.risks || []).map(ensureResidualFields);
+          nextId = d.nextId || risks.length + 1;
+          return;
         }
       } catch(e) {}
       if (risks.length === 0) seedDemoData();
@@ -710,9 +861,9 @@
 
     function seedDemoData() {
       risks = [
-        { id: 'RA-001', hazard: 'Electrical energy', hazSituation: 'Patient contact with exposed energized components during device operation', seqEvents: 'Insulation failure → exposed conductor → patient contact → electric shock', possibleHarm: 'Ventricular fibrillation, cardiac arrest', harmCat: 'Death', p1: 2, p1Rationale: 'Double insulation and ground fault protection; failure is remote', p2: 4, p2Rationale: 'If patient is in contact with exposed conductor, likelihood of cardiac harm is high', s: 5, sRationale: 'Cardiac arrest can be fatal without immediate intervention', notes: '' },
-        { id: 'RA-002', hazard: 'Thermal energy', hazSituation: 'Skin contact with overheated external housing during extended use', seqEvents: 'Cooling system degradation → surface temperature rise → prolonged contact → burn', possibleHarm: 'First to second degree burn on skin contact area', harmCat: 'Physical', p1: 3, p1Rationale: 'Possible during prolonged sessions; cooling is a known failure mode', p2: 3, p2Rationale: 'Burn only if contact is sustained; patient could withdraw', s: 2, sRationale: 'Minor burn; treatable without hospitalization', notes: 'Temperature limit 43°C per IEC 60601-1 clause 11.1' },
-        { id: 'RA-003', hazard: 'Mechanical energy', hazSituation: 'Sharp edge on device enclosure contacts user skin during handling', seqEvents: 'Manufacturing defect → sharp edge on housing → user handles device → laceration', possibleHarm: 'Laceration of fingers or hands', harmCat: 'Physical', p1: 2, p1Rationale: 'In-process inspection screens most edge defects', p2: 2, p2Rationale: 'Minor laceration only if user applies pressure to affected area', s: 2, sRationale: 'Superficial wound; no hospitalization expected', notes: '' },
+        { id: 'RA-001', hazard: 'Electrical energy', hazSituation: 'Patient contact with exposed energized components during device operation', seqEvents: 'Insulation failure → exposed conductor → patient contact → electric shock', possibleHarm: 'Ventricular fibrillation, cardiac arrest', harmCat: 'Death', p1: 2, p1Rationale: 'Double insulation and ground fault protection; failure is remote', p2: 4, p2Rationale: 'If patient is in contact with exposed conductor, likelihood of cardiac harm is high', s: 5, sRationale: 'Cardiac arrest can be fatal without immediate intervention', notes: '', riskControl: 'Added GFCI protection and reinforced double insulation per IEC 60601-1 §8.6; annual dielectric withstand testing required', rp1: 1, rp1Rationale: 'GFCI eliminates most exposure scenarios; insulation reinforcement reduces residual failure probability', rp2: 2, rp2Rationale: 'Even if exposure occurs, GFCI trips within 30ms, limiting harm probability', rs: 5, rsRationale: 'Severity of cardiac harm is unchanged by the control measure' },
+        { id: 'RA-002', hazard: 'Thermal energy', hazSituation: 'Skin contact with overheated external housing during extended use', seqEvents: 'Cooling system degradation → surface temperature rise → prolonged contact → burn', possibleHarm: 'First to second degree burn on skin contact area', harmCat: 'Physical', p1: 3, p1Rationale: 'Possible during prolonged sessions; cooling is a known failure mode', p2: 3, p2Rationale: 'Burn only if contact is sustained; patient could withdraw', s: 2, sRationale: 'Minor burn; treatable without hospitalization', notes: 'Temperature limit 43°C per IEC 60601-1 clause 11.1', riskControl: 'Thermal cutoff at 41°C added; surface warning label applied; session timer alert at 60 min', rp1: 2, rp1Rationale: 'Thermal cutoff reduces probability of reaching dangerous temperature', rp2: 2, rp2Rationale: 'Session alert gives user opportunity to withdraw before sustained contact', rs: 2, rsRationale: 'Severity of burn remains minor if any contact occurs' },
+        { id: 'RA-003', hazard: 'Mechanical energy', hazSituation: 'Sharp edge on device enclosure contacts user skin during handling', seqEvents: 'Manufacturing defect → sharp edge on housing → user handles device → laceration', possibleHarm: 'Laceration of fingers or hands', harmCat: 'Physical', p1: 2, p1Rationale: 'In-process inspection screens most edge defects', p2: 2, p2Rationale: 'Minor laceration only if user applies pressure to affected area', s: 2, sRationale: 'Superficial wound; no hospitalization expected', notes: '', riskControl: 'Enclosure edge radius requirement added to design specification (min 0.5mm); 100% incoming inspection for sharp edges', rp1: 1, rp1Rationale: '100% inspection eliminates most defect escapes to field', rp2: 1, rp2Rationale: 'Design radius eliminates sharp edges that could cause laceration', rs: 2, rsRationale: 'Severity is unchanged — laceration remains possible but unlikely' },
       ];
       nextId = 4;
       saveData();
@@ -739,7 +890,7 @@
     }
 
     function addRisk() {
-      risks.push({ id: makeId(), hazard: '', hazSituation: '', seqEvents: '', possibleHarm: '', harmCat: '', p1: 0, p1Rationale: '', p2: 0, p2Rationale: '', s: 0, sRationale: '', notes: '' });
+      risks.push({ id: makeId(), hazard: '', hazSituation: '', seqEvents: '', possibleHarm: '', harmCat: '', p1: 0, p1Rationale: '', p2: 0, p2Rationale: '', s: 0, sRationale: '', notes: '', riskControl: '', rp1: 0, rp1Rationale: '', rp2: 0, rp2Rationale: '', rs: 0, rsRationale: '' });
       saveData();
       renderTable();
       updateProgress();
@@ -778,7 +929,7 @@
       const visible = risks.filter(matchesFilter);
 
       if (visible.length === 0) {
-        tbody.innerHTML = `<tr class="empty-row"><td colspan="10"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div>${activeFilter === 'all' ? 'No risks yet — click <strong>Add Risk Row</strong> to begin.' : 'No risks match the current filter.'}</td></tr>`;
+        tbody.innerHTML = `<tr class="empty-row"><td colspan="16"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div>${activeFilter === 'all' ? 'No risks yet — click <strong>Add Risk Row</strong> to begin.' : 'No risks match the current filter.'}</td></tr>`;
         document.getElementById('rowCount').textContent = '0 risks';
         return;
       }
@@ -789,14 +940,28 @@
         const sc   = riskScore(r.p1, r.p2, r.s);
         const lv   = riskLevel(sc);
         const cls  = levelClass(lv);
-        const pl   = pLevel(r.p1, r.p2);
+
+        const rsc  = riskScore(r.rp1, r.rp2, r.rs);
+        const rlv  = riskLevel(rsc);
+        const rcls = levelClass(rlv);
+
+        const pSelect = (field, val) => `<select class="p-select${val ? ' set' : ''}" onchange="fieldChange('${r.id}','${field}',+this.value)">
+            <option value="0"${!val?' selected':''}>—</option>
+            ${[1,2,3,4,5].map(n=>`<option value="${n}"${val===n?' selected':''}>${n}</option>`).join('')}
+          </select>`;
 
         const scoreHtml = sc !== null
           ? `<td class="score-cell score-${cls}">${sc}</td>`
           : `<td class="score-cell">—</td>`;
-
         const lvlHtml = lv
           ? `<td class="td-lvl"><span class="lvl-badge ${cls}">${lv}</span></td>`
+          : `<td class="td-lvl"><span class="lvl-badge empty">—</span></td>`;
+
+        const resScoreHtml = rsc !== null
+          ? `<td class="score-cell score-${rcls}">${rsc}</td>`
+          : `<td class="score-cell">—</td>`;
+        const resLvlHtml = rlv
+          ? `<td class="td-lvl"><span class="lvl-badge ${rcls}">${rlv}</span></td>`
           : `<td class="td-lvl"><span class="lvl-badge empty">—</span></td>`;
 
         return `<tr data-id="${r.id}">
@@ -804,20 +969,17 @@
           <td><textarea class="cell-input" rows="1" placeholder="Hazard…" oninput="fieldChange('${r.id}','hazard',this.value)" onfocus="autoExpand(this)" onblur="autoCollapse(this)">${esc(r.hazard)}</textarea></td>
           <td><textarea class="cell-input" rows="1" placeholder="Hazardous situation…" oninput="fieldChange('${r.id}','hazSituation',this.value)" onfocus="autoExpand(this)" onblur="autoCollapse(this)">${esc(r.hazSituation)}</textarea></td>
           <td><textarea class="cell-input" rows="1" placeholder="Possible harm…" oninput="fieldChange('${r.id}','possibleHarm',this.value)" onfocus="autoExpand(this)" onblur="autoCollapse(this)">${esc(r.possibleHarm)}</textarea></td>
-          <td class="td-p"><select class="p-select${r.p1 ? ' set' : ''}" onchange="fieldChange('${r.id}','p1',+this.value)">
-            <option value="0"${!r.p1?' selected':''}>—</option>
-            ${[1,2,3,4,5].map(n=>`<option value="${n}"${r.p1===n?' selected':''}>${n}</option>`).join('')}
-          </select></td>
-          <td class="td-p"><select class="p-select${r.p2 ? ' set' : ''}" onchange="fieldChange('${r.id}','p2',+this.value)">
-            <option value="0"${!r.p2?' selected':''}>—</option>
-            ${[1,2,3,4,5].map(n=>`<option value="${n}"${r.p2===n?' selected':''}>${n}</option>`).join('')}
-          </select></td>
-          <td class="td-p"><select class="p-select${r.s ? ' set' : ''}" onchange="fieldChange('${r.id}','s',+this.value)">
-            <option value="0"${!r.s?' selected':''}>—</option>
-            ${[1,2,3,4,5].map(n=>`<option value="${n}"${r.s===n?' selected':''}>${n}</option>`).join('')}
-          </select></td>
+          <td class="td-p">${pSelect('p1', r.p1)}</td>
+          <td class="td-p">${pSelect('p2', r.p2)}</td>
+          <td class="td-p">${pSelect('s', r.s)}</td>
           ${scoreHtml}
           ${lvlHtml}
+          <td class="td-rc"><textarea class="cell-input" rows="1" placeholder="Risk control measure…" oninput="fieldChange('${r.id}','riskControl',this.value)" onfocus="autoExpand(this)" onblur="autoCollapse(this)">${esc(r.riskControl)}</textarea></td>
+          <td class="td-p td-rp-first">${pSelect('rp1', r.rp1)}</td>
+          <td class="td-p">${pSelect('rp2', r.rp2)}</td>
+          <td class="td-p">${pSelect('rs', r.rs)}</td>
+          ${resScoreHtml}
+          ${resLvlHtml}
           <td class="td-act">
             <button class="btn-open-row" onclick="openRowPanel('${r.id}')" title="Open detail panel">
               <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
@@ -844,6 +1006,11 @@
         updateProgress();
         if (activePanelId === id) syncPanelScore();
       }
+      if (['rp1','rp2','rs'].includes(field)) {
+        updateRowScore(id);
+        updateProgress();
+        if (activePanelId === id) syncPanelResScore();
+      }
       saveData();
     }
 
@@ -853,41 +1020,56 @@
       const sc  = riskScore(r.p1, r.p2, r.s);
       const lv  = riskLevel(sc);
       const cls = levelClass(lv);
+      const rsc  = riskScore(r.rp1, r.rp2, r.rs);
+      const rlv  = riskLevel(rsc);
+      const rcls = levelClass(rlv);
       const row = document.querySelector(`tr[data-id="${id}"]`);
       if (!row) return;
-      const scoreTd = row.querySelector('.score-cell');
-      const lvlTd   = row.querySelector('.td-lvl');
-      if (scoreTd) {
-        scoreTd.textContent = sc !== null ? sc : '—';
-        scoreTd.className = `score-cell${sc !== null ? ` score-${cls}` : ''}`;
+      const scoreTds = row.querySelectorAll('.score-cell');
+      const lvlTds   = row.querySelectorAll('.td-lvl');
+      if (scoreTds[0]) {
+        scoreTds[0].textContent = sc !== null ? sc : '—';
+        scoreTds[0].className = `score-cell${sc !== null ? ` score-${cls}` : ''}`;
       }
-      if (lvlTd) {
-        lvlTd.innerHTML = lv
+      if (lvlTds[0]) {
+        lvlTds[0].innerHTML = lv
           ? `<span class="lvl-badge ${cls}">${lv}</span>`
           : `<span class="lvl-badge empty">—</span>`;
       }
-      // update p-select values and coloring
+      if (scoreTds[1]) {
+        scoreTds[1].textContent = rsc !== null ? rsc : '—';
+        scoreTds[1].className = `score-cell${rsc !== null ? ` score-${rcls}` : ''}`;
+      }
+      if (lvlTds[1]) {
+        lvlTds[1].innerHTML = rlv
+          ? `<span class="lvl-badge ${rcls}">${rlv}</span>`
+          : `<span class="lvl-badge empty">—</span>`;
+      }
+      // update p-select values and coloring (6 selects: p1, p2, s, rp1, rp2, rs)
       const selects = row.querySelectorAll('.p-select');
-      selects[0].value     = r.p1 || 0;
-      selects[1].value     = r.p2 || 0;
-      selects[2].value     = r.s  || 0;
-      selects[0].className = `p-select${r.p1 ? ' set' : ''}`;
-      selects[1].className = `p-select${r.p2 ? ' set' : ''}`;
-      selects[2].className = `p-select${r.s  ? ' set' : ''}`;
+      const vals = [r.p1, r.p2, r.s, r.rp1, r.rp2, r.rs];
+      vals.forEach((v, i) => {
+        if (selects[i]) {
+          selects[i].value = v || 0;
+          selects[i].className = `p-select${v ? ' set' : ''}`;
+        }
+      });
     }
 
     // ── Progress bar & matrix ──────────────────────────────────────
     function updateProgress() {
       const total = risks.length;
-      let acc = 0, alarp = 0, unac = 0, scored = 0;
+      let acc = 0, alarp = 0, unac = 0, scored = 0, residualScored = 0;
       risks.forEach(r => {
         const sc = riskScore(r.p1, r.p2, r.s);
-        if (sc === null) return;
-        scored++;
-        const lv = riskLevel(sc);
-        if (lv === 'Acceptable')   acc++;
-        else if (lv === 'ALARP')   alarp++;
-        else                       unac++;
+        if (sc !== null) {
+          scored++;
+          const lv = riskLevel(sc);
+          if (lv === 'Acceptable')   acc++;
+          else if (lv === 'ALARP')   alarp++;
+          else                       unac++;
+        }
+        if (riskScore(r.rp1, r.rp2, r.rs) !== null) residualScored++;
       });
       const pct = n => total ? `${(n/total*100).toFixed(1)}%` : '0%';
       document.getElementById('pgAcc').style.width   = pct(acc);
@@ -896,37 +1078,46 @@
       document.getElementById('ctAcc').textContent   = acc;
       document.getElementById('ctAlarp').textContent = alarp;
       document.getElementById('ctUnac').textContent  = unac;
-      document.getElementById('pgTotal').textContent = `${scored} / ${total} scored`;
+      document.getElementById('pgTotal').textContent = `${scored} initial · ${residualScored} residual / ${total} total`;
       renderMatrix();
     }
 
     // ── Mini risk matrix ──────────────────────────────────────────
     function renderMatrix() {
       const container = document.getElementById('riskMatrix');
-      // Build cell map: key = `${p}_${s}` → array of risk objects
-      const cellMap = {};
+      // Build cell maps: initial and residual
+      const initMap = {};
+      const resMap  = {};
       risks.forEach(r => {
         const pl = pLevel(r.p1, r.p2);
-        if (!pl || !r.s) return;
-        const key = `${pl}_${r.s}`;
-        if (!cellMap[key]) cellMap[key] = [];
-        cellMap[key].push(r);
+        if (pl && r.s) {
+          const key = `${pl}_${r.s}`;
+          if (!initMap[key]) initMap[key] = [];
+          initMap[key].push(r);
+        }
+        const rpl = pLevel(r.rp1, r.rp2);
+        if (rpl && r.rs) {
+          const key = `${rpl}_${r.rs}`;
+          if (!resMap[key]) resMap[key] = [];
+          resMap[key].push(r);
+        }
       });
 
-      // Render rows S=5 (top) down to S=1 (bottom)
       let html = '';
       for (let s = 5; s >= 1; s--) {
         html += `<div class="matrix-row"><span class="matrix-s-label">${s}</span>`;
         for (let p = 1; p <= 5; p++) {
-          const bg = matrixCellLevel(p, s);
+          const bg  = matrixCellLevel(p, s);
           const key = `${p}_${s}`;
-          const dots = (cellMap[key] || []).map(r => {
-            const sc = riskScore(r.p1, r.p2, r.s);
-            const lv = riskLevel(sc);
-            const dc = levelClass(lv);
-            return `<span class="matrix-dot dot-${dc}" title="${r.id}: ${r.hazard||'Unnamed'}"></span>`;
+          const initDots = (initMap[key] || []).map(r => {
+            const dc = levelClass(riskLevel(riskScore(r.p1, r.p2, r.s)));
+            return `<span class="matrix-dot dot-${dc} dot-ring" title="${r.id} initial: ${r.hazard||'Unnamed'}"></span>`;
           }).join('');
-          html += `<div class="matrix-cell ${bg}">${dots}</div>`;
+          const resDots = (resMap[key] || []).map(r => {
+            const dc = levelClass(riskLevel(riskScore(r.rp1, r.rp2, r.rs)));
+            return `<span class="matrix-dot dot-${dc}" title="${r.id} residual: ${r.hazard||'Unnamed'}"></span>`;
+          }).join('');
+          html += `<div class="matrix-cell ${bg}">${initDots}${resDots}</div>`;
         }
         html += `</div>`;
       }
@@ -940,7 +1131,6 @@
       const r = risks.find(r => r.id === id);
       if (!r) return;
       activePanelId = id;
-      // Populate fields
       document.getElementById('rpId').textContent         = r.id;
       document.getElementById('rpHazard').value           = r.hazard || '';
       document.getElementById('rpHazSit').value           = r.hazSituation || '';
@@ -954,7 +1144,15 @@
       document.getElementById('rpS').value                = r.s || 0;
       document.getElementById('rpSRat').value             = r.sRationale || '';
       document.getElementById('rpNotes').value            = r.notes || '';
+      document.getElementById('rpRiskControl').value      = r.riskControl || '';
+      document.getElementById('rpResP1').value            = r.rp1 || 0;
+      document.getElementById('rpResP1Rat').value         = r.rp1Rationale || '';
+      document.getElementById('rpResP2').value            = r.rp2 || 0;
+      document.getElementById('rpResP2Rat').value         = r.rp2Rationale || '';
+      document.getElementById('rpResS').value             = r.rs || 0;
+      document.getElementById('rpResSRat').value          = r.rsRationale || '';
       syncPanelScore();
+      syncPanelResScore();
       document.getElementById('rowPanelOverlay').classList.add('open', 'row-open');
     }
 
@@ -969,10 +1167,10 @@
       const r = risks.find(r => r.id === activePanelId);
       if (!r) return;
       r[field] = value;
-      // sync back to table cell if applicable
       const row = document.querySelector(`tr[data-id="${activePanelId}"]`);
       if (row) {
-        const textareaMap = { hazard: 0, hazSituation: 1, possibleHarm: 2 };
+        // text cell sync: index 0=hazard, 1=hazSituation, 2=possibleHarm, 3=riskControl
+        const textareaMap = { hazard: 0, hazSituation: 1, possibleHarm: 2, riskControl: 3 };
         if (field in textareaMap) {
           const tas = row.querySelectorAll('.cell-input');
           if (tas[textareaMap[field]]) tas[textareaMap[field]].value = value;
@@ -1036,6 +1234,56 @@
       });
     }
 
+    function rpResChange() {
+      if (!activePanelId) return;
+      const r = risks.find(r => r.id === activePanelId);
+      if (!r) return;
+      r.rp1 = +document.getElementById('rpResP1').value;
+      r.rp2 = +document.getElementById('rpResP2').value;
+      r.rs  = +document.getElementById('rpResS').value;
+      syncPanelResScore();
+      updateRowScore(activePanelId);
+      updateProgress();
+      saveData();
+    }
+
+    function syncPanelResScore() {
+      if (!activePanelId) return;
+      const r    = risks.find(r => r.id === activePanelId);
+      const pl   = pLevel(r.rp1, r.rp2);
+      const sc   = riskScore(r.rp1, r.rp2, r.rs);
+      const lv   = riskLevel(sc);
+      const cls  = levelClass(lv);
+
+      document.getElementById('rpResP1Val').textContent    = r.rp1 || '—';
+      document.getElementById('rpResP2Val').textContent    = r.rp2 || '—';
+      document.getElementById('rpResPVal').textContent     = pl    || '—';
+      document.getElementById('rpResSVal').textContent     = r.rs  || '—';
+      document.getElementById('rpResScoreVal').textContent = sc !== null ? sc : '—';
+
+      const combEl  = document.getElementById('rpResPCombined');
+      const combSub = document.getElementById('rpResPCombinedSub');
+      if (r.rp1 && r.rp2) {
+        combEl.textContent  = pl;
+        combSub.textContent = `(${r.rp1} × ${r.rp2} = ${r.rp1*r.rp2} → level ${pl})`;
+      } else {
+        combEl.textContent  = '—';
+        combSub.textContent = '';
+      }
+
+      const scoreBig = document.getElementById('rpResScoreBig');
+      const scoreEq  = document.getElementById('rpResScoreEq');
+      scoreBig.textContent = sc !== null ? sc : '—';
+      scoreBig.className   = `score-summary-val${sc !== null ? ` ${cls}` : ' empty'}`;
+      scoreEq.textContent  = sc !== null ? `rP${pl} × rS${r.rs} = ${sc}` : '';
+
+      const badge = document.getElementById('rpResLvlBadge');
+      if (badge) {
+        badge.className = `lvl-badge ${lv ? cls : 'empty'}`;
+        badge.textContent = lv || 'Not scored';
+      }
+    }
+
     // ── Guidance panel ────────────────────────────────────────────
     function openHelpPanel() {
       document.getElementById('helpPanelOverlay').classList.add('open', 'help-open');
@@ -1055,12 +1303,15 @@
 
     // ── Export CSV ────────────────────────────────────────────────
     function exportCSV() {
-      const headers = ['Risk ID','Hazard','Hazardous Situation','Sequence of Events','Possible Harm','Harm Category','P1','P1 Rationale','P2','P2 Rationale','P Level','S','S Rationale','Risk Score','Risk Level','Notes'];
+      const headers = ['Risk ID','Hazard','Hazardous Situation','Sequence of Events','Possible Harm','Harm Category','P1','P1 Rationale','P2','P2 Rationale','P Level','S','S Rationale','Risk Score','Risk Level','Notes','Risk Control','Res P1','Res P1 Rationale','Res P2','Res P2 Rationale','Res P Level','Res S','Res S Rationale','Residual Score','Residual Level'];
       const rows = risks.map(r => {
-        const pl = pLevel(r.p1, r.p2);
-        const sc = riskScore(r.p1, r.p2, r.s);
-        const lv = riskLevel(sc);
-        return [r.id, r.hazard, r.hazSituation, r.seqEvents, r.possibleHarm, r.harmCat, r.p1||'', r.p1Rationale, r.p2||'', r.p2Rationale, pl||'', r.s||'', r.sRationale, sc!==null?sc:'', lv||'', r.notes].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
+        const pl  = pLevel(r.p1, r.p2);
+        const sc  = riskScore(r.p1, r.p2, r.s);
+        const lv  = riskLevel(sc);
+        const rpl = pLevel(r.rp1, r.rp2);
+        const rsc = riskScore(r.rp1, r.rp2, r.rs);
+        const rlv = riskLevel(rsc);
+        return [r.id, r.hazard, r.hazSituation, r.seqEvents, r.possibleHarm, r.harmCat, r.p1||'', r.p1Rationale, r.p2||'', r.p2Rationale, pl||'', r.s||'', r.sRationale, sc!==null?sc:'', lv||'', r.notes, r.riskControl, r.rp1||'', r.rp1Rationale, r.rp2||'', r.rp2Rationale, rpl||'', r.rs||'', r.rsRationale, rsc!==null?rsc:'', rlv||''].map(v => `"${String(v).replace(/"/g,'""')}"`).join(',');
       });
       const csv = [headers.join(','), ...rows].join('\n');
       const blob = new Blob([csv], { type: 'text/csv' });
