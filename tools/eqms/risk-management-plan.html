@@ -14,6 +14,7 @@
     /* ─── SUPPRESSIONS ─── */
     #lm-step-footer { display: none !important; }
     #lm-toggle-root { display: none !important; }
+    #lm-step-banner { display: none !important; }
     #intro-slot      { display: none !important; }
     .learn-only      { display: none !important; }
 
@@ -23,6 +24,10 @@
     .status-pill { font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
     .status-pill.draft    { background: rgba(10,192,233,0.1);  color: var(--aqua-dark); }
     .status-pill.approved { background: rgba(16,185,129,0.12); color: #059669; }
+
+    /* ─── MODULE HEADER ─── */
+    .module-header { background: var(--primary); height: 46px; display: flex; align-items: center; padding: 0 1.5rem; flex-shrink: 0; }
+    .module-header-title { font-size: 0.84rem; font-weight: 700; color: white; letter-spacing: -0.01em; }
 
     /* ─── ACTION BUTTONS ─── */
     .btn-export { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: var(--mid-blue); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(11,39,64,0.18); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
@@ -220,6 +225,11 @@
         </button>
       </div>
     </header>
+
+    <!-- ── MODULE HEADER ── -->
+    <div class="module-header">
+      <span class="module-header-title">Risk Management</span>
+    </div>
 
     <!-- Module sub-nav -->
     <nav class="rm-subnav">
