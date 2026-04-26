@@ -321,6 +321,37 @@
     .save-indicator.saving { color: var(--aqua-dark); }
     .save-indicator.saved  { color: #059669; }
     .save-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+    /* ── TOPBAR DOC BADGES ── */
+    .ver-badge { font-size: 0.68rem; font-weight: 700; background: rgba(11,39,64,0.07); border: 1px solid rgba(11,39,64,0.12); color: var(--mid-blue); padding: 0.2rem 0.6rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
+    .status-pill { font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .status-pill.draft    { background: rgba(10,192,233,0.1);  color: var(--aqua-dark); }
+    .status-pill.approved { background: rgba(16,185,129,0.12); color: #059669; }
+    .btn-approve { display: inline-flex; align-items: center; gap: 0.4rem; background: transparent; color: #047857; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 0.78rem; padding: 0.5rem 1rem; border-radius: 7px; border: 1.5px solid rgba(16,185,129,0.3); cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; white-space: nowrap; }
+    .btn-approve:hover { border-color: rgba(16,185,129,0.55); background: rgba(16,185,129,0.05); }
+    .btn-approve svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ── DOC LOCK BANNER ── */
+    .doc-lock-banner { background: rgba(16,185,129,0.07); border-bottom: 1px solid rgba(16,185,129,0.18); color: #047857; font-size: 0.76rem; font-weight: 500; padding: 0.55rem 1.5rem; display: flex; align-items: center; gap: 0.55rem; flex-shrink: 0; }
+    .doc-lock-banner svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+
+    /* ── DOC COVER ── */
+    .doc-cover { background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 14px; padding: 2rem 2.25rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
+    .doc-cover::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #ef4444, #f97316 40%, #0AC0E9); }
+    .doc-cover-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+    .doc-cover-meta { display: flex; flex-direction: column; gap: 0.25rem; text-align: right; flex-shrink: 0; }
+    .doc-cover-meta-row { font-size: 0.7rem; color: rgba(11,39,64,0.4); white-space: nowrap; }
+    .doc-cover-meta-row strong { color: var(--primary); font-weight: 600; }
+    .doc-company { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.5rem; }
+    .doc-name { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 0.35rem; }
+    .doc-subtitle { font-size: 0.82rem; color: rgba(11,39,64,0.5); line-height: 1.5; max-width: 520px; }
+    .doc-cover-divider { height: 1px; background: rgba(11,39,64,0.08); margin: 1.5rem 0; }
+    .doc-field { display: flex; flex-direction: column; gap: 0.2rem; }
+    .doc-field-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.3); }
+    .doc-field-input { font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; font-family: 'Inter', sans-serif; background: var(--light-gray); outline: none; transition: border-color 0.15s; width: 100%; }
+    .doc-field-input:focus { border-color: var(--aqua); background: white; }
+    .doc-field-textarea { font-size: 0.82rem; color: var(--primary); border: 1px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.4rem 0.65rem; font-family: 'Inter', sans-serif; background: var(--light-gray); outline: none; transition: border-color 0.15s; resize: vertical; line-height: 1.55; width: 100%; }
+    .doc-field-textarea:focus { border-color: var(--aqua); background: white; }
   </style>
 </head>
 <body>
@@ -336,6 +367,8 @@
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" placeholder="Search documents, risks, products…">
         </div>
+        <span class="ver-badge" id="docVerBadge">Rev A</span>
+        <span class="status-pill draft" id="docStatusPill">Draft</span>
       </div>
       <div class="topbar-right">
         <span class="save-indicator" id="saveIndicator">
@@ -345,6 +378,10 @@
         <button class="btn-export" onclick="exportCSV()">
           <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Export CSV
+        </button>
+        <button class="btn-approve" id="btn-approve" onclick="initiateApproval()">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Approve
         </button>
         <button class="btn-guidance" onclick="openHelpPanel()">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -370,8 +407,61 @@
       <a href="risk-management-report.html" class="rm-subnav-link">Risk Management Report</a>
     </nav>
 
+    <!-- ── APPROVED LOCK BANNER ── -->
+    <div class="doc-lock-banner" id="doc-lock" style="display:none;">
+      <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      This analysis is approved. Fields are locked. Use "Initiate Revision" to start a new draft.
+    </div>
+
+    <div id="approval-route-panel"></div>
+
     <!-- ── SCROLLABLE CONTENT ── -->
     <div class="page-scroll">
+
+      <!-- ── DOCUMENT COVER ── -->
+      <div class="doc-cover">
+        <div class="doc-cover-top">
+          <div>
+            <div class="doc-company" id="docCompanyLabel">Tangram MedTech</div>
+            <div class="doc-name">Risk Analysis</div>
+            <div class="doc-subtitle">Estimates probability and severity of harm for each hazardous situation, applies risk controls, and re-scores residual risk per ISO 14971:2019 §5.5 and §7.1–7.4.</div>
+          </div>
+          <div class="doc-cover-meta">
+            <div class="doc-cover-meta-row">Document No. <strong>RM-002</strong></div>
+            <div class="doc-cover-meta-row">Revision <strong id="docRevisionDisplay">A</strong></div>
+            <div class="doc-cover-meta-row">Status <strong id="docStatusDisplay">Draft</strong></div>
+          </div>
+        </div>
+        <div class="doc-cover-divider"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem;">
+          <div class="doc-field">
+            <div class="doc-field-label">Revision</div>
+            <input class="doc-field-input" id="fDocRevision" type="text" value="A" placeholder="e.g. A, B, 1.0" oninput="docFieldChange('revision', this.value)">
+          </div>
+          <div class="doc-field">
+            <div class="doc-field-label">Effective Date</div>
+            <input class="doc-field-input" id="fEffectiveDate" type="date" oninput="docFieldChange('effectiveDate', this.value)">
+          </div>
+          <div class="doc-field">
+            <div class="doc-field-label">Risk Management Plan Ref.</div>
+            <input class="doc-field-input" id="fRmpRef" type="text" placeholder="e.g. RM-001 Rev A" oninput="docFieldChange('rmpRef', this.value)">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+          <div class="doc-field">
+            <div class="doc-field-label">Device / Product</div>
+            <input class="doc-field-input" id="fDevice" type="text" placeholder="e.g. CardioSync Pro" oninput="docFieldChange('device', this.value)">
+          </div>
+          <div class="doc-field">
+            <div class="doc-field-label">Analytical Method</div>
+            <input class="doc-field-input" id="fMethod" type="text" placeholder="e.g. FMEA per ISO/TR 24971" oninput="docFieldChange('method', this.value)">
+          </div>
+          <div class="doc-field">
+            <div class="doc-field-label">Author</div>
+            <input class="doc-field-input" id="fAuthor" type="text" placeholder="Name and title" oninput="docFieldChange('author', this.value)">
+          </div>
+        </div>
+      </div>
 
       <!-- ── HEADER CARD ── -->
       <div class="card" style="margin-bottom:1rem;">
@@ -864,6 +954,8 @@
     </div>
   </div>
 
+  <script src="esign.js"></script>
+  <script src="approvals.js"></script>
   <script src="sidebar.js"></script>
   <script>
     // ── Constants ──────────────────────────────────────────────────
@@ -1723,9 +1815,130 @@
       if (firstId) setTimeout(function() { openRowPanel(firstId); }, 120);
     }
 
+    // ── Doc cover persistence ────────────────────────────────────
+    const DOC_KEY = 'qms_ra_doc';
+    let DOC = {};
+
+    function loadDoc() {
+      try { DOC = JSON.parse(localStorage.getItem(DOC_KEY)) || {}; } catch(e) { DOC = {}; }
+    }
+
+    function saveDoc() {
+      localStorage.setItem(DOC_KEY, JSON.stringify(DOC));
+    }
+
+    function docFieldChange(field, value) {
+      DOC[field] = value;
+      if (field === 'revision') {
+        document.getElementById('docRevisionDisplay').textContent = value || 'A';
+        document.getElementById('docVerBadge').textContent = 'Rev ' + (value || 'A');
+      }
+      saveDoc();
+    }
+
+    function populateDocFields() {
+      var fields = [
+        ['fDocRevision',  'revision',      'A'],
+        ['fEffectiveDate','effectiveDate',  ''],
+        ['fRmpRef',       'rmpRef',         ''],
+        ['fDevice',       'device',         ''],
+        ['fMethod',       'method',         ''],
+        ['fAuthor',       'author',         ''],
+      ];
+      fields.forEach(function(f) {
+        var el = document.getElementById(f[0]);
+        if (el) el.value = DOC[f[1]] || f[2];
+      });
+      var rev = DOC.revision || 'A';
+      document.getElementById('docRevisionDisplay').textContent = rev;
+      document.getElementById('docVerBadge').textContent = 'Rev ' + rev;
+    }
+
+    // ── Approval ─────────────────────────────────────────────────
+    function updateDocStatus() {
+      var revDisp  = document.getElementById('docRevisionDisplay');
+      var statDisp = document.getElementById('docStatusDisplay');
+      var verBadge = document.getElementById('docVerBadge');
+      var statPill = document.getElementById('docStatusPill');
+      var lockBanner = document.getElementById('doc-lock');
+      var approveBtn = document.getElementById('btn-approve');
+      var rev = DOC.revision || 'A';
+
+      if (revDisp)  revDisp.textContent  = rev;
+      if (verBadge) verBadge.textContent = 'Rev ' + rev;
+
+      if (DOC.approved) {
+        if (statDisp)   statDisp.textContent   = 'Approved';
+        if (statPill)   { statPill.className = 'status-pill approved'; statPill.textContent = 'Approved'; }
+        if (lockBanner) lockBanner.style.display = '';
+        if (approveBtn) {
+          approveBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Initiate Revision';
+          approveBtn.style.borderColor = 'rgba(11,39,64,0.18)';
+          approveBtn.style.color = '';
+          approveBtn.onclick = initiateRevision;
+        }
+        if (window.Approvals) Approvals.renderStatusPanel('ra-doc', 'doc', document.getElementById('approval-route-panel'));
+        lockDocFields();
+      } else {
+        if (statDisp)   statDisp.textContent   = 'Draft';
+        if (statPill)   { statPill.className = 'status-pill draft'; statPill.textContent = 'Draft'; }
+        if (lockBanner) lockBanner.style.display = 'none';
+        if (approveBtn) {
+          approveBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Approve';
+          approveBtn.style.borderColor = 'rgba(16,185,129,0.3)';
+          approveBtn.style.color = '#047857';
+          approveBtn.onclick = initiateApproval;
+        }
+        unlockDocFields();
+      }
+    }
+
+    function lockDocFields() {
+      document.querySelectorAll('.doc-cover input, .doc-cover textarea, .doc-cover select').forEach(function(el) { el.disabled = true; });
+    }
+    function unlockDocFields() {
+      document.querySelectorAll('.doc-cover input, .doc-cover textarea, .doc-cover select').forEach(function(el) { el.disabled = false; });
+    }
+
+    function initiateApproval() {
+      if (!window.Approvals) { alert('Approval module not loaded.'); return; }
+      Approvals.initiate({
+        recordType: 'ra-doc', recordId: 'doc',
+        meaning: 'I have reviewed and approve this Risk Analysis (RM-002) as complete and accurate per ISO 14971:2019 §5.5 and §7.1–7.4. The risk estimations and control measures are authorized for inclusion in the Risk Management File.',
+        recordSnapshot: Object.assign({}, DOC, { riskCount: risks.length }),
+        onComplete: function(sigs) {
+          DOC.approved    = true;
+          DOC.approvedAt  = sigs[sigs.length - 1].timestamp;
+          DOC.approvedBy  = sigs[sigs.length - 1].signerName;
+          DOC.signatures  = sigs;
+          saveDoc();
+          updateDocStatus();
+        },
+        onCancel: function() {}
+      });
+    }
+
+    function initiateRevision() {
+      if (!confirm('Start a new revision? The document will return to Draft status.')) return;
+      var cur = DOC.revision || 'A';
+      var next = cur.length === 1 ? String.fromCharCode(cur.charCodeAt(0) + 1) : cur;
+      DOC.approved   = false;
+      DOC.approvedAt = null;
+      DOC.approvedBy = null;
+      DOC.signatures = null;
+      DOC.revision   = next;
+      var el = document.getElementById('fDocRevision');
+      if (el) el.value = next;
+      saveDoc();
+      updateDocStatus();
+    }
+
     // ── Init ──────────────────────────────────────────────────────
     (function init() {
       if (typeof initSidebar === 'function') initSidebar({ activePage: 'risk-management' });
+      loadDoc();
+      populateDocFields();
+      updateDocStatus();
       loadRmpLabels();
       populateRatingSelects();
       loadData();
