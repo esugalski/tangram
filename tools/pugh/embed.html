@@ -213,6 +213,25 @@ function renderMatrix(results) {
     </th>`;
   }).join('');
 
+  // Pre-compute all std devs for relative color scaling
+  const _sdMap = {};
+  const _sdAll = [];
+  if (n >= 2) {
+    for (const crit of chart.criteria) {
+      _sdMap[crit.id] = {};
+      for (const concept of chart.concepts) {
+        const vals = Object.values(cachedResponses)
+          .map(r => r.scores?.[concept.id]?.[crit.id])
+          .filter(v => v != null && v !== '');
+        const sd = vals.length >= 2 ? stddev(vals) : null;
+        _sdMap[crit.id][concept.id] = sd;
+        if (sd != null) _sdAll.push(sd);
+      }
+    }
+  }
+  const _minSd   = _sdAll.length ? Math.min(..._sdAll) : 0;
+  const _sdRange = _sdAll.length ? Math.max(..._sdAll) - _minSd : 0;
+
   const rows = chart.criteria.map(crit => {
     const pct = Math.round(weightOverrides[crit.id] / totalW * 100);
     const cells = chart.concepts.map(concept => {
@@ -225,11 +244,9 @@ function renderMatrix(results) {
 
       let sdLine = '';
       if (n >= 2) {
-        const vals = Object.values(cachedResponses)
-          .map(r => r.scores?.[concept.id]?.[crit.id])
-          .filter(v => v != null && v !== '');
-        const sd = vals.length >= 2 ? stddev(vals) : null;
-        sdLine = `<div style="font-size:.85rem;color:#4A5770;margin-top:3px;font-family:'Inter',sans-serif;letter-spacing:.01em">σ ${sd != null ? sd.toFixed(2) : '—'}</div>`;
+        const sd = _sdMap[crit.id]?.[concept.id] ?? null;
+        const col = sdColor(sd, _minSd, _sdRange);
+        sdLine = `<div style="font-size:.85rem;color:${col};margin-top:3px;font-family:'Inter',sans-serif;letter-spacing:.01em">σ ${sd != null ? sd.toFixed(2) : '—'}</div>`;
       }
 
       return `<td style="text-align:center"><span class="cell-score" style="background:${bg};color:${text}">${display}</span>${sdLine}</td>`;
@@ -447,6 +464,25 @@ function stddev(values) {
   if (values.length < 2) return 0;
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
   return Math.sqrt(values.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / values.length);
+}
+
+// Interpolates green (#3ECF8E) → yellow (#ECC94B) → red (#E05555) relative to [minSd, minSd+sdRange]
+function sdColor(sd, minSd, sdRange) {
+  if (sd == null) return '#4A5770';
+  const t = sdRange > 0 ? Math.max(0, Math.min(1, (sd - minSd) / sdRange)) : 0;
+  let r, g, b;
+  if (t <= 0.5) {
+    const u = t * 2;
+    r = Math.round(62  + (236 - 62)  * u);
+    g = Math.round(207 + (201 - 207) * u);
+    b = Math.round(142 + (75  - 142) * u);
+  } else {
+    const u = (t - 0.5) * 2;
+    r = Math.round(236 + (224 - 236) * u);
+    g = Math.round(201 + (85  - 201) * u);
+    b = Math.round(75  + (85  - 75)  * u);
+  }
+  return `rgb(${r},${g},${b})`;
 }
 
 function showCritDetail(critId) {
