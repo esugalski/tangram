@@ -207,7 +207,7 @@ function renderMatrix(results) {
     const isDatum = chart.useDatum && chart.datumConceptId === c.id;
     return `<th class="concept-header ${isBest ? 'best' : ''}" style="position:relative">
       ${c.thumbnail ? `<div style="width:80px;height:80px;border-radius:8px;overflow:hidden;margin:0 auto .5rem;border:1px solid ${isBest ? 'rgba(10,192,233,.4)' : '#0F3050'}"><img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover"></div>` : ''}
-      <div style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9rem;text-align:center;margin:0 auto;${isBest ? 'color:#0AC0E9' : ''}">${escH(c.name)}</div>
+      <div style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9rem;text-align:center;margin:0 auto;color:${isBest ? '#0AC0E9' : '#E8ECF4'}">${escH(c.name)}</div>
       ${isDatum ? '<div style="font-size:.72rem;color:#4A5770;margin-top:.2rem">DATUM</div>' : ''}
       ${isBest ? '<div style="font-size:.72rem;color:#0AC0E9;margin-top:.2rem">▲ BEST</div>' : ''}
     </th>`;
