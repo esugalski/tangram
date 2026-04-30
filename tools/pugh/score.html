@@ -197,6 +197,14 @@ let token = null;
 let participantName = '';
 let scores = {};
 let activeConcept = 0;
+let _submitted = false;
+
+window.addEventListener('beforeunload', e => {
+  if (participantName && !_submitted) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
 
 async function init() {
   if (!chartId) { showError('Invalid link', 'No session ID found in this link.'); return; }
@@ -417,12 +425,14 @@ function setScore(conceptId, critId, val) {
   autoSave();
 }
 
+let _autoSaveTimer = null;
 function autoSave() {
-  fetch(`/api/response/${chartId}/${token}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token, name: participantName, scores, submittedAt: null, updatedAt: new Date().toISOString() })
-  }).catch(() => {});
+  clearTimeout(_autoSaveTimer);
+  _autoSaveTimer = setTimeout(() => {
+    if (token && participantName) {
+      DB.setResponse(chartId, token, scores, participantName).catch(() => {});
+    }
+  }, 500);
 }
 
 function switchConcept(idx) {
@@ -451,6 +461,7 @@ function updateProgress() {
 
 async function submitScores() {
   await DB.setResponse(chartId, token, scores, participantName);
+  _submitted = true;
   showSuccess();
 }
 
