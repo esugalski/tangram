@@ -16,20 +16,20 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 
 /* Matrix table */
 .matrix-table{width:100%;border-collapse:separate;border-spacing:0;font-family:'Inter',sans-serif}
-.matrix-table th{font-family:'Inter',sans-serif;font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;color:#4A5770;padding:.875rem 1rem;text-align:center;border-bottom:1px solid #0F3050;white-space:nowrap;position:sticky;top:0;background:#031C2E;z-index:10}
-.matrix-table th.crit-header{text-align:left;color:#8A97B0;max-width:200px}
-.matrix-table th.concept-header{min-width:150px;max-width:200px}
+.matrix-table th{font-family:'Inter',sans-serif;font-size:1rem;letter-spacing:.05em;text-transform:uppercase;color:#4A5770;padding:1rem 1.25rem;text-align:center;border-bottom:1px solid #0F3050;white-space:nowrap;position:sticky;top:0;background:#031C2E;z-index:10}
+.matrix-table th.crit-header{text-align:left;color:#8A97B0;max-width:260px}
+.matrix-table th.concept-header{min-width:180px;max-width:260px}
 .matrix-table th.concept-header.best{color:#0AC0E9}
 
-.matrix-table td{padding:.75rem 1rem;border-bottom:1px solid #031C2E;text-align:center;font-family:'Inter',sans-serif;font-size:1rem;transition:background .2s}
-.matrix-table td.crit-name{text-align:left;color:#E8ECF4;font-family:'Inter',sans-serif;font-size:1rem;font-weight:500;white-space:nowrap;min-width:180px}
-.matrix-table td.crit-weight{text-align:center;font-size:1rem;color:#8A97B0;padding-right:.5rem}
+.matrix-table td{padding:.875rem 1.25rem;border-bottom:1px solid #031C2E;text-align:center;font-family:'Inter',sans-serif;font-size:1.2rem;transition:background .2s}
+.matrix-table td.crit-name{text-align:left;color:#E8ECF4;font-family:'Inter',sans-serif;font-size:1.2rem;font-weight:500;white-space:nowrap;min-width:220px}
+.matrix-table td.crit-weight{text-align:center;font-size:1.15rem;color:#8A97B0;padding-right:.5rem}
 .matrix-table tr:hover td{background:#0B2740}
-.matrix-table tr.total-row td{border-top:2px solid #1A3D5C;padding-top:1.1rem;padding-bottom:1.1rem;font-weight:600;font-size:1.05rem;background:#0B2740 !important}
-.matrix-table tr.total-row td.crit-name{font-family:'Inter',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.06em;color:#8A97B0;text-transform:uppercase}
+.matrix-table tr.total-row td{border-top:2px solid #1A3D5C;padding-top:1.25rem;padding-bottom:1.25rem;font-weight:600;font-size:1.3rem;background:#0B2740 !important}
+.matrix-table tr.total-row td.crit-name{font-family:'Inter',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.06em;color:#8A97B0;text-transform:uppercase}
 
-.cell-score{display:inline-flex;align-items:center;justify-content:center;width:68px;height:40px;border-radius:6px;font-size:1rem;font-weight:600}
-.cell-empty{color:#0F3050;font-size:.85rem}
+.cell-score{display:inline-flex;align-items:center;justify-content:center;width:88px;height:52px;border-radius:6px;font-size:1.25rem;font-weight:600}
+.cell-empty{color:#0F3050;font-size:1rem}
 
 .legend-dot{display:inline-block;width:11px;height:11px;border-radius:3px}
 
@@ -56,13 +56,13 @@ input[type=range]{accent-color:#0AC0E9}
 
 /* Detail table */
 .detail-table{width:100%;border-collapse:separate;border-spacing:0}
-.detail-table th{font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;color:#4A5770;padding:.75rem 1rem;text-align:center;border-bottom:1px solid #0F3050;white-space:nowrap;background:#031C2E;position:sticky;top:0;z-index:5}
+.detail-table th{font-size:1rem;letter-spacing:.06em;text-transform:uppercase;color:#4A5770;padding:.75rem 1rem;text-align:center;border-bottom:1px solid #0F3050;white-space:nowrap;background:#031C2E;position:sticky;top:0;z-index:5}
 .detail-table th.p-header{text-align:left}
-.detail-table td{padding:.75rem 1rem;border-bottom:1px solid #031C2E;text-align:center;font-size:1rem}
-.detail-table td.p-label{text-align:left;color:#8A97B0;font-size:1rem}
+.detail-table td{padding:.75rem 1rem;border-bottom:1px solid #031C2E;text-align:center;font-size:1.15rem}
+.detail-table td.p-label{text-align:left;color:#8A97B0;font-size:1.15rem}
 .detail-table tr:hover td{background:#0B2740}
-.detail-table tr.stat-row td{border-top:2px solid #0F3050;background:#0B2740 !important;font-weight:600;font-size:1rem}
-.detail-table tr.stat-row td.p-label{font-size:1rem}
+.detail-table tr.stat-row td{border-top:2px solid #0F3050;background:#0B2740 !important;font-weight:600;font-size:1.15rem}
+.detail-table tr.stat-row td.p-label{font-size:1.15rem}
 </style>
 </head>
 <body>
@@ -74,17 +74,17 @@ input[type=range]{accent-color:#0AC0E9}
     <div style="display:flex;align-items:center;gap:1.25rem">
       <img src="../../brand_assets/Tangram_white logo.png" style="height:18px;display:block;opacity:.9">
       <div style="width:1px;height:18px;background:#0F3050"></div>
-      <h1 id="chart-title" style="font-size:1rem;font-weight:600;color:#E8ECF4;letter-spacing:-.01em;margin:0"></h1>
+      <h1 id="chart-title" style="font-size:1.25rem;font-weight:600;color:#E8ECF4;letter-spacing:-.01em;margin:0"></h1>
       <span id="status-badge"></span>
     </div>
     <!-- Live indicator -->
     <div style="display:flex;align-items:center;gap:1.5rem">
       <div id="live-indicator" style="display:flex;align-items:center;gap:.5rem">
         <span class="pulse-dot"></span>
-        <span id="response-count" style="font-size:.78rem;color:#8A97B0;font-weight:500"></span>
+        <span id="response-count" style="font-size:1rem;color:#8A97B0;font-weight:500"></span>
       </div>
-      <span id="last-updated" style="font-size:.72rem;color:#4A5770"></span>
-      <button id="weight-toggle-btn" onclick="toggleWeightEdit()" style="display:flex;align-items:center;gap:.45rem;background:transparent;border:1px solid #1A3D5C;border-radius:6px;padding:.4rem .875rem;color:#8A97B0;cursor:pointer;font-size:.78rem;font-weight:500;font-family:'Inter',sans-serif;transition:all .15s" onmouseover="this.style.color='#E8ECF4'" onmouseout="if(!editingWeights){this.style.color='#8A97B0';this.style.borderColor='#1A3D5C'}">
+      <span id="last-updated" style="font-size:.9rem;color:#4A5770"></span>
+      <button id="weight-toggle-btn" onclick="toggleWeightEdit()" style="display:flex;align-items:center;gap:.45rem;background:transparent;border:1px solid #1A3D5C;border-radius:6px;padding:.4rem .875rem;color:#8A97B0;cursor:pointer;font-size:.9rem;font-weight:500;font-family:'Inter',sans-serif;transition:all .15s" onmouseover="this.style.color='#E8ECF4'" onmouseout="if(!editingWeights){this.style.color='#8A97B0';this.style.borderColor='#1A3D5C'}">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M6 3v3l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
         Adjust Weights
       </button>
@@ -207,9 +207,9 @@ function renderMatrix(results) {
     const isDatum = chart.useDatum && chart.datumConceptId === c.id;
     return `<th class="concept-header ${isBest ? 'best' : ''}" style="position:relative">
       ${c.thumbnail ? `<div style="width:80px;height:80px;border-radius:8px;overflow:hidden;margin:0 auto .5rem;border:1px solid ${isBest ? 'rgba(10,192,233,.4)' : '#0F3050'}"><img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover"></div>` : ''}
-      <div style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9rem;text-align:center;margin:0 auto;color:${isBest ? '#0AC0E9' : '#E8ECF4'}">${escH(c.name)}</div>
-      ${isDatum ? '<div style="font-size:.72rem;color:#4A5770;margin-top:.2rem">DATUM</div>' : ''}
-      ${isBest ? '<div style="font-size:.72rem;color:#0AC0E9;margin-top:.2rem">▲ BEST</div>' : ''}
+      <div style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:1.1rem;text-align:center;margin:0 auto;color:${isBest ? '#0AC0E9' : '#E8ECF4'}">${escH(c.name)}</div>
+      ${isDatum ? '<div style="font-size:.85rem;color:#4A5770;margin-top:.2rem">DATUM</div>' : ''}
+      ${isBest ? '<div style="font-size:.85rem;color:#0AC0E9;margin-top:.2rem">▲ BEST</div>' : ''}
     </th>`;
   }).join('');
 
@@ -259,7 +259,7 @@ function renderMatrix(results) {
       if (n >= 2) {
         const sd = _sdMap[crit.id]?.[concept.id] ?? null;
         const col = sdColor(sd, _minSd, _sdRange);
-        sdLine = `<div style="font-size:.85rem;color:${col};margin-top:3px;font-family:'Inter',sans-serif;letter-spacing:.01em">σ ${sd != null ? sd.toFixed(2) : '—'}</div>`;
+        sdLine = `<div style="font-size:1rem;color:${col};margin-top:3px;font-family:'Inter',sans-serif;letter-spacing:.01em">σ ${sd != null ? sd.toFixed(2) : '—'}</div>`;
       }
 
       return `<td style="text-align:center"><span class="cell-score" style="background:${bg};color:${text}">${display}</span>${sdLine}</td>`;
@@ -279,7 +279,7 @@ function renderMatrix(results) {
             <div style="width:48px;height:5px;background:#0F3050;border-radius:3px;overflow:hidden">
               <div style="height:100%;width:${pct}%;background:#0AC0E9;border-radius:3px"></div>
             </div>
-            <span style="font-size:1rem;color:#8A97B0;font-weight:500">${pct}%</span>
+            <span style="font-size:1.15rem;color:#8A97B0;font-weight:500">${pct}%</span>
           </div>
         </td>`;
 
@@ -299,7 +299,7 @@ function renderMatrix(results) {
     const display = chart.scoringScale === 'pugh'
       ? (t > 0 ? '+' : '') + t.toFixed(3)
       : t.toFixed(3);
-    return `<td><span class="cell-score" style="width:78px;height:44px;font-size:1.05rem;font-weight:700;background:${bg};color:${text};${isBest ? 'box-shadow:0 0 0 2px rgba(10,192,233,.5)' : ''}">${display}</span></td>`;
+    return `<td><span class="cell-score" style="width:96px;height:56px;font-size:1.25rem;font-weight:700;background:${bg};color:${text};${isBest ? 'box-shadow:0 0 0 2px rgba(10,192,233,.5)' : ''}">${display}</span></td>`;
   }).join('');
 
   document.getElementById('matrix-table').innerHTML = `
