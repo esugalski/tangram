@@ -178,6 +178,8 @@ document.getElementById('siteHamburger').addEventListener('click',function(){var
 <script src="app.js"></script>
 <script>
 let user;
+let importPollingTimer = null;
+let importPanelVisible = false;
 
 const STEPS = [
   { id: 'info',     label: 'Info' },
@@ -308,7 +310,36 @@ function renderConcepts() {
     </div>
   `).join('');
 
+  const mobileImportPanel = (importPanelVisible && chartId) ? (() => {
+    const url = location.origin + '/tools/pugh/photos.html?id=' + chartId;
+    const qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=100x100&margin=0&data=' + encodeURIComponent(url);
+    return `
+    <div id="mobile-import-panel" style="background:#031C2E;border:1px solid rgba(62,207,142,.28);border-radius:10px;padding:1.25rem;margin-bottom:1.25rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+        <div style="display:flex;align-items:center;gap:.5rem">
+          <div style="width:6px;height:6px;background:#3ECF8E;border-radius:50%;animation:mipulse 1.5s ease-in-out infinite;flex-shrink:0"></div>
+          <span style="font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#3ECF8E">Watching for new photos…</span>
+        </div>
+        <button onclick="stopMobileImport()" style="background:transparent;border:1px solid #1A3D5C;border-radius:5px;padding:.3rem .65rem;color:#8A97B0;font-family:'Inter',sans-serif;font-size:.75rem;cursor:pointer;transition:all .15s" onmouseover="this.style.color='#E8ECF4';this.style.borderColor='#304F6B'" onmouseout="this.style.color='#8A97B0';this.style.borderColor='#1A3D5C'">Done</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.25rem">
+        <div style="background:white;border-radius:8px;padding:6px;flex-shrink:0">
+          <img src="${qrSrc}" width="100" height="100" style="display:block;border-radius:3px" alt="QR code">
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:.82rem;font-weight:600;color:#E8ECF4;margin-bottom:.25rem">Scan to add concepts from your phone</div>
+          <div style="font-size:.75rem;color:#8A97B0;line-height:1.55;margin-bottom:.625rem">Tap the <strong style="color:#E8ECF4">+</strong> card on your phone to photograph each concept. They'll appear here automatically.</div>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <div style="flex:1;min-width:0;background:#0B2740;border:1px solid #1A3D5C;border-radius:5px;padding:.35rem .65rem;font-size:.68rem;color:#8A97B0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${url}</div>
+            <button onclick="navigator.clipboard.writeText('${url}').then(()=>showToast('Link copied'))" style="flex-shrink:0;background:transparent;border:1px solid #1A3D5C;border-radius:5px;padding:.35rem .65rem;color:#8A97B0;font-family:'Inter',sans-serif;font-size:.72rem;cursor:pointer;white-space:nowrap;transition:all .15s" onmouseover="this.style.color='#E8ECF4';this.style.borderColor='#304F6B'" onmouseout="this.style.color='#8A97B0';this.style.borderColor='#1A3D5C'">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  })() : '';
+
   return `
+    <style>@keyframes mipulse{0%,100%{opacity:1}50%{opacity:.35}}</style>
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
         <div>
@@ -317,6 +348,7 @@ function renderConcepts() {
         </div>
         <span style="font-family:'Inter',sans-serif;font-size:.72rem;color:#4A5770">${form.concepts.length} added</span>
       </div>
+      ${mobileImportPanel}
       <div id="concepts-list">${rows}</div>
       <div style="display:flex;gap:.5rem;margin-top:.75rem">
         <button class="btn-add" onclick="addConcept()" style="flex:1;margin-top:0">
@@ -328,6 +360,10 @@ function renderConcepts() {
           Import from Photos
         </button>
       </div>
+      <button class="btn-add" onclick="startMobileImport()" style="margin-top:.5rem;border-color:rgba(62,207,142,.18);color:#4A5770;justify-content:center" onmouseover="this.style.color='#3ECF8E';this.style.borderColor='rgba(62,207,142,.4)'" onmouseout="this.style.color='#4A5770';this.style.borderColor='rgba(62,207,142,.18)'">
+        <svg width="13" height="13" viewBox="0 0 22 22" fill="none"><rect x="6" y="1" width="10" height="20" rx="2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="11" cy="17" r="1.2" fill="currentColor"/></svg>
+        Import from mobile via QR code
+      </button>
       <input type="file" id="photo-import-input" multiple accept="image/*" style="display:none" onchange="importFromPhotos(this)">
     </div>
   `;
@@ -619,13 +655,14 @@ function validateStep() {
 function nextStep() {
   if (currentStep === STEPS.length - 1) return;
   if (!validateStep()) return;
+  stopMobileImport();
   currentStep++;
   renderStep();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function prevStep() {
-  if (currentStep > 0) { currentStep--; renderStep(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  if (currentStep > 0) { stopMobileImport(); currentStep--; renderStep(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 }
 
 async function saveChart(status) {
@@ -685,6 +722,57 @@ function handleThumbUpload(i, input) {
 function removeThumb(i) {
   form.concepts[i].thumbnail = null;
   renderStep();
+}
+
+async function startMobileImport() {
+  if (!form.title.trim()) {
+    showToast('Enter a chart title first (Step 1) before using mobile import.', 'error');
+    return;
+  }
+  if (!chartId) {
+    try {
+      const draft = await DB.create({
+        hostId: user.uid, title: form.title.trim(), description: form.description.trim(),
+        date: form.date, tags: form.tags, concepts: form.concepts, criteria: form.criteria,
+        scoringScale: form.scoringScale, useDatum: form.useDatum, datumConceptId: form.datumConceptId,
+        resultsVisible: form.resultsVisible, status: 'draft',
+      });
+      chartId = draft.id;
+      history.replaceState(null, '', `builder.html?id=${chartId}`);
+    } catch (err) {
+      showToast('Could not save draft: ' + err.message, 'error');
+      return;
+    }
+  } else {
+    await DB.update(chartId, { concepts: form.concepts });
+  }
+  importPanelVisible = true;
+  renderStep();
+  startPolling();
+}
+
+function stopMobileImport() {
+  importPanelVisible = false;
+  stopPolling();
+}
+
+function startPolling() {
+  if (importPollingTimer) return;
+  importPollingTimer = setInterval(async () => {
+    if (!chartId) return;
+    const latest = await DB.get(chartId);
+    if (!latest) return;
+    if (latest.concepts.length !== form.concepts.length) {
+      const added = latest.concepts.length - form.concepts.length;
+      form.concepts = latest.concepts;
+      renderStep();
+      if (added > 0) showToast(`${added} concept${added > 1 ? 's' : ''} added from mobile.`, 'info');
+    }
+  }, 3000);
+}
+
+function stopPolling() {
+  if (importPollingTimer) { clearInterval(importPollingTimer); importPollingTimer = null; }
 }
 
 async function importFromPhotos(input) {

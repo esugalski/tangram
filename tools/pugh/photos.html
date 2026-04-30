@@ -281,7 +281,7 @@ function editBadgeHtml(i) {
 }
 
 function renderGrid() {
-  document.getElementById('grid').innerHTML = chart.concepts.map((c, i) => `
+  const existingCards = chart.concepts.map((c, i) => `
     <div class="card" id="card-${i}" onclick="openPicker(${i})">
       <div class="thumb-wrap">
         ${c.thumbnail
@@ -301,12 +301,29 @@ function renderGrid() {
       <div class="card-label">${escH(c.name)}</div>
     </div>
   `).join('');
+
+  const newConceptCard = `
+    <div class="card" id="card-new" onclick="openPicker(-1)" style="border-style:dashed">
+      <div class="thumb-wrap">
+        <div class="thumb-placeholder">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 6v20M6 16h20" stroke="#1A3D5C" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="thumb-placeholder-label">New concept</span>
+        </div>
+        <div class="card-overlay" id="overlay-new"></div>
+      </div>
+      <div class="card-label" style="color:#4A5770;font-size:.8rem">Add via photo</div>
+    </div>`;
+
+  document.getElementById('grid').innerHTML = existingCards + newConceptCard;
 }
 
 function openPicker(idx) {
   activeConcept = idx;
-  const hasPhoto = !!chart.concepts[idx]?.thumbnail;
-  document.getElementById('sheet-title').textContent = hasPhoto ? 'Edit Photo' : 'Add Photo';
+  const isNew = idx === -1;
+  const hasPhoto = !isNew && !!chart.concepts[idx]?.thumbnail;
+  document.getElementById('sheet-title').textContent = isNew ? 'New Concept' : (hasPhoto ? 'Edit Photo' : 'Add Photo');
   document.getElementById('sheet-remove-btn').style.display = hasPhoto ? 'flex' : 'none';
   openSheet();
 }
@@ -350,19 +367,27 @@ document.getElementById('file-camera').addEventListener('change', function () { 
 document.getElementById('file-gallery').addEventListener('change', function () { handleFileInput(this); });
 
 async function savePhoto(idx, file) {
-  const overlay = document.getElementById(`overlay-${idx}`);
+  const isNew = idx === -1;
+  const overlay = document.getElementById(isNew ? 'overlay-new' : `overlay-${idx}`);
   showOverlaySpinner(overlay);
 
   try {
     const dataUrl = await compressImage(file, 1000, 0.85);
-    chart.concepts[idx].thumbnail = dataUrl;
-    await DB.update(chartId, { concepts: chart.concepts });
-    showOverlayCheck(overlay);
-    // Patch the DOM without full re-render
-    patchThumb(idx, dataUrl, chart.concepts[idx].name);
+    if (isNew) {
+      chart.concepts.push({ id: uid(), name: 'Concept ' + (chart.concepts.length + 1), description: '', thumbnail: dataUrl });
+      await DB.update(chartId, { concepts: chart.concepts });
+      renderGrid(); // full re-render to show the new card + fresh "+" card
+    } else {
+      chart.concepts[idx].thumbnail = dataUrl;
+      await DB.update(chartId, { concepts: chart.concepts });
+      showOverlayCheck(overlay);
+      patchThumb(idx, dataUrl, chart.concepts[idx].name);
+    }
   } catch (err) {
     console.error(err);
-    showOverlayError(overlay);
+    if (document.getElementById(isNew ? 'overlay-new' : `overlay-${idx}`)) {
+      showOverlayError(document.getElementById(isNew ? 'overlay-new' : `overlay-${idx}`));
+    }
   }
 }
 
