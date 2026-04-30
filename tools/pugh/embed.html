@@ -222,7 +222,17 @@ function renderMatrix(results) {
       const display = chart.scoringScale === 'pugh'
         ? (cell.avg > 0 ? '+' : '') + cell.avg.toFixed(2)
         : cell.avg.toFixed(2);
-      return `<td><span class="cell-score" style="background:${bg};color:${text}">${display}</span></td>`;
+
+      let sdLine = '';
+      if (n >= 2) {
+        const vals = Object.values(cachedResponses)
+          .map(r => r.scores?.[concept.id]?.[crit.id])
+          .filter(v => v != null && v !== '');
+        const sd = vals.length >= 2 ? stddev(vals) : null;
+        sdLine = `<div style="font-size:.72rem;color:#4A5770;margin-top:3px;font-family:'Inter',sans-serif;letter-spacing:.01em">σ ${sd != null ? sd.toFixed(2) : '—'}</div>`;
+      }
+
+      return `<td style="text-align:center"><span class="cell-score" style="background:${bg};color:${text}">${display}</span>${sdLine}</td>`;
     }).join('');
 
     const weightCell = editingWeights
