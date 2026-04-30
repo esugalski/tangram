@@ -50,6 +50,9 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .card-overlay{position:absolute;inset:0;background:rgba(2,25,47,.72);display:flex;align-items:center;justify-content:center;z-index:5;opacity:0;transition:opacity .15s;pointer-events:none}
 .card-overlay.visible{opacity:1;pointer-events:all}
 
+/* Edit badge — always visible on cards with a photo */
+.edit-badge{position:absolute;bottom:8px;right:8px;background:rgba(2,25,47,.82);border:1px solid rgba(10,192,233,.35);border-radius:6px;padding:5px 9px;color:#0AC0E9;font-size:.72rem;font-weight:600;letter-spacing:.03em;cursor:pointer;display:flex;align-items:center;gap:.3rem;z-index:4;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);transition:background .15s,border-color .15s;font-family:'Inter',sans-serif;white-space:nowrap;border:1px solid rgba(10,192,233,.35)}
+.edit-badge:active{background:rgba(10,192,233,.2);border-color:rgba(10,192,233,.6)}
 
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -271,12 +274,18 @@ async function loadChart(user) {
   renderGrid();
 }
 
+const EDIT_BADGE_SVG = `<svg width="11" height="11" viewBox="0 0 13 13" fill="none"><path d="M9 2l2 2-7 7H2V9l7-7z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+function editBadgeHtml(i) {
+  return `<button class="edit-badge" onclick="event.stopPropagation();openPicker(${i})">${EDIT_BADGE_SVG} Edit</button>`;
+}
+
 function renderGrid() {
   document.getElementById('grid').innerHTML = chart.concepts.map((c, i) => `
     <div class="card" id="card-${i}" onclick="openPicker(${i})">
       <div class="thumb-wrap">
         ${c.thumbnail
-          ? `<img id="thumb-img-${i}" src="${c.thumbnail}" alt="${escH(c.name)}">`
+          ? `<img id="thumb-img-${i}" src="${c.thumbnail}" alt="${escH(c.name)}">${editBadgeHtml(i)}`
           : `<div class="thumb-placeholder" id="thumb-ph-${i}">
                <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
                  <circle cx="19" cy="19" r="17" stroke="#1A3D5C" stroke-width="1.5"/>
@@ -372,6 +381,10 @@ function patchThumb(idx, dataUrl, name) {
     wrap.insertBefore(img, wrap.firstChild);
   } else if (existing) {
     existing.src = dataUrl;
+  }
+  // Add edit badge if not already present
+  if (!wrap.querySelector('.edit-badge')) {
+    wrap.insertAdjacentHTML('beforeend', editBadgeHtml(idx));
   }
 }
 
