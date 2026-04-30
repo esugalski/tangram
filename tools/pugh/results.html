@@ -466,7 +466,7 @@ function renderMatrix(results) {
           .map(r => r.scores?.[concept.id]?.[crit.id])
           .filter(v => v != null && v !== '');
         const sd = vals.length >= 2 ? stddevValues(vals) : null;
-        sdLine = `<div style="font-size:.65rem;color:#4A5770;margin-top:2px;font-family:'Inter',sans-serif;letter-spacing:.01em">σ ${sd != null ? sd.toFixed(2) : '—'}</div>`;
+        sdLine = `<div style="font-size:.75rem;color:#4A5770;margin-top:2px;font-family:'Inter',sans-serif;letter-spacing:.01em">σ ${sd != null ? sd.toFixed(2) : '—'}</div>`;
       }
 
       return `<td style="text-align:center"><span class="cell-score" style="background:${bg};color:${text}">${display}</span>${sdLine}</td>`;
