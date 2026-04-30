@@ -147,6 +147,10 @@ document.getElementById('siteHamburger').addEventListener('click',function(){var
     </a>
     <div style="display:flex;align-items:center;gap:.75rem">
       <a href="" id="results-link" style="color:#0AC0E9;font-size:.78rem;text-decoration:none;font-weight:500;opacity:0;pointer-events:none;transition:opacity .2s">Results →</a>
+      <a href="" id="photos-link" style="display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .65rem;background:rgba(10,192,233,.07);color:#8A97B0;font-size:.72rem;text-decoration:none;font-weight:500;border:1px solid #1A3D5C;border-radius:5px;opacity:0;pointer-events:none;transition:opacity .2s" onmouseover="this.style.color='#0AC0E9'" onmouseout="this.style.color='#8A97B0'">
+        <svg width="11" height="11" viewBox="0 0 13 13" fill="none"><rect x="1" y="2.5" width="11" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 2.5V1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M8.5 2.5V1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="6.5" cy="7" r="2" stroke="currentColor" stroke-width="1.2"/></svg>
+        Photos
+      </a>
       <a href="" id="embed-link" style="display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .65rem;background:rgba(10,192,233,.12);color:#0AC0E9;font-size:.72rem;text-decoration:none;font-weight:500;border:1px solid rgba(10,192,233,.25);border-radius:5px;opacity:0;pointer-events:none;transition:opacity .2s" target="_blank">
         <svg width="10" height="10" viewBox="0 0 11 11" fill="none"><rect x="1" y="1" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M4 4h3v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 4L4 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
         Present
@@ -349,6 +353,12 @@ async function renderPage() {
   rl.href = `results.html?id=${chartId}`;
   rl.style.opacity = '1';
   rl.style.pointerEvents = '';
+
+  // Photos link
+  const pl = document.getElementById('photos-link');
+  pl.href = `photos.html?id=${chartId}`;
+  pl.style.opacity = '1';
+  pl.style.pointerEvents = '';
 
   // Presentation embed link
   const el = document.getElementById('embed-link');

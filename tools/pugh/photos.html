@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Tangram Pugh · Add Photos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*,*::before,*::after{font-family:'Inter',sans-serif}
+body{background:#02192F;color:#E8ECF4;margin:0;min-height:100vh}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");background-size:300px;pointer-events:none;z-index:0}
+
+#loading{position:relative;z-index:10;display:flex;align-items:center;justify-content:center;height:70vh;color:#4A5770;font-size:.95rem}
+
+.page{position:relative;z-index:10;display:none;min-height:100vh;flex-direction:column}
+
+/* Header */
+.header{display:flex;align-items:center;gap:.875rem;padding:.875rem 1.25rem;border-bottom:1px solid #0F3050;background:#031C2E;position:sticky;top:0;z-index:20;flex-shrink:0}
+.back-btn{display:flex;align-items:center;gap:.35rem;background:transparent;border:1px solid #1A3D5C;border-radius:6px;padding:.4rem .75rem;color:#8A97B0;text-decoration:none;font-size:.82rem;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.back-btn:hover{color:#E8ECF4;border-color:#304F6B}
+
+/* QR card — shown on non-touch screens to help host share URL to phone */
+.qr-card{margin:1.25rem 1.25rem 0;background:#031C2E;border:1px solid #0F3050;border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1.5rem}
+#qr-canvas{border-radius:8px;flex-shrink:0}
+
+/* Hint text */
+.hint{margin:.875rem 1.25rem .25rem;color:#4A5770;font-size:.82rem;line-height:1.6}
+
+/* Concept grid */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;padding:1rem 1.25rem 2rem}
+@media(min-width:540px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:800px){.grid{grid-template-columns:repeat(4,1fr);max-width:880px;margin:0 auto;padding-left:0;padding-right:0}}
+
+/* Concept card */
+.card{background:#031C2E;border:1.5px solid #0F3050;border-radius:14px;overflow:hidden;cursor:pointer;transition:border-color .15s,transform .1s;position:relative;-webkit-user-select:none;user-select:none}
+.card:hover{border-color:rgba(10,192,233,.4)}
+.card:active{transform:scale(.96);border-color:rgba(10,192,233,.6)}
+
+.thumb-wrap{aspect-ratio:1;background:#0B2740;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb-placeholder{display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.thumb-placeholder-label{font-size:.65rem;font-weight:600;letter-spacing:.06em;color:#1A3D5C;text-transform:uppercase}
+
+.card-label{padding:.625rem .875rem .75rem;font-size:.88rem;font-weight:500;color:#E8ECF4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-top:1px solid #0B2740}
+
+/* Status overlay per card */
+.card-overlay{position:absolute;inset:0;background:rgba(2,25,47,.72);display:flex;align-items:center;justify-content:center;z-index:5;opacity:0;transition:opacity .15s;pointer-events:none}
+.card-overlay.visible{opacity:1;pointer-events:all}
+
+/* Remove button (shown when thumbnail exists) */
+.remove-btn{position:absolute;top:.4rem;right:.4rem;z-index:6;background:rgba(2,25,47,.8);border:1px solid #1A3D5C;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .15s,background .15s;flex-shrink:0}
+.card:hover .remove-btn{opacity:1}
+.remove-btn:hover{background:rgba(224,85,85,.25);border-color:rgba(224,85,85,.5)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div id="loading">Loading…</div>
+
+<div class="page" id="page">
+
+  <div class="header">
+    <img src="../../brand_assets/Tangram_white logo.png" style="height:16px;opacity:.9;flex-shrink:0">
+    <div style="width:1px;height:16px;background:#0F3050;flex-shrink:0"></div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:.6rem;color:#4A5770;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.1rem">Add Photos</div>
+      <div id="chart-title" style="font-size:.95rem;font-weight:600;color:#E8ECF4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+    </div>
+    <a id="back-btn" href="dashboard.html" class="back-btn">
+      <svg width="11" height="11" viewBox="0 0 13 13" fill="none"><path d="M8 2L3 6.5 8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </a>
+  </div>
+
+  <!-- QR helper — only rendered on non-touch / desktop -->
+  <div class="qr-card" id="qr-card" style="display:none">
+    <canvas id="qr-canvas" width="112" height="112"></canvas>
+    <div>
+      <div style="font-size:.82rem;font-weight:600;color:#E8ECF4;margin-bottom:.3rem">Open on your phone</div>
+      <div style="font-size:.78rem;color:#8A97B0;line-height:1.6;max-width:300px">Scan to open this page on a mobile device. Sign in with your host account to add or replace photos.</div>
+      <div id="page-url" style="margin-top:.45rem;font-size:.68rem;color:#4A5770;word-break:break-all"></div>
+    </div>
+  </div>
+
+  <p class="hint">Tap any concept to take a photo or choose from your gallery.</p>
+
+  <div class="grid" id="grid"></div>
+
+</div>
+
+<!-- One shared hidden file input — triggered per concept click -->
+<input type="file" id="file-input" accept="image/*" style="display:none">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="app.js"></script>
+<script>
+const chartId = new URLSearchParams(location.search).get('id');
+let chart = null;
+let activeConcept = null; // index into chart.concepts
+
+async function init() {
+  const user = await Auth.requireHost();
+  if (!user) return;
+
+  if (!chartId) { document.getElementById('loading').textContent = 'No session ID in URL.'; return; }
+
+  chart = await DB.get(chartId);
+  if (!chart) { document.getElementById('loading').textContent = 'Session not found.'; return; }
+
+  if (chart.hostId !== user.uid) {
+    document.getElementById('loading').textContent = 'You do not have permission to edit this session.';
+    return;
+  }
+
+  document.getElementById('chart-title').textContent = chart.title;
+  document.getElementById('back-btn').href = `manage.html?id=${chartId}`;
+
+  // QR code — show on devices without touch (desktop/laptop helper)
+  if (!('ontouchstart' in window) || window.innerWidth >= 800) {
+    const pageUrl = location.href;
+    document.getElementById('page-url').textContent = pageUrl;
+    const qrCard = document.getElementById('qr-card');
+    qrCard.style.display = 'flex';
+    QRCode.toCanvas(document.getElementById('qr-canvas'), pageUrl, {
+      width: 112, margin: 1,
+      color: { dark: '#02192F', light: '#FFFFFF' }
+    }, err => { if (err) qrCard.style.display = 'none'; });
+  }
+
+  document.getElementById('loading').style.display = 'none';
+  const page = document.getElementById('page');
+  page.style.display = 'flex';
+
+  renderGrid();
+}
+
+function renderGrid() {
+  document.getElementById('grid').innerHTML = chart.concepts.map((c, i) => `
+    <div class="card" id="card-${i}" onclick="openPicker(${i})">
+      <div class="thumb-wrap">
+        ${c.thumbnail
+          ? `<img id="thumb-img-${i}" src="${c.thumbnail}" alt="${escH(c.name)}">`
+          : `<div class="thumb-placeholder" id="thumb-ph-${i}">
+               <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+                 <circle cx="19" cy="19" r="17" stroke="#1A3D5C" stroke-width="1.5"/>
+                 <rect x="10" y="13" width="18" height="13" rx="2.5" stroke="#1A3D5C" stroke-width="1.3"/>
+                 <circle cx="19" cy="19.5" r="3.5" stroke="#1A3D5C" stroke-width="1.3"/>
+                 <circle cx="25" cy="15" r="1" fill="#1A3D5C"/>
+               </svg>
+               <span class="thumb-placeholder-label">Add photo</span>
+             </div>`
+        }
+        ${c.thumbnail ? `
+          <button class="remove-btn" onclick="removePic(event,${i})" title="Remove photo">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2L2 8" stroke="#E05555" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>` : ''}
+        <div class="card-overlay" id="overlay-${i}"></div>
+      </div>
+      <div class="card-label">${escH(c.name)}</div>
+    </div>
+  `).join('');
+}
+
+function openPicker(idx) {
+  activeConcept = idx;
+  const input = document.getElementById('file-input');
+  input.value = '';
+  input.click();
+}
+
+document.getElementById('file-input').addEventListener('change', async function () {
+  const file = this.files[0];
+  if (!file || activeConcept == null) return;
+  const idx = activeConcept;
+  await savePhoto(idx, file);
+});
+
+async function savePhoto(idx, file) {
+  const overlay = document.getElementById(`overlay-${idx}`);
+  showOverlaySpinner(overlay);
+
+  try {
+    const dataUrl = await compressImage(file, 1000, 0.85);
+    chart.concepts[idx].thumbnail = dataUrl;
+    await DB.update(chartId, { concepts: chart.concepts });
+    showOverlayCheck(overlay);
+    // Patch the DOM without full re-render
+    patchThumb(idx, dataUrl, chart.concepts[idx].name);
+  } catch (err) {
+    console.error(err);
+    showOverlayError(overlay);
+  }
+}
+
+function patchThumb(idx, dataUrl, name) {
+  const card = document.getElementById(`card-${idx}`);
+  if (!card) return;
+  const wrap = card.querySelector('.thumb-wrap');
+  const ph = document.getElementById(`thumb-ph-${idx}`);
+  const existing = document.getElementById(`thumb-img-${idx}`);
+  if (ph) {
+    ph.remove();
+    const img = document.createElement('img');
+    img.id = `thumb-img-${idx}`;
+    img.src = dataUrl;
+    img.alt = escH(name);
+    wrap.insertBefore(img, wrap.firstChild);
+    // Add remove button
+    const rmBtn = document.createElement('button');
+    rmBtn.className = 'remove-btn';
+    rmBtn.title = 'Remove photo';
+    rmBtn.setAttribute('onclick', `removePic(event,${idx})`);
+    rmBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2L2 8" stroke="#E05555" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+    wrap.insertBefore(rmBtn, wrap.querySelector('.card-overlay'));
+  } else if (existing) {
+    existing.src = dataUrl;
+  }
+}
+
+async function removePic(e, idx) {
+  e.stopPropagation();
+  const overlay = document.getElementById(`overlay-${idx}`);
+  showOverlaySpinner(overlay);
+  try {
+    chart.concepts[idx].thumbnail = null;
+    await DB.update(chartId, { concepts: chart.concepts });
+    // Re-render just this card
+    const card = document.getElementById(`card-${idx}`);
+    const c = chart.concepts[idx];
+    card.outerHTML = `
+      <div class="card" id="card-${idx}" onclick="openPicker(${idx})">
+        <div class="thumb-wrap">
+          <div class="thumb-placeholder" id="thumb-ph-${idx}">
+            <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+              <circle cx="19" cy="19" r="17" stroke="#1A3D5C" stroke-width="1.5"/>
+              <rect x="10" y="13" width="18" height="13" rx="2.5" stroke="#1A3D5C" stroke-width="1.3"/>
+              <circle cx="19" cy="19.5" r="3.5" stroke="#1A3D5C" stroke-width="1.3"/>
+              <circle cx="25" cy="15" r="1" fill="#1A3D5C"/>
+            </svg>
+            <span class="thumb-placeholder-label">Add photo</span>
+          </div>
+          <div class="card-overlay" id="overlay-${idx}"></div>
+        </div>
+        <div class="card-label">${escH(c.name)}</div>
+      </div>`;
+  } catch (err) {
+    console.error(err);
+    showOverlayError(overlay);
+  }
+}
+
+// Overlay states
+function showOverlaySpinner(el) {
+  el.innerHTML = `<div style="width:26px;height:26px;border:2.5px solid rgba(10,192,233,.25);border-top-color:#0AC0E9;border-radius:50%;animation:spin .7s linear infinite"></div>`;
+  el.classList.add('visible');
+}
+function showOverlayCheck(el) {
+  el.innerHTML = `<svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="16" fill="rgba(62,207,142,.15)" stroke="#3ECF8E" stroke-width="1.5"/><path d="M10 18l6 6 10-10" stroke="#3ECF8E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  setTimeout(() => el.classList.remove('visible'), 1100);
+}
+function showOverlayError(el) {
+  el.innerHTML = `<span style="color:#E05555;font-size:.82rem;font-weight:500">Save failed</span>`;
+  setTimeout(() => el.classList.remove('visible'), 2000);
+}
+
+// Resize image to maxPx on longest side, encode as JPEG
+function compressImage(file, maxPx, quality) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      let { naturalWidth: w, naturalHeight: h } = img;
+      if (w > maxPx || h > maxPx) {
+        if (w >= h) { h = Math.round(h * maxPx / w); w = maxPx; }
+        else        { w = Math.round(w * maxPx / h); h = maxPx; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image load failed')); };
+    img.src = url;
+  });
+}
+
+function escH(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+init().catch(err => {
+  document.getElementById('loading').textContent = 'Error: ' + err.message;
+  console.error(err);
+});
+</script>
+</body>
+</html>
