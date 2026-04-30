@@ -77,13 +77,18 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     </a>
   </div>
 
-  <!-- QR helper — only rendered on non-touch / desktop -->
+  <!-- Share link helper — shown on non-touch / desktop -->
   <div class="qr-card" id="qr-card" style="display:none">
-    <canvas id="qr-canvas" width="112" height="112"></canvas>
-    <div>
+    <div style="flex:1;min-width:0">
       <div style="font-size:.82rem;font-weight:600;color:#E8ECF4;margin-bottom:.3rem">Open on your phone</div>
-      <div style="font-size:.78rem;color:#8A97B0;line-height:1.6;max-width:300px">Scan to open this page on a mobile device. Sign in with your host account to add or replace photos.</div>
-      <div id="page-url" style="margin-top:.45rem;font-size:.68rem;color:#4A5770;word-break:break-all"></div>
+      <div style="font-size:.78rem;color:#8A97B0;line-height:1.6;margin-bottom:.625rem">Copy this link and open it on a mobile device, or tap Share below. Sign in with your host account to add photos.</div>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <div id="page-url" style="flex:1;background:#0B2740;border:1px solid #1A3D5C;border-radius:6px;padding:.45rem .75rem;font-size:.72rem;color:#8A97B0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+        <button id="copy-btn" onclick="copyLink()" style="flex-shrink:0;display:flex;align-items:center;gap:.35rem;background:transparent;border:1px solid #1A3D5C;border-radius:6px;padding:.45rem .75rem;color:#8A97B0;cursor:pointer;font-size:.78rem;font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap" onmouseover="this.style.color='#E8ECF4';this.style.borderColor='#304F6B'" onmouseout="this.style.color='#8A97B0';this.style.borderColor='#1A3D5C'">
+          <svg width="12" height="12" viewBox="0 0 13 13" fill="none"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 9V2h7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Copy
+        </button>
+      </div>
     </div>
   </div>
 
@@ -97,7 +102,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 <input type="file" id="file-input" accept="image/*" style="display:none">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script src="app.js"></script>
 <script>
 const chartId = new URLSearchParams(location.search).get('id');
@@ -121,16 +125,10 @@ async function init() {
   document.getElementById('chart-title').textContent = chart.title;
   document.getElementById('back-btn').href = `manage.html?id=${chartId}`;
 
-  // QR code — show on devices without touch (desktop/laptop helper)
+  // Share link — show on non-touch / desktop to help host open on phone
   if (!('ontouchstart' in window) || window.innerWidth >= 800) {
-    const pageUrl = location.href;
-    document.getElementById('page-url').textContent = pageUrl;
-    const qrCard = document.getElementById('qr-card');
-    qrCard.style.display = 'flex';
-    QRCode.toCanvas(document.getElementById('qr-canvas'), pageUrl, {
-      width: 112, margin: 1,
-      color: { dark: '#02192F', light: '#FFFFFF' }
-    }, err => { if (err) qrCard.style.display = 'none'; });
+    document.getElementById('page-url').textContent = location.href;
+    document.getElementById('qr-card').style.display = 'flex';
   }
 
   document.getElementById('loading').style.display = 'none';
@@ -288,6 +286,20 @@ function compressImage(file, maxPx, quality) {
     };
     img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Image load failed')); };
     img.src = url;
+  });
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(location.href).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    btn.style.color = '#3ECF8E';
+    btn.style.borderColor = 'rgba(62,207,142,.4)';
+    setTimeout(() => {
+      btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 13 13" fill="none"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2 9V2h7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg> Copy`;
+      btn.style.color = '#8A97B0';
+      btn.style.borderColor = '#1A3D5C';
+    }, 2000);
   });
 }
 
