@@ -84,7 +84,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .matrix-table{width:100%;border-collapse:separate;border-spacing:0;font-family:'Inter',sans-serif}
 .matrix-table th{font-family:'Inter',sans-serif;font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:#4A5770;padding:.6rem .75rem;text-align:center;border-bottom:1px solid #0F3050;white-space:nowrap;position:sticky;top:0;background:#031C2E;z-index:10}
 .matrix-table th.crit-header{text-align:left;color:#8A97B0;max-width:160px}
-.matrix-table th.concept-header{min-width:130px;max-width:160px}
+.matrix-table th.concept-header{min-width:130px;max-width:160px;white-space:normal}
 .matrix-table th.concept-header.best{color:#0AC0E9}
 
 .matrix-table td{padding:.55rem .75rem;border-bottom:1px solid #031C2E;text-align:center;font-family:'Inter',sans-serif;font-size:.82rem;transition:background .2s}
@@ -444,7 +444,7 @@ function renderMatrix(results) {
     const isDatum = chart.useDatum && chart.datumConceptId === c.id;
     return `<th class="concept-header ${isBest ? 'best' : ''}" style="position:relative">
       ${c.thumbnail ? `<div style="width:80px;height:80px;border-radius:8px;overflow:hidden;margin:0 auto .5rem;border:1px solid ${isBest ? 'rgba(10,192,233,.4)' : '#0F3050'}"><img src="${c.thumbnail}" style="width:100%;height:100%;object-fit:cover"></div>` : ''}
-      <div style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;margin:0 auto;color:${isBest ? '#0AC0E9' : '#E8ECF4'}">${escH(c.name)}</div>
+      <div style="max-width:120px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-align:center;margin:0 auto;line-height:1.35;color:${isBest ? '#0AC0E9' : '#E8ECF4'}">${escH(c.name)}</div>
       ${isDatum ? '<div style="font-size:.58rem;color:#4A5770;margin-top:.1rem">DATUM</div>' : ''}
       ${isBest ? '<div style="font-size:.58rem;color:#0AC0E9;margin-top:.1rem">▲ BEST</div>' : ''}
     </th>`;
