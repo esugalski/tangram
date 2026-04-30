@@ -50,10 +50,6 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .card-overlay{position:absolute;inset:0;background:rgba(2,25,47,.72);display:flex;align-items:center;justify-content:center;z-index:5;opacity:0;transition:opacity .15s;pointer-events:none}
 .card-overlay.visible{opacity:1;pointer-events:all}
 
-/* Remove button (shown when thumbnail exists) */
-.remove-btn{position:absolute;top:.4rem;right:.4rem;z-index:6;background:rgba(2,25,47,.8);border:1px solid #1A3D5C;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .15s,background .15s;flex-shrink:0}
-.card:hover .remove-btn{opacity:1}
-.remove-btn:hover{background:rgba(224,85,85,.25);border-color:rgba(224,85,85,.5)}
 
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -291,10 +287,6 @@ function renderGrid() {
                <span class="thumb-placeholder-label">Add photo</span>
              </div>`
         }
-        ${c.thumbnail ? `
-          <button class="remove-btn" onclick="removePic(event,${i})" title="Remove photo">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2L2 8" stroke="#E05555" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </button>` : ''}
         <div class="card-overlay" id="overlay-${i}"></div>
       </div>
       <div class="card-label">${escH(c.name)}</div>
@@ -378,13 +370,6 @@ function patchThumb(idx, dataUrl, name) {
     img.src = dataUrl;
     img.alt = escH(name);
     wrap.insertBefore(img, wrap.firstChild);
-    // Add remove button
-    const rmBtn = document.createElement('button');
-    rmBtn.className = 'remove-btn';
-    rmBtn.title = 'Remove photo';
-    rmBtn.setAttribute('onclick', `removePic(event,${idx})`);
-    rmBtn.innerHTML = `<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2L2 8" stroke="#E05555" stroke-width="1.5" stroke-linecap="round"/></svg>`;
-    wrap.insertBefore(rmBtn, wrap.querySelector('.card-overlay'));
   } else if (existing) {
     existing.src = dataUrl;
   }
