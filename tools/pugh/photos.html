@@ -77,11 +77,14 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     </a>
   </div>
 
-  <!-- Share link helper — shown on non-touch / desktop -->
+  <!-- QR helper — shown on non-touch / desktop so host can scan from phone -->
   <div class="qr-card" id="qr-card" style="display:none">
+    <div style="background:white;border-radius:10px;padding:8px;flex-shrink:0">
+      <img id="qr-img" width="120" height="120" style="display:block;border-radius:4px" alt="QR code">
+    </div>
     <div style="flex:1;min-width:0">
-      <div style="font-size:.82rem;font-weight:600;color:#E8ECF4;margin-bottom:.3rem">Open on your phone</div>
-      <div style="font-size:.78rem;color:#8A97B0;line-height:1.6;margin-bottom:.625rem">Copy this link and open it on a mobile device, or tap Share below. Sign in with your host account to add photos.</div>
+      <div style="font-size:.82rem;font-weight:600;color:#E8ECF4;margin-bottom:.3rem">Scan to open on your phone</div>
+      <div style="font-size:.78rem;color:#8A97B0;line-height:1.6;margin-bottom:.625rem">Sign in with your host account, then tap any concept to take a photo.</div>
       <div style="display:flex;align-items:center;gap:.5rem">
         <div id="page-url" style="flex:1;background:#0B2740;border:1px solid #1A3D5C;border-radius:6px;padding:.45rem .75rem;font-size:.72rem;color:#8A97B0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
         <button id="copy-btn" onclick="copyLink()" style="flex-shrink:0;display:flex;align-items:center;gap:.35rem;background:transparent;border:1px solid #1A3D5C;border-radius:6px;padding:.45rem .75rem;color:#8A97B0;cursor:pointer;font-size:.78rem;font-family:'Inter',sans-serif;transition:all .15s;white-space:nowrap" onmouseover="this.style.color='#E8ECF4';this.style.borderColor='#304F6B'" onmouseout="this.style.color='#8A97B0';this.style.borderColor='#1A3D5C'">
@@ -125,9 +128,13 @@ async function init() {
   document.getElementById('chart-title').textContent = chart.title;
   document.getElementById('back-btn').href = `manage.html?id=${chartId}`;
 
-  // Share link — show on non-touch / desktop to help host open on phone
+  // QR code + link — show on non-touch / desktop to help host open on phone
   if (!('ontouchstart' in window) || window.innerWidth >= 800) {
-    document.getElementById('page-url').textContent = location.href;
+    const pageUrl = location.href;
+    document.getElementById('page-url').textContent = pageUrl;
+    document.getElementById('qr-img').src =
+      'https://api.qrserver.com/v1/create-qr-code/?size=120x120&margin=0&data=' +
+      encodeURIComponent(pageUrl);
     document.getElementById('qr-card').style.display = 'flex';
   }
 
