@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Status — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --muted:      #6B7A8D;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --light-gray: #F7F8FA;
+      --green:      #10B981;
+      --green-bg:   #ECFDF5;
+      --green-text: #065F46;
+      --amber:      #F59E0B;
+      --amber-bg:   #FFFBEB;
+      --amber-text: #92400E;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+      --indigo-bg:  #EEF2FF;
+      --indigo-text:#3730A3;
+      --border:     rgba(11,39,64,0.08);
+      --sidebar-w:  220px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR STRUCTURE ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; overflow: hidden; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; white-space: nowrap; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); white-space: nowrap; }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
+    .sidebar-sign-out a { font-size: 0.63rem; color: rgba(255,255,255,0.2); text-decoration: none; transition: color 0.15s; }
+    .sidebar-sign-out a:hover { color: rgba(255,255,255,0.45); }
+
+    /* ─── APP SHELL ─── */
+    .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+
+    /* ─── TOPBAR ─── */
+    .topbar { background: white; border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; padding: 0 1.5rem; flex-shrink: 0; gap: 0.875rem; }
+    .topbar-title { font-size: 0.88rem; font-weight: 700; color: var(--primary); letter-spacing: -0.015em; white-space: nowrap; }
+    .topbar-sep { width: 1px; height: 16px; background: var(--border); flex-shrink: 0; }
+    .topbar-project { font-size: 0.78rem; color: var(--mid-blue); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+    .topbar-updated { font-size: 0.7rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+
+    /* ─── STATS BAR ─── */
+    .stats-bar { background: white; border-bottom: 1px solid var(--border); padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 1.75rem; flex-shrink: 0; overflow-x: auto; }
+    .stats-bar::-webkit-scrollbar { display: none; }
+    .stat-block { display: flex; flex-direction: column; gap: 0.25rem; flex-shrink: 0; }
+    .stat-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .stat-row { display: flex; align-items: baseline; gap: 0.3rem; }
+    .stat-val { font-size: 1.15rem; font-weight: 800; color: var(--primary); letter-spacing: -0.03em; line-height: 1; }
+    .stat-of { font-size: 0.7rem; font-weight: 600; color: var(--muted); }
+    .stat-bar-track { height: 3px; width: 72px; background: rgba(11,39,64,0.07); border-radius: 2px; overflow: hidden; margin-top: 0.2rem; }
+    .stat-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s cubic-bezier(0.22,1,0.36,1); }
+    .stat-text { font-size: 0.78rem; font-weight: 600; color: var(--primary); letter-spacing: -0.01em; }
+    .stats-div { width: 1px; height: 28px; background: var(--border); flex-shrink: 0; }
+
+    /* ─── TWO-COLUMN LAYOUT ─── */
+    .columns { flex: 1; display: flex; min-height: 0; overflow: hidden; }
+
+    /* ─── LEFT PANEL — DHF ─── */
+    .col-left { flex: 0 0 58%; display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--border); }
+    .col-header { padding: 0.75rem 1.25rem 0.625rem; border-bottom: 1px solid var(--border); background: white; flex-shrink: 0; display: flex; align-items: center; gap: 0.5rem; }
+    .col-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .col-scroll { flex: 1; overflow-y: auto; padding: 0.875rem 1.25rem; display: flex; flex-direction: column; gap: 0.625rem; }
+    .col-scroll::-webkit-scrollbar { width: 4px; }
+    .col-scroll::-webkit-scrollbar-track { background: transparent; }
+    .col-scroll::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.14); border-radius: 2px; }
+
+    /* Phase cards */
+    .phase-card { background: white; border-radius: 9px; border: 1px solid var(--border); overflow: visible; }
+    .phase-card.st-complete  { border-left: 3px solid var(--green); }
+    .phase-card.st-inprogress { border-left: 3px solid var(--amber); }
+    .phase-card.st-notstarted { border-left: 3px solid rgba(11,39,64,0.12); }
+
+    .phase-hd { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0.875rem 0.75rem 0.75rem; cursor: pointer; user-select: none; transition: background 0.12s; border-radius: 8px 8px 0 0; }
+    .phase-hd:hover { background: rgba(11,39,64,0.02); }
+    .phase-card.collapsed .phase-hd { border-radius: 8px; }
+
+    .phase-num-badge { font-size: 0.58rem; font-weight: 800; letter-spacing: 0.06em; color: white; background: rgba(11,39,64,0.22); border-radius: 4px; padding: 0.18rem 0.42rem; flex-shrink: 0; }
+    .phase-card.st-complete  .phase-num-badge { background: var(--green); }
+    .phase-card.st-inprogress .phase-num-badge { background: var(--amber); }
+
+    .phase-name { font-size: 0.845rem; font-weight: 700; color: var(--primary); letter-spacing: -0.01em; flex: 1; }
+    .phase-frac { font-size: 0.7rem; font-weight: 600; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+
+    .phase-badge { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.18rem 0.52rem; border-radius: 3px; flex-shrink: 0; }
+    .phase-badge.complete   { background: var(--green-bg);  color: var(--green-text); }
+    .phase-badge.inprogress { background: var(--amber-bg);  color: var(--amber-text); }
+    .phase-badge.notstarted { background: rgba(11,39,64,0.05); color: rgba(11,39,64,0.32); }
+
+    .chev { width: 14px; height: 14px; stroke: rgba(11,39,64,0.28); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; transition: transform 0.2s cubic-bezier(0.22,1,0.36,1); }
+    .phase-card.collapsed .chev { transform: rotate(-90deg); }
+
+    .phase-body { border-top: 1px solid rgba(11,39,64,0.05); }
+    .phase-card.collapsed .phase-body { display: none; }
+
+    /* Doc rows */
+    .doc-row { display: flex; align-items: center; gap: 0.625rem; padding: 0.565rem 0.875rem 0.565rem 2.25rem; border-bottom: 1px solid rgba(11,39,64,0.04); transition: background 0.1s; color: inherit; text-decoration: none; position: relative; }
+    .doc-row:last-child { border-bottom: none; }
+    .doc-row:hover { background: rgba(11,39,64,0.02); }
+    @keyframes docFlash { 0%,5% { background: rgba(10,192,233,0.12); } 100% { background: transparent; } }
+    .doc-row.flash { animation: docFlash 2s ease-out forwards; }
+
+    .doc-name { font-size: 0.8rem; font-weight: 500; color: var(--primary); flex: 1; min-width: 0; }
+
+    /* Status pills */
+    .pill { font-size: 0.575rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.16rem 0.48rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; border: 1px solid transparent; }
+    .pill-approved   { background: var(--green-bg);  color: var(--green-text); border-color: rgba(16,185,129,0.2); }
+    .pill-review     { background: var(--amber-bg);  color: var(--amber-text); border-color: rgba(245,158,11,0.2); }
+    .pill-draft      { background: var(--indigo-bg); color: var(--indigo-text); border-color: rgba(99,102,241,0.18); }
+    .pill-planned,
+    .pill-not-started { background: rgba(11,39,64,0.05); color: rgba(11,39,64,0.35); border-color: rgba(11,39,64,0.08); }
+
+    /* Warning indicator */
+    .warn-wrap { position: relative; display: inline-flex; align-items: center; flex-shrink: 0; cursor: help; }
+    .warn-wrap svg { width: 14px; height: 14px; display: block; }
+    .warn-tip { position: absolute; right: -4px; top: calc(100% + 5px); background: #1a2942; color: rgba(255,255,255,0.88); font-size: 0.67rem; font-weight: 500; line-height: 1.55; padding: 0.45rem 0.7rem; border-radius: 5px; white-space: nowrap; z-index: 100; pointer-events: none; opacity: 0; transform: translateY(-3px); transition: opacity 0.15s, transform 0.15s; box-shadow: 0 4px 12px rgba(0,0,0,0.25); min-width: 180px; }
+    .warn-tip::before { content: ''; position: absolute; top: -4px; right: 8px; border-left: 4px solid transparent; border-right: 4px solid transparent; border-bottom: 4px solid #1a2942; }
+    .warn-wrap:hover .warn-tip { opacity: 1; transform: translateY(0); }
+
+    .row-arrow { width: 13px; height: 13px; stroke: rgba(11,39,64,0.2); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; transition: stroke 0.12s; }
+    .doc-row:hover .row-arrow { stroke: var(--aqua); }
+
+    /* ─── RIGHT PANEL — SOPs ─── */
+    .col-right { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .sop-search-bar { padding: 0.75rem 1.25rem 0.625rem; border-bottom: 1px solid var(--border); background: white; flex-shrink: 0; }
+    .sop-search-inner { display: flex; align-items: center; gap: 0.5rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.09); border-radius: 7px; padding: 0.4rem 0.75rem; transition: border-color 0.15s; }
+    .sop-search-inner:focus-within { border-color: rgba(10,192,233,0.35); background: white; }
+    .sop-search-inner svg { width: 12px; height: 12px; stroke: rgba(11,39,64,0.28); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .sop-search-inner input { flex: 1; border: none; outline: none; background: transparent; font-family: 'Inter', sans-serif; font-size: 0.775rem; color: var(--primary); }
+    .sop-search-inner input::placeholder { color: rgba(11,39,64,0.28); }
+
+    .sop-scroll { flex: 1; overflow-y: auto; padding: 0.875rem 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .sop-scroll::-webkit-scrollbar { width: 4px; }
+    .sop-scroll::-webkit-scrollbar-track { background: transparent; }
+    .sop-scroll::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.14); border-radius: 2px; }
+
+    .sop-group { }
+    .sop-group.hidden { display: none; }
+    .sop-group-hd { display: flex; align-items: center; gap: 0.45rem; padding: 0.3rem 0.35rem; cursor: pointer; user-select: none; border-radius: 5px; transition: background 0.12s; margin-bottom: 0.25rem; }
+    .sop-group-hd:hover { background: rgba(11,39,64,0.04); }
+    .sop-group-title { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.38); flex: 1; }
+    .sop-group-count { font-size: 0.6rem; color: rgba(11,39,64,0.25); font-weight: 500; }
+    .sop-chev { width: 11px; height: 11px; stroke: rgba(11,39,64,0.22); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
+    .sop-group.collapsed .sop-chev { transform: rotate(-90deg); }
+    .sop-group.collapsed .sop-rows-wrap { display: none; }
+
+    .sop-rows-wrap { background: white; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .sop-row { display: flex; align-items: center; gap: 0.55rem; padding: 0.575rem 0.875rem; border-bottom: 1px solid rgba(11,39,64,0.04); transition: background 0.1s; color: inherit; text-decoration: none; }
+    .sop-row:last-child { border-bottom: none; }
+    .sop-row:hover { background: rgba(11,39,64,0.02); }
+    .sop-row.hidden { display: none; }
+
+    .sop-doc-num { font-size: 0.565rem; font-weight: 600; color: rgba(11,39,64,0.3); letter-spacing: 0.03em; white-space: nowrap; min-width: 68px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+    .sop-name { font-size: 0.785rem; font-weight: 500; color: var(--primary); flex: 1; min-width: 0; }
+    .gates-badge { font-size: 0.575rem; font-weight: 700; letter-spacing: 0.04em; padding: 0.16rem 0.46rem; border-radius: 3px; background: rgba(10,192,233,0.1); color: #0369a1; border: 1px solid rgba(10,192,233,0.2); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.12s, border-color 0.12s; }
+    .gates-badge:hover { background: rgba(10,192,233,0.18); border-color: rgba(10,192,233,0.35); }
+    .sop-row-arrow { width: 12px; height: 12px; stroke: rgba(11,39,64,0.2); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; transition: stroke 0.12s; }
+    .sop-row:hover .sop-row-arrow { stroke: var(--aqua); }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 900px) {
+      .columns { flex-direction: column; overflow-y: auto; }
+      .col-left, .col-right { flex: none; border-right: none; }
+      .col-left { border-bottom: 1px solid var(--border); }
+      .col-scroll, .sop-scroll { overflow-y: visible; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar-root"></aside>
+
+<div class="app-main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <span class="topbar-title">Project Status</span>
+    <div class="topbar-sep"></div>
+    <span class="topbar-project" id="topbar-project">Loading…</span>
+    <span class="topbar-updated" id="topbar-updated"></span>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar" id="stats-bar"></div>
+
+  <!-- Two-column content -->
+  <div class="columns">
+
+    <!-- Left: DHF by Phase -->
+    <div class="col-left">
+      <div class="col-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;stroke:var(--muted);flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <span class="col-title">Design History File — by Phase</span>
+      </div>
+      <div class="col-scroll" id="phases-container"></div>
+    </div>
+
+    <!-- Right: SOP Registry -->
+    <div class="col-right">
+      <div class="sop-search-bar">
+        <div class="sop-search-inner">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="sop-search" placeholder="Filter SOPs…" oninput="filterSOPs(this.value)" autocomplete="off">
+        </div>
+      </div>
+      <div class="sop-scroll" id="sop-container"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+initSidebar({ activePage: 'project-status' });
+
+// ─── PHASE + DOCUMENT DEFINITIONS ────────────────────────────────────────────
+
+const PHASES = [
+  {
+    id: 'concept', num: '01', label: 'Concept',
+    docs: [
+      { id: 'regulatory-assessment', label: 'Regulatory Assessment', href: 'regulatory-assessment.html', lsKey: 'qms_regulatory_assessment' },
+    ]
+  },
+  {
+    id: 'planning', num: '02', label: 'Planning',
+    docs: [
+      { id: 'dev-plan',       label: 'Design & Development Plan', href: 'dev-plan.html',              lsKey: 'qms_dev_plan' },
+      { id: 'user-needs',     label: 'User Needs',                href: 'user-needs.html',            lsKey: 'qms_user_needs',   isArray: true },
+      { id: 'risk-mgmt-plan', label: 'Risk Management Plan',      href: 'risk-management-plan.html',  lsKey: 'qms_risk_mgmt_plan' },
+    ]
+  },
+  {
+    id: 'development', num: '03', label: 'Development',
+    docs: [
+      { id: 'design-inputs',  label: 'Design Inputs',         href: 'design-inputs.html',         lsKey: 'qms_design_inputs',  isArray: true },
+      { id: 'design-outputs', label: 'Design Outputs',        href: 'design-outputs.html',        lsKey: 'qms_design_outputs', isArray: true },
+      { id: 'hazard-id',      label: 'Hazard Identification', href: 'hazard-identification.html', lsKey: 'qms_hazard_identification' },
+      { id: 'risk-analysis',  label: 'Risk Analysis',         href: 'risk-analysis.html',         lsKey: 'qms_risk_analysis' },
+    ]
+  },
+  {
+    id: 'verification', num: '04', label: 'Verification',
+    docs: [
+      { id: 'vv',           label: 'V&V Protocols & Reports', href: 'vv.html',           lsKey: 'qms_vv_records',  isArray: true },
+      { id: 'trace-matrix', label: 'Traceability Matrix',     href: 'trace-matrix.html', lsKey: 'qms_trace_matrix' },
+      { id: 'design-review',label: 'Design Review',           href: 'design-review.html',lsKey: 'qms_design_review' },
+    ]
+  },
+  {
+    id: 'validation', num: '05', label: 'Validation',
+    docs: [
+      { id: 'validation-hub',      label: 'Validation Hub',          href: 'vv-hub.html',         lsKey: 'qms_validation_hub' },
+      { id: 'design-review-final', label: 'Design Review (Final)',    href: 'design-review.html',  lsKey: 'qms_design_review_final' },
+    ]
+  },
+  {
+    id: 'transfer', num: '06', label: 'Design Transfer',
+    docs: [
+      { id: 'dmr',         label: 'Device Master Record', href: 'dmr.html',         lsKey: 'qms_dmr' },
+      { id: 'dmr-builder', label: 'DMR Builder',          href: 'dmr-builder.html', lsKey: 'qms_dmr_builder' },
+    ]
+  },
+];
+
+// ─── SOP DEFINITIONS ─────────────────────────────────────────────────────────
+
+const SOP_GROUPS = [
+  {
+    id: 'design-controls', label: 'Design Controls',
+    sops: [
+      { key: 'SOP-DC-001',  num: 'SOP-DC-001', label: 'Document Control',               href: 'document-control.html',             lsKey: 'qms_proc_doc_control' },
+      { key: 'SOP-DC-002',  num: 'SOP-DC-002', label: 'Design & Development Controls',  href: 'design-control.html',               lsKey: 'qms_proc_design_control' },
+      { key: 'CHANGE-CTRL', num: 'SOP-DC-003', label: 'Change Control',                 href: 'change-control.html',               lsKey: 'qms_proc_change_control' },
+    ]
+  },
+  {
+    id: 'risk-management', label: 'Risk Management',
+    sops: [
+      { key: 'SOP-RM-001', num: 'SOP-RM-001', label: 'Risk Management Procedure', href: 'risk-management-procedure.html', lsKey: 'qms_proc_risk_mgmt' },
+    ]
+  },
+  {
+    id: 'quality-system', label: 'Quality System',
+    sops: [
+      { key: 'SOP-CAPA-001', num: 'SOP-CAPA-001', label: 'Corrective & Preventive Action', href: 'capa-procedure.html',              lsKey: 'qms_proc_capa' },
+      { key: 'SOP-AUD-001',  num: 'SOP-AUD-001',  label: 'Internal Audit',                 href: 'internal-audit-procedure.html',   lsKey: 'qms_proc_audit' },
+      { key: 'SOP-NC-001',   num: 'SOP-NC-001',   label: 'Nonconformance',                 href: 'nonconformance-procedure.html',   lsKey: 'qms_proc_nonconformance' },
+    ]
+  },
+  {
+    id: 'post-market', label: 'Post-Market',
+    sops: [
+      { key: 'SOP-COMP-001', num: 'SOP-COMP-001', label: 'Complaint Handling', href: 'complaint-handling-procedure.html', lsKey: 'qms_proc_complaints' },
+    ]
+  },
+  {
+    id: 'supplier', label: 'Supplier & Equipment',
+    sops: [
+      { key: 'SOP-SUP-001', num: 'SOP-SUP-001', label: 'Supplier Control', href: 'supplier-control-procedure.html', lsKey: 'qms_proc_supplier' },
+    ]
+  },
+];
+
+// Which doc IDs does each SOP gate?
+const SOP_GATES = {
+  'SOP-DC-001':  ['regulatory-assessment','dev-plan','user-needs','risk-mgmt-plan','design-inputs','design-outputs','hazard-id','risk-analysis','vv','trace-matrix','design-review','design-review-final','dmr','dmr-builder'],
+  'SOP-DC-002':  ['dev-plan','user-needs','design-inputs','design-outputs','vv','trace-matrix','design-review','design-review-final','dmr'],
+  'SOP-RM-001':  ['risk-mgmt-plan','risk-analysis','hazard-id'],
+  'CHANGE-CTRL': ['dmr','dmr-builder'],
+};
+
+// Compute inverse: which SOPs does each doc require?
+const DOC_REQUIRED_SOPS = {};
+for (const [sopKey, docIds] of Object.entries(SOP_GATES)) {
+  for (const docId of docIds) {
+    if (!DOC_REQUIRED_SOPS[docId]) DOC_REQUIRED_SOPS[docId] = [];
+    DOC_REQUIRED_SOPS[docId].push(sopKey);
+  }
+}
+
+// ─── STATUS READING ───────────────────────────────────────────────────────────
+
+function getSopStatus(sopKey) {
+  try {
+    const procs = JSON.parse(localStorage.getItem('qms_procedures') || '{}');
+    if (procs[sopKey] && procs[sopKey].status) return procs[sopKey].status;
+  } catch(e) {}
+  for (const g of SOP_GROUPS) {
+    const sop = g.sops.find(s => s.key === sopKey);
+    if (sop) {
+      try {
+        const data = JSON.parse(localStorage.getItem(sop.lsKey) || 'null');
+        if (data) {
+          if (data.status) return data.status;
+          if (data.approved) return 'approved';
+        }
+      } catch(e) {}
+    }
+  }
+  return 'planned';
+}
+
+function getDocStatus(doc) {
+  try {
+    const raw = localStorage.getItem(doc.lsKey);
+    if (!raw) return 'not-started';
+    const data = JSON.parse(raw);
+    if (data === null || data === undefined) return 'not-started';
+    if (doc.isArray) {
+      const arr = Array.isArray(data) ? data : (data.items || data.needs || data.inputs || data.outputs || []);
+      if (!arr.length) return 'not-started';
+      if (arr.every(i => i.status === 'approved')) return 'approved';
+      if (arr.some(i => i.status === 'approved' || i.status === 'review' || i.status === 'pending')) return 'review';
+      return 'draft';
+    }
+    if (data.status) return data.status;
+    if (typeof data === 'object' && Object.keys(data).length > 0) return 'draft';
+  } catch(e) {}
+  return 'not-started';
+}
+
+function getSopLabel(sopKey) {
+  for (const g of SOP_GROUPS) {
+    const sop = g.sops.find(s => s.key === sopKey);
+    if (sop) return sop.label + ' (' + sop.num + ')';
+  }
+  return sopKey;
+}
+
+function getBlockingSOPs(docId) {
+  const required = DOC_REQUIRED_SOPS[docId] || [];
+  return required.filter(k => getSopStatus(k) !== 'approved').map(getSopLabel);
+}
+
+function getProjectName() {
+  try { const d = JSON.parse(localStorage.getItem('qms_dev_plan')   || 'null'); if (d && d.project)    return d.project;    } catch(e) {}
+  try { const c = JSON.parse(localStorage.getItem('qms_context')    || 'null'); if (c && c.deviceName) return c.deviceName; if (c && c.companyName) return c.companyName; } catch(e) {}
+  try { const r = JSON.parse(localStorage.getItem('qms_regulatory_assessment') || 'null'); if (r && r.deviceName) return r.deviceName; } catch(e) {}
+  return 'No project configured';
+}
+
+// ─── SVG SNIPPETS ─────────────────────────────────────────────────────────────
+
+const ARROW = '<svg viewBox="0 0 24 24" class="row-arrow"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+const CHEV  = '<svg viewBox="0 0 24 24" class="chev"><polyline points="6 9 12 15 18 9"/></svg>';
+const SOPCHEV = '<svg viewBox="0 0 24 24" class="sop-chev"><polyline points="6 9 12 15 18 9"/></svg>';
+
+function pill(status) {
+  const map = { approved: 'Approved', review: 'In Review', draft: 'Draft', planned: 'Planned', 'not-started': 'Not Started' };
+  return `<span class="pill pill-${status}">${map[status] || status}</span>`;
+}
+
+function warnIcon(blocking) {
+  if (!blocking.length) return '';
+  const tip = 'Requires approved SOP:<br>' + blocking.map(s => '· ' + s).join('<br>');
+  return `<span class="warn-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+      <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+    <span class="warn-tip">${tip}</span>
+  </span>`;
+}
+
+// ─── RENDER: DHF PHASES ───────────────────────────────────────────────────────
+
+function renderPhases() {
+  let totalDocs = 0, approvedDocs = 0, activePhase = null;
+  const html = PHASES.map(phase => {
+    const docStatuses = phase.docs.map(d => getDocStatus(d));
+    const approved = docStatuses.filter(s => s === 'approved').length;
+    const total    = phase.docs.length;
+    totalDocs    += total;
+    approvedDocs += approved;
+
+    const hasProgress = approved > 0 || docStatuses.some(s => s !== 'not-started');
+    const st = approved === total ? 'complete' : hasProgress ? 'inprogress' : 'notstarted';
+    if (st === 'inprogress' && !activePhase) activePhase = phase.label;
+
+    const badgeLabel = { complete: 'Complete', inprogress: 'In Progress', notstarted: 'Not Started' }[st];
+
+    const docRows = phase.docs.map(doc => {
+      const status   = getDocStatus(doc);
+      const blocking = getBlockingSOPs(doc.id);
+      return `<a class="doc-row" href="${doc.href}" id="doc-${doc.id}">
+        <span class="doc-name">${doc.label}</span>
+        ${pill(status)}
+        ${warnIcon(blocking)}
+        ${ARROW}
+      </a>`;
+    }).join('');
+
+    return `<div class="phase-card st-${st}" id="phase-${phase.id}">
+      <div class="phase-hd" onclick="togglePhase('${phase.id}')">
+        <span class="phase-num-badge">${phase.num}</span>
+        <span class="phase-name">${phase.label}</span>
+        <span class="phase-frac">${approved}/${total}</span>
+        <span class="phase-badge ${st}">${badgeLabel}</span>
+        ${CHEV}
+      </div>
+      <div class="phase-body">${docRows}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('phases-container').innerHTML = html;
+  return { totalDocs, approvedDocs, activePhase };
+}
+
+// ─── RENDER: SOPs ─────────────────────────────────────────────────────────────
+
+function renderSOPs() {
+  let totalSOPs = 0, approvedSOPs = 0;
+
+  const html = SOP_GROUPS.map(group => {
+    const rows = group.sops.map(sop => {
+      const status = getSopStatus(sop.key);
+      totalSOPs++;
+      if (status === 'approved') approvedSOPs++;
+      const gated    = (SOP_GATES[sop.key] || []).length;
+      const gatesBadge = gated > 0
+        ? `<button class="gates-badge" onclick="highlightGated(event,'${sop.key}')">Gates ${gated} doc${gated !== 1 ? 's' : ''}</button>`
+        : '';
+      return `<a class="sop-row" href="${sop.href}" data-search="${sop.label.toLowerCase()} ${sop.num.toLowerCase()}">
+        <span class="sop-doc-num">${sop.num}</span>
+        <span class="sop-name">${sop.label}</span>
+        ${pill(status)}
+        ${gatesBadge}
+        <svg viewBox="0 0 24 24" class="sop-row-arrow"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>`;
+    }).join('');
+
+    return `<div class="sop-group" id="sop-group-${group.id}">
+      <div class="sop-group-hd" onclick="toggleSopGroup('${group.id}')">
+        <span class="sop-group-title">${group.label}</span>
+        <span class="sop-group-count">${group.sops.length}</span>
+        ${SOPCHEV}
+      </div>
+      <div class="sop-rows-wrap">${rows}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('sop-container').innerHTML = html;
+  return { totalSOPs, approvedSOPs };
+}
+
+// ─── RENDER: STATS BAR ────────────────────────────────────────────────────────
+
+function renderStats(totalDocs, approvedDocs, totalSOPs, approvedSOPs, activePhase) {
+  const dhfPct = totalDocs   ? Math.round(approvedDocs  / totalDocs   * 100) : 0;
+  const sopPct = totalSOPs   ? Math.round(approvedSOPs  / totalSOPs   * 100) : 0;
+  const dhfColor = dhfPct >= 80 ? 'var(--green)' : dhfPct >= 40 ? 'var(--amber)' : 'var(--indigo)';
+  const sopColor = sopPct >= 80 ? 'var(--green)' : sopPct >= 40 ? 'var(--amber)' : 'var(--indigo)';
+
+  document.getElementById('stats-bar').innerHTML = `
+    <div class="stat-block">
+      <div class="stat-label">DHF Progress</div>
+      <div class="stat-row">
+        <span class="stat-val">${approvedDocs}</span>
+        <span class="stat-of">/ ${totalDocs} docs approved</span>
+      </div>
+      <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${dhfPct}%;background:${dhfColor}"></div></div>
+    </div>
+    <div class="stats-div"></div>
+    <div class="stat-block">
+      <div class="stat-label">SOP Coverage</div>
+      <div class="stat-row">
+        <span class="stat-val">${approvedSOPs}</span>
+        <span class="stat-of">/ ${totalSOPs} SOPs approved</span>
+      </div>
+      <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${sopPct}%;background:${sopColor}"></div></div>
+    </div>
+    <div class="stats-div"></div>
+    <div class="stat-block">
+      <div class="stat-label">Active Phase</div>
+      <div class="stat-text">${activePhase || 'Not started'}</div>
+    </div>
+  `;
+}
+
+// ─── INTERACTIONS ─────────────────────────────────────────────────────────────
+
+function togglePhase(id) {
+  const el = document.getElementById('phase-' + id);
+  if (el) el.classList.toggle('collapsed');
+}
+
+function toggleSopGroup(id) {
+  const el = document.getElementById('sop-group-' + id);
+  if (el) el.classList.toggle('collapsed');
+}
+
+function highlightGated(e, sopKey) {
+  e.preventDefault();
+  e.stopPropagation();
+  const docIds = SOP_GATES[sopKey] || [];
+
+  // Expand all phases
+  PHASES.forEach(p => {
+    const card = document.getElementById('phase-' + p.id);
+    if (card) card.classList.remove('collapsed');
+  });
+
+  // Clear previous flashes
+  document.querySelectorAll('.doc-row.flash').forEach(el => {
+    el.classList.remove('flash');
+    void el.offsetWidth;
+  });
+
+  let firstEl = null;
+  docIds.forEach(docId => {
+    const el = document.getElementById('doc-' + docId);
+    if (el) {
+      el.classList.add('flash');
+      if (!firstEl) firstEl = el;
+    }
+  });
+
+  if (firstEl) {
+    firstEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function filterSOPs(query) {
+  const q = query.trim().toLowerCase();
+  document.querySelectorAll('.sop-group').forEach(group => {
+    let anyVisible = false;
+    group.querySelectorAll('.sop-row').forEach(row => {
+      const matches = !q || (row.dataset.search || '').includes(q);
+      row.classList.toggle('hidden', !matches);
+      if (matches) anyVisible = true;
+    });
+    group.classList.toggle('hidden', !anyVisible);
+    if (q && anyVisible) group.classList.remove('collapsed');
+  });
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+
+const projectName = getProjectName();
+document.getElementById('topbar-project').textContent = projectName;
+document.getElementById('topbar-updated').textContent = 'Updated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+document.title = projectName + ' — Project Status — Tangram eQMS';
+
+const { totalDocs, approvedDocs, activePhase } = renderPhases();
+const { totalSOPs, approvedSOPs } = renderSOPs();
+renderStats(totalDocs, approvedDocs, totalSOPs, approvedSOPs, activePhase);
+</script>
+</body>
+</html>

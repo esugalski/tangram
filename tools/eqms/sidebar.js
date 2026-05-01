@@ -10,6 +10,12 @@ const NAV_ITEMS = [
     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
   },
   {
+    key: 'project-status',
+    label: 'Project Status',
+    href: 'project-status.html',
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+  },
+  {
     key: 'library',
     label: 'Library',
     href: 'doc-library.html',
@@ -63,6 +69,8 @@ const NAV_ITEMS = [
 // Old pages need no code change — they keep calling initSidebar({ activePage: 'capa' })
 // and this map resolves to 'capa-ncr'.
 const ACTIVE_MAP = {
+  // → Project Status
+  'project-status':     'project-status',
   // → My Work
   'dashboard':          'my-work',
   'quality-roadmap':    'my-work',
