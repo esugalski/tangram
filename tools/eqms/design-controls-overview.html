@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" class="glance-open">
 <head>
   <meta charset="UTF-8">
@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css">
   <style>
     :root {
       --primary:    #0B2740;
@@ -29,29 +30,8 @@
       --indigo-bg:  #EEF2FF;
       --indigo-text:#3730A3;
       --border:     rgba(11,39,64,0.08);
-      --sidebar-w:  220px;
+      --sidebar-w:  232px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
-
-    /* ─── SIDEBAR ─── */
-    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; overflow: hidden; }
-    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
-    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
-    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
-    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
-    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; white-space: nowrap; }
-    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; }
-    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
-    .sidebar-nav::-webkit-scrollbar { width: 0; }
-    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
-    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
-    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
-    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); white-space: nowrap; }
-    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
-    .sidebar-sign-out a { font-size: 0.63rem; color: rgba(255,255,255,0.2); text-decoration: none; transition: color 0.15s; }
-    .sidebar-sign-out a:hover { color: rgba(255,255,255,0.45); }
-
     /* ─── DC SUBNAV ─── */
     .dc-subnav { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 40px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; overflow-x: auto; flex-shrink: 0; }
     .dc-subnav::-webkit-scrollbar { height: 0; }
@@ -59,8 +39,11 @@
     .dc-subnav-link:hover { color: var(--primary); }
     .dc-subnav-link.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
 
+    /* ─── MODULE HEADER ─── */
+    .module-header { background: var(--primary); height: 46px; display: flex; align-items: center; padding: 0 1.5rem; flex-shrink: 0; }
+    .module-header-title { font-size: 0.84rem; font-weight: 700; color: white; letter-spacing: -0.01em; }
     /* ─── APP SHELL ─── */
-    .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; position: relative; }
+    .main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; position: relative; }
 
     /* ─── TOPBAR ─── */
     .topbar { background: white; border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; padding: 0 1.25rem; flex-shrink: 0; gap: 0.75rem; }
@@ -89,7 +72,7 @@
     .glance-tab { position: fixed; right: 0; top: 50%; transform: translateY(-50%); width: 28px; height: 110px; background: white; border: 1px solid rgba(11,39,64,0.09); border-right: none; border-radius: 8px 0 0 8px; box-shadow: -2px 0 10px rgba(11,39,64,0.06); display: flex; align-items: center; justify-content: center; writing-mode: vertical-rl; text-orientation: mixed; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.35); cursor: pointer; user-select: none; z-index: 119; font-family: 'Inter', sans-serif; transition: color 0.15s, background 0.15s, opacity 0.2s; }
     .glance-tab:hover { color: #0B2740; background: rgba(11,39,64,0.02); }
     html.glance-open .glance-tab { opacity: 0; pointer-events: none; }
-    html.glance-open .app-main { margin-right: 280px; transition: margin-right 0.25s cubic-bezier(0.4,0,0.2,1); }
+    html.glance-open .main { margin-right: 280px; transition: margin-right 0.25s cubic-bezier(0.4,0,0.2,1); }
     /* lm-sw* widget classes (used inside the At a Glance panel) */
     .lm-sw { padding: 0.75rem 1rem; display: flex; flex-direction: column; gap: 0.7rem; }
     .lm-sw-gauge-wrap { display: flex; flex-direction: column; align-items: center; padding: 0.5rem 0; gap: 0.25rem; }
@@ -242,7 +225,7 @@
       .detail-panel { width: 100%; }
       .next-items { flex-direction: column; }
       .glance-panel, .glance-tab { display: none !important; }
-      html.glance-open .app-main { margin-right: 0; }
+      html.glance-open .main { margin-right: 0; }
     }
   </style>
 </head>
@@ -250,7 +233,8 @@
 
 <aside class="sidebar" id="sidebar-root"></aside>
 
-<div class="app-main">
+<div class="main">
+<div class="module-header"><span class="module-header-title">Design Controls</span></div>
 
 <nav class="dc-subnav">
   <a href="design-controls-overview.html" class="dc-subnav-link active">Design Controls Overview</a>
