@@ -769,6 +769,7 @@ function renderPhases(idx) {
         <span class="phase-num-badge">${phase.num}</span>
         <span class="phase-name">${escH(phase.label)}</span>
         <button class="doc-edit-btn phase-rename-btn" onclick="renamePhase(event,'${escA(phase.id)}')">Rename</button>
+        <button class="doc-edit-btn del phase-rename-btn" onclick="removePhase(event,'${escA(phase.id)}')">✕ Delete</button>
         <span class="phase-frac">${approved}/${total}</span>
         <span class="phase-badge ${st}">${badgeLabel}</span>
         ${CHEV}
@@ -967,6 +968,26 @@ function addPhase() {
   const idx = getIndex();
   const id = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   idx.phases.push({ id, num: (num || '').trim() || String(idx.phases.length + 1).padStart(2,'0'), label: label.trim(), docs: [] });
+  saveIndex(idx);
+  renderAll();
+}
+
+function removePhase(e, phaseId) {
+  e.preventDefault();
+  e.stopPropagation();
+  const idx = getIndex();
+  const phase = idx.phases.find(p => p.id === phaseId);
+  if (!phase) return;
+  const docCount = phase.docs.length;
+  const msg = docCount > 0
+    ? `Delete phase "${phase.label}" and its ${docCount} document${docCount !== 1 ? 's' : ''}?`
+    : `Delete phase "${phase.label}"?`;
+  if (!confirm(msg)) return;
+  const removedDocIds = phase.docs.map(d => d.id);
+  idx.phases = idx.phases.filter(p => p.id !== phaseId);
+  for (const d of allDocs(idx)) {
+    d.predecessors = (d.predecessors || []).filter(pid => !removedDocIds.includes(pid));
+  }
   saveIndex(idx);
   renderAll();
 }
