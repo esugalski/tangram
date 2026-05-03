@@ -344,60 +344,36 @@ const SEED_INDEX = {
     {
       id: 'planning', num: '01', label: 'Planning',
       docs: [
-        { id: 'user-needs',            label: 'User Needs',                      href: 'user-needs.html',               lsKey: 'qms_user_needs',            isArray: true,  required: true,  predecessors: [],                                              requiredSops: ['SOP-DC-002'],                     aiDraftUrl: 'user-needs.html?autodraft=1' },
-        { id: 'regulatory-assessment', label: 'Regulatory Assessment',           href: 'regulatory-assessment.html',    lsKey: 'qms_regulatory_assessment',                 required: true,  predecessors: [],                                              requiredSops: [],                                 aiDraftUrl: 'regulatory-assessment.html?autodraft=1' },
-        { id: 'dev-plan',              label: 'Design & Development Plan',       href: 'dev-plan.html',                 lsKey: 'qms_dev_plan',                              required: true,  predecessors: ['user-needs','regulatory-assessment'],           requiredSops: ['SOP-DC-002'],                     aiDraftUrl: 'dev-plan.html?autodraft=1' },
-        { id: 'risk-mgmt-plan',        label: 'Risk Management Plan',            href: 'risk-management-plan.html',     lsKey: 'qms_risk_mgmt_plan',                        required: true,  predecessors: ['dev-plan'],                                    requiredSops: ['SOP-RM-001'],                     aiDraftUrl: 'risk-management-plan.html?autodraft=1' },
-        { id: 'design-review-plan',    label: 'Design Review (Planning Gate)',   href: 'design-review.html',            lsKey: 'qms_design_review_planning',                required: false, predecessors: ['dev-plan','risk-mgmt-plan'],                   requiredSops: [] },
+        { id: 'risk-mgmt-plan',        label: 'Risk Management Plan',            href: 'risk-management-plan.html',     lsKey: 'qms_risk_mgmt_plan',                        required: true,  predecessors: [],                                              requiredSops: ['SOP-RM-001'],                     aiDraftUrl: 'risk-management-plan.html?autodraft=1' },
       ]
     },
     {
       id: 'design-inputs', num: '02', label: 'Design Inputs',
       docs: [
-        { id: 'design-inputs',         label: 'Design Inputs',                   href: 'design-inputs.html',            lsKey: 'qms_design_inputs',         isArray: true,  required: true,  predecessors: ['design-review-plan'],                          requiredSops: [],                                 aiDraftUrl: 'design-inputs.html?autodraft=1' },
-        { id: 'software-requirements', label: 'Software Requirements',           href: 'design-inputs.html',            lsKey: 'qms_software_requirements',                 required: false, predecessors: ['design-review-plan'],                          requiredSops: [] },
-        { id: 'risk-analysis',         label: 'Risk Analysis',                   href: 'risk-analysis.html',            lsKey: 'qms_risk_analysis',                         required: true,  predecessors: ['design-inputs','software-requirements'],       requiredSops: [] },
-        { id: 'user-risk-analysis',    label: 'User-Related Risk Analysis',      href: 'risk-analysis.html',            lsKey: 'qms_user_risk_analysis',                    required: false, predecessors: ['design-inputs'],                               requiredSops: [] },
-        { id: 'design-review-inputs',  label: 'Design Review (Inputs Gate)',     href: 'design-review.html',            lsKey: 'qms_design_review_inputs',                  required: false, predecessors: ['risk-analysis','user-risk-analysis'],          requiredSops: [] },
+        { id: 'risk-analysis',         label: 'Risk Analysis',                   href: 'risk-analysis.html',            lsKey: 'qms_risk_analysis',                         required: true,  predecessors: ['risk-mgmt-plan'],                              requiredSops: [] },
+        { id: 'user-risk-analysis',    label: 'User-Related Risk Analysis',      href: 'risk-analysis.html',            lsKey: 'qms_user_risk_analysis',                    required: false, predecessors: ['risk-mgmt-plan'],                              requiredSops: [] },
       ]
     },
     {
       id: 'design-outputs', num: '03', label: 'Design Outputs',
       docs: [
-        { id: 'dfmea',                 label: 'Design FMEA',                     href: 'risk-hub.html',                 lsKey: 'qms_dfmea',                                 required: false, predecessors: ['design-review-inputs'],                        requiredSops: [] },
-        { id: '2d-drawings',           label: '2D Drawings / Specifications',    href: 'design-outputs.html',           lsKey: 'qms_2d_drawings',                           required: true,  predecessors: ['design-review-inputs'],                        requiredSops: [] },
-        { id: 'work-instructions',     label: 'Work Instructions',               href: 'design-outputs.html',           lsKey: 'qms_work_instructions',                     required: false, predecessors: ['2d-drawings'],                                 requiredSops: [] },
-        { id: 'pfmea',                 label: 'Process FMEA',                    href: 'risk-hub.html',                 lsKey: 'qms_pfmea',                                 required: false, predecessors: ['work-instructions'],                           requiredSops: [] },
-        { id: 'bom',                   label: 'Bill of Materials',               href: 'design-outputs.html',           lsKey: 'qms_bom',                                   required: false, predecessors: ['design-review-inputs'],                        requiredSops: [] },
-        { id: 'packaging-spec',        label: 'Packaging Specification',         href: 'design-outputs.html',           lsKey: 'qms_packaging_spec',                        required: true,  predecessors: ['2d-drawings'],                                 requiredSops: [] },
-        { id: 'labeling-spec',         label: 'Labeling Specification',          href: 'design-outputs.html',           lsKey: 'qms_labeling_spec',                         required: true,  predecessors: ['2d-drawings'],                                 requiredSops: [] },
-        { id: 'vv-master-plan',        label: 'Master V&V Plan',                 href: 'vv-hub.html',                   lsKey: 'qms_vv_master_plan',                        required: false, predecessors: ['2d-drawings','packaging-spec','labeling-spec'], requiredSops: [] },
-        { id: 'supplier-agreements',   label: 'Supplier Agreements',             href: 'suppliers.html',                lsKey: 'qms_supplier_agreements',                   required: false, predecessors: ['2d-drawings','packaging-spec','labeling-spec'], requiredSops: ['SOP-PC-001'] },
-        { id: 'design-review-outputs', label: 'Design Review (Outputs Gate)',    href: 'design-review.html',            lsKey: 'qms_design_review',                         required: true,  predecessors: ['vv-master-plan','supplier-agreements'],        requiredSops: [] },
+        { id: 'dfmea',                 label: 'Design FMEA',                     href: 'risk-hub.html',                 lsKey: 'qms_dfmea',                                 required: false, predecessors: ['risk-analysis'],                               requiredSops: [] },
+        { id: 'pfmea',                 label: 'Process FMEA',                    href: 'risk-hub.html',                 lsKey: 'qms_pfmea',                                 required: false, predecessors: ['risk-analysis'],                               requiredSops: [] },
       ]
     },
     {
       id: 'verification', num: '04', label: 'Verification',
-      docs: [
-        { id: 'verification-protocol', label: 'Verification Protocol',           href: 'vv.html',                       lsKey: 'qms_verification_protocol',                 required: true,  predecessors: ['design-review-outputs'],                       requiredSops: ['SOP-STAT-001'] },
-        { id: 'verification-report',   label: 'Verification Report',             href: 'vv.html',                       lsKey: 'qms_verification_report',                   required: true,  predecessors: ['verification-protocol'],                       requiredSops: [] },
-        { id: 'design-review-verif',   label: 'Design Review (Verification Gate)', href: 'design-review.html',          lsKey: 'qms_design_review_verification',             required: false, predecessors: ['verification-report'],                         requiredSops: [] },
-      ]
+      docs: []
     },
     {
       id: 'validation', num: '05', label: 'Validation',
       docs: [
-        { id: 'validation-protocol',   label: 'Validation Protocol',             href: 'vv-hub.html',                   lsKey: 'qms_validation_protocol',                   required: true,  predecessors: ['design-review-verif'],                         requiredSops: [] },
-        { id: 'validation-report',     label: 'Validation Report',               href: 'vv-hub.html',                   lsKey: 'qms_validation_report',                     required: true,  predecessors: ['validation-protocol'],                         requiredSops: [] },
-        { id: 'design-review-valid',   label: 'Design Review (Final)',            href: 'design-review.html',            lsKey: 'qms_design_review_final',                   required: true,  predecessors: ['validation-report'],                           requiredSops: [] },
-        { id: 'risk-mgmt-report',      label: 'Risk Management Report',          href: 'risk-management-report.html',   lsKey: 'qms_risk_mgmt_report',                      required: true,  predecessors: ['design-review-valid'],                         requiredSops: [] },
+        { id: 'risk-mgmt-report',      label: 'Risk Management Report',          href: 'risk-management-report.html',   lsKey: 'qms_risk_mgmt_report',                      required: true,  predecessors: ['dfmea','pfmea'],                               requiredSops: [] },
       ]
     },
     {
       id: 'transfer', num: '06', label: 'Design Transfer',
-      docs: [
-        { id: 'design-transfer',       label: 'Design Transfer / DMR',           href: 'dmr.html',                      lsKey: 'qms_dmr',                                   required: false, predecessors: ['risk-mgmt-report'],                            requiredSops: [] },
-      ]
+      docs: []
     },
   ],
 
