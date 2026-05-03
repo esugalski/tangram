@@ -1,0 +1,1276 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="glance-open">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Management Overview — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary:    #0B2740;
+      --mid-blue:   #304F6B;
+      --muted:      #6B7A8D;
+      --dark-blue:  #02192F;
+      --sidebar-bg: #071e31;
+      --aqua:       #0AC0E9;
+      --aqua-dark:  #089bbf;
+      --light-gray: #F7F8FA;
+      --green:      #10B981;
+      --green-bg:   #ECFDF5;
+      --green-text: #065F46;
+      --amber:      #F59E0B;
+      --amber-bg:   #FFFBEB;
+      --amber-text: #92400E;
+      --red:        #EF4444;
+      --indigo:     #6366f1;
+      --indigo-bg:  #EEF2FF;
+      --indigo-text:#3730A3;
+      --border:     rgba(11,39,64,0.08);
+      --sidebar-w:  220px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; overflow: hidden; }
+    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
+    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
+    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
+    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; white-space: nowrap; }
+    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; }
+    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
+    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
+    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); white-space: nowrap; }
+    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
+    .sidebar-sign-out a { font-size: 0.63rem; color: rgba(255,255,255,0.2); text-decoration: none; transition: color 0.15s; }
+    .sidebar-sign-out a:hover { color: rgba(255,255,255,0.45); }
+
+    /* ─── DC SUBNAV ─── */
+    .dc-subnav { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 40px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; overflow-x: auto; flex-shrink: 0; }
+    .dc-subnav::-webkit-scrollbar { height: 0; }
+    .dc-subnav-link { font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.5); text-decoration: none; padding: 0 0.7rem; white-space: nowrap; height: 40px; display: flex; align-items: center; border-bottom: 2px solid transparent; transition: color 0.12s; }
+    .dc-subnav-link:hover { color: var(--primary); }
+    .dc-subnav-link.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
+
+    /* ─── APP SHELL ─── */
+    .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; position: relative; }
+
+    /* ─── TOPBAR ─── */
+    .topbar { background: white; border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; padding: 0 1.25rem; flex-shrink: 0; gap: 0.75rem; }
+    .topbar-title { font-size: 0.88rem; font-weight: 700; color: var(--primary); letter-spacing: -0.015em; white-space: nowrap; }
+    .topbar-sep { width: 1px; height: 16px; background: var(--border); flex-shrink: 0; }
+    .topbar-project { font-size: 0.78rem; color: var(--mid-blue); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+    .project-select { font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid var(--border); border-radius: 5px; padding: 0.25rem 1.6rem 0.25rem 0.55rem; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23304F6B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.45rem center; flex: 1; min-width: 0; max-width: 260px; transition: border-color 0.12s; }
+    .project-select:hover { border-color: rgba(10,192,233,0.35); color: var(--aqua); }
+    .project-select:focus { outline: none; border-color: rgba(10,192,233,0.5); }
+    .project-new-btn { font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; color: var(--aqua); background: rgba(10,192,233,0.08); border: 1.5px solid rgba(10,192,233,0.25); border-radius: 5px; padding: 0.28rem 0.6rem; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.12s; }
+    .project-new-btn:hover { background: rgba(10,192,233,0.16); }
+    .topbar-updated { font-size: 0.7rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+    .topbar-btn { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.01em; padding: 0.3rem 0.7rem; border-radius: 5px; border: 1.5px solid var(--border); background: white; color: var(--mid-blue); cursor: pointer; transition: all 0.12s; white-space: nowrap; flex-shrink: 0; }
+    .topbar-btn:hover { border-color: rgba(10,192,233,0.35); color: var(--aqua); background: rgba(10,192,233,0.04); }
+    .topbar-btn.active { border-color: var(--amber); color: var(--amber-text); background: var(--amber-bg); }
+    .topbar-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── AT A GLANCE PANEL ─── */
+    .glance-panel { position: fixed; top: 56px; right: 0; bottom: 0; width: 280px; background: white; border-left: 1px solid rgba(11,39,64,0.09); box-shadow: -4px 0 24px rgba(11,39,64,0.08); overflow-y: auto; overflow-x: hidden; z-index: 120; transform: translateX(100%); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); font-family: 'Inter', sans-serif; }
+    .glance-panel.open { transform: translateX(0); }
+    .glance-panel-head { position: sticky; top: 0; display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 0.9rem 0.6rem; background: white; border-bottom: 1px solid rgba(11,39,64,0.08); z-index: 1; }
+    .glance-panel-label { flex: 1; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.38); }
+    .glance-panel-close { width: 24px; height: 24px; border: none; background: rgba(11,39,64,0.05); border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; font-size: 14px; line-height: 1; color: rgba(11,39,64,0.55); }
+    .glance-panel-close:hover { background: rgba(11,39,64,0.1); }
+    .glance-panel-body { padding: 0; }
+    .glance-tab { position: fixed; right: 0; top: 50%; transform: translateY(-50%); width: 28px; height: 110px; background: white; border: 1px solid rgba(11,39,64,0.09); border-right: none; border-radius: 8px 0 0 8px; box-shadow: -2px 0 10px rgba(11,39,64,0.06); display: flex; align-items: center; justify-content: center; writing-mode: vertical-rl; text-orientation: mixed; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.35); cursor: pointer; user-select: none; z-index: 119; font-family: 'Inter', sans-serif; transition: color 0.15s, background 0.15s, opacity 0.2s; }
+    .glance-tab:hover { color: #0B2740; background: rgba(11,39,64,0.02); }
+    html.glance-open .glance-tab { opacity: 0; pointer-events: none; }
+    html.glance-open .app-main { margin-right: 280px; transition: margin-right 0.25s cubic-bezier(0.4,0,0.2,1); }
+    /* lm-sw* widget classes (used inside the At a Glance panel) */
+    .lm-sw { padding: 0.75rem 1rem; display: flex; flex-direction: column; gap: 0.7rem; }
+    .lm-sw-gauge-wrap { display: flex; flex-direction: column; align-items: center; padding: 0.5rem 0; gap: 0.25rem; }
+    .lm-sw-big { font-size: 1.6rem; font-weight: 800; color: #0B2740; letter-spacing: -0.03em; line-height: 1; }
+    .lm-sw-gauge-sub { font-size: 0.64rem; color: rgba(11,39,64,0.48); }
+    .lm-sw-section { border-top: 1px solid rgba(11,39,64,0.07); padding-top: 0.65rem; }
+    .lm-sw-section-title { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.45rem; }
+    .lm-sw-stat-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; padding: 0.18rem 0; }
+    .lm-sw-stat-label { color: rgba(11,39,64,0.52); }
+    .lm-sw-stat-value { font-weight: 700; color: #0B2740; }
+    .lm-sw-bar-row { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.28rem; }
+    .lm-sw-bar-label { font-size: 0.67rem; color: #304F6B; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lm-sw-bar-track { flex: 2; height: 5px; background: rgba(11,39,64,0.08); border-radius: 100px; overflow: hidden; }
+    .lm-sw-bar-fill { height: 100%; border-radius: 100px; }
+    .lm-sw-bar-val { font-size: 0.6rem; font-weight: 600; color: rgba(11,39,64,0.42); min-width: 24px; text-align: right; }
+
+    /* ─── TWO-COLUMN LAYOUT ─── */
+    .columns { flex: 1; display: flex; min-height: 0; overflow: hidden; }
+
+    /* ─── LEFT PANEL ─── */
+    .col-left { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .col-header { padding: 0.75rem 1.25rem 0.625rem; border-bottom: 1px solid var(--border); background: white; flex-shrink: 0; display: flex; align-items: center; gap: 0.5rem; }
+    .col-title { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); flex: 1; }
+    .col-scroll { flex: 1; overflow-y: auto; padding: 0.875rem 1.25rem; display: flex; flex-direction: column; gap: 0.625rem; }
+    .col-scroll::-webkit-scrollbar { width: 4px; }
+    .col-scroll::-webkit-scrollbar-track { background: transparent; }
+    .col-scroll::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.14); border-radius: 2px; }
+
+    /* Phase cards */
+    .phase-card { background: white; border-radius: 9px; border: 1px solid var(--border); overflow: visible; }
+    .phase-card.st-complete   { border-left: 3px solid var(--green); }
+    .phase-card.st-inprogress { border-left: 3px solid var(--amber); }
+    .phase-card.st-notstarted { border-left: 3px solid rgba(11,39,64,0.12); }
+    .phase-hd { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0.875rem 0.75rem 0.75rem; cursor: pointer; user-select: none; transition: background 0.12s; border-radius: 8px 8px 0 0; }
+    .phase-hd:hover { background: rgba(11,39,64,0.02); }
+    .phase-card.collapsed .phase-hd { border-radius: 8px; }
+    .phase-num-badge { font-size: 0.58rem; font-weight: 800; letter-spacing: 0.06em; color: white; background: rgba(11,39,64,0.22); border-radius: 4px; padding: 0.18rem 0.42rem; flex-shrink: 0; }
+    .phase-card.st-complete   .phase-num-badge { background: var(--green); }
+    .phase-card.st-inprogress .phase-num-badge { background: var(--amber); }
+    .phase-name { font-size: 0.845rem; font-weight: 700; color: var(--primary); letter-spacing: -0.01em; flex: 1; }
+    .phase-frac { font-size: 0.7rem; font-weight: 600; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
+    .phase-badge { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.18rem 0.52rem; border-radius: 3px; flex-shrink: 0; }
+    .phase-badge.complete   { background: var(--green-bg);  color: var(--green-text); }
+    .phase-badge.inprogress { background: var(--amber-bg);  color: var(--amber-text); }
+    .phase-badge.notstarted { background: rgba(11,39,64,0.05); color: rgba(11,39,64,0.32); }
+    .chev { width: 14px; height: 14px; stroke: rgba(11,39,64,0.28); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; transition: transform 0.2s cubic-bezier(0.22,1,0.36,1); }
+    .phase-card.collapsed .chev { transform: rotate(-90deg); }
+    .phase-body { border-top: 1px solid rgba(11,39,64,0.05); }
+    .phase-card.collapsed .phase-body { display: none; }
+
+    /* Doc rows */
+    .doc-row { display: flex; align-items: center; gap: 0.625rem; padding: 0.565rem 0.875rem 0.565rem 2.25rem; border-bottom: 1px solid rgba(11,39,64,0.04); transition: background 0.1s; color: inherit; text-decoration: none; position: relative; }
+    .doc-row:last-child { border-bottom: none; }
+    .doc-row:hover { background: rgba(11,39,64,0.02); }
+    .doc-row.scoped-out { opacity: 0.38; }
+    @keyframes docFlash { 0%,5% { background: rgba(10,192,233,0.12); } 100% { background: transparent; } }
+    .doc-row.flash { animation: docFlash 2s ease-out forwards; }
+    .doc-name { font-size: 0.8rem; font-weight: 500; color: var(--primary); flex: 1; min-width: 0; }
+    .doc-opt-badge { font-size: 0.5rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; background: rgba(11,39,64,0.05); color: rgba(11,39,64,0.3); border-radius: 3px; padding: 0.1rem 0.35rem; flex-shrink: 0; }
+
+    /* Edit mode doc controls */
+    .doc-edit-btns { display: none; align-items: center; gap: 0.3rem; flex-shrink: 0; }
+    body.edit-mode .doc-edit-btns { display: flex; }
+    body.edit-mode .row-arrow { display: none; }
+    .phase-rename-btn { display: none; }
+    body.edit-mode .phase-rename-btn { display: inline-flex; }
+    .phase-name-input { font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--primary); border: 1.5px solid rgba(10,192,233,0.4); border-radius: 4px; padding: 0.1rem 0.4rem; outline: none; background: white; min-width: 120px; max-width: 300px; }
+    .doc-edit-btn { font-family: 'Inter', sans-serif; font-size: 0.62rem; font-weight: 600; padding: 0.18rem 0.5rem; border-radius: 4px; border: 1px solid var(--border); background: white; color: var(--mid-blue); cursor: pointer; transition: all 0.1s; white-space: nowrap; }
+    .doc-edit-btn:hover { border-color: rgba(10,192,233,0.4); color: var(--aqua); }
+    .doc-edit-btn.del { border-color: rgba(239,68,68,0.2); color: var(--red); }
+    .doc-edit-btn.del:hover { border-color: var(--red); background: rgba(239,68,68,0.05); }
+
+    /* Phase add-doc row (edit mode) */
+    .phase-add-row { display: none; padding: 0.45rem 0.875rem 0.45rem 2.25rem; }
+    body.edit-mode .phase-add-row { display: block; }
+    .phase-add-btn { font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 600; color: rgba(10,192,233,0.8); background: none; border: 1px dashed rgba(10,192,233,0.3); border-radius: 5px; padding: 0.3rem 0.65rem; cursor: pointer; width: 100%; transition: all 0.12s; }
+    .phase-add-btn:hover { color: var(--aqua); border-color: rgba(10,192,233,0.6); background: rgba(10,192,233,0.04); }
+
+    /* Status pills */
+    .pill { font-size: 0.575rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.16rem 0.48rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; border: 1px solid transparent; }
+    .pill-approved     { background: var(--green-bg);  color: var(--green-text); border-color: rgba(16,185,129,0.2); }
+    .pill-review       { background: var(--amber-bg);  color: var(--amber-text); border-color: rgba(245,158,11,0.2); }
+    .pill-draft        { background: var(--indigo-bg); color: var(--indigo-text); border-color: rgba(99,102,241,0.18); }
+    .pill-planned,
+    .pill-not-started  { background: rgba(11,39,64,0.05); color: rgba(11,39,64,0.35); border-color: rgba(11,39,64,0.08); }
+
+    /* Warning indicator */
+    .warn-wrap { position: relative; display: inline-flex; align-items: center; flex-shrink: 0; cursor: help; }
+    .warn-wrap svg { width: 14px; height: 14px; display: block; }
+    .warn-tip { position: absolute; right: -4px; top: calc(100% + 5px); background: #1a2942; color: rgba(255,255,255,0.88); font-size: 0.67rem; font-weight: 500; line-height: 1.55; padding: 0.45rem 0.7rem; border-radius: 5px; white-space: nowrap; z-index: 200; pointer-events: none; opacity: 0; transform: translateY(-3px); transition: opacity 0.15s, transform 0.15s; box-shadow: 0 4px 12px rgba(0,0,0,0.25); min-width: 180px; max-width: 260px; white-space: normal; }
+    .warn-tip::before { content: ''; position: absolute; top: -4px; right: 8px; border-left: 4px solid transparent; border-right: 4px solid transparent; border-bottom: 4px solid #1a2942; }
+    .warn-wrap:hover .warn-tip { opacity: 1; transform: translateY(0); }
+    .row-arrow { width: 13px; height: 13px; stroke: rgba(11,39,64,0.2); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; transition: stroke 0.12s; }
+    .doc-row:hover .row-arrow { stroke: var(--aqua); }
+
+
+    /* ─── DETAIL PANEL (slide-out) ─── */
+    .detail-panel { position: fixed; right: 0; top: 0; bottom: 0; width: 380px; background: white; border-left: 1px solid var(--border); box-shadow: -4px 0 24px rgba(11,39,64,0.1); z-index: 300; transform: translateX(100%); transition: transform 0.25s cubic-bezier(0.22,1,0.36,1); display: flex; flex-direction: column; }
+    .detail-panel.open { transform: translateX(0); }
+    .detail-hd { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+    .detail-hd-title { font-size: 0.85rem; font-weight: 700; color: var(--primary); flex: 1; }
+    .detail-close { background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; border-radius: 4px; display: flex; }
+    .detail-close:hover { background: var(--light-gray); }
+    .detail-body { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.1rem; }
+    .detail-field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .detail-label { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .detail-input { font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--primary); border: 1.5px solid var(--border); border-radius: 6px; padding: 0.5rem 0.7rem; outline: none; transition: border-color 0.12s; background: white; }
+    .detail-input:focus { border-color: rgba(10,192,233,0.4); }
+    .detail-check-list { display: flex; flex-direction: column; gap: 0.3rem; max-height: 160px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem; }
+    .detail-check-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.28rem 0.4rem; border-radius: 4px; cursor: pointer; }
+    .detail-check-item:hover { background: var(--light-gray); }
+    .detail-check-item input { accent-color: var(--aqua); flex-shrink: 0; }
+    .detail-check-item label { font-size: 0.76rem; color: var(--primary); cursor: pointer; line-height: 1.3; }
+    .detail-check-item label span { font-size: 0.62rem; color: var(--muted); display: block; }
+    .detail-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--border); display: flex; gap: 0.5rem; flex-shrink: 0; }
+    .detail-save { flex: 1; font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 700; background: var(--aqua); color: var(--dark-blue); border: none; border-radius: 6px; padding: 0.55rem; cursor: pointer; transition: background 0.12s; }
+    .detail-save:hover { background: var(--aqua-dark); }
+    .detail-cancel { font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500; background: white; color: var(--mid-blue); border: 1px solid var(--border); border-radius: 6px; padding: 0.55rem 1rem; cursor: pointer; }
+
+    /* ─── MODAL ─── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(2,25,47,0.45); z-index: 400; display: none; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: white; border-radius: 12px; padding: 1.75rem; width: min(540px, 92vw); max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+    .modal-title { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 0.35rem; }
+    .modal-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.25rem; line-height: 1.5; }
+    .modal-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.875rem; }
+    .modal-scroll::-webkit-scrollbar { width: 4px; }
+    .modal-scroll::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.14); border-radius: 2px; }
+    .modal-group-title { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(11,39,64,0.35); padding: 0.25rem 0 0.25rem; border-bottom: 1px solid var(--border); }
+    .modal-check-row { display: flex; align-items: flex-start; gap: 0.625rem; padding: 0.35rem 0; }
+    .modal-check-row input { accent-color: var(--aqua); flex-shrink: 0; margin-top: 2px; }
+    .modal-check-label { font-size: 0.8rem; font-weight: 500; color: var(--primary); }
+    .modal-check-sub { font-size: 0.68rem; color: var(--muted); display: block; }
+    .modal-footer { display: flex; gap: 0.5rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .modal-save { flex: 1; font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700; background: var(--aqua); color: var(--dark-blue); border: none; border-radius: 7px; padding: 0.65rem; cursor: pointer; }
+    .modal-save:hover { background: var(--aqua-dark); }
+    .modal-cancel { font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500; background: white; color: var(--mid-blue); border: 1px solid var(--border); border-radius: 7px; padding: 0.65rem 1.25rem; cursor: pointer; }
+
+    /* ─── EDIT MODE: add-phase/add-group buttons ─── */
+    .add-phase-row { display: none; padding: 0.5rem 0; }
+    body.edit-mode .add-phase-row { display: block; }
+    .add-phase-btn { font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600; color: rgba(11,39,64,0.4); background: none; border: 1px dashed rgba(11,39,64,0.18); border-radius: 7px; padding: 0.45rem; cursor: pointer; width: 100%; transition: all 0.12s; }
+    .add-phase-btn:hover { color: var(--aqua); border-color: rgba(10,192,233,0.35); }
+    .add-sopgroup-row { display: none; padding: 0.5rem 0; }
+    body.edit-mode .add-sopgroup-row { display: block; }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 900px) {
+      .col-scroll { overflow-y: visible; }
+      .detail-panel { width: 100%; }
+      .next-items { flex-direction: column; }
+      .glance-panel, .glance-tab { display: none !important; }
+      html.glance-open .app-main { margin-right: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar-root"></aside>
+
+<div class="app-main">
+
+<nav class="dc-subnav">
+  <a href="risk-management-overview.html" class="dc-subnav-link active">Risk Management Overview</a>
+  <a href="risk-management_guide.html" class="dc-subnav-link">RM Guide</a>
+  <a href="risk-management-plan.html" class="dc-subnav-link">RM Plan</a>
+  <a href="hazard-identification.html" class="dc-subnav-link">Hazard ID</a>
+  <a href="risk-analysis.html" class="dc-subnav-link">Risk Analysis</a>
+  <a href="risk-management-report.html" class="dc-subnav-link">RM Report</a>
+</nav>
+
+  <!-- Topbar -->
+  <div class="topbar">
+<select class="project-select" id="project-select" onchange="onProjectSelectChange(this.value)"></select>
+    <button class="project-new-btn" onclick="createNewProject()" title="Add a new project">+ New</button>
+    <span class="topbar-updated" id="topbar-updated"></span>
+    <button class="topbar-btn" id="btn-scope" onclick="openScopeModal()" title="Choose which documents apply to this project">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      Scope
+    </button>
+    <button class="topbar-btn" id="btn-edit" onclick="toggleEditMode()" title="Add, edit, and reorder documents and dependencies">
+      <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Edit Index
+    </button>
+  </div>
+
+  <!-- Two-column content -->
+  <div class="columns">
+
+    <!-- Left: DHF by Phase -->
+    <div class="col-left">
+      <div class="col-header">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;stroke:var(--muted);flex-shrink:0"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span class="col-title">Risk Management — by Phase</span>
+      </div>
+      <div class="col-scroll" id="phases-container"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- At a Glance tab + panel -->
+<div class="glance-tab" onclick="toggleGlance()">At a glance</div>
+<div id="glance-panel" class="glance-panel open">
+  <div class="glance-panel-head">
+    <span class="glance-panel-label">At a glance</span>
+    <button class="glance-panel-close" onclick="toggleGlance()">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="glance-panel-body" id="glance-body"></div>
+</div>
+
+<!-- Detail panel (slide-out for editing a doc/SOP) -->
+<div class="detail-panel" id="detail-panel">
+  <div class="detail-hd">
+    <span class="detail-hd-title" id="detail-title">Document Details</span>
+    <button class="detail-close" onclick="closeDetailPanel()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="detail-body" id="detail-body"></div>
+  <div class="detail-footer">
+    <button class="detail-save" id="detail-save-btn" onclick="saveDetailPanel()">Save Changes</button>
+    <button class="detail-cancel" onclick="closeDetailPanel()">Cancel</button>
+  </div>
+</div>
+
+<!-- Scope modal -->
+<div class="modal-overlay" id="scope-modal">
+  <div class="modal-box">
+    <div class="modal-title">Scope This Project</div>
+    <div class="modal-sub">Uncheck documents that don't apply to this device. Scoped-out items are dimmed and excluded from Next Actions.</div>
+    <div class="modal-scroll" id="scope-modal-body"></div>
+    <div class="modal-footer">
+      <button class="modal-save" onclick="saveScopeModal()">Save Scope</button>
+      <button class="modal-cancel" onclick="closeScopeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="sidebar.js"></script>
+<script>
+initSidebar({ activePage: 'risk-management' });
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SEED INDEX  —  Full document list from projectJourney_index.xlsx
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const SEED_INDEX = {
+  phases: [
+    {
+      id: 'planning', num: '01', label: 'Planning',
+      docs: [
+        { id: 'user-needs',            label: 'User Needs',                      href: 'user-needs.html',               lsKey: 'qms_user_needs',            isArray: true,  required: true,  predecessors: [],                                              requiredSops: ['SOP-DC-002'],                     aiDraftUrl: 'user-needs.html?autodraft=1' },
+        { id: 'regulatory-assessment', label: 'Regulatory Assessment',           href: 'regulatory-assessment.html',    lsKey: 'qms_regulatory_assessment',                 required: true,  predecessors: [],                                              requiredSops: [],                                 aiDraftUrl: 'regulatory-assessment.html?autodraft=1' },
+        { id: 'dev-plan',              label: 'Design & Development Plan',       href: 'dev-plan.html',                 lsKey: 'qms_dev_plan',                              required: true,  predecessors: ['user-needs','regulatory-assessment'],           requiredSops: ['SOP-DC-002'],                     aiDraftUrl: 'dev-plan.html?autodraft=1' },
+        { id: 'risk-mgmt-plan',        label: 'Risk Management Plan',            href: 'risk-management-plan.html',     lsKey: 'qms_risk_mgmt_plan',                        required: true,  predecessors: ['dev-plan'],                                    requiredSops: ['SOP-RM-001'],                     aiDraftUrl: 'risk-management-plan.html?autodraft=1' },
+        { id: 'design-review-plan',    label: 'Design Review (Planning Gate)',   href: 'design-review.html',            lsKey: 'qms_design_review_planning',                required: false, predecessors: ['dev-plan','risk-mgmt-plan'],                   requiredSops: [] },
+      ]
+    },
+    {
+      id: 'design-inputs', num: '02', label: 'Design Inputs',
+      docs: [
+        { id: 'design-inputs',         label: 'Design Inputs',                   href: 'design-inputs.html',            lsKey: 'qms_design_inputs',         isArray: true,  required: true,  predecessors: ['design-review-plan'],                          requiredSops: [],                                 aiDraftUrl: 'design-inputs.html?autodraft=1' },
+        { id: 'software-requirements', label: 'Software Requirements',           href: 'design-inputs.html',            lsKey: 'qms_software_requirements',                 required: false, predecessors: ['design-review-plan'],                          requiredSops: [] },
+        { id: 'risk-analysis',         label: 'Risk Analysis',                   href: 'risk-analysis.html',            lsKey: 'qms_risk_analysis',                         required: true,  predecessors: ['design-inputs','software-requirements'],       requiredSops: [] },
+        { id: 'user-risk-analysis',    label: 'User-Related Risk Analysis',      href: 'risk-analysis.html',            lsKey: 'qms_user_risk_analysis',                    required: false, predecessors: ['design-inputs'],                               requiredSops: [] },
+        { id: 'design-review-inputs',  label: 'Design Review (Inputs Gate)',     href: 'design-review.html',            lsKey: 'qms_design_review_inputs',                  required: false, predecessors: ['risk-analysis','user-risk-analysis'],          requiredSops: [] },
+      ]
+    },
+    {
+      id: 'design-outputs', num: '03', label: 'Design Outputs',
+      docs: [
+        { id: 'dfmea',                 label: 'Design FMEA',                     href: 'risk-hub.html',                 lsKey: 'qms_dfmea',                                 required: false, predecessors: ['design-review-inputs'],                        requiredSops: [] },
+        { id: '2d-drawings',           label: '2D Drawings / Specifications',    href: 'design-outputs.html',           lsKey: 'qms_2d_drawings',                           required: true,  predecessors: ['design-review-inputs'],                        requiredSops: [] },
+        { id: 'work-instructions',     label: 'Work Instructions',               href: 'design-outputs.html',           lsKey: 'qms_work_instructions',                     required: false, predecessors: ['2d-drawings'],                                 requiredSops: [] },
+        { id: 'pfmea',                 label: 'Process FMEA',                    href: 'risk-hub.html',                 lsKey: 'qms_pfmea',                                 required: false, predecessors: ['work-instructions'],                           requiredSops: [] },
+        { id: 'bom',                   label: 'Bill of Materials',               href: 'design-outputs.html',           lsKey: 'qms_bom',                                   required: false, predecessors: ['design-review-inputs'],                        requiredSops: [] },
+        { id: 'packaging-spec',        label: 'Packaging Specification',         href: 'design-outputs.html',           lsKey: 'qms_packaging_spec',                        required: true,  predecessors: ['2d-drawings'],                                 requiredSops: [] },
+        { id: 'labeling-spec',         label: 'Labeling Specification',          href: 'design-outputs.html',           lsKey: 'qms_labeling_spec',                         required: true,  predecessors: ['2d-drawings'],                                 requiredSops: [] },
+        { id: 'vv-master-plan',        label: 'Master V&V Plan',                 href: 'vv-hub.html',                   lsKey: 'qms_vv_master_plan',                        required: false, predecessors: ['2d-drawings','packaging-spec','labeling-spec'], requiredSops: [] },
+        { id: 'supplier-agreements',   label: 'Supplier Agreements',             href: 'suppliers.html',                lsKey: 'qms_supplier_agreements',                   required: false, predecessors: ['2d-drawings','packaging-spec','labeling-spec'], requiredSops: ['SOP-PC-001'] },
+        { id: 'design-review-outputs', label: 'Design Review (Outputs Gate)',    href: 'design-review.html',            lsKey: 'qms_design_review',                         required: true,  predecessors: ['vv-master-plan','supplier-agreements'],        requiredSops: [] },
+      ]
+    },
+    {
+      id: 'verification', num: '04', label: 'Verification',
+      docs: [
+        { id: 'verification-protocol', label: 'Verification Protocol',           href: 'vv.html',                       lsKey: 'qms_verification_protocol',                 required: true,  predecessors: ['design-review-outputs'],                       requiredSops: ['SOP-STAT-001'] },
+        { id: 'verification-report',   label: 'Verification Report',             href: 'vv.html',                       lsKey: 'qms_verification_report',                   required: true,  predecessors: ['verification-protocol'],                       requiredSops: [] },
+        { id: 'design-review-verif',   label: 'Design Review (Verification Gate)', href: 'design-review.html',          lsKey: 'qms_design_review_verification',             required: false, predecessors: ['verification-report'],                         requiredSops: [] },
+      ]
+    },
+    {
+      id: 'validation', num: '05', label: 'Validation',
+      docs: [
+        { id: 'validation-protocol',   label: 'Validation Protocol',             href: 'vv-hub.html',                   lsKey: 'qms_validation_protocol',                   required: true,  predecessors: ['design-review-verif'],                         requiredSops: [] },
+        { id: 'validation-report',     label: 'Validation Report',               href: 'vv-hub.html',                   lsKey: 'qms_validation_report',                     required: true,  predecessors: ['validation-protocol'],                         requiredSops: [] },
+        { id: 'design-review-valid',   label: 'Design Review (Final)',            href: 'design-review.html',            lsKey: 'qms_design_review_final',                   required: true,  predecessors: ['validation-report'],                           requiredSops: [] },
+        { id: 'risk-mgmt-report',      label: 'Risk Management Report',          href: 'risk-management-report.html',   lsKey: 'qms_risk_mgmt_report',                      required: true,  predecessors: ['design-review-valid'],                         requiredSops: [] },
+      ]
+    },
+    {
+      id: 'transfer', num: '06', label: 'Design Transfer',
+      docs: [
+        { id: 'design-transfer',       label: 'Design Transfer / DMR',           href: 'dmr.html',                      lsKey: 'qms_dmr',                                   required: false, predecessors: ['risk-mgmt-report'],                            requiredSops: [] },
+      ]
+    },
+  ],
+
+  sopGroups: [
+    {
+      id: 'quality-foundation', label: 'Quality System Foundation',
+      sops: [
+        { key: 'QS-QM-001',    num: 'QS-QM-001',    label: 'Quality Manual',                          href: 'quality-manual.html',                   lsKey: 'qms_quality_manual',         predecessors: [] },
+        { key: 'SOP-DC-001',   num: 'SOP-DC-001',   label: 'Document Control',                        href: 'document-control.html',                 lsKey: 'qms_proc_doc_control',       predecessors: ['QS-QM-001'] },
+        { key: 'SOP-SV-001',   num: 'SOP-SV-001',   label: 'QS Software Validation',                  href: '#',                                     lsKey: 'qms_proc_sw_validation',     predecessors: ['SOP-DC-001'] },
+        { key: 'SOP-SCM-001',  num: 'SOP-SCM-001',  label: 'Software Configuration Management',       href: '#',                                     lsKey: 'qms_proc_scm',               predecessors: ['SOP-DC-001'] },
+      ]
+    },
+    {
+      id: 'training', label: 'Training',
+      sops: [
+        { key: 'SOP-TR-001',   num: 'SOP-TR-001',   label: 'Training',                                href: 'training.html',                         lsKey: 'qms_proc_training',          predecessors: ['QS-QM-001'] },
+        { key: 'SOP-TR-002',   num: 'SOP-TR-002',   label: 'Training Records',                        href: 'team-training.html',                    lsKey: 'qms_proc_training_records',  predecessors: ['SOP-SV-001'] },
+      ]
+    },
+    {
+      id: 'design-risk', label: 'Design & Risk Controls',
+      sops: [
+        { key: 'SOP-DC-002',   num: 'SOP-DC-002',   label: 'Design Control',                          href: 'design-control.html',                   lsKey: 'qms_proc_design_control',    predecessors: ['QS-QM-001','SOP-DC-001'] },
+        { key: 'SOP-UE-001',   num: 'SOP-UE-001',   label: 'Usability Engineering',                   href: '#',                                     lsKey: 'qms_proc_usability',         predecessors: ['SOP-TR-001'] },
+        { key: 'SOP-SDLC-001', num: 'SOP-SDLC-001', label: 'Software Development Lifecycle',          href: '#',                                     lsKey: 'qms_proc_sdlc',              predecessors: ['SOP-TR-001'] },
+        { key: 'SOP-RM-001',   num: 'SOP-RM-001',   label: 'Risk Management',                         href: 'risk-management-procedure.html',        lsKey: 'qms_proc_risk_mgmt',         predecessors: ['SOP-TR-001'] },
+      ]
+    },
+    {
+      id: 'operations', label: 'Quality Operations',
+      sops: [
+        { key: 'SOP-MR-001',   num: 'SOP-MR-001',   label: 'Management Review',                       href: 'management-review.html',                lsKey: 'qms_proc_mgmt_review',       predecessors: [] },
+        { key: 'SOP-PC-001',   num: 'SOP-PC-001',   label: 'Purchasing Controls',                     href: 'suppliers.html',                        lsKey: 'qms_proc_purchasing',        predecessors: ['SOP-UE-001'] },
+        { key: 'SOP-SRR-001',  num: 'SOP-SRR-001',  label: 'Shipping, Receiving & Returned Goods',   href: '#',                                     lsKey: 'qms_proc_shipping',          predecessors: ['SOP-SDLC-001'] },
+        { key: 'SOP-IT-001',   num: 'SOP-IT-001',   label: 'Identification & Traceability',           href: '#',                                     lsKey: 'qms_proc_id_trace',          predecessors: [] },
+        { key: 'SOP-INS-001',  num: 'SOP-INS-001',  label: 'Inspection',                              href: '#',                                     lsKey: 'qms_proc_inspection',        predecessors: ['SOP-RM-001'] },
+        { key: 'SOP-NC-001',   num: 'SOP-NC-001',   label: 'Nonconformances',                         href: 'nonconformance-procedure.html',          lsKey: 'qms_proc_nonconformance',    predecessors: ['SOP-MR-001'] },
+        { key: 'SOP-PROD-001', num: 'SOP-PROD-001', label: 'Production Controls',                     href: '#',                                     lsKey: 'qms_proc_production',        predecessors: [] },
+        { key: 'SOP-CER-001',  num: 'SOP-CER-001',  label: 'Controlled Environment',                  href: '#',                                     lsKey: 'qms_proc_clean_room',        predecessors: ['SOP-NC-001'] },
+        { key: 'SOP-RW-001',   num: 'SOP-RW-001',   label: 'Rework',                                  href: '#',                                     lsKey: 'qms_proc_rework',            predecessors: ['SOP-NC-001','SOP-PROD-001'] },
+      ]
+    },
+    {
+      id: 'validation-tools', label: 'Validation & Technical Tools',
+      sops: [
+        { key: 'SOP-PV-001',   num: 'SOP-PV-001',   label: 'Process Validation',                      href: 'validation-hub.html',                   lsKey: 'qms_proc_process_validation',predecessors: [] },
+        { key: 'SOP-PD-001',   num: 'SOP-PD-001',   label: 'Process Deviation',                       href: '#',                                     lsKey: 'qms_proc_process_deviation', predecessors: ['SOP-PV-001'] },
+        { key: 'SOP-STAT-001', num: 'SOP-STAT-001', label: 'Statistical Techniques',                  href: '#',                                     lsKey: 'qms_proc_statistics',        predecessors: [] },
+        { key: 'SOP-EQ-001',   num: 'SOP-EQ-001',   label: 'Equipment Control',                       href: 'equipment.html',                        lsKey: 'qms_proc_equipment',         predecessors: [] },
+      ]
+    },
+    {
+      id: 'post-market', label: 'Post-Market & Compliance',
+      sops: [
+        { key: 'SOP-CAPA-001', num: 'SOP-CAPA-001', label: 'Corrective & Preventive Action (CAPA)',  href: 'capa-procedure.html',                   lsKey: 'qms_proc_capa',              predecessors: [] },
+        { key: 'SOP-COMP-001', num: 'SOP-COMP-001', label: 'Complaint Management',                   href: 'complaint-handling-procedure.html',      lsKey: 'qms_proc_complaints',        predecessors: [] },
+        { key: 'SOP-AUD-001',  num: 'SOP-AUD-001',  label: 'Third Party / Internal Audit',           href: 'internal-audit-procedure.html',         lsKey: 'qms_proc_audit',             predecessors: [] },
+      ]
+    },
+  ]
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PROJECT MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function getProjects() {
+  try { return JSON.parse(localStorage.getItem('qms_projects') || '[]'); } catch(e) { return []; }
+}
+
+function saveProjects(list) {
+  localStorage.setItem('qms_projects', JSON.stringify(list));
+}
+
+function getActiveProjectId() {
+  return localStorage.getItem('qms_active_project') || null;
+}
+
+function setActiveProjectId(id) {
+  if (id) localStorage.setItem('qms_active_project', id);
+  else localStorage.removeItem('qms_active_project');
+}
+
+function projectStorageKey(base) {
+  const pid = getActiveProjectId();
+  return pid ? `qms_proj_${pid}_${base}` : `qms_${base}`;
+}
+
+function getActiveProjectName() {
+  const pid = getActiveProjectId();
+  if (!pid) return null;
+  const proj = getProjects().find(p => p.id === pid);
+  return proj ? proj.name : null;
+}
+
+function renderProjectSelector() {
+  const sel = document.getElementById('project-select');
+  if (!sel) return;
+  const projects = getProjects();
+  const activeId = getActiveProjectId();
+  sel.innerHTML = '';
+  if (!projects.length) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = 'No project configured';
+    sel.appendChild(opt);
+  } else {
+    projects.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.name;
+      opt.selected = p.id === activeId;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+function onProjectSelectChange(id) {
+  if (!id) return;
+  setActiveProjectId(id);
+  document.getElementById('topbar-updated').textContent = 'Updated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  document.title = (getActiveProjectName() || 'Project') + ' — Risk Management Overview — Tangram eQMS';
+  renderAll();
+}
+
+function createNewProject() {
+  const name = prompt('Project name:');
+  if (!name || !name.trim()) return;
+  const id = 'proj_' + Math.random().toString(36).slice(2, 10);
+  const projects = getProjects();
+  projects.push({ id, name: name.trim() });
+  saveProjects(projects);
+  setActiveProjectId(id);
+  renderProjectSelector();
+  document.getElementById('project-select').value = id;
+  document.getElementById('topbar-updated').textContent = 'Updated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  document.title = name.trim() + ' — Risk Management Overview — Tangram eQMS';
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INDEX PERSISTENCE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function getIndex() {
+  try {
+    const raw = localStorage.getItem(projectStorageKey('rm_journey_index'));
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(SEED_INDEX)); // deep clone
+}
+
+function saveIndex(idx) {
+  localStorage.setItem(projectStorageKey('rm_journey_index'), JSON.stringify(idx));
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPUTED HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function allDocs(idx) {
+  idx = idx || getIndex();
+  return idx.phases.flatMap(p => p.docs);
+}
+
+function allSops(idx) {
+  idx = idx || getIndex();
+  return idx.sopGroups.flatMap(g => g.sops);
+}
+
+function findDocById(id, idx) {
+  return allDocs(idx).find(d => d.id === id) || null;
+}
+
+function findSopByKey(key, idx) {
+  return allSops(idx).find(s => s.key === key) || null;
+}
+
+function computeSopGates(idx) {
+  idx = idx || getIndex();
+  const gates = {};
+  for (const doc of allDocs(idx)) {
+    for (const sopKey of (doc.requiredSops || [])) {
+      if (!gates[sopKey]) gates[sopKey] = [];
+      if (!gates[sopKey].includes(doc.id)) gates[sopKey].push(doc.id);
+    }
+  }
+  return gates;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCOPE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function getScope() {
+  try {
+    const raw = localStorage.getItem(projectStorageKey('rm_journey_scope'));
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+
+function saveScope(scope) {
+  localStorage.setItem(projectStorageKey('rm_journey_scope'), JSON.stringify(scope));
+}
+
+function isDocInScope(docId) {
+  const scope = getScope();
+  if (!scope) return true;
+  return scope[docId] !== false;
+}
+
+function isSopInScope(sopKey) {
+  const scope = getScope();
+  if (!scope) return true;
+  return scope[sopKey] !== false;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STATUS READING
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function getSopStatus(sopKey, idx) {
+  try {
+    const procs = JSON.parse(localStorage.getItem('qms_procedures') || '{}');
+    if (procs[sopKey]?.status) return procs[sopKey].status;
+  } catch(e) {}
+  const sop = findSopByKey(sopKey, idx);
+  if (sop?.lsKey) {
+    try {
+      const data = JSON.parse(localStorage.getItem(sop.lsKey) || 'null');
+      if (data) {
+        if (data.status) return data.status;
+        if (data.approved) return 'approved';
+      }
+    } catch(e) {}
+  }
+  return 'planned';
+}
+
+function getDocStatus(doc) {
+  if (!doc) return 'not-started';
+  try {
+    const raw = localStorage.getItem(doc.lsKey);
+    if (!raw) return 'not-started';
+    const data = JSON.parse(raw);
+    if (data === null || data === undefined) return 'not-started';
+    if (doc.isArray) {
+      const arr = Array.isArray(data) ? data : (data.items || data.needs || data.inputs || data.outputs || []);
+      if (!arr.length) return 'not-started';
+      if (arr.every(i => i.status === 'approved')) return 'approved';
+      if (arr.some(i => ['approved','review','pending'].includes(i.status))) return 'review';
+      return 'draft';
+    }
+    if (data.status) return data.status;
+    if (typeof data === 'object' && Object.keys(data).length > 0) return 'draft';
+  } catch(e) {}
+  return 'not-started';
+}
+
+function getDocStatusById(docId, idx) {
+  return getDocStatus(findDocById(docId, idx));
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BLOCKING LOGIC
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function getBlockingSOPs(docId, idx) {
+  const doc = findDocById(docId, idx);
+  if (!doc) return [];
+  return (doc.requiredSops || [])
+    .filter(k => getSopStatus(k, idx) !== 'approved')
+    .map(k => {
+      const sop = findSopByKey(k, idx);
+      return sop ? `${sop.label} (${sop.num})` : k;
+    });
+}
+
+function getBlockingDocs(docId, idx) {
+  const doc = findDocById(docId, idx);
+  if (!doc) return [];
+  return (doc.predecessors || [])
+    .filter(pid => getDocStatusById(pid, idx) !== 'approved')
+    .map(pid => {
+      const d = findDocById(pid, idx);
+      return d ? d.label : pid;
+    });
+}
+
+function getSopBlockingSOPs(sopKey, idx) {
+  const sop = findSopByKey(sopKey, idx);
+  if (!sop) return [];
+  return (sop.predecessors || [])
+    .filter(k => getSopStatus(k, idx) !== 'approved')
+    .map(k => {
+      const s = findSopByKey(k, idx);
+      return s ? `${s.label} (${s.num})` : k;
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SVG CONSTANTS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const ARROW = '<svg viewBox="0 0 24 24" class="row-arrow"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+const CHEV  = '<svg viewBox="0 0 24 24" class="chev"><polyline points="6 9 12 15 18 9"/></svg>';
+const SOPCHEV = '<svg viewBox="0 0 24 24" class="sop-chev"><polyline points="6 9 12 15 18 9"/></svg>';
+
+function pillHtml(status) {
+  const map = { approved: 'Approved', review: 'Pending Review', draft: 'Draft', planned: 'Planned', 'not-started': 'Not Started' };
+  return `<span class="pill pill-${status}">${map[status] || status}</span>`;
+}
+
+function warnHtml(blockingDocs, blockingSOPs) {
+  const all = [...blockingDocs.map(d => '📄 ' + d), ...blockingSOPs.map(s => '⚙ ' + s)];
+  if (!all.length) return '';
+  const tip = 'Blocked — requires:<br>' + all.join('<br>');
+  return `<span class="warn-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+      <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </svg>
+    <span class="warn-tip">${tip}</span>
+  </span>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RENDER: DHF PHASES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function renderPhases(idx) {
+  idx = idx || getIndex();
+  let totalDocs = 0, approvedDocs = 0, activePhase = null;
+  const phaseBreakdown = [];
+
+  // Pre-compute stats so we can pick which phase to expand before rendering
+  const phaseStats = idx.phases.map(phase => {
+    const inScopeDocs = phase.docs.filter(d => isDocInScope(d.id));
+    const docStatuses = inScopeDocs.map(d => getDocStatus(d));
+    const approved = docStatuses.filter(s => s === 'approved').length;
+    const total    = inScopeDocs.length;
+    totalDocs    += total;
+    approvedDocs += approved;
+    phaseBreakdown.push({ label: phase.label, approved, total });
+    const hasProgress = approved > 0 || docStatuses.some(s => s !== 'not-started');
+    const st = total === 0 ? 'notstarted' : approved === total ? 'complete' : hasProgress ? 'inprogress' : 'notstarted';
+    if (st === 'inprogress' && !activePhase) activePhase = phase.label;
+    return { phase, approved, total, st };
+  });
+
+  const expandedEntry = phaseStats.find(p => p.st === 'inprogress') || phaseStats.find(p => p.st === 'notstarted') || phaseStats[0];
+  const expandedId = expandedEntry?.phase.id;
+
+  const html = phaseStats.map(({ phase, approved, total, st }) => {
+    const collapsed = phase.id !== expandedId;
+    const badgeLabel = { complete: 'Complete', inprogress: 'In Progress', notstarted: 'Not Started' }[st];
+
+    const docRows = phase.docs.map(doc => {
+      const status       = getDocStatus(doc);
+      const scopedOut    = !isDocInScope(doc.id);
+      const blockingDocs = scopedOut ? [] : getBlockingDocs(doc.id, idx);
+      const blockingSOPs = scopedOut ? [] : getBlockingSOPs(doc.id, idx);
+      const editBtns     = `<span class="doc-edit-btns">
+        <button class="doc-edit-btn" onclick="openDocDetail(event,'${escA(phase.id)}','${escA(doc.id)}')">⋯ Edit</button>
+        <button class="doc-edit-btn del" onclick="removeDoc(event,'${escA(phase.id)}','${escA(doc.id)}')">✕</button>
+      </span>`;
+      return `<a class="doc-row${scopedOut ? ' scoped-out' : ''}" href="${doc.href}" id="doc-${doc.id}">
+        <span class="doc-name">${escH(doc.label)}</span>
+        ${doc.required ? '' : '<span class="doc-opt-badge">Optional</span>'}
+        ${pillHtml(status)}
+        ${warnHtml(blockingDocs, blockingSOPs)}
+        ${editBtns}
+        ${ARROW}
+      </a>`;
+    }).join('');
+
+    const addRow = `<div class="phase-add-row"><button class="phase-add-btn" onclick="addDocToPhase('${escA(phase.id)}')">+ Add Document</button></div>`;
+
+    return `<div class="phase-card st-${st}${collapsed ? ' collapsed' : ''}" id="phase-${phase.id}">
+      <div class="phase-hd" onclick="togglePhase('${phase.id}')">
+        <span class="phase-num-badge">${phase.num}</span>
+        <span class="phase-name">${escH(phase.label)}</span>
+        <button class="doc-edit-btn phase-rename-btn" onclick="renamePhase(event,'${escA(phase.id)}')">Rename</button>
+        <button class="doc-edit-btn del phase-rename-btn" onclick="removePhase(event,'${escA(phase.id)}')">✕ Delete</button>
+        <span class="phase-frac">${approved}/${total}</span>
+        <span class="phase-badge ${st}">${badgeLabel}</span>
+        ${CHEV}
+      </div>
+      <div class="phase-body">${docRows}${addRow}</div>
+    </div>`;
+  }).join('');
+
+  const addPhaseRow = `<div class="add-phase-row"><button class="add-phase-btn" onclick="addPhase()">+ Add Phase</button></div>`;
+  document.getElementById('phases-container').innerHTML = html + addPhaseRow;
+  return { totalDocs, approvedDocs, activePhase, phaseBreakdown };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RENDER: SOPs
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function renderSOPs(idx) {
+  idx = idx || getIndex();
+  let totalSOPs = 0, approvedSOPs = 0;
+  for (const group of idx.sopGroups) {
+    for (const sop of group.sops) {
+      if (!isSopInScope(sop.key)) continue;
+      totalSOPs++;
+      if (getSopStatus(sop.key, idx) === 'approved') approvedSOPs++;
+    }
+  }
+  return { totalSOPs, approvedSOPs };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RENDER: STATS BAR
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function renderStats(totalDocs, approvedDocs, totalSOPs, approvedSOPs, activePhase, phaseBreakdown) {
+  const dhfPct = totalDocs ? Math.round(approvedDocs / totalDocs * 100) : 0;
+  const bigColor = dhfPct >= 80 ? '#10B981' : dhfPct >= 40 ? '#F59E0B' : '#6366f1';
+  const phaseRows = (phaseBreakdown || []).map(ph => {
+    const pct = ph.total ? Math.round(ph.approved / ph.total * 100) : 0;
+    const fillColor = pct === 100 ? '#10B981' : pct >= 50 ? '#F59E0B' : '#EF4444';
+    return `<div class="lm-sw-bar-row">
+      <span class="lm-sw-bar-label">${escH(ph.label)}</span>
+      <div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:${pct}%;background:${fillColor}"></div></div>
+      <span class="lm-sw-bar-val">${ph.approved}/${ph.total}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('glance-body').innerHTML = `
+    <div class="lm-sw">
+      <div class="lm-sw-gauge-wrap">
+        <span class="lm-sw-big" style="color:${bigColor}">${dhfPct}%</span>
+        <span class="lm-sw-gauge-sub">DHF completion</span>
+      </div>
+      <div class="lm-sw-section">
+        <div class="lm-sw-section-title">Key stats</div>
+        <div class="lm-sw-stat-row">
+          <span class="lm-sw-stat-label">Docs approved</span>
+          <span class="lm-sw-stat-value">${approvedDocs} of ${totalDocs}</span>
+        </div>
+        <div class="lm-sw-stat-row">
+          <span class="lm-sw-stat-label">SOPs approved</span>
+          <span class="lm-sw-stat-value">${approvedSOPs} of ${totalSOPs}</span>
+        </div>
+        <div class="lm-sw-stat-row">
+          <span class="lm-sw-stat-label">Active phase</span>
+          <span class="lm-sw-stat-value">${escH(activePhase || 'Not started')}</span>
+        </div>
+      </div>
+      <div class="lm-sw-section">
+        <div class="lm-sw-section-title">Phase breakdown</div>
+        ${phaseRows}
+      </div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// RENDER ALL
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function renderAll() {
+  const idx = getIndex();
+  const { totalDocs, approvedDocs, activePhase, phaseBreakdown } = renderPhases(idx);
+  const { totalSOPs, approvedSOPs } = renderSOPs(idx);
+  renderStats(totalDocs, approvedDocs, totalSOPs, approvedSOPs, activePhase, phaseBreakdown);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INTERACTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function togglePhase(id) {
+  document.getElementById('phase-' + id)?.classList.toggle('collapsed');
+}
+
+function renamePhase(event, phaseId) {
+  event.stopPropagation();
+  const card = document.getElementById('phase-' + phaseId);
+  const nameSpan = card?.querySelector('.phase-name');
+  if (!nameSpan) return;
+  const current = nameSpan.textContent;
+  const input = document.createElement('input');
+  input.className = 'phase-name-input';
+  input.value = current;
+  nameSpan.replaceWith(input);
+  input.focus();
+  input.select();
+
+  let saved = false;
+  function commit() {
+    if (saved) return;
+    saved = true;
+    const newName = input.value.trim();
+    if (newName && newName !== current) {
+      const idx = getIndex();
+      const phase = idx.phases.find(p => p.id === phaseId);
+      if (phase) { phase.label = newName; saveIndex(idx); }
+    }
+    renderAll();
+  }
+
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { input.blur(); }
+    if (e.key === 'Escape') { saved = true; renderAll(); }
+  });
+}
+
+function toggleGlance() {
+  document.documentElement.classList.toggle('glance-open');
+  document.getElementById('glance-panel').classList.toggle('open');
+}
+
+function highlightGated(e, sopKey) {
+  e.preventDefault();
+  e.stopPropagation();
+  const idx = getIndex();
+  const docIds = (computeSopGates(idx)[sopKey] || []);
+  getIndex().phases.forEach(p => document.getElementById('phase-' + p.id)?.classList.remove('collapsed'));
+  document.querySelectorAll('.doc-row.flash').forEach(el => { el.classList.remove('flash'); void el.offsetWidth; });
+  let firstEl = null;
+  docIds.forEach(docId => {
+    const el = document.getElementById('doc-' + docId);
+    if (el) { el.classList.add('flash'); if (!firstEl) firstEl = el; }
+  });
+  if (firstEl) firstEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// EDIT MODE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let _editMode = false;
+
+function toggleEditMode() {
+  _editMode = !_editMode;
+  document.body.classList.toggle('edit-mode', _editMode);
+  const btn = document.getElementById('btn-edit');
+  btn.classList.toggle('active', _editMode);
+  btn.querySelector('svg + span, svg').nextSibling;
+  // Update button text
+  btn.innerHTML = btn.innerHTML.replace(_editMode ? 'Edit Index' : 'Done Editing', _editMode ? 'Done Editing' : 'Edit Index');
+  if (!_editMode) closeDetailPanel();
+}
+
+function addDocToPhase(phaseId) {
+  const label = prompt('Document name:');
+  if (!label?.trim()) return;
+  const idx = getIndex();
+  const phase = idx.phases.find(p => p.id === phaseId);
+  if (!phase) return;
+  const id = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-' + Date.now().toString(36);
+  phase.docs.push({ id, label: label.trim(), href: '#', lsKey: 'qms_' + id.replace(/-/g,'_'), required: false, predecessors: [], requiredSops: [] });
+  saveIndex(idx);
+  renderAll();
+}
+
+function removeDoc(e, phaseId, docId) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!confirm('Remove this document from the index?')) return;
+  const idx = getIndex();
+  const phase = idx.phases.find(p => p.id === phaseId);
+  if (phase) phase.docs = phase.docs.filter(d => d.id !== docId);
+  // Remove from predecessors of other docs
+  for (const d of allDocs(idx)) {
+    d.predecessors = (d.predecessors || []).filter(pid => pid !== docId);
+  }
+  saveIndex(idx);
+  renderAll();
+}
+
+function addPhase() {
+  const label = prompt('Phase name:');
+  if (!label?.trim()) return;
+  const num = prompt('Phase number (e.g. 07):');
+  const idx = getIndex();
+  const id = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  idx.phases.push({ id, num: (num || '').trim() || String(idx.phases.length + 1).padStart(2,'0'), label: label.trim(), docs: [] });
+  saveIndex(idx);
+  renderAll();
+}
+
+function removePhase(e, phaseId) {
+  e.preventDefault();
+  e.stopPropagation();
+  const idx = getIndex();
+  const phase = idx.phases.find(p => p.id === phaseId);
+  if (!phase) return;
+  const docCount = phase.docs.length;
+  const msg = docCount > 0
+    ? `Delete phase "${phase.label}" and its ${docCount} document${docCount !== 1 ? 's' : ''}?`
+    : `Delete phase "${phase.label}"?`;
+  if (!confirm(msg)) return;
+  const removedDocIds = phase.docs.map(d => d.id);
+  idx.phases = idx.phases.filter(p => p.id !== phaseId);
+  for (const d of allDocs(idx)) {
+    d.predecessors = (d.predecessors || []).filter(pid => !removedDocIds.includes(pid));
+  }
+  saveIndex(idx);
+  renderAll();
+}
+
+function addSopToGroup(groupId) {
+  const label = prompt('SOP name:');
+  if (!label?.trim()) return;
+  const num = prompt('SOP number (e.g. SOP-XX-001):');
+  const idx = getIndex();
+  const group = idx.sopGroups.find(g => g.id === groupId);
+  if (!group) return;
+  const key = (num?.trim() || label.toLowerCase().replace(/[^a-z0-9]+/g,'-').slice(0,20).toUpperCase());
+  group.sops.push({ key, num: num?.trim() || key, label: label.trim(), href: '#', lsKey: 'qms_proc_' + key.toLowerCase().replace(/[^a-z0-9]+/g,'_'), predecessors: [] });
+  saveIndex(idx);
+  renderAll();
+}
+
+function removeSop(e, groupId, sopKey) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!confirm('Remove this SOP from the index?')) return;
+  const idx = getIndex();
+  const group = idx.sopGroups.find(g => g.id === groupId);
+  if (group) group.sops = group.sops.filter(s => s.key !== sopKey);
+  for (const d of allDocs(idx)) d.requiredSops = (d.requiredSops || []).filter(k => k !== sopKey);
+  for (const s of allSops(idx)) s.predecessors = (s.predecessors || []).filter(k => k !== sopKey);
+  saveIndex(idx);
+  renderAll();
+}
+
+function addSopGroup() {
+  const label = prompt('Group name:');
+  if (!label?.trim()) return;
+  const idx = getIndex();
+  const id = label.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  idx.sopGroups.push({ id, label: label.trim(), sops: [] });
+  saveIndex(idx);
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DETAIL PANEL (edit doc/SOP dependencies)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+let _detailTarget = null; // { type, phaseId/groupId, id }
+
+function openDocDetail(e, phaseId, docId) {
+  e.preventDefault();
+  e.stopPropagation();
+  const idx = getIndex();
+  const doc = findDocById(docId, idx);
+  if (!doc) return;
+  _detailTarget = { type: 'doc', phaseId, id: docId };
+  document.getElementById('detail-title').textContent = doc.label;
+
+  const allDocList = allDocs(idx).filter(d => d.id !== docId);
+  const allSopList = allSops(idx);
+
+  document.getElementById('detail-body').innerHTML = `
+    <div class="detail-field">
+      <div class="detail-label">Label</div>
+      <input class="detail-input" id="detail-label" value="${escH(doc.label)}" placeholder="Document name">
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Page Link (href)</div>
+      <input class="detail-input" id="detail-href" value="${escH(doc.href || '#')}" placeholder="page.html">
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">localStorage Key</div>
+      <input class="detail-input" id="detail-lskey" value="${escH(doc.lsKey || '')}" placeholder="qms_...">
+    </div>
+    <div class="detail-field">
+      <label class="detail-check-item" style="flex-direction:row">
+        <input type="checkbox" id="detail-required" ${doc.required ? 'checked' : ''}>
+        <span style="font-size:0.8rem;color:var(--primary)">Required for this device type</span>
+      </label>
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">AI Draft URL (optional)</div>
+      <input class="detail-input" id="detail-ai-url" value="${escH(doc.aiDraftUrl || '')}" placeholder="page.html?autodraft=1">
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Predecessor Documents <span style="font-weight:400;text-transform:none;letter-spacing:0">(must be approved first)</span></div>
+      <div class="detail-check-list" id="detail-pred-docs">
+        ${allDocList.map(d => `
+          <label class="detail-check-item">
+            <input type="checkbox" name="pred-doc" value="${escH(d.id)}" ${(doc.predecessors || []).includes(d.id) ? 'checked' : ''}>
+            <label style="cursor:pointer">${escH(d.label)} <span>${escH(findPhaseForDoc(d.id, idx)?.label || '')}</span></label>
+          </label>`).join('')}
+      </div>
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Required SOPs <span style="font-weight:400;text-transform:none;letter-spacing:0">(must be approved first)</span></div>
+      <div class="detail-check-list" id="detail-req-sops">
+        ${allSopList.map(s => `
+          <label class="detail-check-item">
+            <input type="checkbox" name="req-sop" value="${escH(s.key)}" ${(doc.requiredSops || []).includes(s.key) ? 'checked' : ''}>
+            <label style="cursor:pointer">${escH(s.label)} <span>${escH(s.num)}</span></label>
+          </label>`).join('')}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function openSopDetail(e, groupId, sopKey) {
+  e.preventDefault();
+  e.stopPropagation();
+  const idx = getIndex();
+  const sop = findSopByKey(sopKey, idx);
+  if (!sop) return;
+  _detailTarget = { type: 'sop', groupId, id: sopKey };
+  document.getElementById('detail-title').textContent = sop.label;
+
+  const allSopList = allSops(idx).filter(s => s.key !== sopKey);
+
+  document.getElementById('detail-body').innerHTML = `
+    <div class="detail-field">
+      <div class="detail-label">Label</div>
+      <input class="detail-input" id="detail-label" value="${escH(sop.label)}" placeholder="SOP name">
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">SOP Number</div>
+      <input class="detail-input" id="detail-sopnum" value="${escH(sop.num || '')}" placeholder="SOP-XX-001">
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Page Link (href)</div>
+      <input class="detail-input" id="detail-href" value="${escH(sop.href || '#')}" placeholder="page.html">
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">localStorage Key</div>
+      <input class="detail-input" id="detail-lskey" value="${escH(sop.lsKey || '')}" placeholder="qms_proc_...">
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Prerequisite SOPs <span style="font-weight:400;text-transform:none;letter-spacing:0">(must be approved first)</span></div>
+      <div class="detail-check-list" id="detail-pred-sops">
+        ${allSopList.map(s => `
+          <label class="detail-check-item">
+            <input type="checkbox" name="pred-sop" value="${escH(s.key)}" ${(sop.predecessors || []).includes(s.key) ? 'checked' : ''}>
+            <label style="cursor:pointer">${escH(s.label)} <span>${escH(s.num)}</span></label>
+          </label>`).join('')}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function saveDetailPanel() {
+  if (!_detailTarget) return;
+  const idx = getIndex();
+
+  if (_detailTarget.type === 'doc') {
+    const doc = findDocById(_detailTarget.id, idx);
+    if (!doc) return;
+    doc.label      = document.getElementById('detail-label')?.value.trim() || doc.label;
+    doc.href       = document.getElementById('detail-href')?.value.trim() || '#';
+    doc.lsKey      = document.getElementById('detail-lskey')?.value.trim() || doc.lsKey;
+    doc.required   = document.getElementById('detail-required')?.checked || false;
+    doc.aiDraftUrl = document.getElementById('detail-ai-url')?.value.trim() || null;
+    doc.predecessors = [...document.querySelectorAll('input[name="pred-doc"]:checked')].map(el => el.value);
+    doc.requiredSops = [...document.querySelectorAll('input[name="req-sop"]:checked')].map(el => el.value);
+  } else {
+    const sop = findSopByKey(_detailTarget.id, idx);
+    if (!sop) return;
+    sop.label      = document.getElementById('detail-label')?.value.trim() || sop.label;
+    sop.num        = document.getElementById('detail-sopnum')?.value.trim() || sop.num;
+    sop.href       = document.getElementById('detail-href')?.value.trim() || '#';
+    sop.lsKey      = document.getElementById('detail-lskey')?.value.trim() || sop.lsKey;
+    sop.predecessors = [...document.querySelectorAll('input[name="pred-sop"]:checked')].map(el => el.value);
+  }
+
+  saveIndex(idx);
+  closeDetailPanel();
+  renderAll();
+}
+
+function closeDetailPanel() {
+  document.getElementById('detail-panel').classList.remove('open');
+  _detailTarget = null;
+}
+
+function findPhaseForDoc(docId, idx) {
+  for (const p of idx.phases) {
+    if (p.docs.find(d => d.id === docId)) return p;
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SCOPE MODAL
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function openScopeModal() {
+  const idx = getIndex();
+  const scope = getScope() || {};
+
+  let html = '';
+  for (const phase of idx.phases) {
+    html += `<div class="modal-group-title">${escH(phase.label)}</div>`;
+    for (const doc of phase.docs) {
+      const checked = scope[doc.id] !== false;
+      html += `<div class="modal-check-row">
+        <input type="checkbox" id="scope-doc-${escH(doc.id)}" value="${escH(doc.id)}" data-kind="doc" ${checked ? 'checked' : ''}>
+        <label for="scope-doc-${escH(doc.id)}">
+          <span class="modal-check-label">${escH(doc.label)}</span>
+          <span class="modal-check-sub">${doc.required ? 'Required' : 'Optional'}</span>
+        </label>
+      </div>`;
+    }
+  }
+
+  html += `<div class="modal-group-title" style="margin-top:0.5rem">QMS Procedures / SOPs</div>`;
+  for (const group of idx.sopGroups) {
+    html += `<div class="modal-group-title" style="font-size:0.52rem;color:rgba(11,39,64,0.22);border:none;padding-top:0.5rem">${escH(group.label)}</div>`;
+    for (const sop of group.sops) {
+      const checked = scope[sop.key] !== false;
+      html += `<div class="modal-check-row">
+        <input type="checkbox" id="scope-sop-${escH(sop.key)}" value="${escH(sop.key)}" data-kind="sop" ${checked ? 'checked' : ''}>
+        <label for="scope-sop-${escH(sop.key)}">
+          <span class="modal-check-label">${escH(sop.label)}</span>
+          <span class="modal-check-sub">${escH(sop.num)}</span>
+        </label>
+      </div>`;
+    }
+  }
+
+  document.getElementById('scope-modal-body').innerHTML = html;
+  document.getElementById('scope-modal').classList.add('open');
+}
+
+function saveScopeModal() {
+  const scope = {};
+  document.querySelectorAll('#scope-modal-body input[type=checkbox]').forEach(cb => {
+    scope[cb.value] = cb.checked;
+  });
+  saveScope(scope);
+  closeScopeModal();
+  renderAll();
+}
+
+function closeScopeModal() {
+  document.getElementById('scope-modal').classList.remove('open');
+}
+
+// Close modal on overlay click
+document.getElementById('scope-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeScopeModal();
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function escH(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escA(s) { return String(s || '').replace(/'/g, "\\'"); }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+renderProjectSelector();
+document.getElementById('topbar-updated').textContent = 'Updated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+const _initProjectName = getActiveProjectName() || 'Project Status';
+document.title = _initProjectName + ' — Risk Management Overview — Tangram eQMS';
+
+renderAll();
+</script>
+</body>
+</html>
+
