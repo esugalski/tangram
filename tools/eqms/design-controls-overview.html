@@ -60,6 +60,12 @@
     .topbar-btn:hover { border-color: rgba(10,192,233,0.35); color: var(--aqua); background: rgba(10,192,233,0.04); }
     .topbar-btn.active { border-color: var(--amber); color: var(--amber-text); background: var(--amber-bg); }
     .topbar-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .topbar-search-wrap { flex: 1; max-width: 320px; position: relative; display: flex; align-items: center; }
+    .topbar-search-icon { position: absolute; left: 0.5rem; width: 12px; height: 12px; stroke: var(--muted); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+    .topbar-search { font-family: 'Inter', sans-serif; font-size: 0.75rem; color: var(--primary); border: 1.5px solid var(--border); border-radius: 5px; padding: 0.28rem 0.6rem 0.28rem 1.75rem; outline: none; width: 100%; background: var(--light-gray); transition: border-color 0.12s, background 0.12s; }
+    .topbar-search:focus { border-color: rgba(10,192,233,0.5); background: white; }
+    .topbar-search::placeholder { color: rgba(11,39,64,0.3); }
+    .topbar-spacer { flex: 1; }
 
     /* ─── AT A GLANCE PANEL ─── */
     .glance-panel { position: fixed; top: 56px; right: 0; bottom: 0; width: 280px; background: white; border-left: 1px solid rgba(11,39,64,0.09); box-shadow: -4px 0 24px rgba(11,39,64,0.08); overflow-y: auto; overflow-x: hidden; z-index: 120; transform: translateX(100%); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); font-family: 'Inter', sans-serif; }
@@ -234,6 +240,25 @@
 <aside class="sidebar" id="sidebar-root"></aside>
 
 <div class="main">
+  <!-- Topbar -->
+  <div class="topbar">
+    <select class="project-select" id="project-select" onchange="onProjectSelectChange(this.value)"></select>
+    <button class="project-new-btn" onclick="createNewProject()" title="Add a new project">+ New</button>
+    <div class="topbar-search-wrap">
+      <svg class="topbar-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="topbar-search" id="doc-search" type="text" placeholder="Search documents…" oninput="filterDocs(this.value)">
+    </div>
+    <span class="topbar-spacer"></span>
+    <span class="topbar-updated" id="topbar-updated"></span>
+    <button class="topbar-btn" id="btn-scope" onclick="openScopeModal()" title="Choose which documents apply to this project">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      Scope
+    </button>
+    <button class="topbar-btn" id="btn-edit" onclick="toggleEditMode()" title="Add, edit, and reorder documents and dependencies">
+      <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Edit Index
+    </button>
+  </div>
 <div class="module-header"><span class="module-header-title">Design Controls</span></div>
 
 <nav class="dc-subnav">
@@ -246,21 +271,6 @@
   <a href="vv.html" class="dc-subnav-link">V&amp;V</a>
   <a href="trace-matrix.html" class="dc-subnav-link">Trace Matrix</a>
 </nav>
-
-  <!-- Topbar -->
-  <div class="topbar">
-<select class="project-select" id="project-select" onchange="onProjectSelectChange(this.value)"></select>
-    <button class="project-new-btn" onclick="createNewProject()" title="Add a new project">+ New</button>
-    <span class="topbar-updated" id="topbar-updated"></span>
-    <button class="topbar-btn" id="btn-scope" onclick="openScopeModal()" title="Choose which documents apply to this project">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-      Scope
-    </button>
-    <button class="topbar-btn" id="btn-edit" onclick="toggleEditMode()" title="Add, edit, and reorder documents and dependencies">
-      <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Edit Index
-    </button>
-  </div>
 
   <!-- Two-column content -->
   <div class="columns">
@@ -900,6 +910,21 @@ function renamePhase(event, phaseId) {
 function toggleGlance() {
   document.documentElement.classList.toggle('glance-open');
   document.getElementById('glance-panel').classList.toggle('open');
+}
+
+function filterDocs(query) {
+  const q = query.toLowerCase().trim();
+  document.querySelectorAll('.phase-card').forEach(card => {
+    let anyVisible = false;
+    card.querySelectorAll('.doc-row').forEach(row => {
+      const name = (row.querySelector('.doc-name')?.textContent || '').toLowerCase();
+      const show = !q || name.includes(q);
+      row.style.display = show ? '' : 'none';
+      if (show) anyVisible = true;
+    });
+    card.style.display = (!q || anyVisible) ? '' : 'none';
+    if (q && anyVisible && card.classList.contains('collapsed')) card.classList.remove('collapsed');
+  });
 }
 
 function highlightGated(e, sopKey) {
