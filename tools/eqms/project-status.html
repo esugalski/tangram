@@ -718,7 +718,8 @@ function renderPhases(idx) {
   let totalDocs = 0, approvedDocs = 0, activePhase = null;
   const phaseBreakdown = [];
 
-  const html = idx.phases.map(phase => {
+  // Pre-compute stats so we can pick which phase to expand before rendering
+  const phaseStats = idx.phases.map(phase => {
     const inScopeDocs = phase.docs.filter(d => isDocInScope(d.id));
     const docStatuses = inScopeDocs.map(d => getDocStatus(d));
     const approved = docStatuses.filter(s => s === 'approved').length;
@@ -726,11 +727,17 @@ function renderPhases(idx) {
     totalDocs    += total;
     approvedDocs += approved;
     phaseBreakdown.push({ label: phase.label, approved, total });
-
     const hasProgress = approved > 0 || docStatuses.some(s => s !== 'not-started');
     const st = total === 0 ? 'notstarted' : approved === total ? 'complete' : hasProgress ? 'inprogress' : 'notstarted';
     if (st === 'inprogress' && !activePhase) activePhase = phase.label;
+    return { phase, approved, total, st };
+  });
 
+  const expandedEntry = phaseStats.find(p => p.st === 'inprogress') || phaseStats.find(p => p.st === 'notstarted') || phaseStats[0];
+  const expandedId = expandedEntry?.phase.id;
+
+  const html = phaseStats.map(({ phase, approved, total, st }) => {
+    const collapsed = phase.id !== expandedId;
     const badgeLabel = { complete: 'Complete', inprogress: 'In Progress', notstarted: 'Not Started' }[st];
 
     const docRows = phase.docs.map(doc => {
@@ -755,7 +762,7 @@ function renderPhases(idx) {
     const addRow = `<div class="phase-add-row"><button class="phase-add-btn" onclick="addDocToPhase('${escA(phase.id)}')">+ Add Document</button></div>`;
     const phaseEditBtn = `<button class="doc-edit-btn" style="display:none" id="phase-rename-${phase.id}" onclick="renamePhase(event,'${escA(phase.id)}')">Rename</button>`;
 
-    return `<div class="phase-card st-${st}" id="phase-${phase.id}">
+    return `<div class="phase-card st-${st}${collapsed ? ' collapsed' : ''}" id="phase-${phase.id}">
       <div class="phase-hd" onclick="togglePhase('${phase.id}')">
         <span class="phase-num-badge">${phase.num}</span>
         <span class="phase-name">${escH(phase.label)}</span>
