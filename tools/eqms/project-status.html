@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="glance-open">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,6 +60,11 @@
     .topbar-title { font-size: 0.88rem; font-weight: 700; color: var(--primary); letter-spacing: -0.015em; white-space: nowrap; }
     .topbar-sep { width: 1px; height: 16px; background: var(--border); flex-shrink: 0; }
     .topbar-project { font-size: 0.78rem; color: var(--mid-blue); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+    .project-select { font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid var(--border); border-radius: 5px; padding: 0.25rem 1.6rem 0.25rem 0.55rem; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23304F6B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.45rem center; flex: 1; min-width: 0; max-width: 260px; transition: border-color 0.12s; }
+    .project-select:hover { border-color: rgba(10,192,233,0.35); color: var(--aqua); }
+    .project-select:focus { outline: none; border-color: rgba(10,192,233,0.5); }
+    .project-new-btn { font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; color: var(--aqua); background: rgba(10,192,233,0.08); border: 1.5px solid rgba(10,192,233,0.25); border-radius: 5px; padding: 0.28rem 0.6rem; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.12s; }
+    .project-new-btn:hover { background: rgba(10,192,233,0.16); }
     .topbar-updated { font-size: 0.7rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
     .topbar-btn { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.01em; padding: 0.3rem 0.7rem; border-radius: 5px; border: 1.5px solid var(--border); background: white; color: var(--mid-blue); cursor: pointer; transition: all 0.12s; white-space: nowrap; flex-shrink: 0; }
     .topbar-btn:hover { border-color: rgba(10,192,233,0.35); color: var(--aqua); background: rgba(10,192,233,0.04); }
@@ -241,7 +246,8 @@
   <div class="topbar">
     <span class="topbar-title">Project Status</span>
     <div class="topbar-sep"></div>
-    <span class="topbar-project" id="topbar-project">Loading…</span>
+    <select class="project-select" id="project-select" onchange="onProjectSelectChange(this.value)"></select>
+    <button class="project-new-btn" onclick="createNewProject()" title="Add a new project">+ New</button>
     <span class="topbar-updated" id="topbar-updated"></span>
     <button class="topbar-btn" id="btn-scope" onclick="openScopeModal()" title="Choose which documents apply to this project">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
@@ -270,7 +276,7 @@
 
 <!-- At a Glance tab + panel -->
 <div class="glance-tab" onclick="toggleGlance()">At a glance</div>
-<div id="glance-panel" class="glance-panel">
+<div id="glance-panel" class="glance-panel open">
   <div class="glance-panel-head">
     <span class="glance-panel-label">At a glance</span>
     <button class="glance-panel-close" onclick="toggleGlance()">
@@ -439,19 +445,97 @@ const SEED_INDEX = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// PROJECT MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function getProjects() {
+  try { return JSON.parse(localStorage.getItem('qms_projects') || '[]'); } catch(e) { return []; }
+}
+
+function saveProjects(list) {
+  localStorage.setItem('qms_projects', JSON.stringify(list));
+}
+
+function getActiveProjectId() {
+  return localStorage.getItem('qms_active_project') || null;
+}
+
+function setActiveProjectId(id) {
+  if (id) localStorage.setItem('qms_active_project', id);
+  else localStorage.removeItem('qms_active_project');
+}
+
+function projectStorageKey(base) {
+  const pid = getActiveProjectId();
+  return pid ? `qms_proj_${pid}_${base}` : `qms_${base}`;
+}
+
+function getActiveProjectName() {
+  const pid = getActiveProjectId();
+  if (!pid) return null;
+  const proj = getProjects().find(p => p.id === pid);
+  return proj ? proj.name : null;
+}
+
+function renderProjectSelector() {
+  const sel = document.getElementById('project-select');
+  if (!sel) return;
+  const projects = getProjects();
+  const activeId = getActiveProjectId();
+  sel.innerHTML = '';
+  if (!projects.length) {
+    const opt = document.createElement('option');
+    opt.value = '';
+    opt.textContent = 'No project configured';
+    sel.appendChild(opt);
+  } else {
+    projects.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.name;
+      opt.selected = p.id === activeId;
+      sel.appendChild(opt);
+    });
+  }
+}
+
+function onProjectSelectChange(id) {
+  if (!id) return;
+  setActiveProjectId(id);
+  document.getElementById('topbar-updated').textContent = 'Updated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  document.title = (getActiveProjectName() || 'Project') + ' — Project Status — Tangram eQMS';
+  renderAll();
+}
+
+function createNewProject() {
+  const name = prompt('Project name:');
+  if (!name || !name.trim()) return;
+  const id = 'proj_' + Math.random().toString(36).slice(2, 10);
+  const projects = getProjects();
+  projects.push({ id, name: name.trim() });
+  saveProjects(projects);
+  setActiveProjectId(id);
+  renderProjectSelector();
+  document.getElementById('project-select').value = id;
+  document.getElementById('topbar-updated').textContent = 'Updated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  document.title = name.trim() + ' — Project Status — Tangram eQMS';
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // INDEX PERSISTENCE
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function getIndex() {
   try {
-    const raw = localStorage.getItem('qms_journey_index');
+    const raw = localStorage.getItem(projectStorageKey('journey_index'));
     if (raw) return JSON.parse(raw);
   } catch(e) {}
   return JSON.parse(JSON.stringify(SEED_INDEX)); // deep clone
 }
 
 function saveIndex(idx) {
-  localStorage.setItem('qms_journey_index', JSON.stringify(idx));
+  localStorage.setItem(projectStorageKey('journey_index'), JSON.stringify(idx));
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -494,14 +578,14 @@ function computeSopGates(idx) {
 
 function getScope() {
   try {
-    const raw = localStorage.getItem('qms_journey_scope');
+    const raw = localStorage.getItem(projectStorageKey('journey_scope'));
     if (raw) return JSON.parse(raw);
   } catch(e) {}
   return null;
 }
 
 function saveScope(scope) {
-  localStorage.setItem('qms_journey_scope', JSON.stringify(scope));
+  localStorage.setItem(projectStorageKey('journey_scope'), JSON.stringify(scope));
 }
 
 function isDocInScope(docId) {
@@ -1098,21 +1182,14 @@ document.getElementById('scope-modal').addEventListener('click', e => {
 function escH(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function escA(s) { return String(s || '').replace(/'/g, "\\'"); }
 
-function getProjectName() {
-  try { const d = JSON.parse(localStorage.getItem('qms_dev_plan')            || 'null'); if (d?.project)    return d.project; } catch(e) {}
-  try { const c = JSON.parse(localStorage.getItem('qms_context')             || 'null'); if (c?.deviceName) return c.deviceName; if (c?.companyName) return c.companyName; } catch(e) {}
-  try { const r = JSON.parse(localStorage.getItem('qms_regulatory_assessment')|| 'null'); if (r?.deviceName) return r.deviceName; } catch(e) {}
-  return 'No project configured';
-}
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const projectName = getProjectName();
-document.getElementById('topbar-project').textContent = projectName;
+renderProjectSelector();
 document.getElementById('topbar-updated').textContent = 'Updated ' + new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-document.title = projectName + ' — Project Status — Tangram eQMS';
+const _initProjectName = getActiveProjectName() || 'Project Status';
+document.title = _initProjectName + ' — Project Status — Tangram eQMS';
 
 renderAll();
 </script>
