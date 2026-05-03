@@ -94,23 +94,6 @@
     .lm-sw-bar-fill { height: 100%; border-radius: 100px; }
     .lm-sw-bar-val { font-size: 0.6rem; font-weight: 600; color: rgba(11,39,64,0.42); min-width: 24px; text-align: right; }
 
-    /* ─── NEXT ACTION BANNER ─── */
-    .next-bar { background: white; border-bottom: 1px solid var(--border); padding: 0.75rem 1.5rem; flex-shrink: 0; }
-    .next-bar-hd { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.625rem; }
-    .next-bar-star { font-size: 0.78rem; color: var(--aqua); }
-    .next-bar-title { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-    .next-bar-count { font-size: 0.6rem; font-weight: 600; color: rgba(11,39,64,0.3); margin-left: auto; }
-    .next-items { display: flex; gap: 0.625rem; flex-wrap: wrap; }
-    .next-item { display: flex; align-items: center; gap: 0.625rem; background: var(--light-gray); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.75rem; min-width: 0; flex: 1; min-width: 200px; max-width: 360px; transition: border-color 0.12s; }
-    .next-item:hover { border-color: rgba(10,192,233,0.3); }
-    .next-item-num { font-size: 0.6rem; font-weight: 800; color: rgba(11,39,64,0.22); letter-spacing: 0.04em; flex-shrink: 0; min-width: 14px; }
-    .next-item-body { flex: 1; min-width: 0; }
-    .next-item-label { font-size: 0.8rem; font-weight: 600; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .next-item-meta { font-size: 0.68rem; color: var(--muted); margin-top: 0.1rem; }
-    .next-item-cta { font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 700; color: var(--aqua); background: rgba(10,192,233,0.08); border: 1px solid rgba(10,192,233,0.2); border-radius: 4px; padding: 0.22rem 0.55rem; cursor: pointer; white-space: nowrap; flex-shrink: 0; text-decoration: none; transition: background 0.12s; }
-    .next-item-cta:hover { background: rgba(10,192,233,0.16); }
-    .next-bar-empty { font-size: 0.78rem; color: var(--muted); font-style: italic; }
-
     /* ─── TWO-COLUMN LAYOUT ─── */
     .columns { flex: 1; display: flex; min-height: 0; overflow: hidden; }
 
@@ -269,9 +252,6 @@
       Edit Index
     </button>
   </div>
-
-  <!-- Next Action banner -->
-  <div class="next-bar" id="next-bar"></div>
 
   <!-- Two-column content -->
   <div class="columns">
@@ -620,53 +600,6 @@ function getSopBlockingSOPs(sopKey, idx) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// NEXT ACTIONS
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function computeNextActions(idx) {
-  idx = idx || getIndex();
-  const actions = [];
-  const gates = computeSopGates(idx);
-
-  // SOPs first — they gate downstream work
-  for (const group of idx.sopGroups) {
-    for (const sop of group.sops) {
-      if (!isSopInScope(sop.key)) continue;
-      const status = getSopStatus(sop.key, idx);
-      if (status === 'approved') continue;
-      if (getSopBlockingSOPs(sop.key, idx).length > 0) continue;
-      const gatedCount = (gates[sop.key] || []).filter(id => isDocInScope(id)).length;
-      actions.push({ type: 'sop', id: sop.key, label: sop.label, num: sop.num, href: sop.href, status, meta: gatedCount > 0 ? `Gates ${gatedCount} doc${gatedCount !== 1 ? 's' : ''}` : 'QMS procedure' });
-    }
-  }
-
-  // DHF docs — only actionable ones (all predecessors approved)
-  for (const phase of idx.phases) {
-    for (const doc of phase.docs) {
-      if (!isDocInScope(doc.id)) continue;
-      const status = getDocStatus(doc);
-      if (status === 'approved') continue;
-      if (getBlockingDocs(doc.id, idx).length > 0) continue;
-      if (getBlockingSOPs(doc.id, idx).length > 0) continue;
-      actions.push({ type: 'doc', id: doc.id, label: doc.label, href: doc.href, aiDraftUrl: doc.aiDraftUrl || null, status, meta: phase.label, required: doc.required });
-    }
-  }
-
-  return actions.slice(0, 3);
-}
-
-function ctaHref(item) {
-  if ((item.status === 'not-started' || item.status === 'planned') && item.aiDraftUrl) return item.aiDraftUrl;
-  return item.href || '#';
-}
-
-function ctaLabel(item) {
-  if (item.status === 'draft') return 'Continue →';
-  if (item.status === 'review') return 'Get Approved →';
-  return item.aiDraftUrl ? 'Generate Draft →' : 'Start →';
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
 // SVG CONSTANTS
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -690,42 +623,6 @@ function warnHtml(blockingDocs, blockingSOPs) {
     </svg>
     <span class="warn-tip">${tip}</span>
   </span>`;
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// RENDER: NEXT ACTION BANNER
-// ═══════════════════════════════════════════════════════════════════════════════
-
-function renderNextActions(idx) {
-  const actions = computeNextActions(idx);
-  const bar = document.getElementById('next-bar');
-  if (!actions.length) {
-    const allDone = allDocs(idx).filter(d => isDocInScope(d.id)).every(d => getDocStatus(d) === 'approved')
-      && allSops(idx).filter(s => isSopInScope(s.key)).every(s => getSopStatus(s.key, idx) === 'approved');
-    bar.innerHTML = allDone
-      ? `<div class="next-bar-hd"><span class="next-bar-star">✦</span><span class="next-bar-title">All in-scope items approved</span></div>`
-      : `<div class="next-bar-hd"><span class="next-bar-star">✦</span><span class="next-bar-title">Next Up</span></div><div class="next-bar-empty">No items are actionable right now — check for blocking predecessors above.</div>`;
-    return;
-  }
-  bar.innerHTML = `
-    <div class="next-bar-hd">
-      <span class="next-bar-star">✦</span>
-      <span class="next-bar-title">Next Up</span>
-      <span class="next-bar-count">${actions.length} action${actions.length !== 1 ? 's' : ''} ready</span>
-    </div>
-    <div class="next-items">
-      ${actions.map((item, i) => `
-        <div class="next-item">
-          <span class="next-item-num">${i + 1}</span>
-          <div class="next-item-body">
-            <div class="next-item-label">${escH(item.label)}</div>
-            <div class="next-item-meta">${escH(item.meta)}</div>
-          </div>
-          <a class="next-item-cta" href="${ctaHref(item)}">${ctaLabel(item)}</a>
-        </div>
-      `).join('')}
-    </div>
-  `;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -862,7 +759,6 @@ function renderAll() {
   const { totalDocs, approvedDocs, activePhase, phaseBreakdown } = renderPhases(idx);
   const { totalSOPs, approvedSOPs } = renderSOPs(idx);
   renderStats(totalDocs, approvedDocs, totalSOPs, approvedSOPs, activePhase, phaseBreakdown);
-  renderNextActions(idx);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
