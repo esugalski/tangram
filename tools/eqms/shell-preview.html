@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shell Preview — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css">
+  <style>
+    /* ─── PREVIEW OVERLAY ─── */
+    /* Thin amber banner above the eQMS shell indicating preview mode */
+    #preview-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+      height: 32px;
+      background: #FFFBEB;
+      border-bottom: 1px solid rgba(245,158,11,0.35);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.68rem;
+    }
+    #preview-bar-left {
+      display: flex; align-items: center; gap: 0.5rem;
+      color: #92400E; font-weight: 700; letter-spacing: 0.03em;
+    }
+    #preview-bar-left svg {
+      width: 12px; height: 12px; stroke: #b45309; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+    #preview-bar-right {
+      display: flex; align-items: center; gap: 0.35rem;
+    }
+    .preview-mode-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.64rem; font-weight: 600;
+      padding: 0.2rem 0.6rem; border-radius: 4px;
+      border: 1.5px solid rgba(245,158,11,0.3);
+      background: transparent; color: #b45309;
+      cursor: pointer; transition: all 0.12s; white-space: nowrap;
+    }
+    .preview-mode-btn:hover { background: rgba(245,158,11,0.1); }
+    .preview-mode-btn.active { background: #F59E0B; color: white; border-color: #F59E0B; }
+
+    /* Push the eQMS shell down by the preview bar height */
+    body { padding-top: 32px; }
+    .sidebar { top: 32px !important; height: calc(100vh - 32px) !important; }
+    .glance-panel { top: calc(32px + 58px) !important; }
+
+    /* ─── PREVIEW CONTENT AREA ─── */
+    .preview-content {
+      flex: 1; overflow-y: auto; background: var(--light-gray);
+      display: flex; flex-direction: column;
+    }
+    .preview-content::-webkit-scrollbar { width: 5px; }
+    .preview-content::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+
+    .preview-body {
+      padding: 1.5rem;
+      display: flex; flex-direction: column; gap: 1.25rem;
+      max-width: 860px;
+    }
+
+    /* Placeholder content cards */
+    .preview-placeholder-card {
+      background: white;
+      border: 1px solid rgba(11,39,64,0.08);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .preview-placeholder-head {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(11,39,64,0.06);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .preview-placeholder-title {
+      font-size: 0.78rem; font-weight: 700; color: var(--primary);
+    }
+    .preview-placeholder-body {
+      padding: 1rem;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .preview-placeholder-row {
+      height: 10px; border-radius: 4px;
+      background: rgba(11,39,64,0.06);
+      animation: shimmer 1.8s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Preview bar ── -->
+<div id="preview-bar">
+  <div id="preview-bar-left">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Shell Preview — not a production page
+  </div>
+  <div id="preview-bar-right">
+    <span style="font-size:0.62rem;color:#b45309;margin-right:0.25rem;">Mode:</span>
+    <button class="preview-mode-btn active" data-mode="hub" onclick="switchMode('hub')">Hub Page</button>
+    <button class="preview-mode-btn" data-mode="detail" onclick="switchMode('detail')">Detail / Form Page</button>
+  </div>
+</div>
+
+<!-- ── Shell root anchors ── -->
+<aside class="sidebar" id="sidebar-root"></aside>
+
+<div class="main">
+  <div id="topbar-root"></div>
+  <div id="module-header-root"></div>
+  <nav id="subnav-root"></nav>
+
+  <!-- Page content area -->
+  <div class="preview-content">
+    <div class="preview-body">
+
+      <!-- KPI row placeholder -->
+      <div class="kpi-row">
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Documents</div>
+          <div class="kpi-tile-value">24</div>
+          <div class="kpi-tile-sub up">18 approved</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">In Review</div>
+          <div class="kpi-tile-value">3</div>
+          <div class="kpi-tile-sub">awaiting sign-off</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Open Actions</div>
+          <div class="kpi-tile-value">7</div>
+          <div class="kpi-tile-sub down">2 overdue</div>
+        </div>
+        <div class="kpi-tile">
+          <div class="kpi-tile-label">Completeness</div>
+          <div class="kpi-tile-value">81%</div>
+          <div class="kpi-tile-sub up">+4% this month</div>
+        </div>
+      </div>
+
+      <!-- Main content card placeholder -->
+      <div class="preview-placeholder-card">
+        <div class="preview-placeholder-head">
+          <div class="preview-placeholder-title">Content Area</div>
+          <span class="badge gray">Placeholder</span>
+        </div>
+        <div class="preview-placeholder-body">
+          <div class="preview-placeholder-row" style="width:85%"></div>
+          <div class="preview-placeholder-row" style="width:60%"></div>
+          <div class="preview-placeholder-row" style="width:75%"></div>
+          <div class="preview-placeholder-row" style="width:50%"></div>
+          <div class="preview-placeholder-row" style="width:80%"></div>
+          <div class="preview-placeholder-row" style="width:65%"></div>
+        </div>
+      </div>
+
+      <!-- Secondary card placeholder -->
+      <div class="preview-placeholder-card">
+        <div class="preview-placeholder-head">
+          <div class="preview-placeholder-title">Secondary Section</div>
+        </div>
+        <div class="preview-placeholder-body">
+          <div class="preview-placeholder-row" style="width:70%"></div>
+          <div class="preview-placeholder-row" style="width:90%"></div>
+          <div class="preview-placeholder-row" style="width:55%"></div>
+          <div class="preview-placeholder-row" style="width:78%"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- At a Glance panel root -->
+<div id="glance-root"></div>
+
+<script src="sidebar.js"></script>
+<script src="shell.js"></script>
+<script>
+
+// ── Preview mode configs ──────────────────────────────────────────────────────
+
+var PREVIEW_CONFIGS = {
+  hub: {
+    activePage: 'design-controls',
+    topbar: {
+      title: 'Design Controls',
+      showSearch: true,
+      showProjectSelect: true,
+      searchPlaceholder: 'Search documents…',
+      rightActions: [
+        { id: 'btn-scope',     label: 'Scope',      icon: 'scope' },
+        { id: 'btn-edit-idx',  label: 'Edit Index', icon: 'edit'  },
+      ]
+    },
+    moduleHeader: 'Design Controls',
+    subNav: {
+      module: 'design-controls',
+      activeHref: 'design-controls-overview.html'
+    }
+    // glancePanel omitted → defaults to open
+  },
+  detail: {
+    activePage: 'risk-analysis',
+    topbar: {
+      title: 'Risk Analysis',
+      showSearch: true,
+      showProjectSelect: false,
+      searchPlaceholder: 'Search hazards…',
+      rightActions: [
+        { id: 'btn-export',   label: 'Export',    icon: 'export' },
+        { id: 'btn-guidance', label: 'Guidance',  icon: 'help'   },
+      ]
+    },
+    // no moduleHeader → band not rendered
+    subNav: {
+      module: 'risk-management',
+      activeHref: 'risk-analysis.html'
+    },
+    glancePanel: { defaultOpen: false }
+  }
+};
+
+// ── Glance body content ───────────────────────────────────────────────────────
+
+function populateGlanceBody(mode) {
+  var body = document.getElementById('glance-body');
+  if (!body) return;
+
+  if (mode === 'hub') {
+    body.innerHTML =
+      '<div class="lm-sw">'
+      + '<div class="lm-sw-gauge-wrap">'
+      +   '<div class="lm-sw-big">81%</div>'
+      +   '<div class="lm-sw-gauge-sub">DHF Completeness</div>'
+      + '</div>'
+      + '<div class="lm-sw-section">'
+      +   '<div class="lm-sw-section-title">By Phase</div>'
+      +   '<div class="lm-sw-bar-row"><span class="lm-sw-bar-label">Planning</span><div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:100%;background:var(--green)"></div></div><span class="lm-sw-bar-val">100%</span></div>'
+      +   '<div class="lm-sw-bar-row"><span class="lm-sw-bar-label">User Needs</span><div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:88%;background:var(--green)"></div></div><span class="lm-sw-bar-val">88%</span></div>'
+      +   '<div class="lm-sw-bar-row"><span class="lm-sw-bar-label">Design Inputs</span><div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:72%;background:var(--amber)"></div></div><span class="lm-sw-bar-val">72%</span></div>'
+      +   '<div class="lm-sw-bar-row"><span class="lm-sw-bar-label">V&amp;V</span><div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:45%;background:var(--amber)"></div></div><span class="lm-sw-bar-val">45%</span></div>'
+      + '</div>'
+      + '<div class="lm-sw-section">'
+      +   '<div class="lm-sw-section-title">Document Status</div>'
+      +   '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Approved</span><span class="lm-sw-stat-value">18</span></div>'
+      +   '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">In Review</span><span class="lm-sw-stat-value">3</span></div>'
+      +   '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Draft</span><span class="lm-sw-stat-value">5</span></div>'
+      + '</div>'
+      + '</div>'
+      + '<div class="lm-sw-ai">'
+      +   '<div class="lm-sw-ai-label"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>AI Assist</div>'
+      +   '<div class="lm-sw-ai-text">3 design inputs are missing traceability links to user needs. Consider reviewing UN-04 and UN-07 first.</div>'
+      + '</div>';
+  } else {
+    body.innerHTML =
+      '<div class="lm-sw">'
+      + '<div class="lm-sw-gauge-wrap">'
+      +   '<div class="lm-sw-big">12</div>'
+      +   '<div class="lm-sw-gauge-sub">Hazards Identified</div>'
+      + '</div>'
+      + '<div class="lm-sw-section">'
+      +   '<div class="lm-sw-section-title">Risk Level</div>'
+      +   '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Acceptable</span><span class="lm-sw-stat-value" style="color:var(--green)">7</span></div>'
+      +   '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">ALARP</span><span class="lm-sw-stat-value" style="color:var(--amber)">4</span></div>'
+      +   '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Unacceptable</span><span class="lm-sw-stat-value" style="color:var(--red)">1</span></div>'
+      + '</div>'
+      + '<div class="lm-sw-section">'
+      +   '<div class="lm-sw-section-title">Mitigations</div>'
+      +   '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Applied</span><span class="lm-sw-stat-value">9</span></div>'
+      +   '<div class="lm-sw-stat-row"><span class="lm-sw-stat-label">Pending</span><span class="lm-sw-stat-value">3</span></div>'
+      + '</div>'
+      + '</div>'
+      + '<div class="lm-sw-ai">'
+      +   '<div class="lm-sw-ai-label"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>AI Assist</div>'
+      +   '<div class="lm-sw-ai-text">H-08 (Unacceptable) has no applied mitigations. ISO 14971 §6.4 requires risk reduction before proceeding.</div>'
+      + '</div>';
+  }
+}
+
+// ── Mode switcher ─────────────────────────────────────────────────────────────
+
+function switchMode(mode) {
+  // Clear injected shell elements
+  ['topbar-root', 'module-header-root', 'subnav-root', 'glance-root'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = '';
+  });
+  document.documentElement.classList.remove('glance-open');
+
+  // Re-initialise shell with new config
+  initShell(PREVIEW_CONFIGS[mode]);
+
+  // Populate glance panel body
+  populateGlanceBody(mode);
+
+  // Update mode button active state
+  document.querySelectorAll('.preview-mode-btn').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+
+// Support ?mode=detail via URL param for screenshotting both modes
+var urlMode = new URLSearchParams(window.location.search).get('mode') || 'hub';
+var validMode = PREVIEW_CONFIGS[urlMode] ? urlMode : 'hub';
+
+initShell(PREVIEW_CONFIGS[validMode]);
+populateGlanceBody(validMode);
+
+// Mark the correct button active on load
+document.querySelectorAll('.preview-mode-btn').forEach(function(btn) {
+  btn.classList.toggle('active', btn.dataset.mode === validMode);
+});
+
+// Populate project-select with a sample project name
+var ps = document.getElementById('project-select');
+if (ps) {
+  ps.innerHTML = '<option>Apex Infusion Pump</option><option>Model 2 Prototype</option>';
+}
+
+</script>
+</body>
+</html>
