@@ -297,8 +297,15 @@ body[data-learn-mode="power"] .page-scroll { padding: 1.1rem; }
 /* ─── TOPBAR EXTENSIONS ─── */
 /* Visual divider bar (use <div class="topbar-divider"> — distinct from .topbar-sep text separator) */
 .topbar-divider { width: 1px; height: 18px; background: rgba(11,39,64,0.1); flex-shrink: 0; align-self: center; }
+/* Topbar user profile (right-aligned) */
+.topbar-user { display: flex; align-items: center; gap: 0.55rem; flex-shrink: 0; cursor: default; }
+.topbar-user-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.12); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.64rem; font-weight: 800; color: var(--aqua-dark); flex-shrink: 0; letter-spacing: 0.02em; }
+.topbar-user-info { display: flex; flex-direction: column; gap: 0; }
+.topbar-user-name { font-size: 0.75rem; font-weight: 600; color: var(--primary); line-height: 1.2; }
+.topbar-user-role { font-size: 0.6rem; font-weight: 500; color: rgba(11,39,64,0.42); letter-spacing: 0.02em; }
+
 /* Search field inside topbar */
-.topbar-search-wrap { position: relative; display: flex; align-items: center; flex: 1; max-width: 320px; }
+.topbar-search-wrap { position: relative; display: flex; align-items: center; flex: 1; max-width: 420px; }
 .topbar-search-icon { position: absolute; left: 0.55rem; width: 12px; height: 12px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .topbar-search-wrap input { font-family: 'Inter', sans-serif; font-size: 0.75rem; color: var(--primary); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 6px; padding: 0.3rem 0.6rem 0.3rem 1.8rem; outline: none; width: 100%; background: var(--light-gray); transition: border-color 0.12s, background 0.12s; }
 .topbar-search-wrap input:focus { border-color: rgba(10,192,233,0.5); background: white; }
@@ -332,8 +339,9 @@ body[data-learn-mode="power"] .page-scroll { padding: 1.1rem; }
 .glance-tab { position: fixed; right: 0; top: 50%; transform: translateY(-50%); width: 28px; height: 110px; background: white; border: 1px solid rgba(11,39,64,0.09); border-right: none; border-radius: 8px 0 0 8px; box-shadow: -2px 0 10px rgba(11,39,64,0.06); display: flex; align-items: center; justify-content: center; writing-mode: vertical-rl; text-orientation: mixed; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.35); cursor: pointer; user-select: none; z-index: 119; font-family: 'Inter', sans-serif; transition: color 0.15s, background 0.15s, opacity 0.2s; }
 .glance-tab:hover { color: var(--primary); background: rgba(11,39,64,0.02); }
 html.glance-open .glance-tab { opacity: 0; pointer-events: none; }
-html.glance-open .main { margin-right: 280px; transition: margin-right 0.25s cubic-bezier(0.4,0,0.2,1); }
-@media (max-width: 900px) { .glance-panel, .glance-tab { display: none !important; } html.glance-open .main { margin-right: 0; } }
+/* Only the scrollable content area shifts — topbar and module header remain full-width */
+html.glance-open .page-scroll { margin-right: 280px; transition: margin-right 0.25s cubic-bezier(0.4,0,0.2,1); }
+@media (max-width: 900px) { .glance-panel, .glance-tab { display: none !important; } html.glance-open .page-scroll { margin-right: 0; } }
 
 /* ─── LM-SW WIDGETS (At a Glance panel content helpers) ─── */
 .lm-sw { padding: 0.75rem 1rem; display: flex; flex-direction: column; gap: 0.7rem; }

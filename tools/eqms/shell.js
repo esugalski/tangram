@@ -74,40 +74,29 @@ function _esc(s) {
 }
 
 // ─── TOPBAR BUILDER ──────────────────────────────────────────────────────────
+// Topbar always renders two zones: search (left) + user profile (right).
+// Config: { searchPlaceholder?: string }  — or simply pass `true` for defaults.
 
 function _buildTopbarHTML(cfg) {
   if (!cfg) return '';
-  var h = '<div class="topbar">';
+  var placeholder = (typeof cfg === 'object' && cfg.searchPlaceholder)
+    ? cfg.searchPlaceholder
+    : 'Search…';
 
-  if (cfg.showProjectSelect) {
-    h += '<select class="project-select" id="project-select">'
-       + '<option>Loading project…</option>'
-       + '</select>';
-    h += '<button class="project-new-btn" id="btn-project-new" title="Add a new project">+ New</button>';
-  } else if (cfg.title) {
-    h += '<span class="topbar-title">' + _esc(cfg.title) + '</span>';
-  }
-
-  if (cfg.showSearch) {
-    h += '<div class="topbar-search-wrap">'
-       + '<svg class="topbar-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
-       + '<input type="text" id="topbar-search-input" placeholder="' + _esc(cfg.searchPlaceholder || 'Search…') + '">'
-       + '</div>';
-  }
-
-  h += '<span class="topbar-spacer"></span>';
-
-  if (cfg.rightActions && cfg.rightActions.length) {
-    cfg.rightActions.forEach(function(action) {
-      var icon = TOPBAR_ICONS[action.icon] || '';
-      h += '<button class="topbar-btn" id="' + _esc(action.id) + '" title="' + _esc(action.label) + '">'
-         + icon + _esc(action.label)
-         + '</button>';
-    });
-  }
-
-  h += '</div>';
-  return h;
+  return '<div class="topbar">'
+    + '<div class="topbar-search-wrap">'
+    +   '<svg class="topbar-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+    +   '<input type="text" id="topbar-search-input" placeholder="' + _esc(placeholder) + '">'
+    + '</div>'
+    + '<span class="topbar-spacer"></span>'
+    + '<div class="topbar-user">'
+    +   '<div class="topbar-user-avatar">FM</div>'
+    +   '<div class="topbar-user-info">'
+    +     '<div class="topbar-user-name">Founding Member</div>'
+    +     '<div class="topbar-user-role">Early Access</div>'
+    +   '</div>'
+    + '</div>'
+    + '</div>';
 }
 
 // ─── MODULE HEADER BUILDER ───────────────────────────────────────────────────
@@ -209,10 +198,22 @@ function initShell(config) {
   var glanceRoot = document.getElementById('glance-root');
   if (glanceRoot) {
     glanceRoot.innerHTML = _buildGlancePanelHTML();
+
+    // Position panel below topbar + module header (if present)
+    var panelTop = 58; // topbar height
+    if (config.moduleHeader) panelTop += 46; // module-header height
+    var panel = document.getElementById('glance-panel');
+    var glanceTab = document.querySelector('.glance-tab');
+    if (panel) panel.style.top = panelTop + 'px';
+    // Centre the pull-tab vertically within the panel's visible area
+    if (glanceTab) {
+      glanceTab.style.top = 'calc(' + panelTop + 'px + (100vh - ' + panelTop + 'px) / 2)';
+      glanceTab.style.transform = 'translateY(-50%)';
+    }
+
     // Determine initial open/closed state
     var defaultOpen = !(config.glancePanel && config.glancePanel.defaultOpen === false);
     if (defaultOpen) {
-      var panel = document.getElementById('glance-panel');
       if (panel) panel.classList.add('open');
       document.documentElement.classList.add('glance-open');
     } else {

@@ -10,53 +10,37 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="qms-shared.css">
   <style>
-    /* ─── PREVIEW OVERLAY ─── */
-    /* Thin amber banner above the eQMS shell indicating preview mode */
-    #preview-bar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
-      height: 32px;
-      background: #FFFBEB;
-      border-bottom: 1px solid rgba(245,158,11,0.35);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 1rem;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.68rem;
+    /* ─── IN-TOPBAR MODE TOGGLE ─── */
+    .preview-mode-toggle {
+      display: flex; align-items: center; gap: 0.25rem;
+      margin-right: 0.75rem;
     }
-    #preview-bar-left {
-      display: flex; align-items: center; gap: 0.5rem;
-      color: #92400E; font-weight: 700; letter-spacing: 0.03em;
-    }
-    #preview-bar-left svg {
-      width: 12px; height: 12px; stroke: #b45309; fill: none;
-      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-      flex-shrink: 0;
-    }
-    #preview-bar-right {
-      display: flex; align-items: center; gap: 0.35rem;
+    .preview-mode-toggle-label {
+      font-size: 0.6rem; font-weight: 600; color: rgba(11,39,64,0.4);
+      letter-spacing: 0.05em; text-transform: uppercase;
+      margin-right: 0.15rem; white-space: nowrap;
     }
     .preview-mode-btn {
       font-family: 'Inter', sans-serif;
-      font-size: 0.64rem; font-weight: 600;
-      padding: 0.2rem 0.6rem; border-radius: 4px;
-      border: 1.5px solid rgba(245,158,11,0.3);
-      background: transparent; color: #b45309;
+      font-size: 0.62rem; font-weight: 600;
+      padding: 0.18rem 0.55rem; border-radius: 4px;
+      border: 1.5px solid rgba(11,39,64,0.14);
+      background: transparent; color: rgba(11,39,64,0.45);
       cursor: pointer; transition: all 0.12s; white-space: nowrap;
     }
-    .preview-mode-btn:hover { background: rgba(245,158,11,0.1); }
-    .preview-mode-btn.active { background: #F59E0B; color: white; border-color: #F59E0B; }
-
-    /* Push the eQMS shell down by the preview bar height */
-    body { padding-top: 32px; }
-    .sidebar { top: 32px !important; height: calc(100vh - 32px) !important; }
-    .glance-panel { top: calc(32px + 58px) !important; }
+    .preview-mode-btn:hover { background: rgba(11,39,64,0.05); color: var(--primary); }
+    .preview-mode-btn.active {
+      background: var(--primary); color: white;
+      border-color: var(--primary);
+    }
 
     /* ─── PREVIEW CONTENT AREA ─── */
-    .preview-content {
+    .page-scroll {
       flex: 1; overflow-y: auto; background: var(--light-gray);
       display: flex; flex-direction: column;
     }
-    .preview-content::-webkit-scrollbar { width: 5px; }
-    .preview-content::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
+    .page-scroll::-webkit-scrollbar { width: 5px; }
+    .page-scroll::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 3px; }
 
     .preview-body {
       padding: 1.5rem;
@@ -96,19 +80,6 @@
 </head>
 <body>
 
-<!-- ── Preview bar ── -->
-<div id="preview-bar">
-  <div id="preview-bar-left">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    Shell Preview — not a production page
-  </div>
-  <div id="preview-bar-right">
-    <span style="font-size:0.62rem;color:#b45309;margin-right:0.25rem;">Mode:</span>
-    <button class="preview-mode-btn active" data-mode="hub" onclick="switchMode('hub')">Hub Page</button>
-    <button class="preview-mode-btn" data-mode="detail" onclick="switchMode('detail')">Detail / Form Page</button>
-  </div>
-</div>
-
 <!-- ── Shell root anchors ── -->
 <aside class="sidebar" id="sidebar-root"></aside>
 
@@ -118,7 +89,7 @@
   <nav id="subnav-root"></nav>
 
   <!-- Page content area -->
-  <div class="preview-content">
+  <div class="page-scroll">
     <div class="preview-body">
 
       <!-- KPI row placeholder -->
@@ -190,16 +161,7 @@
 var PREVIEW_CONFIGS = {
   hub: {
     activePage: 'design-controls',
-    topbar: {
-      title: 'Design Controls',
-      showSearch: true,
-      showProjectSelect: true,
-      searchPlaceholder: 'Search documents…',
-      rightActions: [
-        { id: 'btn-scope',     label: 'Scope',      icon: 'scope' },
-        { id: 'btn-edit-idx',  label: 'Edit Index', icon: 'edit'  },
-      ]
-    },
+    topbar: { searchPlaceholder: 'Search documents…' },
     moduleHeader: 'Design Controls',
     subNav: {
       module: 'design-controls',
@@ -209,16 +171,7 @@ var PREVIEW_CONFIGS = {
   },
   detail: {
     activePage: 'risk-analysis',
-    topbar: {
-      title: 'Risk Analysis',
-      showSearch: true,
-      showProjectSelect: false,
-      searchPlaceholder: 'Search hazards…',
-      rightActions: [
-        { id: 'btn-export',   label: 'Export',    icon: 'export' },
-        { id: 'btn-guidance', label: 'Guidance',  icon: 'help'   },
-      ]
-    },
+    topbar: { searchPlaceholder: 'Search hazards…' },
     // no moduleHeader → band not rendered
     subNav: {
       module: 'risk-management',
@@ -285,6 +238,32 @@ function populateGlanceBody(mode) {
   }
 }
 
+// ── Inject mode toggle into the rendered topbar ───────────────────────────────
+
+function injectModeToggle(activeMode) {
+  var topbar = document.querySelector('.topbar');
+  if (!topbar) return;
+
+  // Remove any existing toggle
+  var existing = topbar.querySelector('.preview-mode-toggle');
+  if (existing) existing.remove();
+
+  var toggle = document.createElement('div');
+  toggle.className = 'preview-mode-toggle';
+  toggle.innerHTML =
+    '<span class="preview-mode-toggle-label">Preview:</span>'
+    + '<button class="preview-mode-btn' + (activeMode === 'hub' ? ' active' : '') + '" data-mode="hub" onclick="switchMode(\'hub\')">Hub Page</button>'
+    + '<button class="preview-mode-btn' + (activeMode === 'detail' ? ' active' : '') + '" data-mode="detail" onclick="switchMode(\'detail\')">Detail / Form</button>';
+
+  // Insert before the user profile (last child) so order is: search | spacer | toggle | user
+  var userEl = topbar.querySelector('.topbar-user');
+  if (userEl) {
+    topbar.insertBefore(toggle, userEl);
+  } else {
+    topbar.appendChild(toggle);
+  }
+}
+
 // ── Mode switcher ─────────────────────────────────────────────────────────────
 
 function switchMode(mode) {
@@ -298,13 +277,11 @@ function switchMode(mode) {
   // Re-initialise shell with new config
   initShell(PREVIEW_CONFIGS[mode]);
 
+  // Re-inject mode toggle with updated active state
+  injectModeToggle(mode);
+
   // Populate glance panel body
   populateGlanceBody(mode);
-
-  // Update mode button active state
-  document.querySelectorAll('.preview-mode-btn').forEach(function(btn) {
-    btn.classList.toggle('active', btn.dataset.mode === mode);
-  });
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
@@ -314,18 +291,8 @@ var urlMode = new URLSearchParams(window.location.search).get('mode') || 'hub';
 var validMode = PREVIEW_CONFIGS[urlMode] ? urlMode : 'hub';
 
 initShell(PREVIEW_CONFIGS[validMode]);
+injectModeToggle(validMode);
 populateGlanceBody(validMode);
-
-// Mark the correct button active on load
-document.querySelectorAll('.preview-mode-btn').forEach(function(btn) {
-  btn.classList.toggle('active', btn.dataset.mode === validMode);
-});
-
-// Populate project-select with a sample project name
-var ps = document.getElementById('project-select');
-if (ps) {
-  ps.innerHTML = '<option>Apex Infusion Pump</option><option>Model 2 Prototype</option>';
-}
 
 </script>
 </body>
