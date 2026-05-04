@@ -21,7 +21,7 @@
       --amber:      #F59E0B;
       --red:        #EF4444;
       --indigo:     #6366f1;
-      --sidebar-w:  220px;
+      --sidebar-w:  232px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
@@ -65,16 +65,16 @@
     .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
 
     /* ─── TOPBAR ─── */
-    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 60px; display: flex; align-items: center; flex-shrink: 0; z-index: 10; }
-    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; height: 100%; overflow: hidden; }
-    .topbar-brand-name, .topbar-brand-sub { display: none !important; }
-    .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 1.5rem; }
-    .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; width: min(400px, 100%); transition: border-color 0.15s; }
-    .topbar-search:focus-within { border-color: rgba(10,192,233,0.4); }
-    .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-    .topbar-search input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 100%; }
-    .topbar-search input::placeholder { color: rgba(11,39,64,0.35); }
-    .topbar-right { display: flex; align-items: center; gap: 0.5rem; padding: 0 1.25rem; flex-shrink: 0; }
+    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 58px; display: flex; align-items: center; padding: 0 1.5rem; flex-shrink: 0; z-index: 10; gap: 0.75rem; }
+    .topbar-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); letter-spacing: -0.015em; white-space: nowrap; flex-shrink: 0; }
+    .topbar-sep { width: 1px; height: 16px; background: rgba(11,39,64,0.08); flex-shrink: 0; }
+    .topbar-spacer { flex: 1; }
+    .topbar-search-wrap { flex: 1; max-width: 380px; position: relative; display: flex; align-items: center; }
+    .topbar-search-icon { position: absolute; left: 0.55rem; width: 13px; height: 13px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+    .topbar-search { font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem 0.42rem 2rem; outline: none; width: 100%; transition: border-color 0.15s, background 0.15s; }
+    .topbar-search:focus { border-color: rgba(10,192,233,0.4); background: white; }
+    .topbar-search::placeholder { color: rgba(11,39,64,0.35); }
+    .topbar-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
     .topbar-icon-btn { width: 34px; height: 34px; border-radius: 8px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.12s; position: relative; }
     .topbar-icon-btn:hover { background: var(--light-gray); }
     .topbar-icon-btn svg { width: 16px; height: 16px; stroke: var(--mid-blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -99,12 +99,16 @@
     .page-heading { font-size: 1.3rem; font-weight: 800; color: var(--primary); letter-spacing: -0.025em; line-height: 1.2; }
     .page-subtitle { font-size: 0.77rem; color: rgba(11,39,64,0.44); margin-top: 0.22rem; }
     .page-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
-    .btn-primary { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; color: white; background: var(--aqua-dark); border: none; border-radius: 7px; padding: 0.45rem 0.9rem; cursor: pointer; transition: background 0.12s; white-space: nowrap; }
-    .btn-primary:hover { background: var(--aqua); }
+    .btn-primary { display: inline-flex; align-items: center; gap: 0.4rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--primary); background: var(--aqua); border: none; border-radius: 7px; padding: 0.45rem 0.9rem; cursor: pointer; transition: background 0.15s, transform 0.12s; white-space: nowrap; box-shadow: 0 2px 8px rgba(10,192,233,0.28); }
+    .btn-primary:hover { background: var(--aqua-dark); transform: translateY(-1px); }
     .btn-primary svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-    .btn-ghost { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.42rem 0.8rem; cursor: pointer; transition: border-color 0.12s, background 0.12s; white-space: nowrap; }
-    .btn-ghost:hover { border-color: rgba(10,192,233,0.4); background: rgba(10,192,233,0.02); }
-    .btn-ghost svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-secondary { display: inline-flex; align-items: center; gap: 0.4rem; font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 600; color: var(--primary); background: white; border: 1.5px solid rgba(11,39,64,0.12); border-radius: 7px; padding: 0.45rem 0.9rem; cursor: pointer; transition: background 0.15s, border-color 0.15s; white-space: nowrap; }
+    .btn-secondary:hover { background: rgba(11,39,64,0.03); border-color: rgba(11,39,64,0.22); }
+    .btn-secondary svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ─── MODULE HEADER ─── */
+    .module-header { background: var(--primary); height: 46px; display: flex; align-items: center; padding: 0 1.5rem; flex-shrink: 0; }
+    .module-header-title { font-size: 0.84rem; font-weight: 700; color: white; letter-spacing: -0.01em; }
 
     /* ─── SUBTABS ─── */
     .subtabs { display: flex; gap: 0; border-bottom: 1.5px solid rgba(11,39,64,0.08); margin-bottom: 1rem; }
@@ -121,10 +125,10 @@
     .filter-dropdown svg { width: 11px; height: 11px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
     .filter-more-btn { font-family: 'Inter', sans-serif; font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.42); background: transparent; border: none; cursor: pointer; padding: 0.36rem 0.45rem; transition: color 0.12s; }
     .filter-more-btn:hover { color: var(--primary); }
-    .filter-search-inline { display: flex; align-items: center; gap: 0.45rem; margin-left: auto; background: white; border: 1.5px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.34rem 0.7rem; transition: border-color 0.15s; }
+    .filter-search-inline { display: flex; align-items: center; gap: 0.45rem; background: white; border: 1.5px solid rgba(11,39,64,0.1); border-radius: 7px; padding: 0.34rem 0.7rem; transition: border-color 0.15s; }
     .filter-search-inline:focus-within { border-color: rgba(10,192,233,0.4); }
     .filter-search-inline svg { width: 12px; height: 12px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; flex-shrink: 0; }
-    .filter-search-inline input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.74rem; color: var(--primary); width: 160px; }
+    .filter-search-inline input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 220px; }
     .filter-search-inline input::placeholder { color: rgba(11,39,64,0.33); }
 
     /* ─── SORT BAR ─── */
@@ -285,13 +289,13 @@
 
   <div class="app-main">
     <div class="topbar">
-      <div class="topbar-brand-area"></div>
-      <div class="topbar-center">
-        <div class="topbar-search">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" placeholder="Search documents, CAPAs, products, audits…" id="topbarSearch" oninput="handleTopbarSearch(this.value)">
-        </div>
+      <span class="topbar-title">Document Library</span>
+      <div class="topbar-sep"></div>
+      <div class="topbar-search-wrap">
+        <svg class="topbar-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="topbar-search" type="text" placeholder="Search documents…" oninput="handleSearch(this.value)">
       </div>
+      <span class="topbar-spacer"></span>
       <div class="topbar-right">
         <button class="topbar-icon-btn" title="Notifications">
           <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
@@ -306,20 +310,20 @@
         </div>
       </div>
     </div>
+    <div class="module-header"><span class="module-header-title">Document Library</span></div>
 
     <div class="content-wrap">
       <div class="main-area">
         <div class="page-header">
           <div>
-            <div class="page-heading">Library</div>
             <div class="page-subtitle">Search and browse controlled documents and records</div>
           </div>
           <div class="page-actions">
-            <button class="btn-ghost">
+            <button class="btn-secondary">
               <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
               Save View
             </button>
-            <button class="btn-ghost">
+            <button class="btn-secondary">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
               Event View
             </button>
@@ -356,10 +360,6 @@
               <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <button class="filter-more-btn">+ More Filters</button>
-            <div class="filter-search-inline">
-              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" placeholder="Search library…" id="libSearch" oninput="handleSearch(this.value)">
-            </div>
           </div>
         </div>
 
@@ -385,7 +385,6 @@
   </div>
 
   <script src="seed-demo.js?v=1776901546755"></script>
-  <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
   <script src="filter-dropdown.js"></script>
   <script>
@@ -948,10 +947,6 @@
       filterState.search = val.trim();
       shownCount = PAGE_SIZE;
       renderTable();
-    }
-    function handleTopbarSearch(val) {
-      var el = document.getElementById('libSearch');
-      if (el) { el.value = val; handleSearch(val); }
     }
     window.onFilterChange = function(key, value) {
       filterState[key] = value;
