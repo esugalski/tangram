@@ -77,7 +77,7 @@ y=0  ┌────────────┬───────────
      │ SIDEBAR    │ [🔍 Search…]  ·····  [FM  Founding Member]               │ ← TOPBAR (58px, white)
 y=58 │ (220px,    ├──────────────────────────────────────────────────────────┤
      │  dark      │ ████  Design Controls  ████████████████████████████████  │ ← MODULE HEADER (46px, navy)
-     │  navy)     ├─────────────────────────────────────┬────────────────────┤  hub pages only
+     │  navy)     ├─────────────────────────────────────┬────────────────────┤  every page
 y=104│            │ Overview  Dev Plan  User Needs  …   │ AT A GLANCE (280px)│ ← SUB-NAV (40px, white)
      │            ├─────────────────────────────────────│                    │
      │            │ .page-scroll (content area)         │  panel body        │
@@ -105,7 +105,7 @@ y=104│            │ Overview  Dev Plan  User Needs  …   │ AT A GLANCE (2
 ### Shell init (bottom of `<body>`, after sidebar.js + shell.js)
 
 ```javascript
-// Hub / overview page (with module header band):
+// Hub / overview page:
 initShell({
   activePage: 'design-controls',
   topbar: { searchPlaceholder: 'Search documents…' },
@@ -113,10 +113,11 @@ initShell({
   subNav: { module: 'design-controls', activeHref: 'design-controls-overview.html' }
 });
 
-// Detail / form page (no module header; wide-format pages default glance to closed):
+// Detail / form page (wide-format pages default glance to closed):
 initShell({
   activePage: 'risk-analysis',
   topbar: { searchPlaceholder: 'Search hazards…' },
+  moduleHeader: 'Risk Management',
   subNav: { module: 'risk-management', activeHref: 'risk-analysis.html' },
   glancePanel: { defaultOpen: false }
 });
@@ -175,7 +176,7 @@ Used in document page headers (not the topbar). Kept here for reference:
 
 ## 6. Module Header Band
 
-A full-width dark navy bar positioned immediately below the topbar and above the sub-nav on every hub/overview page. It displays the module name in white, providing a clear visual anchor that separates the global chrome (topbar) from the module-scoped chrome (sub-nav and content).
+A full-width dark navy bar positioned immediately below the topbar on every shell page. It displays the module or section name in white, providing a clear visual anchor between the topbar and the content below it.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -197,7 +198,7 @@ A full-width dark navy bar positioned immediately below the topbar and above the
 </div>
 ```
 
-Place this div as a **direct child of `.app-main`**, immediately after the topbar div and before the sub-nav `<nav>`.
+Shell.js injects this from `config.moduleHeader`. Pass the module or section name as a string.
 
 ### CSS
 
@@ -220,8 +221,8 @@ Place this div as a **direct child of `.app-main`**, immediately after the topba
 
 ### Rules
 
-- **Always present** on hub/overview pages (Design Controls, Risk Management, CAPA, etc.)
-- The module title must exactly match the sidebar nav label for that module
+- **Required on every shell page** — always pass `moduleHeader` in `initShell()`
+- The module title must exactly match the sidebar nav label for that module (or the page title for cross-module pages like "My Work", "Document Library")
 - No icons, badges, or actions inside the band — title only
 - Never change the background color — it must always be `var(--primary)` to maintain the navy-to-white contrast rhythm with the sub-nav below it
 
