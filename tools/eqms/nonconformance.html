@@ -26,17 +26,11 @@
 <body>
   <aside class="sidebar" id="sidebar-root"></aside>
 
-  <main class="main">
-    <header class="topbar">
-      <div class="topbar-title">
-        <span class="topbar-crumb">Governance</span>
-        <span class="topbar-sep">/</span>
-        Nonconformances
-      </div>
-      <div class="topbar-right">
-        <button class="btn-primary" onclick="newNC()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New nonconformance</button>
-      </div>
-    </header>
+  <div class="main">
+    <div id="topbar-root"></div>
+    <div id="module-header-root"></div>
+    <nav id="subnav-root"></nav>
+    <div class="page-scroll">
     <div class="doc-approval-bar">
       <div class="proc-status-pill draft" id="proc-status-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Draft · Rev A</div>
       <div style="flex:1;"></div>
@@ -60,15 +54,17 @@
         <div class="detail-pane" id="pane" style="display:none;"></div>
       </div>
     </div>
-  </main>
+    </div><!-- /page-scroll -->
+  </div><!-- /main -->
+  <div id="glance-root"></div>
 
   <script src="ai-assist.js?v=1776901546755"></script>
   <script src="esign.js?v=1776901546755"></script>
   <script src="approvals.js?v=1776901546755"></script>
   <script src="seed-demo.js?v=1776901546755"></script>
 
-  <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
+  <script src="shell.js"></script>
   <script>
     'use strict';
     const KEY = 'qms_nonconformances';
@@ -314,7 +310,11 @@
     AIAssist.register('f-description', aiDescription);
     AIAssist.register('f-dispositionJustification', aiJustification);
 
-    initSidebar({ activePage: 'nonconformance' });
+    initShell({
+      activePage: 'capa-ncr',
+      topbar: { searchPlaceholder: 'Search nonconformances…' },
+      subNav: { module: 'capa-ncr', activeHref: 'nonconformance.html' }
+    });
     renderIntro();
     renderList();
     updateStatus();

@@ -9,81 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="qms-shared.css">
   <style>
-    :root {
-      --primary:    #0B2740;
-      --mid-blue:   #304F6B;
-      --dark-blue:  #02192F;
-      --sidebar-bg: #071e31;
-      --aqua:       #0AC0E9;
-      --aqua-dark:  #089bbf;
-      --light-gray: #F7F8FA;
-      --green:      #10B981;
-      --amber:      #F59E0B;
-      --red:        #EF4444;
-      --indigo:     #6366f1;
-      --sidebar-w:  220px;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: var(--light-gray); color: var(--primary); display: flex; height: 100vh; overflow: hidden; }
-
-    /* ─── SIDEBAR ─── */
-    .sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); min-height: 100vh; display: flex; flex-direction: column; flex-shrink: 0; position: relative; z-index: 100; transition: width 0.2s ease; overflow: hidden; }
-    .sidebar.collapsed { width: 56px; }
-    .sidebar::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.06); pointer-events: none; }
-    .sidebar-header { padding: 1.25rem 1rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
-    .sidebar-brand { display: flex; align-items: center; gap: 0.65rem; }
-    .sidebar-t-mark { width: 28px; height: 28px; border-radius: 6px; flex-shrink: 0; object-fit: contain; display: block; }
-    .sidebar-brand-text { overflow: hidden; transition: opacity 0.15s, width 0.2s; }
-    .sidebar.collapsed .sidebar-brand-text { opacity: 0; width: 0; }
-    .sidebar-brand-name { font-size: 0.85rem; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.1; white-space: nowrap; }
-    .sidebar-brand-sub { font-size: 0.6rem; font-weight: 500; color: rgba(255,255,255,0.28); letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; }
-    .sidebar-nav { flex: 1; padding: 0.5rem 0.5rem 0; overflow-y: auto; overflow-x: hidden; }
-    .sidebar-nav::-webkit-scrollbar { width: 0; }
-    .sidebar-section { margin-bottom: 0.25rem; }
-    .sidebar-nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.48rem 0.75rem; border-radius: 7px; font-size: 0.79rem; font-weight: 500; color: rgba(255,255,255,0.70); cursor: pointer; transition: background 0.12s, color 0.12s; text-decoration: none; position: relative; white-space: nowrap; }
-    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.88); }
-    .sidebar-nav-item.active { background: rgba(10,192,233,0.12); color: #5DDAF5; }
-    .sidebar-nav-item.active::before { content: ''; position: absolute; left: 0; top: 5px; bottom: 5px; width: 2.5px; background: var(--aqua); border-radius: 0 2px 2px 0; }
-    .sidebar-nav-icon { width: 15px; height: 15px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .sidebar-nav-label { overflow: hidden; text-overflow: ellipsis; transition: opacity 0.15s; }
-    .sidebar.collapsed .sidebar-nav-label { opacity: 0; }
-    .sidebar-footer { padding: 0.85rem 1rem; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
-    .sidebar-user { display: flex; align-items: center; gap: 0.6rem; }
-    .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: rgba(10,192,233,0.15); border: 1.5px solid rgba(10,192,233,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua); flex-shrink: 0; }
-    .sidebar-user-info { overflow: hidden; transition: opacity 0.15s, width 0.2s; min-width: 0; flex: 1; }
-    .sidebar.collapsed .sidebar-user-info { opacity: 0; width: 0; flex: 0; }
-    .sidebar-user-name { font-size: 0.76rem; font-weight: 600; color: rgba(255,255,255,0.62); white-space: nowrap; }
-    .sidebar-user-role { font-size: 0.63rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
-    .sidebar-collapse-btn { margin-left: auto; flex-shrink: 0; background: transparent; border: none; cursor: pointer; padding: 4px; border-radius: 5px; transition: background 0.12s; display: flex; align-items: center; justify-content: center; }
-    .sidebar-collapse-btn:hover { background: rgba(255,255,255,0.07); }
-    .sidebar-collapse-icon { width: 14px; height: 14px; stroke: rgba(255,255,255,0.3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.2s; }
-    .sidebar.collapsed .sidebar-collapse-icon { transform: rotate(180deg); }
-
-    /* ─── APP MAIN ─── */
-    .app-main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
-
-    /* ─── TOPBAR ─── */
-    .topbar { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 60px; display: flex; align-items: center; flex-shrink: 0; z-index: 10; }
-    .topbar-brand-area { width: var(--sidebar-w); flex-shrink: 0; height: 100%; overflow: hidden; }
-    .topbar-brand-name, .topbar-brand-sub { display: none !important; }
-    .topbar-center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 0 1.5rem; }
-    .topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; width: min(400px, 100%); transition: border-color 0.15s; }
-    .topbar-search:focus-within { border-color: rgba(10,192,233,0.4); }
-    .topbar-search svg { width: 14px; height: 14px; stroke: rgba(11,39,64,0.3); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-    .topbar-search input { background: transparent; border: none; outline: none; font-family: 'Inter', sans-serif; font-size: 0.8rem; color: var(--primary); width: 100%; }
-    .topbar-search input::placeholder { color: rgba(11,39,64,0.35); }
-    .topbar-right { display: flex; align-items: center; gap: 0.5rem; padding: 0 1.25rem; flex-shrink: 0; }
-    .topbar-icon-btn { width: 34px; height: 34px; border-radius: 8px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.12s; position: relative; }
-    .topbar-icon-btn:hover { background: var(--light-gray); }
-    .topbar-icon-btn svg { width: 16px; height: 16px; stroke: var(--mid-blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .topbar-notif-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--red); border: 1.5px solid white; }
-    .topbar-user { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.3rem 0.6rem; border-radius: 8px; transition: background 0.12s; }
-    .topbar-user:hover { background: var(--light-gray); }
-    .topbar-user-avatar { width: 30px; height: 30px; border-radius: 50%; background: rgba(10,192,233,0.1); border: 1.5px solid rgba(10,192,233,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: var(--aqua-dark); flex-shrink: 0; }
-    .topbar-user-name { font-size: 0.8rem; font-weight: 600; color: var(--primary); white-space: nowrap; }
-    .topbar-user-role { font-size: 0.63rem; color: rgba(11,39,64,0.4); white-space: nowrap; }
-
     /* ─── CONTENT WRAP ─── */
     .content-wrap { flex: 1; display: flex; min-height: 0; overflow: hidden; }
 
@@ -203,95 +130,12 @@
   </style>
 </head>
 <body>
-
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-brand">
-        <img src="../../brand_assets/Tangram-T%20mark%20reverse_Square.png" class="sidebar-t-mark" alt="T">
-        <div class="sidebar-brand-text">
-          <div class="sidebar-brand-name">Tangram eQMS</div>
-          <div class="sidebar-brand-sub">Quality Management</div>
-        </div>
-      </div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="sidebar-section">
-        <a class="sidebar-nav-item" href="my-work.html">
-          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17.5h7M17.5 14v7"/></svg>
-          <span class="sidebar-nav-label">My Work</span>
-        </a>
-        <a class="sidebar-nav-item" href="doc-library.html">
-          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-          <span class="sidebar-nav-label">Library</span>
-        </a>
-        <a class="sidebar-nav-item" href="design-controls.html">
-          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><rect x="2" y="9" width="5" height="6" rx="1"/><rect x="9.5" y="9" width="5" height="6" rx="1"/><rect x="17" y="9" width="5" height="6" rx="1"/><line x1="7" y1="12" x2="9.5" y2="12"/><line x1="14.5" y1="12" x2="17" y2="12"/></svg>
-          <span class="sidebar-nav-label">Design Controls</span>
-        </a>
-        <a class="sidebar-nav-item" href="risk-management.html">
-          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span class="sidebar-nav-label">Risk Management</span>
-        </a>
-        <a class="sidebar-nav-item active" href="capa-ncr.html">
-          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-          <span class="sidebar-nav-label">CAPA / NCR</span>
-        </a>
-        <a class="sidebar-nav-item" href="suppliers.html">
-          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          <span class="sidebar-nav-label">Suppliers</span>
-        </a>
-        <a class="sidebar-nav-item" href="audits.html">
-          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13l2 2 4-4"/></svg>
-          <span class="sidebar-nav-label">Audits</span>
-        </a>
-        <a class="sidebar-nav-item" href="training-hub.html">
-          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-          <span class="sidebar-nav-label">Training</span>
-        </a>
-        <a class="sidebar-nav-item" href="reports.html">
-          <svg class="sidebar-nav-icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          <span class="sidebar-nav-label">Reports</span>
-        </a>
-      </div>
-    </nav>
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="sidebar-avatar">SJ</div>
-        <div class="sidebar-user-info">
-          <div class="sidebar-user-name">Sarah Johnson</div>
-          <div class="sidebar-user-role">Quality Manager</div>
-        </div>
-        <button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Collapse sidebar">
-          <svg class="sidebar-collapse-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-      </div>
-    </div>
-  </aside>
-
-  <div class="app-main">
-    <div class="topbar">
-      <div class="topbar-brand-area"></div>
-      <div class="topbar-center">
-        <div class="topbar-search">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" placeholder="Search documents, CAPAs, products, audits…">
-        </div>
-      </div>
-      <div class="topbar-right">
-        <button class="topbar-icon-btn" title="Notifications">
-          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg>
-          <span class="topbar-notif-dot"></span>
-        </button>
-        <div class="topbar-user">
-          <div class="topbar-user-avatar">SJ</div>
-          <div>
-            <div class="topbar-user-name">Sarah Johnson</div>
-            <div class="topbar-user-role">Quality Manager</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+  <aside class="sidebar" id="sidebar-root"></aside>
+  <div class="main">
+    <div id="topbar-root"></div>
+    <div id="module-header-root"></div>
+    <nav id="subnav-root"></nav>
+    <div class="page-scroll">
     <div class="content-wrap">
       <div class="main-area">
         <div class="page-header">
@@ -378,11 +222,13 @@
         </div>
       </div>
     </div>
-  </div>
+    </div><!-- /page-scroll -->
+  </div><!-- /main -->
+  <div id="glance-root"></div>
 
   <script src="seed-demo.js?v=1776901546755"></script>
-  <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
+  <script src="shell.js"></script>
   <script src="filter-dropdown.js"></script>
   <script>
     function esc(s) {
@@ -623,10 +469,6 @@
       renderTable();
     };
 
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('collapsed');
-    }
-
     function init() {
       loadData();
       updateCounts();
@@ -639,6 +481,13 @@
     } else {
       init();
     }
+
+    initShell({
+      activePage: 'capa-ncr',
+      topbar: { searchPlaceholder: 'Search CAPAs…' },
+      moduleHeader: 'CAPA / NCR',
+      subNav: { module: 'capa-ncr', activeHref: 'capa-ncr.html' }
+    });
   </script>
 </body>
 </html>

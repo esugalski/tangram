@@ -46,17 +46,10 @@
 <body>
   <aside class="sidebar" id="sidebar-root"></aside>
 
-  <main class="main">
-    <header class="topbar">
-      <div class="topbar-title">
-        <span class="topbar-crumb">Quality System</span>
-        <span class="topbar-sep">/</span>
-        Audit Center
-      </div>
-      <div class="topbar-right">
-        <button class="btn-primary" onclick="newAudit()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Schedule audit</button>
-      </div>
-    </header>
+  <div class="main">
+    <div id="topbar-root"></div>
+    <div id="module-header-root"></div>
+    <nav id="subnav-root"></nav>
 
     <div class="view-tabs">
       <button class="view-tab active" data-tab="readiness" onclick="setTab('readiness')">Audit readiness</button>
@@ -99,12 +92,13 @@
         </div>
       </div>
     </div>
-  </main>
+  </div><!-- /main -->
+  <div id="glance-root"></div>
 
   <script src="seed-demo.js?v=1776901546755"></script>
 
-  <script src="learn-mode.js?v=1776901546755"></script>
   <script src="sidebar.js?v=1776901546755"></script>
+  <script src="shell.js"></script>
   <script>
     'use strict';
     const AKEY = 'qms_internal_audits';
@@ -399,7 +393,11 @@
     }
 
     document.addEventListener('qms-learn-mode-changed', function(){ renderReadiness(); if (currentId) renderAudit(); });
-    initSidebar({ activePage: 'audit-ready' });
+    initShell({
+      activePage: 'audits',
+      topbar: { searchPlaceholder: 'Search audit readiness…' },
+      subNav: { module: 'audits', activeHref: 'audit-ready.html' }
+    });
     renderIntro();
     renderReadiness();
     renderAuditList();
