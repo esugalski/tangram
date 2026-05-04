@@ -217,14 +217,7 @@ function initSidebar(config) {
       navItemsHTML +
     '</nav>' +
     '<div class="sidebar-footer">' +
-      '<div class="sidebar-user">' +
-        '<div class="sidebar-avatar">FM</div>' +
-        '<div>' +
-          '<div class="sidebar-user-name">Founding Member</div>' +
-          '<div class="sidebar-user-role">Early Access</div>' +
-        '</div>' +
-        '<div class="sidebar-sign-out"><a href="auth.html">Sign out</a></div>' +
-      '</div>' +
+      '<a class="sidebar-sign-out-link" href="auth.html">Sign out</a>' +
     '</div>';
 
   var root = document.getElementById('sidebar-root') || document.getElementById('sidebar');
