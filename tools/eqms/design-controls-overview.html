@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en" class="glance-open">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,91 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="qms-shared.css">
   <style>
-    :root {
-      --primary:    #0B2740;
-      --mid-blue:   #304F6B;
-      --muted:      #6B7A8D;
-      --dark-blue:  #02192F;
-      --sidebar-bg: #071e31;
-      --aqua:       #0AC0E9;
-      --aqua-dark:  #089bbf;
-      --light-gray: #F7F8FA;
-      --green:      #10B981;
-      --green-bg:   #ECFDF5;
-      --green-text: #065F46;
-      --amber:      #F59E0B;
-      --amber-bg:   #FFFBEB;
-      --amber-text: #92400E;
-      --red:        #EF4444;
-      --indigo:     #6366f1;
-      --indigo-bg:  #EEF2FF;
-      --indigo-text:#3730A3;
-      --border:     rgba(11,39,64,0.08);
-      --sidebar-w:  232px;
-    }
-    /* ─── DC SUBNAV ─── */
-    .dc-subnav { background: white; border-bottom: 1px solid rgba(11,39,64,0.08); height: 40px; display: flex; align-items: center; padding: 0 1.5rem; gap: 0; overflow-x: auto; flex-shrink: 0; }
-    .dc-subnav::-webkit-scrollbar { height: 0; }
-    .dc-subnav-link { font-size: 0.74rem; font-weight: 500; color: rgba(11,39,64,0.5); text-decoration: none; padding: 0 0.7rem; white-space: nowrap; height: 40px; display: flex; align-items: center; border-bottom: 2px solid transparent; transition: color 0.12s; }
-    .dc-subnav-link:hover { color: var(--primary); }
-    .dc-subnav-link.active { color: var(--aqua-dark); font-weight: 600; border-bottom-color: var(--aqua); }
-
-    /* ─── MODULE HEADER ─── */
-    .module-header { background: var(--primary); height: 46px; display: flex; align-items: center; padding: 0 1.5rem; flex-shrink: 0; }
-    .module-header-title { font-size: 0.84rem; font-weight: 700; color: white; letter-spacing: -0.01em; }
-    /* ─── APP SHELL ─── */
-    .main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; position: relative; }
-
-    /* ─── TOPBAR ─── */
-    .topbar { background: white; border-bottom: 1px solid var(--border); height: 56px; display: flex; align-items: center; padding: 0 1.25rem; flex-shrink: 0; gap: 0.75rem; }
-    .topbar-title { font-size: 0.88rem; font-weight: 700; color: var(--primary); letter-spacing: -0.015em; white-space: nowrap; }
-    .topbar-sep { width: 1px; height: 16px; background: var(--border); flex-shrink: 0; }
-    .topbar-project { font-size: 0.78rem; color: var(--mid-blue); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
-    .project-select { font-family: 'Inter', sans-serif; font-size: 0.78rem; font-weight: 500; color: var(--mid-blue); background: white; border: 1.5px solid var(--border); border-radius: 5px; padding: 0.25rem 1.6rem 0.25rem 0.55rem; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23304F6B' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.45rem center; flex: 1; min-width: 0; max-width: 260px; transition: border-color 0.12s; }
-    .project-select:hover { border-color: rgba(10,192,233,0.35); color: var(--aqua); }
-    .project-select:focus { outline: none; border-color: rgba(10,192,233,0.5); }
-    .project-new-btn { font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; color: var(--aqua); background: rgba(10,192,233,0.08); border: 1.5px solid rgba(10,192,233,0.25); border-radius: 5px; padding: 0.28rem 0.6rem; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.12s; }
-    .project-new-btn:hover { background: rgba(10,192,233,0.16); }
-    .topbar-updated { font-size: 0.7rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
-    .topbar-btn { display: inline-flex; align-items: center; gap: 0.35rem; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.01em; padding: 0.3rem 0.7rem; border-radius: 5px; border: 1.5px solid var(--border); background: white; color: var(--mid-blue); cursor: pointer; transition: all 0.12s; white-space: nowrap; flex-shrink: 0; }
-    .topbar-btn:hover { border-color: rgba(10,192,233,0.35); color: var(--aqua); background: rgba(10,192,233,0.04); }
-    .topbar-btn.active { border-color: var(--amber); color: var(--amber-text); background: var(--amber-bg); }
-    .topbar-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .topbar-search-wrap { flex: 1; max-width: 320px; position: relative; display: flex; align-items: center; }
-    .topbar-search-icon { position: absolute; left: 0.5rem; width: 12px; height: 12px; stroke: var(--muted); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
-    .topbar-search { font-family: 'Inter', sans-serif; font-size: 0.75rem; color: var(--primary); border: 1.5px solid var(--border); border-radius: 5px; padding: 0.28rem 0.6rem 0.28rem 1.75rem; outline: none; width: 100%; background: var(--light-gray); transition: border-color 0.12s, background 0.12s; }
-    .topbar-search:focus { border-color: rgba(10,192,233,0.5); background: white; }
-    .topbar-search::placeholder { color: rgba(11,39,64,0.3); }
-    .topbar-spacer { flex: 1; }
-
-    /* ─── AT A GLANCE PANEL ─── */
-    .glance-panel { position: fixed; top: 56px; right: 0; bottom: 0; width: 280px; background: white; border-left: 1px solid rgba(11,39,64,0.09); box-shadow: -4px 0 24px rgba(11,39,64,0.08); overflow-y: auto; overflow-x: hidden; z-index: 120; transform: translateX(100%); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); font-family: 'Inter', sans-serif; }
-    .glance-panel.open { transform: translateX(0); }
-    .glance-panel-head { position: sticky; top: 0; display: flex; align-items: center; gap: 0.5rem; padding: 0.7rem 0.9rem 0.6rem; background: white; border-bottom: 1px solid rgba(11,39,64,0.08); z-index: 1; }
-    .glance-panel-label { flex: 1; font-size: 0.6rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.38); }
-    .glance-panel-close { width: 24px; height: 24px; border: none; background: rgba(11,39,64,0.05); border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; font-size: 14px; line-height: 1; color: rgba(11,39,64,0.55); }
-    .glance-panel-close:hover { background: rgba(11,39,64,0.1); }
-    .glance-panel-body { padding: 0; }
-    .glance-tab { position: fixed; right: 0; top: 50%; transform: translateY(-50%); width: 28px; height: 110px; background: white; border: 1px solid rgba(11,39,64,0.09); border-right: none; border-radius: 8px 0 0 8px; box-shadow: -2px 0 10px rgba(11,39,64,0.06); display: flex; align-items: center; justify-content: center; writing-mode: vertical-rl; text-orientation: mixed; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(11,39,64,0.35); cursor: pointer; user-select: none; z-index: 119; font-family: 'Inter', sans-serif; transition: color 0.15s, background 0.15s, opacity 0.2s; }
-    .glance-tab:hover { color: #0B2740; background: rgba(11,39,64,0.02); }
-    html.glance-open .glance-tab { opacity: 0; pointer-events: none; }
-    html.glance-open .main { margin-right: 280px; transition: margin-right 0.25s cubic-bezier(0.4,0,0.2,1); }
-    /* lm-sw* widget classes (used inside the At a Glance panel) */
-    .lm-sw { padding: 0.75rem 1rem; display: flex; flex-direction: column; gap: 0.7rem; }
-    .lm-sw-gauge-wrap { display: flex; flex-direction: column; align-items: center; padding: 0.5rem 0; gap: 0.25rem; }
-    .lm-sw-big { font-size: 1.6rem; font-weight: 800; color: #0B2740; letter-spacing: -0.03em; line-height: 1; }
-    .lm-sw-gauge-sub { font-size: 0.64rem; color: rgba(11,39,64,0.48); }
-    .lm-sw-section { border-top: 1px solid rgba(11,39,64,0.07); padding-top: 0.65rem; }
-    .lm-sw-section-title { font-size: 0.55rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(11,39,64,0.35); margin-bottom: 0.45rem; }
-    .lm-sw-stat-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.7rem; padding: 0.18rem 0; }
-    .lm-sw-stat-label { color: rgba(11,39,64,0.52); }
-    .lm-sw-stat-value { font-weight: 700; color: #0B2740; }
-    .lm-sw-bar-row { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.28rem; }
-    .lm-sw-bar-label { font-size: 0.67rem; color: #304F6B; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .lm-sw-bar-track { flex: 2; height: 5px; background: rgba(11,39,64,0.08); border-radius: 100px; overflow: hidden; }
-    .lm-sw-bar-fill { height: 100%; border-radius: 100px; }
-    .lm-sw-bar-val { font-size: 0.6rem; font-weight: 600; color: rgba(11,39,64,0.42); min-width: 24px; text-align: right; }
-
+    html { height: 100%; }
     /* ─── TWO-COLUMN LAYOUT ─── */
     .columns { flex: 1; display: flex; min-height: 0; overflow: hidden; }
 
@@ -240,11 +156,16 @@
 <aside class="sidebar" id="sidebar-root"></aside>
 
 <div class="main">
-  <!-- Topbar -->
-  <div class="topbar">
+  <div id="topbar-root"></div>
+  <div id="module-header-root"></div>
+  <nav id="subnav-root"></nav>
+
+  <div class="page-scroll" style="padding:0;overflow:hidden;display:flex;flex-direction:column;">
+  <!-- Project selector toolbar (page-specific) -->
+  <div style="background:white;border-bottom:1px solid rgba(11,39,64,0.08);height:42px;display:flex;align-items:center;padding:0 1.25rem;gap:0.5rem;flex-shrink:0;">
     <select class="project-select" id="project-select" onchange="onProjectSelectChange(this.value)"></select>
     <button class="project-new-btn" onclick="createNewProject()" title="Add a new project">+ New</button>
-    <div class="topbar-search-wrap">
+    <div class="topbar-search-wrap" style="max-width:260px;">
       <svg class="topbar-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input class="topbar-search" id="doc-search" type="text" placeholder="Search documents…" oninput="filterDocs(this.value)">
     </div>
@@ -259,19 +180,6 @@
       Edit Index
     </button>
   </div>
-<div class="module-header"><span class="module-header-title">Design Controls</span></div>
-
-<nav class="dc-subnav">
-  <a href="design-controls-overview.html" class="dc-subnav-link active">Design Controls Overview</a>
-  <a href="dev-plan.html" class="dc-subnav-link">Dev Plan</a>
-  <a href="user-needs.html" class="dc-subnav-link">User Needs</a>
-  <a href="design-inputs.html" class="dc-subnav-link">Design Inputs</a>
-  <a href="design-outputs.html" class="dc-subnav-link">Design Outputs</a>
-  <a href="design-review.html" class="dc-subnav-link">Design Reviews</a>
-  <a href="vv.html" class="dc-subnav-link">V&amp;V</a>
-  <a href="trace-matrix.html" class="dc-subnav-link">Trace Matrix</a>
-</nav>
-
   <!-- Two-column content -->
   <div class="columns">
 
@@ -285,19 +193,10 @@
     </div>
 
   </div>
+  </div><!-- /page-scroll -->
 </div>
 
-<!-- At a Glance tab + panel -->
-<div class="glance-tab" onclick="toggleGlance()">At a glance</div>
-<div id="glance-panel" class="glance-panel open">
-  <div class="glance-panel-head">
-    <span class="glance-panel-label">At a glance</span>
-    <button class="glance-panel-close" onclick="toggleGlance()">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-  <div class="glance-panel-body" id="glance-body"></div>
-</div>
+<div id="glance-root"></div>
 
 <!-- Detail panel (slide-out for editing a doc/SOP) -->
 <div class="detail-panel" id="detail-panel">
@@ -328,8 +227,14 @@
 </div>
 
 <script src="sidebar.js"></script>
+<script src="shell.js"></script>
 <script>
-initSidebar({ activePage: 'design-controls' });
+initShell({
+  activePage: 'design-controls',
+  topbar: { searchPlaceholder: 'Search documents…' },
+  moduleHeader: 'Design Controls',
+  subNav: { module: 'design-controls', activeHref: 'design-controls-overview.html' }
+});
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SEED INDEX  —  Full document list from projectJourney_index.xlsx
@@ -905,11 +810,6 @@ function renamePhase(event, phaseId) {
     if (e.key === 'Enter') { input.blur(); }
     if (e.key === 'Escape') { saved = true; renderAll(); }
   });
-}
-
-function toggleGlance() {
-  document.documentElement.classList.toggle('glance-open');
-  document.getElementById('glance-panel').classList.toggle('open');
 }
 
 function filterDocs(query) {

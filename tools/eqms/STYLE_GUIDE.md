@@ -70,50 +70,100 @@ Declare these in `:root` on every page.
 
 ## 4. Layout Structure
 
-Every page uses the same three-zone shell:
+Every page uses the same shell, fully managed by `shell.js`. Pages own only their page-specific content.
 
 ```
-┌─────────────────────────────────────────────────┐
-│  SIDEBAR (232px fixed)  │  MAIN                 │
-│                         │  ┌─────────────────┐  │
-│  dark navy (#071e31)    │  │ TOPBAR (58px)   │  │  white bg, search bar
-│                         │  ├─────────────────┤  │
-│  nav items              │  │ MODULE HEADER   │  │  navy bg, module name
-│  active = aqua tint     │  ├─────────────────┤  │
-│                         │  │ SUB-NAV (40px)  │  │  white bg, section tabs
-│                         │  ├─────────────────┤  │
-│                         │  │ CONTENT AREA    │  │
-│                         │  │ (scrollable)    │  │
-│                         │  └─────────────────┘  │
-└─────────────────────────────────────────────────┘
+y=0  ┌────────────┬──────────────────────────────────────────────────────────┐
+     │ SIDEBAR    │ [🔍 Search…]  ·····  [FM  Founding Member]               │ ← TOPBAR (58px, white)
+y=58 │ (220px,    ├──────────────────────────────────────────────────────────┤
+     │  dark      │ ████  Design Controls  ████████████████████████████████  │ ← MODULE HEADER (46px, navy)
+     │  navy)     ├─────────────────────────────────────┬────────────────────┤  hub pages only
+y=104│            │ Overview  Dev Plan  User Needs  …   │ AT A GLANCE (280px)│ ← SUB-NAV (40px, white)
+     │            ├─────────────────────────────────────│                    │
+     │            │ .page-scroll (content area)         │  panel body        │
+     │            │ margin-right: 280px when open       │                    │
+     └────────────┴─────────────────────────────────────┴────────────────────┘
 ```
 
+### HTML root anchors (required on every shell page)
+
+```html
+<body>
+  <aside class="sidebar" id="sidebar-root"></aside>
+  <div class="main">
+    <div id="topbar-root"></div>
+    <div id="module-header-root"></div>
+    <nav id="subnav-root"></nav>
+    <div class="page-scroll">
+      <!-- page-specific content only -->
+    </div>
+  </div>
+  <div id="glance-root"></div>
+</body>
+```
+
+### Shell init (bottom of `<body>`, after sidebar.js + shell.js)
+
+```javascript
+// Hub / overview page (with module header band):
+initShell({
+  activePage: 'design-controls',
+  topbar: { searchPlaceholder: 'Search documents…' },
+  moduleHeader: 'Design Controls',
+  subNav: { module: 'design-controls', activeHref: 'design-controls-overview.html' }
+});
+
+// Detail / form page (no module header; wide-format pages default glance to closed):
+initShell({
+  activePage: 'risk-analysis',
+  topbar: { searchPlaceholder: 'Search hazards…' },
+  subNav: { module: 'risk-management', activeHref: 'risk-analysis.html' },
+  glancePanel: { defaultOpen: false }
+});
+```
+
+`glancePanel` can be omitted entirely — it defaults to `{ defaultOpen: true }`. Only pass it to override the default.
+
+### CSS
 ```css
 body { display: flex; height: 100vh; overflow: hidden; background: var(--light-gray); }
-.sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); flex-shrink: 0; }
+.sidebar { width: 220px; background: var(--sidebar-bg); flex-shrink: 0; }
 .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
-.topbar { height: 58px; background: white; border-bottom: 1px solid rgba(11,39,64,0.08); }
-.content-area { flex: 1; overflow-y: auto; padding: 1.5rem; }
+.page-scroll { flex: 1; overflow-y: auto; }
 ```
 
 ---
 
 ## 5. Topbar
 
+The topbar is a **global element** injected by `shell.js`. Pages do not render it directly.
+
 ### Structure
 ```
-[ Search bar (flex: 1, max 360px) ]   [ Export ] [ Approve ] [ Guidance ]
+[ 🔍 Search input (flex: 1, max 420px) ]   ·····   [ FM  Founding Member / Early Access ]
 ```
 
-The topbar-left holds the search bar + doc revision/status badges. The topbar-right holds action buttons.
+Two fixed zones only: search (left-aligned) and user profile (right-aligned). No title, no project selector, no action buttons.
 
-### Search Bar
+### Config
+```javascript
+topbar: { searchPlaceholder: 'Search documents…' }
+// or simply: topbar: true  (uses default "Search…" placeholder)
+```
+
+### Key CSS classes (in qms-shared.css)
 ```css
-.topbar-search { display: flex; align-items: center; gap: 0.6rem; background: var(--light-gray); border: 1.5px solid rgba(11,39,64,0.1); border-radius: 8px; padding: 0.42rem 0.9rem; max-width: 360px; flex: 1; transition: border-color 0.15s; }
-.topbar-search:focus-within { border-color: rgba(10,192,233,0.4); }
+.topbar              /* 58px white bar, flex row */
+.topbar-search-wrap  /* search input container, max-width 420px */
+.topbar-spacer       /* flex: 1 gap between search and user profile */
+.topbar-user         /* flex row: avatar + name/role */
+.topbar-user-avatar  /* 28px circle, aqua tint, FM monogram */
+.topbar-user-name    /* 0.75rem, 600, --primary */
+.topbar-user-role    /* 0.6rem, 500, muted */
 ```
 
-### Revision / Status Badges (topbar-left)
+### Revision / Status Badges (document pages only)
+Used in document page headers (not the topbar). Kept here for reference:
 ```css
 .ver-badge  { font-size: 0.68rem; font-weight: 700; background: rgba(11,39,64,0.07); border: 1px solid rgba(11,39,64,0.12); color: var(--mid-blue); padding: 0.2rem 0.6rem; border-radius: 5px; }
 .status-pill.draft    { background: rgba(10,192,233,0.1); color: var(--aqua-dark); }
@@ -392,51 +442,65 @@ The footer is hidden by default; shown with `.dirty` when unsaved changes exist.
 
 ## 12. Sidebar
 
-The sidebar is rendered by `sidebar.js` via `initSidebar({ activePage: 'page-id' })`. Do not hardcode sidebar HTML — call the JS initializer.
+The sidebar is a **global element** injected by `shell.js` (which delegates to `sidebar.js` internally). Do not call `initSidebar()` directly on shell-enabled pages — `initShell()` handles it. Do not hardcode sidebar HTML.
 
 ### Visual conventions
 - Background: `var(--sidebar-bg)` (#071e31)
-- Active item: `background: rgba(10,192,233,0.12); color: #5DDAF5` + left border `2.5px solid var(--aqua)`
-- Inactive item: `color: rgba(255,255,255,0.70)`, hover `rgba(255,255,255,0.05)` tint
-- Section labels: `0.57rem`, 700, `letter-spacing: 0.12em`, `color: rgba(255,255,255,0.18)`
-- Nav icons: `15×15px`, stroke-only, `stroke-width: 2`
+- Active item: `background: rgba(10,192,233,0.14); color: #0AC0E9`, `font-weight: 600`
+- Inactive item: `color: rgba(255,255,255,0.62)`, hover `rgba(255,255,255,0.07)` tint
+- Nav icons: `16×16px`, stroke-only, `stroke-width: 2`
+- Footer: "Sign out" link only — user profile (avatar, name, role) lives in the **topbar**, not the sidebar
 
 ---
 
-## 13. At a Glance Widget (Sidebar Panel)
+## 13. At a Glance Panel
 
-Rendered by `renderSidebarWidget()` on each page into `#lm-sidebar-widget`. The widget is copied into the guided-mode At a Glance panel by `learn-mode.js`.
+A **global shell element**, always present on every shell-enabled page. Injected by `shell.js` into `#glance-root`. Pages never render the panel chrome themselves.
 
-### Structure
+### Behavior
+- Default state: **open** (`defaultOpen: true` is implicit — omit `glancePanel` from `initShell()` config entirely)
+- Wide-format pages (tables, matrices): pass `glancePanel: { defaultOpen: false }` — panel starts collapsed as a right-edge pull-tab
+- State always resets to the page's configured default on load (no localStorage persistence)
+- Panel top: `58px` (topbar-only pages) or `104px` (pages with module header band) — set dynamically by `shell.js`
+
+### Panel top positioning by page type
+
+| Page type | `moduleHeader` | Panel top |
+|-----------|---------------|-----------|
+| Hub / overview | present | 104px |
+| Detail / form | absent | 58px |
+
+### Content
+
+`shell.js` injects the panel **chrome** (header, close button, `#glance-body` container). Page JS is responsible for populating `#glance-body` with module-specific content after `initShell()` completes:
+
+```javascript
+initShell(config);
+// Then populate content:
+document.getElementById('glance-body').innerHTML = '...';
 ```
-┌──────────────────────────────┐
-│  [donut svg]  ● Approved 3   │  ← status breakdown
-│               ● Draft 2      │
-│──────────────────────────────│
-│  5  user needs               │  ← big count + label
-│──────────────────────────────│
-│  ⚠ 2 needs with no linked…  │  ← conditional warning
-└──────────────────────────────┘
+
+### CSS classes (in qms-shared.css)
+```
+.glance-panel       — 280px fixed right panel
+.glance-panel.open  — slide-in state
+.glance-panel-head  — sticky header with label + close button
+.glance-panel-body  — scrollable content area (#glance-body target)
+.glance-tab         — collapsed pull-tab on right viewport edge
 ```
 
-The donut is generated as an inline SVG string using the `stroke-dasharray` technique:
-- `r = 15.9155` → circumference ≈ 100 (makes percentage math trivial)
-- Each segment: `stroke-dasharray="pct (100-pct)"`, `stroke-dashoffset="-cumulativeOffset"`
-- Rotate the `<svg>` element `-90deg` to start segments at 12 o'clock
-- Status colors: approved `#059669`, review `#b45309`, draft `rgba(11,39,64,0.22)`
-
-### CSS classes used inside the widget (from `learn-mode.js`)
+### Widget content classes (lm-sw*)
+Used inside `#glance-body` for summary stat layouts:
 ```
-.lm-sw              — outer wrapper
-.lm-sw-gauge-wrap   — big number row
-.lm-sw-big          — large count number
-.lm-sw-big-label    — "user needs" / "design inputs" label
-.lm-sw-section      — grouped sub-section
-.lm-sw-section-title
-.lm-sw-pills        — flex row of status pills
-.lm-sw-pill-green / -amber / -gray
-.lm-sw-warn         — amber warning row with triangle icon
-.lm-sw-bar-row / .lm-sw-bar-track / .lm-sw-bar-fill / .lm-sw-bar-val  — horizontal bar chart rows
+.lm-sw              — outer wrapper (padding, flex column)
+.lm-sw-gauge-wrap   — centered big-number + subtitle
+.lm-sw-big          — large stat number (1.6rem, 800)
+.lm-sw-gauge-sub    — subtitle label below big number
+.lm-sw-section      — grouped sub-section (border-top separator)
+.lm-sw-section-title — section label (0.55rem, uppercase)
+.lm-sw-stat-row     — key/value row
+.lm-sw-bar-row / .lm-sw-bar-track / .lm-sw-bar-fill / .lm-sw-bar-val  — horizontal bar chart row
+.lm-sw-ai           — AI Assist card (aqua tint bg, icon + text)
 ```
 
 ---
@@ -445,8 +509,8 @@ The donut is generated as an inline SVG string using the `stroke-dasharray` tech
 
 | File | Purpose |
 |------|---------|
-| `sidebar.js` | Renders the left nav. Call `initSidebar({ activePage })` after DOM ready. |
-| `learn-mode.js` | Guided/Power mode, At a Glance panel, step footer. Suppressed on Design Controls pages via CSS (`#lm-step-footer`, `#lm-toggle-root { display: none !important }`). |
+| `shell.js` | **Primary entry point.** Injects all global shell elements (sidebar, topbar, module header, sub-nav, At a Glance panel). Call `initShell(config)` — do not call `initSidebar()` directly on shell-enabled pages. |
+| `sidebar.js` | Renders the left nav. Called internally by `shell.js`. Load before `shell.js`. |
 | `seed-demo.js` | Populates demo data into `localStorage` on first load. |
 | `approvals.js` | Approval workflow and e-signature logic. |
 | `versions.js` | Document versioning / revision history. |
@@ -456,15 +520,21 @@ The donut is generated as an inline SVG string using the `stroke-dasharray` tech
 ### Script load order (bottom of `<body>`)
 ```html
 <script src="seed-demo.js?v=..."></script>
-<script src="learn-mode.js?v=..."></script>
-<script src="sidebar.js?v=..."></script>
+<script src="sidebar.js"></script>
+<script src="shell.js"></script>
 <script src="esign.js"></script>
 <script src="versions.js"></script>
 <script src="governance.js"></script>
 <script src="approvals.js"></script>
 <script>
-  initSidebar({ activePage: 'page-id' });
-  renderSidebarWidget();
+  initShell({
+    activePage: 'page-id',
+    topbar: { searchPlaceholder: 'Search…' },
+    moduleHeader: 'Module Name',          // hub pages only
+    subNav: { module: 'module-key', activeHref: 'current-page.html' }
+  });
+  // Populate At a Glance panel body after shell init:
+  document.getElementById('glance-body').innerHTML = '...';
 </script>
 ```
 
@@ -566,15 +636,16 @@ Leave the JS functions in place (removing them risks errors if `learn-mode.js` s
 
 When creating a new eQMS tool page:
 
-- [ ] Copy `:root` variables block verbatim
-- [ ] Use the sidebar + main + topbar shell structure
-- [ ] Topbar-right: `[ Export ] [ Approve ] [ Guidance ]` — nothing else
-- [ ] Add `<div class="module-header"><span class="module-header-title">Module Name</span></div>` between topbar and sub-nav (hub/overview pages)
+- [ ] Link `qms-shared.css` — do **not** copy `:root` variables inline (they live in the shared CSS)
+- [ ] Add shell root anchors to `<body>`: `#sidebar-root`, `#topbar-root`, `#module-header-root`, `#subnav-root`, `.page-scroll`, `#glance-root` (see §4)
+- [ ] Load `sidebar.js` then `shell.js` before page scripts
+- [ ] Call `initShell({ activePage, topbar, moduleHeader?, subNav?, glancePanel? })` — do **not** call `initSidebar()` directly
+- [ ] Include `moduleHeader` only on hub/overview pages
+- [ ] Pass `glancePanel: { defaultOpen: false }` on wide-format pages (tables, matrices, multi-column layouts)
+- [ ] Populate `#glance-body` after `initShell()` with module-specific summary widgets
 - [ ] Add `btn-guidance` → opens `#helpPanel` with page-specific explanation (what it is, regulatory context, best practices, video placeholder)
 - [ ] Guidance panel replaces any `#intro-slot`, `renderIntro()`, or `.learn-only` explainer elements — suppress those with CSS if present
 - [ ] Wrap doc-cover + section-head + table in `.doc-page-card`
 - [ ] Section head: title left, `[+ Add Item]` right (`.btn-tbl-add`)
 - [ ] Table rows use `.row-approved / .row-review / .row-draft` for left border stripe
-- [ ] Implement `renderSidebarWidget()` — donut chart above big count number
-- [ ] Add page suppressions (`#lm-step-footer`, `#lm-toggle-root`)
-- [ ] Call `initSidebar({ activePage: 'your-page-id' })` + `renderSidebarWidget()` at init
+- [ ] Add page suppressions if `learn-mode.js` is present: `#lm-step-footer`, `#lm-toggle-root`, `#lm-step-banner { display: none !important }`
