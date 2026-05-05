@@ -690,11 +690,12 @@ Do **not** pass `glancePanel: { defaultOpen: false }` on Index pages — the sum
 
 ### Layout
 
-Standard single-column `.page-scroll`. No scroll override needed:
+Standard single-column `.page-scroll`. Override the shell's default padding to avoid double-padding, then let `.index-content` own all spacing:
 
 ```html
 <div class="page-scroll">
   <div class="index-content">
+    <!-- Optional: Project bar (.project-bar) — when page is project-scoped -->
     <!-- Filter bar (.filter-bar) -->
     <!-- Grouped variant: .phase-cards -->
     <!-- Table variant: .list-table-outer -->
@@ -703,22 +704,98 @@ Standard single-column `.page-scroll`. No scroll override needed:
 ```
 
 ```css
+.page-scroll { padding: 0; } /* override shell default — index-content owns spacing */
 .index-content {
-  padding: 1.25rem 1.5rem;
+  padding: 1.5rem;
   display: flex; flex-direction: column; gap: 1rem;
-  max-width: 1100px;
+  /* no max-width — content fills the full available width up to the At a Glance panel */
 }
 ```
 
 ---
 
-### Filter Bar
+### Project Bar (optional)
 
-The filter bar sits between the KPI row (if present) and the document list. Left: property dropdowns. Right: inline text search.
+When an Index page is scoped to projects, add a `.project-bar` row **above** the filter bar. It acts as a higher-level context selector — the project selection narrows the dataset before any property filters are applied.
+
+```html
+<div class="project-bar">
+  <span class="project-bar-label">Project</span>
+  <div class="filter-dropdown-wrap" id="dd-project">
+    <button class="filter-dropdown project-dropdown" onclick="toggleDropdown('dd-project')">
+      <span id="dd-project-label">All Projects</span>
+      <svg class="filter-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="filter-dropdown-menu">
+      <div class="filter-option selected" onclick="setFilter('project','',this,'dd-project-label','All Projects')">All Projects</div>
+      <div class="filter-option" onclick="setFilter('project','Project A',this,'dd-project-label','Project A')">Project A</div>
+      <!-- one option per project -->
+    </div>
+  </div>
+</div>
+```
 
 ```css
-.filter-bar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
-.filter-bar-left { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.project-bar {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(11,39,64,0.07);
+}
+.project-bar-label {
+  font-size: 0.67rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(11,39,64,0.38); white-space: nowrap;
+}
+/* Modifier — makes the dropdown visually heavier than property filters */
+.project-dropdown {
+  font-size: 0.82rem !important; font-weight: 600 !important;
+  color: var(--primary) !important;
+  padding: 0.42rem 1rem !important;
+  min-width: 220px;
+}
+```
+
+Add `filterProject` to the filter state alongside `filterStatus`, `filterPhase`, etc., and include it in the `getFilteredDocs()` check (AND logic, same pattern as all other filters).
+
+---
+
+### Filter Bar
+
+The filter bar sits directly above the document list. Left side: one `.filter-dropdown-wrap` per filterable property. Right side: the `+New` primary action button.
+
+> **No inline search input.** The topbar search field handles text search globally; a duplicate search in the filter bar is redundant.
+
+```html
+<div class="filter-bar">
+  <div class="filter-bar-left">
+    <div class="filter-dropdown-wrap" id="dd-status">
+      <button class="filter-dropdown" onclick="toggleDropdown('dd-status')">
+        <span id="dd-status-label">Status</span>
+        <svg class="filter-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="filter-dropdown-menu">
+        <div class="filter-option selected" onclick="setFilter('status','',this,'dd-status-label','Status')">All statuses</div>
+        <div class="filter-option" onclick="setFilter('status','approved',this,'dd-status-label','Approved')">Approved</div>
+        <!-- one option per status value -->
+      </div>
+    </div>
+    <!-- add one .filter-dropdown-wrap per additional property -->
+    <span id="filter-results-count" class="filter-results-count"></span>
+  </div>
+  <div class="filter-bar-right">
+    <button class="btn-new">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New
+    </button>
+  </div>
+</div>
+```
+
+```css
+.filter-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.75rem; flex-wrap: wrap;
+}
+.filter-bar-left  { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
 .filter-bar-right { display: flex; align-items: center; }
 
 .filter-dropdown-wrap { position: relative; }
@@ -749,24 +826,74 @@ The filter bar sits between the KPI row (if present) and the document list. Left
   padding: 0.38rem 0.6rem; border-radius: 5px; cursor: pointer;
   font-size: 0.78rem; color: var(--primary); transition: background 0.1s;
 }
-.filter-option:hover { background: rgba(10,192,233,0.06); }
+.filter-option:hover  { background: rgba(10,192,233,0.06); }
 .filter-option.selected { background: rgba(10,192,233,0.08); color: var(--aqua-dark); font-weight: 600; }
 
-.filter-search-inline {
-  display: flex; align-items: center; gap: 0.4rem;
-  background: white; border: 1.5px solid rgba(11,39,64,0.14);
-  border-radius: 7px; padding: 0.38rem 0.75rem; transition: border-color 0.15s;
+.filter-results-count { font-size: 0.72rem; color: rgba(11,39,64,0.4); padding: 0 0.1rem; }
+
+/* +New button — always right-aligned in .filter-bar-right */
+.btn-new {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  font-size: 0.75rem; font-weight: 700; color: white;
+  background: var(--aqua); border: none; border-radius: 7px;
+  padding: 0.38rem 0.85rem; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(10,192,233,0.3);
+  transition: background 0.15s, transform 0.12s; white-space: nowrap;
 }
-.filter-search-inline:focus-within { border-color: var(--aqua); }
-.filter-search-icon { width: 13px; height: 13px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; flex-shrink: 0; }
-.filter-search-inline input {
-  border: none; outline: none; background: transparent;
-  font-size: 0.78rem; color: var(--primary); width: 180px;
-}
-.filter-search-inline input::placeholder { color: rgba(11,39,64,0.35); }
+.btn-new:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+.btn-new svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
 ```
 
-**Filter behavior:** All active filters apply simultaneously (AND logic). Text search matches title, ID, and owner. Grouped variant auto-expands phases with matches. Show a result count when fewer than total items are visible.
+**Filter JS pattern:**
+```javascript
+var filterProject = ''; // omit if page is not project-scoped
+var filterStatus  = '';
+var filterPhase   = '';
+var filterOwner   = '';
+
+function getFilteredDocs() {
+  return ALL_DOCS.filter(function(d) {
+    if (filterProject && d.project !== filterProject) return false;
+    if (filterStatus  && d.status  !== filterStatus)  return false;
+    if (filterPhase   && d.phase   !== filterPhase)   return false;
+    if (filterOwner   && d.owner   !== filterOwner)   return false;
+    return true;
+  });
+}
+
+function setFilter(prop, value, optionEl, labelId, labelText) {
+  if (prop === 'project') filterProject = value;
+  if (prop === 'status')  filterStatus  = value;
+  if (prop === 'phase')   filterPhase   = value;
+  if (prop === 'owner')   filterOwner   = value;
+
+  document.getElementById(labelId).textContent = labelText;
+  optionEl.closest('.filter-dropdown-menu').querySelectorAll('.filter-option')
+    .forEach(function(o) { o.classList.remove('selected'); });
+  optionEl.classList.add('selected');
+  optionEl.closest('.filter-dropdown').classList.toggle('has-value', !!value);
+  optionEl.closest('.filter-dropdown-wrap').classList.remove('open');
+  applyFilters();
+}
+
+function toggleDropdown(id) {
+  var wrap = document.getElementById(id);
+  wrap.classList.toggle('open');
+  // close other open dropdowns
+  document.querySelectorAll('.filter-dropdown-wrap.open').forEach(function(w) {
+    if (w.id !== id) w.classList.remove('open');
+  });
+}
+
+// Close dropdowns on outside click
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.filter-dropdown-wrap'))
+    document.querySelectorAll('.filter-dropdown-wrap.open')
+      .forEach(function(w) { w.classList.remove('open'); });
+});
+```
+
+**Filter behavior:** All active filters (including project) apply with AND logic. Show a result count (`.filter-results-count`) when fewer than total items are visible. Grouped variant auto-expands phases that contain matches.
 
 ---
 
@@ -880,33 +1007,202 @@ function setSort(col) {
 
 ### At a Glance Panel — Index Page Recipe
 
-Index pages should always populate `#glance-body` with this structure (adjust labels/values to the module):
+`#glance-body` is split into two independent sections rendered by separate functions. This keeps the stats fresh when the user switches between Grouped/Table mode while preserving the chat conversation.
 
 ```
 ┌──────────────────────────────┐
-│  [Big Number]                │  ← total count or % complete (.lm-sw-big)
-│  "Documents" / "Completeness"│  ← subtitle (.lm-sw-gauge-sub)
+│  [Big Number]                │  ← % complete (Grouped) or total count (Table)
+│  "DHF Completeness" / "Docs" │    .lm-sw-big + .lm-sw-gauge-sub
 ├──────────────────────────────┤
-│  By Phase / By Category      │  ← progress bars (.lm-sw-bar-row) — GROUPED only
-│  Phase A  ████████░░  80%    │     omit this section on flat Table Index pages
-│  Phase B  █████░░░░░  50%    │
+│  By Phase          (Grouped) │  ← .lm-sw-bar-row — omit on Table Index
+│  Planning  ████████  100%    │
+│  Inputs    ██░░░░░░   20%    │
 ├──────────────────────────────┤
-│  Status Breakdown            │  ← stat rows (.lm-sw-stat-row)
-│  Approved          18        │     always present on both variants
-│  Under Review       3        │
-│  Draft              5        │
+│  Document Status             │  ← .lm-sw-stat-row — always present
+│  Approved            7       │
+│  Under Review        2       │
+│  Draft               3       │
+│  Not Started         1       │
 ├──────────────────────────────┤
-│  🤖 AI Assist                │  ← .lm-sw-ai — always present
-│  Surface an actionable gap   │
-│  or coverage issue here.     │
+│  🤖 AI ASSIST                │  ← chat section — always present
+│  ┌────────────────────────┐  │
+│  │ AI bubble (insight)    │  │  initial message seeded from module context
+│  │         User bubble ▶  │  │  user types follow-up questions
+│  │ AI bubble (response)   │  │
+│  └────────────────────────┘  │
+│  [ Ask about this data…  ➤ ] │  ← input + send button
 └──────────────────────────────┘
 ```
 
-**Content guidelines:**
-- **Big number:** Total item count for Table Index; completion % for Grouped Index
-- **Progress bars:** Grouped Index only — one bar per group using `var(--green)` (≥80%), `var(--amber)` (<80%), `var(--red)` (<50%)
-- **Status breakdown:** Always present — counts per status (Approved / Under Review / Draft / Not Started)
-- **AI Assist:** One actionable insight — missing owner, stalled review, coverage gap, blocking dependency
+#### Stats section — `buildGlanceStats(mode)` + `populateGlance(mode)`
+
+Wrap the stats in `#glance-stats` so they can be replaced on mode switch without touching the chat:
+
+```javascript
+function buildGlanceStats(mode) {
+  // ... compute approved, review, draft, notStarted counts ...
+  var bigNum = mode === 'grouped' ? pct + '%' : String(total);
+  var bigSub = mode === 'grouped' ? 'DHF Completeness' : 'Total Documents';
+  var phaseBars = ''; // populated for 'grouped' only — see phase bar pattern above
+
+  return '<div class="lm-sw">...[gauge + phaseBars + statRows]...</div>';
+}
+
+function populateGlance(mode) {
+  var el = document.getElementById('glance-body');
+  if (!el) return;
+  var statsEl = document.getElementById('glance-stats');
+  if (!statsEl) {
+    statsEl = document.createElement('div');
+    statsEl.id = 'glance-stats';
+    el.appendChild(statsEl);
+    initGlanceChat(mode); // create chat once
+  }
+  statsEl.innerHTML = buildGlanceStats(mode); // refresh stats only
+}
+```
+
+#### Chat section — `initGlanceChat(mode)`
+
+Called once on first render. Appends the chat UI after `#glance-stats` and seeds the first AI bubble with a context-specific insight.
+
+```html
+<!-- rendered by initGlanceChat() — do not include in static HTML -->
+<div class="lm-sw-chat">
+  <div class="lm-sw-chat-header">
+    <svg><!-- stacked-layers icon --></svg>
+    AI Assist
+  </div>
+  <div class="lm-sw-chat-msgs" id="chat-msgs">
+    <!-- bubbles appended by appendChatBubble() -->
+  </div>
+  <div class="lm-sw-chat-input-row">
+    <input class="lm-sw-chat-input" id="chat-input" placeholder="Ask about this data…">
+    <button class="lm-sw-chat-send" id="chat-send">
+      <svg><!-- send/arrow icon --></svg>
+    </button>
+  </div>
+</div>
+```
+
+```css
+.lm-sw-chat {
+  display: flex; flex-direction: column;
+  border-top: 1px solid rgba(11,39,64,0.07);
+}
+.lm-sw-chat-header {
+  display: flex; align-items: center; gap: 0.35rem;
+  padding: 0.65rem 0.9rem 0.4rem;
+  font-size: 0.55rem; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--aqua-dark);
+}
+.lm-sw-chat-header svg { width: 11px; height: 11px; stroke: var(--aqua-dark); fill: none; stroke-width: 2; }
+
+.lm-sw-chat-msgs {
+  overflow-y: auto; max-height: 160px;
+  padding: 0 0.75rem 0.6rem;
+  display: flex; flex-direction: column; gap: 0.45rem;
+}
+.lm-sw-bubble {
+  font-size: 0.7rem; line-height: 1.5;
+  padding: 0.45rem 0.6rem; border-radius: 8px;
+  max-width: 92%; word-break: break-word;
+}
+.lm-sw-bubble.ai {
+  align-self: flex-start;
+  background: rgba(10,192,233,0.07); color: var(--mid-blue);
+  border: 1px solid rgba(10,192,233,0.15);
+  border-radius: 2px 8px 8px 8px;
+}
+.lm-sw-bubble.user {
+  align-self: flex-end;
+  background: var(--aqua); color: white;
+  border-radius: 8px 2px 8px 8px;
+}
+.lm-sw-bubble.typing { opacity: 0.45; font-style: italic; }
+
+.lm-sw-chat-input-row {
+  display: flex; align-items: center; gap: 0.35rem;
+  border-top: 1px solid rgba(11,39,64,0.07);
+  padding: 0.45rem 0.65rem; background: rgba(11,39,64,0.01);
+}
+.lm-sw-chat-input {
+  flex: 1; border: none; outline: none; background: transparent;
+  font-size: 0.72rem; color: var(--primary);
+}
+.lm-sw-chat-input::placeholder { color: rgba(11,39,64,0.3); }
+.lm-sw-chat-send {
+  width: 22px; height: 22px; border: none; border-radius: 5px;
+  background: var(--aqua); cursor: pointer; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.12s;
+}
+.lm-sw-chat-send:hover { background: var(--aqua-dark); }
+.lm-sw-chat-send svg { width: 10px; height: 10px; stroke: white; fill: none; stroke-width: 2.5; }
+```
+
+```javascript
+function initGlanceChat(mode) {
+  var el = document.getElementById('glance-body');
+  if (!el) return;
+  // ... build chatDiv HTML, append to el ...
+
+  document.getElementById('chat-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); sendChatMsg(); }
+  });
+  document.getElementById('chat-send').addEventListener('click', sendChatMsg);
+
+  // Seed with module-specific insight
+  appendChatBubble('ai', getInitialInsight(mode));
+}
+
+function sendChatMsg() {
+  var input = document.getElementById('chat-input');
+  if (!input || !input.value.trim()) return;
+  var text = input.value.trim();
+  input.value = '';
+  appendChatBubble('user', text);
+
+  // Show typing indicator, then respond after short delay
+  var typingEl = document.createElement('div');
+  typingEl.className = 'lm-sw-bubble ai typing';
+  typingEl.id = 'chat-typing';
+  typingEl.textContent = '…';
+  document.getElementById('chat-msgs').appendChild(typingEl);
+  scrollChatToBottom();
+  setTimeout(function() {
+    var t = document.getElementById('chat-typing');
+    if (t) t.remove();
+    appendChatBubble('ai', getChatResponse(text));
+  }, 500 + Math.random() * 400);
+}
+
+function appendChatBubble(role, text) {
+  var el = document.createElement('div');
+  el.className = 'lm-sw-bubble ' + role;
+  el.textContent = text;
+  document.getElementById('chat-msgs').appendChild(el);
+  scrollChatToBottom();
+}
+
+function scrollChatToBottom() {
+  var m = document.getElementById('chat-msgs');
+  if (m) m.scrollTop = m.scrollHeight;
+}
+
+function getChatResponse(q) {
+  // Implement keyword-matching responses using live data counts.
+  // Cover: approval rate, stalled reviews, drafts, owners, phase progress,
+  // any module-specific regulatory requirements.
+  // Default: "I don't have a specific answer — try asking about status,
+  //   ownership, phase progress, or specific record IDs."
+}
+```
+
+**Chat content guidelines:**
+- **Initial insight (`getInitialInsight`):** The single most actionable gap — missing owner, stalled review, blocking dependency, regulatory coverage issue. Keep to 1–2 sentences.
+- **`getChatResponse` coverage:** Approval counts/percentages, items under review or overdue, draft items not yet submitted, ownership gaps, phase completion percentages, module-specific regulatory hooks (ISO standards, design control traceability, etc.)
+- **Typing indicator:** Always show the `…` bubble for 500–900 ms before the response — it makes the interaction feel considered rather than instant.
 
 ---
 
@@ -914,10 +1210,15 @@ Index pages should always populate `#glance-body` with this structure (adjust la
 
 Additional checklist items when building a new Index page (append to the §18 checklist):
 
-- [ ] Choose variant: Grouped (`.phase-cards`) or Table (`.list-table`)
-- [ ] Add `.filter-bar` with one `.filter-dropdown-wrap` per filterable property + inline search input
-- [ ] Wire `applyFilters()` to all filter inputs and search on `oninput` / `onchange`
+- [ ] Override `.page-scroll { padding: 0; }` and set `.index-content { padding: 1.5rem; }` — no `max-width`
+- [ ] Choose variant: Grouped (`.phase-cards`) or Table (`.list-table-outer`)
+- [ ] If page is project-scoped: add `.project-bar` row above filter bar; include `filterProject` in state and `getFilteredDocs()`
+- [ ] Add `.filter-bar` with one `.filter-dropdown-wrap` per filterable property; **no inline search input** (topbar handles it)
+- [ ] Add `.btn-new` button right-aligned in `.filter-bar-right`
+- [ ] Wire `applyFilters()` to all filter dropdowns via `setFilter()`
 - [ ] Grouped: collapse/expand on phase header click; auto-expand phases with search matches
 - [ ] Table: `setSort(col)` on column headers; add `.pagination-bar` when item count > PAGE_SIZE
-- [ ] At a Glance: big number + status breakdown + AI assist card; add phase progress bars for Grouped
+- [ ] At a Glance: implement `buildGlanceStats(mode)` + `populateGlance(mode)` + `initGlanceChat(mode)` split
+- [ ] At a Glance stats: big number (% for Grouped, count for Table) + status breakdown; add phase progress bars for Grouped only
+- [ ] At a Glance chat: seed with one actionable insight; implement `getChatResponse()` covering status, ownership, phase progress, and any module-specific regulatory hooks
 - [ ] Do **not** pass `glancePanel: { defaultOpen: false }` — At a Glance stays open by default on Index pages
