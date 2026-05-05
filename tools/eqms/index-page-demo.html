@@ -262,9 +262,6 @@
   <div class="page-scroll">
     <div class="index-content">
 
-      <!-- KPI tiles -->
-      <div class="kpi-row" id="kpi-row"></div>
-
       <!-- Filter bar -->
       <div class="filter-bar">
         <div class="filter-bar-left">
@@ -459,29 +456,6 @@ function injectModeToggle(mode) {
   var userEl = topbar.querySelector('.topbar-user');
   if (userEl) topbar.insertBefore(div, userEl);
   else topbar.appendChild(div);
-}
-
-// ── KPI tiles ─────────────────────────────────────────────────────────────────
-
-function renderKpis() {
-  var approved = DEMO_DOCS.filter(function(d) { return d.status === 'approved'; }).length;
-  var review   = DEMO_DOCS.filter(function(d) { return d.status === 'review'; }).length;
-  var total    = DEMO_DOCS.length;
-  var pct      = Math.round(approved / total * 100);
-
-  document.getElementById('kpi-row').innerHTML =
-    tile('Total Documents', total, '') +
-    tile('Approved', approved, 'up') +
-    tile('Under Review', review, '') +
-    tile('Completeness', pct + '%', pct >= 70 ? 'up' : '');
-
-  function tile(label, value, sub) {
-    return '<div class="kpi-tile">'
-      + '<div class="kpi-tile-label">' + label + '</div>'
-      + '<div class="kpi-tile-value">' + value + '</div>'
-      + '<div class="kpi-tile-sub' + (sub === 'up' ? ' up' : '') + '">&nbsp;</div>'
-      + '</div>';
-  }
 }
 
 // ── Grouped view ──────────────────────────────────────────────────────────────
@@ -699,7 +673,6 @@ if (currentMode === 'table') {
 }
 
 injectModeToggle(currentMode);
-renderKpis();
 if (currentMode === 'grouped') renderGrouped(DEMO_DOCS);
 else renderTable(DEMO_DOCS);
 populateGlance(currentMode);

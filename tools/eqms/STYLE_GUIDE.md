@@ -695,7 +695,6 @@ Standard single-column `.page-scroll`. No scroll override needed:
 ```html
 <div class="page-scroll">
   <div class="index-content">
-    <!-- Optional: KPI tile row (.kpi-row) -->
     <!-- Filter bar (.filter-bar) -->
     <!-- Grouped variant: .phase-cards -->
     <!-- Table variant: .list-table-outer -->
