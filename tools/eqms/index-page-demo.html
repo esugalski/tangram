@@ -39,6 +39,25 @@
       display: flex; flex-direction: column; gap: 1rem;
     }
 
+    /* ─── PROJECT BAR ─── */
+    .project-bar {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(11,39,64,0.07);
+    }
+    .project-bar-label {
+      font-size: 0.67rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(11,39,64,0.38);
+      white-space: nowrap;
+    }
+    .project-dropdown {
+      font-size: 0.82rem !important; font-weight: 600 !important;
+      color: var(--primary) !important;
+      padding: 0.42rem 1rem !important;
+      min-width: 220px;
+    }
+    .project-dropdown.has-value { color: var(--primary) !important; }
+
     /* ─── FILTER BAR ─── */
     .filter-bar {
       display: flex; align-items: center; justify-content: space-between;
@@ -258,6 +277,23 @@
   <div class="page-scroll">
     <div class="index-content">
 
+      <!-- Project bar -->
+      <div class="project-bar">
+        <span class="project-bar-label">Project</span>
+        <div class="filter-dropdown-wrap" id="dd-project">
+          <button class="filter-dropdown project-dropdown" onclick="toggleDropdown('dd-project')">
+            <span id="dd-project-label">All Projects</span>
+            <svg class="filter-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="filter-dropdown-menu">
+            <div class="filter-option selected" onclick="setFilter('project','',this,'dd-project-label','All Projects')">All Projects</div>
+            <div class="filter-option" onclick="setFilter('project','Apex Cardiac Monitor',this,'dd-project-label','Apex Cardiac Monitor')">Apex Cardiac Monitor</div>
+            <div class="filter-option" onclick="setFilter('project','Nova Infusion Pump',this,'dd-project-label','Nova Infusion Pump')">Nova Infusion Pump</div>
+            <div class="filter-option" onclick="setFilter('project','Pulse Oximeter Gen 2',this,'dd-project-label','Pulse Oximeter Gen 2')">Pulse Oximeter Gen 2</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Filter bar -->
       <div class="filter-bar">
         <div class="filter-bar-left">
@@ -329,19 +365,19 @@
 // ── Demo data ─────────────────────────────────────────────────────────────────
 
 var DEMO_DOCS = [
-  { id:'DP-001', title:'Development Plan',           phase:'Planning',      status:'approved',    rev:'v1.2', owner:'E. Sugalski', date:'Jan 12, 2026' },
-  { id:'DP-002', title:'Quality Plan',               phase:'Planning',      status:'approved',    rev:'v1.0', owner:'A. Chen',     date:'Jan 15, 2026' },
-  { id:'DP-003', title:'Risk Management Plan',       phase:'Planning',      status:'approved',    rev:'v1.1', owner:'E. Sugalski', date:'Jan 20, 2026' },
-  { id:'DP-004', title:'Clinical Evaluation Plan',   phase:'Planning',      status:'approved',    rev:'v1.0', owner:'M. Patel',    date:'Feb 2, 2026'  },
-  { id:'UN-001', title:'User Needs Document',        phase:'User Needs',    status:'approved',    rev:'v2.1', owner:'A. Chen',     date:'Feb 10, 2026' },
-  { id:'UN-002', title:'Use Specifications',         phase:'User Needs',    status:'review',      rev:'v1.0', owner:'M. Patel',    date:'Apr 18, 2026' },
-  { id:'UN-003', title:'Intended Use Statement',     phase:'User Needs',    status:'approved',    rev:'v1.3', owner:'E. Sugalski', date:'Mar 5, 2026'  },
-  { id:'UN-004', title:'User Profile Summary',       phase:'User Needs',    status:'draft',       rev:'v0.2', owner:'A. Chen',     date:'—'            },
-  { id:'DI-001', title:'Design Input Specification', phase:'Design Inputs', status:'approved',    rev:'v1.0', owner:'E. Sugalski', date:'Mar 22, 2026' },
-  { id:'DI-002', title:'Interface Requirements',     phase:'Design Inputs', status:'review',      rev:'v0.9', owner:'M. Patel',    date:'Apr 25, 2026' },
-  { id:'DI-003', title:'Performance Requirements',   phase:'Design Inputs', status:'draft',       rev:'v0.3', owner:'A. Chen',     date:'—'            },
-  { id:'DI-004', title:'Safety Requirements',        phase:'Design Inputs', status:'draft',       rev:'v0.1', owner:'E. Sugalski', date:'—'            },
-  { id:'DI-005', title:'Usability Requirements',     phase:'Design Inputs', status:'not-started', rev:'—',    owner:'—',          date:'—'            },
+  { id:'DP-001', title:'Development Plan',           phase:'Planning',      status:'approved',    rev:'v1.2', owner:'E. Sugalski', date:'Jan 12, 2026', project:'Apex Cardiac Monitor'  },
+  { id:'DP-002', title:'Quality Plan',               phase:'Planning',      status:'approved',    rev:'v1.0', owner:'A. Chen',     date:'Jan 15, 2026', project:'Apex Cardiac Monitor'  },
+  { id:'DP-003', title:'Risk Management Plan',       phase:'Planning',      status:'approved',    rev:'v1.1', owner:'E. Sugalski', date:'Jan 20, 2026', project:'Nova Infusion Pump'    },
+  { id:'DP-004', title:'Clinical Evaluation Plan',   phase:'Planning',      status:'approved',    rev:'v1.0', owner:'M. Patel',    date:'Feb 2, 2026',  project:'Pulse Oximeter Gen 2'  },
+  { id:'UN-001', title:'User Needs Document',        phase:'User Needs',    status:'approved',    rev:'v2.1', owner:'A. Chen',     date:'Feb 10, 2026', project:'Apex Cardiac Monitor'  },
+  { id:'UN-002', title:'Use Specifications',         phase:'User Needs',    status:'review',      rev:'v1.0', owner:'M. Patel',    date:'Apr 18, 2026', project:'Apex Cardiac Monitor'  },
+  { id:'UN-003', title:'Intended Use Statement',     phase:'User Needs',    status:'approved',    rev:'v1.3', owner:'E. Sugalski', date:'Mar 5, 2026',  project:'Nova Infusion Pump'    },
+  { id:'UN-004', title:'User Profile Summary',       phase:'User Needs',    status:'draft',       rev:'v0.2', owner:'A. Chen',     date:'—',            project:'Pulse Oximeter Gen 2'  },
+  { id:'DI-001', title:'Design Input Specification', phase:'Design Inputs', status:'approved',    rev:'v1.0', owner:'E. Sugalski', date:'Mar 22, 2026', project:'Apex Cardiac Monitor'  },
+  { id:'DI-002', title:'Interface Requirements',     phase:'Design Inputs', status:'review',      rev:'v0.9', owner:'M. Patel',    date:'Apr 25, 2026', project:'Nova Infusion Pump'    },
+  { id:'DI-003', title:'Performance Requirements',   phase:'Design Inputs', status:'draft',       rev:'v0.3', owner:'A. Chen',     date:'—',            project:'Apex Cardiac Monitor'  },
+  { id:'DI-004', title:'Safety Requirements',        phase:'Design Inputs', status:'draft',       rev:'v0.1', owner:'E. Sugalski', date:'—',            project:'Pulse Oximeter Gen 2'  },
+  { id:'DI-005', title:'Usability Requirements',     phase:'Design Inputs', status:'not-started', rev:'—',    owner:'—',          date:'—',            project:'Apex Cardiac Monitor'  },
 ];
 
 var PHASES = [
@@ -356,16 +392,18 @@ function statusLabel(s) {
 
 // ── Filter state ──────────────────────────────────────────────────────────────
 
-var filterStatus = '';
-var filterPhase  = '';
-var filterOwner  = '';
+var filterProject = '';
+var filterStatus  = '';
+var filterPhase   = '';
+var filterOwner   = '';
 
 function getFilteredDocs() {
   var q = (document.getElementById('doc-search') || { value: '' }).value.toLowerCase().trim();
   return DEMO_DOCS.filter(function(d) {
-    if (filterStatus && d.status !== filterStatus) return false;
-    if (filterPhase  && d.phase  !== filterPhase)  return false;
-    if (filterOwner  && d.owner  !== filterOwner)  return false;
+    if (filterProject && d.project !== filterProject) return false;
+    if (filterStatus  && d.status  !== filterStatus)  return false;
+    if (filterPhase   && d.phase   !== filterPhase)   return false;
+    if (filterOwner   && d.owner   !== filterOwner)   return false;
     if (q && !(
       d.title.toLowerCase().indexOf(q) !== -1 ||
       d.id.toLowerCase().indexOf(q) !== -1 ||
@@ -397,9 +435,10 @@ function toggleDropdown(id) {
 }
 
 function setFilter(prop, value, optionEl, labelId, labelText) {
-  if (prop === 'status') filterStatus = value;
-  if (prop === 'phase')  filterPhase  = value;
-  if (prop === 'owner')  filterOwner  = value;
+  if (prop === 'project') filterProject = value;
+  if (prop === 'status')  filterStatus  = value;
+  if (prop === 'phase')   filterPhase   = value;
+  if (prop === 'owner')   filterOwner   = value;
 
   var lbl = document.getElementById(labelId);
   if (lbl) lbl.textContent = labelText;
