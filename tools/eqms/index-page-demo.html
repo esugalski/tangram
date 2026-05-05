@@ -41,10 +41,25 @@
 
     /* ─── FILTER BAR ─── */
     .filter-bar {
-      display: flex; align-items: center;
+      display: flex; align-items: center; justify-content: space-between;
       gap: 0.75rem; flex-wrap: wrap;
     }
     .filter-bar-left  { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .filter-bar-right { display: flex; align-items: center; }
+
+    .btn-new {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem; font-weight: 700;
+      color: white; background: var(--aqua);
+      border: none; border-radius: 7px;
+      padding: 0.38rem 0.85rem; cursor: pointer;
+      box-shadow: 0 2px 8px rgba(10,192,233,0.3);
+      transition: background 0.15s, transform 0.12s;
+      white-space: nowrap;
+    }
+    .btn-new:hover { background: var(--aqua-dark); transform: translateY(-1px); }
+    .btn-new svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; }
 
     .filter-dropdown-wrap { position: relative; }
     .filter-dropdown {
@@ -288,6 +303,12 @@
           </div>
 
           <span id="filter-results-count" class="filter-results-count"></span>
+        </div>
+        <div class="filter-bar-right">
+          <button class="btn-new">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New
+          </button>
         </div>
       </div>
 
