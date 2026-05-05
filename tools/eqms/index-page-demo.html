@@ -33,19 +33,19 @@
     .preview-mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
     /* ─── INDEX PAGE LAYOUT ─── */
+    .page-scroll { padding: 0; }
     .index-content {
-      padding: 1.25rem 1.5rem;
+      padding: 1.5rem;
       display: flex; flex-direction: column; gap: 1rem;
       max-width: 1100px;
     }
 
     /* ─── FILTER BAR ─── */
     .filter-bar {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center;
       gap: 0.75rem; flex-wrap: wrap;
     }
     .filter-bar-left  { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-    .filter-bar-right { display: flex; align-items: center; }
 
     .filter-dropdown-wrap { position: relative; }
     .filter-dropdown {
@@ -84,24 +84,6 @@
     }
     .filter-option:hover { background: rgba(10,192,233,0.06); }
     .filter-option.selected { background: rgba(10,192,233,0.08); color: var(--aqua-dark); font-weight: 600; }
-
-    .filter-search-inline {
-      display: flex; align-items: center; gap: 0.4rem;
-      background: white; border: 1.5px solid rgba(11,39,64,0.14);
-      border-radius: 7px; padding: 0.38rem 0.75rem;
-      transition: border-color 0.15s;
-    }
-    .filter-search-inline:focus-within { border-color: var(--aqua); }
-    .filter-search-icon {
-      width: 13px; height: 13px; stroke: rgba(11,39,64,0.35); fill: none;
-      stroke-width: 2; flex-shrink: 0;
-    }
-    .filter-search-inline input {
-      border: none; outline: none; background: transparent;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.78rem; color: var(--primary); width: 180px;
-    }
-    .filter-search-inline input::placeholder { color: rgba(11,39,64,0.35); }
 
     .filter-results-count {
       font-size: 0.72rem; color: rgba(11,39,64,0.4); padding: 0 0.1rem;
@@ -307,14 +289,6 @@
           </div>
 
           <span id="filter-results-count" class="filter-results-count"></span>
-        </div>
-        <div class="filter-bar-right">
-          <div class="filter-search-inline">
-            <svg class="filter-search-icon" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-            <input type="text" id="doc-search" placeholder="Search…" oninput="applyFilters()">
-          </div>
         </div>
       </div>
 
