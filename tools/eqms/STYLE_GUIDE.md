@@ -1222,3 +1222,149 @@ Additional checklist items when building a new Index page (append to the §18 ch
 - [ ] At a Glance stats: big number (% for Grouped, count for Table) + status breakdown; add phase progress bars for Grouped only
 - [ ] At a Glance chat: seed with one actionable insight; implement `getChatResponse()` covering status, ownership, phase progress, and any module-specific regulatory hooks
 - [ ] Do **not** pass `glancePanel: { defaultOpen: false }` — At a Glance stays open by default on Index pages
+
+---
+
+### Building a new Index page — page spec format
+
+When asking Claude to build a new Index page, provide a spec in this format. Everything else is derived from this section and `index-page-demo.html`.
+
+```
+File: tools/eqms/[filename].html
+Module: [module-id] | Header: "[Module Label]" | SubNav: [this-page.html]
+Variant: Grouped by [field] | Table (columns: ID, Title, ...)
+Filters: [Property: val1, val2; Property: val1, val2]
+Project-scoped: yes | no
+Demo data: [10–15 rows — id, title, grouping field, status, rev, owner, date]
+At a Glance: [big-number label, e.g. "% Closed" or "Total Records"]
+AI seed: "[one-sentence insight seeded as the first chat bubble]"
+AI topics: [comma-separated list of what getChatResponse should handle]
+```
+
+---
+
+### HTML skeleton
+
+Copy this as the starting structure for any new Index page. Replace every `<!-- TODO -->` with page-specific values.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><!-- TODO: Page Title --> — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css">
+  <style>
+    /* §19 required overrides */
+    .page-scroll { padding: 0; }
+    .index-content { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+
+    /* Copy all applicable §19 CSS blocks:
+       Project bar      — if project-scoped
+       Filter bar       — always
+       btn-new          — always
+       phase-card/doc-row — Grouped variant
+       list-table-outer / col-sortable / pagination-bar — Table variant
+       lm-sw-chat       — always
+    */
+  </style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar-root"></aside>
+<div class="main">
+  <div id="topbar-root"></div>
+  <div id="module-header-root"></div>
+  <nav id="subnav-root"></nav>
+  <div class="page-scroll">
+    <div class="index-content">
+
+      <!-- PROJECT BAR — include only if project-scoped (see §19 Project Bar) -->
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+        <div class="filter-bar-left">
+          <!-- TODO: one .filter-dropdown-wrap per filterable property -->
+          <span id="filter-results-count" class="filter-results-count"></span>
+        </div>
+        <div class="filter-bar-right">
+          <button class="btn-new">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New
+          </button>
+        </div>
+      </div>
+
+      <!-- CONTENT — show the active variant, hide the other -->
+      <div id="grouped-view"></div>
+      <div id="table-view" style="display:none"></div>
+
+    </div>
+  </div>
+</div>
+<div id="glance-root"></div>
+
+<script src="sidebar.js"></script>
+<script src="shell.js"></script>
+<script>
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+var ALL_DOCS = [
+  // TODO: 10–15 rows — { id, title, [groupField], status, rev, owner, date[, project] }
+];
+
+// ── Filter state ──────────────────────────────────────────────────────────────
+// var filterProject = ''; // uncomment if project-scoped
+var filterStatus = '';
+// TODO: add one var per additional filterable property
+
+function getFilteredDocs() {
+  return ALL_DOCS.filter(function(d) {
+    // if (filterProject && d.project !== filterProject) return false;
+    if (filterStatus && d.status !== filterStatus) return false;
+    // TODO: add one check per additional filter property
+    return true;
+  });
+}
+
+function applyFilters() {
+  var docs = getFilteredDocs();
+  var cnt = document.getElementById('filter-results-count');
+  if (cnt) cnt.textContent = docs.length < ALL_DOCS.length ? 'Showing ' + docs.length + ' of ' + ALL_DOCS.length : '';
+  renderGrouped(docs); // or renderTable(docs)
+}
+
+// Copy setFilter(), toggleDropdown(), and outside-click handler from §19
+
+// ── Render ────────────────────────────────────────────────────────────────────
+// TODO: renderGrouped(docs) — see §19 Variant A
+// TODO: renderTable(docs) + var sortCol, sortDir, setSort(col) — see §19 Variant B
+
+// ── At a Glance ───────────────────────────────────────────────────────────────
+// Copy buildGlanceStats(mode), populateGlance(mode), initGlanceChat(mode),
+// sendChatMsg(), appendChatBubble(), scrollChatToBottom() from §19.
+// Customize:
+//   buildGlanceStats — bigNum, bigSub, phaseBars (Grouped only), stat labels
+//   initGlanceChat   — getInitialInsight(mode) → one-sentence seed text
+//   getChatResponse  — keyword branches for this module's data and regs
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+initShell({
+  activePage: '<!-- TODO: module-id -->',
+  topbar: { searchPlaceholder: 'Search…' },
+  moduleHeader: '<!-- TODO: Module Label -->',
+  subNav: { module: '<!-- TODO: module-id -->', activeHref: '<!-- TODO: this-page.html -->' }
+});
+
+renderGrouped(ALL_DOCS); // TODO: switch to renderTable if Table variant
+populateGlance('grouped'); // TODO: switch to 'table' if Table variant
+
+</script>
+</body>
+</html>
+```
