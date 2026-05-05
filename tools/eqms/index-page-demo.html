@@ -252,6 +252,65 @@
       font-size: 0.75rem; color: rgba(11,39,64,0.4);
     }
 
+    /* ─── GLANCE CHAT ─── */
+    .lm-sw-chat {
+      display: flex; flex-direction: column;
+      border-top: 1px solid rgba(11,39,64,0.07);
+    }
+    .lm-sw-chat-header {
+      display: flex; align-items: center; gap: 0.35rem;
+      padding: 0.65rem 0.9rem 0.4rem;
+      font-size: 0.55rem; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--aqua-dark);
+    }
+    .lm-sw-chat-header svg { width: 11px; height: 11px; stroke: var(--aqua-dark); fill: none; stroke-width: 2; }
+    .lm-sw-chat-msgs {
+      overflow-y: auto; max-height: 160px;
+      padding: 0 0.75rem 0.6rem;
+      display: flex; flex-direction: column; gap: 0.45rem;
+    }
+    .lm-sw-chat-msgs::-webkit-scrollbar { width: 3px; }
+    .lm-sw-chat-msgs::-webkit-scrollbar-thumb { background: rgba(11,39,64,0.1); border-radius: 2px; }
+    .lm-sw-bubble {
+      font-size: 0.7rem; line-height: 1.5;
+      padding: 0.45rem 0.6rem; border-radius: 8px;
+      max-width: 92%; word-break: break-word;
+    }
+    .lm-sw-bubble.ai {
+      align-self: flex-start;
+      background: rgba(10,192,233,0.07);
+      color: var(--mid-blue);
+      border: 1px solid rgba(10,192,233,0.15);
+      border-radius: 2px 8px 8px 8px;
+    }
+    .lm-sw-bubble.user {
+      align-self: flex-end;
+      background: var(--aqua);
+      color: white;
+      border-radius: 8px 2px 8px 8px;
+    }
+    .lm-sw-bubble.typing { opacity: 0.45; font-style: italic; }
+    .lm-sw-chat-input-row {
+      display: flex; align-items: center; gap: 0.35rem;
+      border-top: 1px solid rgba(11,39,64,0.07);
+      padding: 0.45rem 0.65rem;
+      background: rgba(11,39,64,0.01);
+    }
+    .lm-sw-chat-input {
+      flex: 1; border: none; outline: none; background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem; color: var(--primary);
+    }
+    .lm-sw-chat-input::placeholder { color: rgba(11,39,64,0.3); }
+    .lm-sw-chat-send {
+      width: 22px; height: 22px; border: none; border-radius: 5px;
+      background: var(--aqua); cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.12s;
+    }
+    .lm-sw-chat-send:hover { background: var(--aqua-dark); }
+    .lm-sw-chat-send svg { width: 10px; height: 10px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
     /* Empty state */
     .no-results {
       padding: 2rem; text-align: center;
@@ -617,10 +676,7 @@ function renderTable(docs) {
 
 // ── At a Glance ───────────────────────────────────────────────────────────────
 
-function populateGlance(mode) {
-  var el = document.getElementById('glance-body');
-  if (!el) return;
-
+function buildGlanceStats(mode) {
   var approved   = DEMO_DOCS.filter(function(d) { return d.status === 'approved';    }).length;
   var review     = DEMO_DOCS.filter(function(d) { return d.status === 'review';      }).length;
   var draft      = DEMO_DOCS.filter(function(d) { return d.status === 'draft';       }).length;
@@ -631,9 +687,7 @@ function populateGlance(mode) {
     var app = ph.filter(function(d) { return d.status === 'approved'; }).length;
     return Math.round(app / ph.length * 100);
   }
-
   function barColor(p) { return p >= 80 ? 'var(--green)' : p >= 40 ? 'var(--amber)' : 'var(--red)'; }
-
   function barRow(label, pct) {
     return '<div class="lm-sw-bar-row">'
       + '<span class="lm-sw-bar-label">' + label + '</span>'
@@ -641,7 +695,6 @@ function populateGlance(mode) {
       + '<span class="lm-sw-bar-val">' + pct + '%</span>'
       + '</div>';
   }
-
   function statRow(label, value, color) {
     return '<div class="lm-sw-stat-row">'
       + '<span class="lm-sw-stat-label">' + label + '</span>'
@@ -664,12 +717,7 @@ function populateGlance(mode) {
     : String(DEMO_DOCS.length);
   var bigSub = mode === 'grouped' ? 'DHF Completeness' : 'Total Documents';
 
-  var aiText = mode === 'grouped'
-    ? 'DI-005 (Usability Requirements) has no assigned owner and is blocking V&amp;V planning. ISO&nbsp;62366-1 requires usability documentation before validation begins.'
-    : 'UN-002 and DI-002 have been under review for 14+ days with no approval activity. Consider escalating or reassigning sign-off.';
-
-  el.innerHTML =
-    '<div class="lm-sw">'
+  return '<div class="lm-sw">'
     + '<div class="lm-sw-gauge-wrap">'
     + '<div class="lm-sw-big">' + bigNum + '</div>'
     + '<div class="lm-sw-gauge-sub">' + bigSub + '</div>'
@@ -682,11 +730,120 @@ function populateGlance(mode) {
     + statRow('Draft',       draft,      null)
     + statRow('Not Started', notStarted, 'rgba(11,39,64,0.35)')
     + '</div>'
-    + '</div>'
-    + '<div class="lm-sw-ai">'
-    + '<div class="lm-sw-ai-label"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>AI Assist</div>'
-    + '<div class="lm-sw-ai-text">' + aiText + '</div>'
     + '</div>';
+}
+
+function populateGlance(mode) {
+  var el = document.getElementById('glance-body');
+  if (!el) return;
+
+  var statsEl = document.getElementById('glance-stats');
+  if (!statsEl) {
+    // First call — build both sections
+    statsEl = document.createElement('div');
+    statsEl.id = 'glance-stats';
+    el.appendChild(statsEl);
+    initGlanceChat(mode);
+  }
+  statsEl.innerHTML = buildGlanceStats(mode);
+}
+
+function initGlanceChat(mode) {
+  var el = document.getElementById('glance-body');
+  if (!el) return;
+
+  var chatDiv = document.createElement('div');
+  chatDiv.className = 'lm-sw-chat';
+  chatDiv.innerHTML =
+    '<div class="lm-sw-chat-header">'
+    + '<svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>'
+    + 'AI Assist</div>'
+    + '<div class="lm-sw-chat-msgs" id="chat-msgs"></div>'
+    + '<div class="lm-sw-chat-input-row">'
+    + '<input class="lm-sw-chat-input" id="chat-input" placeholder="Ask about this data…">'
+    + '<button class="lm-sw-chat-send" id="chat-send">'
+    + '<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'
+    + '</button>'
+    + '</div>';
+  el.appendChild(chatDiv);
+
+  document.getElementById('chat-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); sendChatMsg(); }
+  });
+  document.getElementById('chat-send').addEventListener('click', sendChatMsg);
+
+  // Seed with an initial AI insight
+  var seed = mode === 'grouped'
+    ? 'DI-005 (Usability Requirements) has no assigned owner and is blocking V&V planning. ISO 62366-1 requires this before validation begins.'
+    : 'UN-002 and DI-002 have been under review for 14+ days with no approval activity. Consider escalating or reassigning sign-off.';
+  appendChatBubble('ai', seed);
+}
+
+// ── Chat helpers ──────────────────────────────────────────────────────────────
+
+function sendChatMsg() {
+  var input = document.getElementById('chat-input');
+  if (!input || !input.value.trim()) return;
+  var text = input.value.trim();
+  input.value = '';
+  appendChatBubble('user', text);
+
+  var msgsEl = document.getElementById('chat-msgs');
+  var typingEl = document.createElement('div');
+  typingEl.className = 'lm-sw-bubble ai typing';
+  typingEl.id = 'chat-typing';
+  typingEl.textContent = '…';
+  msgsEl.appendChild(typingEl);
+  scrollChatToBottom();
+
+  setTimeout(function() {
+    var t = document.getElementById('chat-typing');
+    if (t) t.remove();
+    appendChatBubble('ai', getChatResponse(text));
+  }, 500 + Math.random() * 400);
+}
+
+function appendChatBubble(role, text) {
+  var msgsEl = document.getElementById('chat-msgs');
+  if (!msgsEl) return;
+  var el = document.createElement('div');
+  el.className = 'lm-sw-bubble ' + role;
+  el.textContent = text;
+  msgsEl.appendChild(el);
+  scrollChatToBottom();
+}
+
+function scrollChatToBottom() {
+  var msgsEl = document.getElementById('chat-msgs');
+  if (msgsEl) msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+function getChatResponse(q) {
+  var lq = q.toLowerCase();
+  var approved = DEMO_DOCS.filter(function(d) { return d.status === 'approved'; }).length;
+  var total    = DEMO_DOCS.length;
+  var pct      = Math.round(approved / total * 100);
+
+  if (lq.indexOf('approv') !== -1)
+    return approved + ' of ' + total + ' documents are approved (' + pct + '%). Planning is fully approved. Design Inputs has the most remaining work.';
+  if (lq.indexOf('review') !== -1 || lq.indexOf('pending') !== -1)
+    return 'UN-002 and DI-002 are both under review. UN-002 has been open since Apr 18 — consider following up with M. Patel.';
+  if (lq.indexOf('draft') !== -1)
+    return 'Three documents are in Draft: UN-004, DI-003, and DI-004. None have been submitted for review yet.';
+  if (lq.indexOf('risk') !== -1)
+    return 'DP-003 (Risk Management Plan) is approved. DI-005 (Usability Requirements) is unstarted — ISO 62366-1 requires this before V&V.';
+  if (lq.indexOf('usabilit') !== -1 || lq.indexOf('di-005') !== -1)
+    return 'DI-005 has no owner and is Not Started. It\'s on the critical path for V&V. Recommend assigning an owner this sprint.';
+  if (lq.indexOf('owner') !== -1 || lq.indexOf('assign') !== -1)
+    return 'DI-005 is the only document without an owner. E. Sugalski owns the most documents (5 total).';
+  if (lq.indexOf('phase') !== -1)
+    return 'Planning: 100% complete. User Needs: 50% (2/4). Design Inputs: 20% (1/5). Focus on Design Inputs to unblock downstream work.';
+  if (lq.indexOf('complet') !== -1 || lq.indexOf('progress') !== -1 || lq.indexOf('status') !== -1)
+    return pct + '% of documents are approved. Planning is done; User Needs and Design Inputs need attention before moving to Design Outputs.';
+  if (lq.indexOf('help') !== -1 || lq.indexOf('what can') !== -1)
+    return 'I can help with document status, ownership gaps, phase progress, overdue reviews, or regulatory requirements. What would you like to know?';
+
+  return 'I don\'t have a specific answer for that yet. Try asking about status, ownership, phase progress, or specific document IDs.';
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
