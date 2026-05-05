@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Index Page Demo — Tangram eQMS</title>
+  <link rel="icon" type="image/png" href="../../brand_assets/Tangram-T%20mark%20reverse_Square.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="qms-shared.css">
+  <style>
+
+    /* ─── MODE TOGGLE (topbar injection) ─── */
+    .preview-mode-toggle {
+      display: flex; align-items: center; gap: 0.25rem;
+      margin-right: 0.75rem;
+    }
+    .preview-mode-toggle-label {
+      font-size: 0.6rem; font-weight: 600; color: rgba(11,39,64,0.4);
+      letter-spacing: 0.05em; text-transform: uppercase;
+      margin-right: 0.15rem; white-space: nowrap;
+    }
+    .preview-mode-btn {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.62rem; font-weight: 600;
+      padding: 0.18rem 0.55rem; border-radius: 4px;
+      border: 1.5px solid rgba(11,39,64,0.14);
+      background: transparent; color: rgba(11,39,64,0.45);
+      cursor: pointer; transition: all 0.12s; white-space: nowrap;
+    }
+    .preview-mode-btn:hover { background: rgba(11,39,64,0.05); color: var(--primary); }
+    .preview-mode-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    /* ─── INDEX PAGE LAYOUT ─── */
+    .index-content {
+      padding: 1.25rem 1.5rem;
+      display: flex; flex-direction: column; gap: 1rem;
+      max-width: 1100px;
+    }
+
+    /* ─── FILTER BAR ─── */
+    .filter-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 0.75rem; flex-wrap: wrap;
+    }
+    .filter-bar-left  { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .filter-bar-right { display: flex; align-items: center; }
+
+    .filter-dropdown-wrap { position: relative; }
+    .filter-dropdown {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem; font-weight: 600; color: var(--mid-blue);
+      background: white; border: 1.5px solid rgba(11,39,64,0.14);
+      border-radius: 7px; padding: 0.38rem 0.75rem; cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .filter-dropdown:hover { border-color: var(--aqua); color: var(--aqua-dark); }
+    .filter-dropdown.has-value {
+      border-color: var(--aqua); color: var(--aqua-dark);
+      background: rgba(10,192,233,0.05);
+    }
+    .filter-chevron {
+      width: 11px; height: 11px; stroke: currentColor; fill: none;
+      stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+      transition: transform 0.15s;
+    }
+    .filter-dropdown-wrap.open .filter-chevron { transform: rotate(180deg); }
+
+    .filter-dropdown-menu {
+      position: absolute; top: calc(100% + 4px); left: 0; z-index: 50;
+      background: white; border: 1px solid rgba(11,39,64,0.1);
+      border-radius: 8px; padding: 0.35rem; min-width: 164px;
+      box-shadow: 0 6px 20px rgba(11,39,64,0.1); display: none;
+    }
+    .filter-dropdown-wrap.open .filter-dropdown-menu { display: block; }
+
+    .filter-option {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.38rem 0.6rem; border-radius: 5px; cursor: pointer;
+      font-size: 0.78rem; color: var(--primary); transition: background 0.1s;
+      user-select: none;
+    }
+    .filter-option:hover { background: rgba(10,192,233,0.06); }
+    .filter-option.selected { background: rgba(10,192,233,0.08); color: var(--aqua-dark); font-weight: 600; }
+
+    .filter-search-inline {
+      display: flex; align-items: center; gap: 0.4rem;
+      background: white; border: 1.5px solid rgba(11,39,64,0.14);
+      border-radius: 7px; padding: 0.38rem 0.75rem;
+      transition: border-color 0.15s;
+    }
+    .filter-search-inline:focus-within { border-color: var(--aqua); }
+    .filter-search-icon {
+      width: 13px; height: 13px; stroke: rgba(11,39,64,0.35); fill: none;
+      stroke-width: 2; flex-shrink: 0;
+    }
+    .filter-search-inline input {
+      border: none; outline: none; background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem; color: var(--primary); width: 180px;
+    }
+    .filter-search-inline input::placeholder { color: rgba(11,39,64,0.35); }
+
+    .filter-results-count {
+      font-size: 0.72rem; color: rgba(11,39,64,0.4); padding: 0 0.1rem;
+    }
+
+    /* ─── GROUPED VARIANT ─── */
+    .phase-cards { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .phase-card {
+      background: white;
+      border: 1px solid rgba(11,39,64,0.08);
+      border-left: 3px solid rgba(11,39,64,0.18);
+      border-radius: 12px; overflow: hidden;
+    }
+    .phase-card.phase-complete    { border-left-color: var(--green); }
+    .phase-card.phase-progress    { border-left-color: var(--amber); }
+    .phase-card.phase-not-started { border-left-color: rgba(11,39,64,0.18); }
+
+    .phase-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1rem; cursor: pointer; transition: background 0.1s;
+    }
+    .phase-hd:hover { background: rgba(11,39,64,0.02); }
+    .phase-hd-left  { display: flex; align-items: center; gap: 0.6rem; }
+    .phase-hd-right { display: flex; align-items: center; gap: 0.75rem; }
+
+    .phase-chevron {
+      width: 14px; height: 14px; stroke: rgba(11,39,64,0.4); fill: none;
+      stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+      transition: transform 0.18s; flex-shrink: 0;
+    }
+    .phase-card.collapsed .phase-chevron { transform: rotate(-90deg); }
+    .phase-card.collapsed .phase-body   { display: none; }
+
+    .phase-name      { font-size: 0.82rem; font-weight: 700; color: var(--primary); }
+    .phase-doc-count { font-size: 0.72rem; color: rgba(11,39,64,0.4); }
+
+    .phase-status-pill {
+      font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 0.15rem 0.55rem; border-radius: 4px;
+    }
+    .pill-complete    { background: rgba(16,185,129,0.1); color: #047857; }
+    .pill-progress    { background: rgba(245,158,11,0.12); color: #b45309; }
+    .pill-not-started { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); }
+
+    .phase-body { border-top: 1px solid rgba(11,39,64,0.06); }
+
+    .doc-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      align-items: center; gap: 1rem;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid rgba(11,39,64,0.05);
+      cursor: pointer; transition: background 0.1s;
+    }
+    .doc-row:last-child { border-bottom: none; }
+    .doc-row:hover { background: rgba(10,192,233,0.03); }
+
+    .doc-row-name {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.82rem; font-weight: 500; color: var(--primary);
+      min-width: 0;
+    }
+    .doc-row-name .doc-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .doc-row-rev   { font-size: 0.72rem; color: rgba(11,39,64,0.4); min-width: 36px; text-align: right; }
+    .doc-row-owner { font-size: 0.72rem; color: rgba(11,39,64,0.4); min-width: 90px; text-align: right; white-space: nowrap; }
+
+    /* ─── TABLE VARIANT ─── */
+    .list-table-outer {
+      background: white; border: 1px solid rgba(11,39,64,0.08);
+      border-radius: 12px; overflow: hidden;
+    }
+    .list-table { width: 100%; border-collapse: collapse; }
+    .list-table thead th {
+      padding: 0.7rem 1rem;
+      font-size: 0.67rem; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: rgba(11,39,64,0.38);
+      background: #FAFBFC; border-bottom: 1px solid rgba(11,39,64,0.08);
+      white-space: nowrap; text-align: left;
+    }
+    .list-table tbody tr {
+      border-bottom: 1px solid rgba(11,39,64,0.06);
+      cursor: pointer; transition: background 0.1s;
+    }
+    .list-table tbody tr:last-child { border-bottom: none; }
+    .list-table tbody tr:hover { background: rgba(10,192,233,0.03); }
+    .list-table td { padding: 0.75rem 1rem; font-size: 0.8rem; color: var(--primary); vertical-align: middle; }
+
+    /* Status left border stripe */
+    .list-table tbody tr.row-approved   td:first-child { border-left: 3px solid var(--green); }
+    .list-table tbody tr.row-review     td:first-child { border-left: 3px solid var(--amber); }
+    .list-table tbody tr.row-draft      td:first-child { border-left: 3px solid rgba(11,39,64,0.18); }
+    .list-table tbody tr.row-not-started td:first-child { border-left: 3px dashed rgba(11,39,64,0.15); }
+
+    /* Sortable column headers */
+    .col-sortable { cursor: pointer; user-select: none; }
+    .col-sortable:hover { color: rgba(11,39,64,0.7); }
+    .col-sortable.sort-active { color: var(--primary); }
+    .sort-arrow {
+      display: inline-block; width: 10px; height: 10px;
+      stroke: currentColor; fill: none; stroke-width: 2.5;
+      stroke-linecap: round; stroke-linejoin: round;
+      opacity: 0.2; margin-left: 3px; vertical-align: middle;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .col-sortable.sort-active .sort-arrow { opacity: 0.75; }
+    .col-sortable.sort-desc   .sort-arrow { transform: rotate(180deg); }
+
+    /* In-table components */
+    .id-pill {
+      font-size: 0.66rem; font-weight: 700; letter-spacing: 0.05em;
+      color: rgba(11,39,64,0.45); background: rgba(11,39,64,0.06);
+      padding: 0.15rem 0.5rem; border-radius: 4px; white-space: nowrap;
+    }
+    .status-badge {
+      font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; padding: 0.12rem 0.45rem; border-radius: 4px;
+      white-space: nowrap;
+    }
+    .status-badge.approved   { background: rgba(16,185,129,0.1);  color: #047857; }
+    .status-badge.review     { background: rgba(245,158,11,0.12);  color: #b45309; }
+    .status-badge.draft      { background: rgba(11,39,64,0.07);    color: rgba(11,39,64,0.45); }
+    .status-badge.not-started { background: rgba(11,39,64,0.04);   color: rgba(11,39,64,0.3); }
+
+    .td-muted  { color: rgba(11,39,64,0.38); font-size: 0.78rem; }
+    .td-owner  { color: rgba(11,39,64,0.55); }
+    .td-phase  { font-size: 0.75rem; font-weight: 500; color: var(--mid-blue); }
+
+    /* Pagination */
+    .pagination-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.7rem 1rem; border-top: 1px solid rgba(11,39,64,0.06);
+      font-size: 0.75rem; color: rgba(11,39,64,0.4);
+    }
+
+    /* Empty state */
+    .no-results {
+      padding: 2rem; text-align: center;
+      font-size: 0.82rem; color: rgba(11,39,64,0.4);
+    }
+    .no-results-card {
+      background: white; border: 1px solid rgba(11,39,64,0.08); border-radius: 12px;
+      padding: 2.5rem; text-align: center;
+      font-size: 0.82rem; color: rgba(11,39,64,0.4);
+    }
+
+  </style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar-root"></aside>
+
+<div class="main">
+  <div id="topbar-root"></div>
+  <div id="module-header-root"></div>
+  <nav id="subnav-root"></nav>
+
+  <div class="page-scroll">
+    <div class="index-content">
+
+      <!-- KPI tiles -->
+      <div class="kpi-row" id="kpi-row"></div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <div class="filter-bar-left">
+
+          <div class="filter-dropdown-wrap" id="dd-status">
+            <button class="filter-dropdown" onclick="toggleDropdown('dd-status')">
+              <span id="dd-status-label">Status</span>
+              <svg class="filter-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="filter-dropdown-menu">
+              <div class="filter-option selected" onclick="setFilter('status','',this,'dd-status-label','Status')">All statuses</div>
+              <div class="filter-option" onclick="setFilter('status','approved',this,'dd-status-label','Approved')">Approved</div>
+              <div class="filter-option" onclick="setFilter('status','review',this,'dd-status-label','Under Review')">Under Review</div>
+              <div class="filter-option" onclick="setFilter('status','draft',this,'dd-status-label','Draft')">Draft</div>
+              <div class="filter-option" onclick="setFilter('status','not-started',this,'dd-status-label','Not Started')">Not Started</div>
+            </div>
+          </div>
+
+          <div class="filter-dropdown-wrap" id="dd-phase">
+            <button class="filter-dropdown" onclick="toggleDropdown('dd-phase')">
+              <span id="dd-phase-label">Phase</span>
+              <svg class="filter-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="filter-dropdown-menu">
+              <div class="filter-option selected" onclick="setFilter('phase','',this,'dd-phase-label','Phase')">All phases</div>
+              <div class="filter-option" onclick="setFilter('phase','Planning',this,'dd-phase-label','Planning')">Planning</div>
+              <div class="filter-option" onclick="setFilter('phase','User Needs',this,'dd-phase-label','User Needs')">User Needs</div>
+              <div class="filter-option" onclick="setFilter('phase','Design Inputs',this,'dd-phase-label','Design Inputs')">Design Inputs</div>
+            </div>
+          </div>
+
+          <div class="filter-dropdown-wrap" id="dd-owner">
+            <button class="filter-dropdown" onclick="toggleDropdown('dd-owner')">
+              <span id="dd-owner-label">Owner</span>
+              <svg class="filter-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="filter-dropdown-menu">
+              <div class="filter-option selected" onclick="setFilter('owner','',this,'dd-owner-label','Owner')">All owners</div>
+              <div class="filter-option" onclick="setFilter('owner','E. Sugalski',this,'dd-owner-label','E. Sugalski')">E. Sugalski</div>
+              <div class="filter-option" onclick="setFilter('owner','A. Chen',this,'dd-owner-label','A. Chen')">A. Chen</div>
+              <div class="filter-option" onclick="setFilter('owner','M. Patel',this,'dd-owner-label','M. Patel')">M. Patel</div>
+            </div>
+          </div>
+
+          <span id="filter-results-count" class="filter-results-count"></span>
+        </div>
+        <div class="filter-bar-right">
+          <div class="filter-search-inline">
+            <svg class="filter-search-icon" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="doc-search" placeholder="Search…" oninput="applyFilters()">
+          </div>
+        </div>
+      </div>
+
+      <!-- Views — toggled by mode -->
+      <div id="grouped-view"></div>
+      <div id="table-view" style="display:none"></div>
+
+    </div>
+  </div>
+</div>
+
+<div id="glance-root"></div>
+
+<script src="sidebar.js"></script>
+<script src="shell.js"></script>
+<script>
+
+// ── Demo data ─────────────────────────────────────────────────────────────────
+
+var DEMO_DOCS = [
+  { id:'DP-001', title:'Development Plan',           phase:'Planning',      status:'approved',    rev:'v1.2', owner:'E. Sugalski', date:'Jan 12, 2026' },
+  { id:'DP-002', title:'Quality Plan',               phase:'Planning',      status:'approved',    rev:'v1.0', owner:'A. Chen',     date:'Jan 15, 2026' },
+  { id:'DP-003', title:'Risk Management Plan',       phase:'Planning',      status:'approved',    rev:'v1.1', owner:'E. Sugalski', date:'Jan 20, 2026' },
+  { id:'DP-004', title:'Clinical Evaluation Plan',   phase:'Planning',      status:'approved',    rev:'v1.0', owner:'M. Patel',    date:'Feb 2, 2026'  },
+  { id:'UN-001', title:'User Needs Document',        phase:'User Needs',    status:'approved',    rev:'v2.1', owner:'A. Chen',     date:'Feb 10, 2026' },
+  { id:'UN-002', title:'Use Specifications',         phase:'User Needs',    status:'review',      rev:'v1.0', owner:'M. Patel',    date:'Apr 18, 2026' },
+  { id:'UN-003', title:'Intended Use Statement',     phase:'User Needs',    status:'approved',    rev:'v1.3', owner:'E. Sugalski', date:'Mar 5, 2026'  },
+  { id:'UN-004', title:'User Profile Summary',       phase:'User Needs',    status:'draft',       rev:'v0.2', owner:'A. Chen',     date:'—'            },
+  { id:'DI-001', title:'Design Input Specification', phase:'Design Inputs', status:'approved',    rev:'v1.0', owner:'E. Sugalski', date:'Mar 22, 2026' },
+  { id:'DI-002', title:'Interface Requirements',     phase:'Design Inputs', status:'review',      rev:'v0.9', owner:'M. Patel',    date:'Apr 25, 2026' },
+  { id:'DI-003', title:'Performance Requirements',   phase:'Design Inputs', status:'draft',       rev:'v0.3', owner:'A. Chen',     date:'—'            },
+  { id:'DI-004', title:'Safety Requirements',        phase:'Design Inputs', status:'draft',       rev:'v0.1', owner:'E. Sugalski', date:'—'            },
+  { id:'DI-005', title:'Usability Requirements',     phase:'Design Inputs', status:'not-started', rev:'—',    owner:'—',          date:'—'            },
+];
+
+var PHASES = [
+  { key: 'Planning',      label: 'Planning' },
+  { key: 'User Needs',    label: 'User Needs' },
+  { key: 'Design Inputs', label: 'Design Inputs' },
+];
+
+function statusLabel(s) {
+  return { approved:'Approved', review:'Under Review', draft:'Draft', 'not-started':'Not Started' }[s] || s;
+}
+
+// ── Filter state ──────────────────────────────────────────────────────────────
+
+var filterStatus = '';
+var filterPhase  = '';
+var filterOwner  = '';
+
+function getFilteredDocs() {
+  var q = (document.getElementById('doc-search') || { value: '' }).value.toLowerCase().trim();
+  return DEMO_DOCS.filter(function(d) {
+    if (filterStatus && d.status !== filterStatus) return false;
+    if (filterPhase  && d.phase  !== filterPhase)  return false;
+    if (filterOwner  && d.owner  !== filterOwner)  return false;
+    if (q && !(
+      d.title.toLowerCase().indexOf(q) !== -1 ||
+      d.id.toLowerCase().indexOf(q) !== -1 ||
+      d.owner.toLowerCase().indexOf(q) !== -1
+    )) return false;
+    return true;
+  });
+}
+
+function applyFilters() {
+  var docs = getFilteredDocs();
+  var cnt = document.getElementById('filter-results-count');
+  if (cnt) cnt.textContent = (docs.length < DEMO_DOCS.length) ? ('Showing ' + docs.length + ' of ' + DEMO_DOCS.length) : '';
+  if (currentMode === 'grouped') renderGrouped(docs);
+  else renderTable(docs);
+}
+
+// ── Dropdown helpers ──────────────────────────────────────────────────────────
+
+function toggleDropdown(id) {
+  var wrap = document.getElementById(id);
+  if (!wrap) return;
+  var isOpen = wrap.classList.toggle('open');
+  if (isOpen) {
+    document.querySelectorAll('.filter-dropdown-wrap.open').forEach(function(w) {
+      if (w.id !== id) w.classList.remove('open');
+    });
+  }
+}
+
+function setFilter(prop, value, optionEl, labelId, labelText) {
+  if (prop === 'status') filterStatus = value;
+  if (prop === 'phase')  filterPhase  = value;
+  if (prop === 'owner')  filterOwner  = value;
+
+  var lbl = document.getElementById(labelId);
+  if (lbl) lbl.textContent = labelText;
+
+  var menu = optionEl.closest('.filter-dropdown-menu');
+  if (menu) menu.querySelectorAll('.filter-option').forEach(function(o) { o.classList.remove('selected'); });
+  optionEl.classList.add('selected');
+
+  var btn = optionEl.closest('.filter-dropdown-wrap').querySelector('.filter-dropdown');
+  if (btn) btn.classList.toggle('has-value', !!value);
+
+  optionEl.closest('.filter-dropdown-wrap').classList.remove('open');
+  applyFilters();
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.filter-dropdown-wrap')) {
+    document.querySelectorAll('.filter-dropdown-wrap.open').forEach(function(w) { w.classList.remove('open'); });
+  }
+});
+
+// ── View toggle ───────────────────────────────────────────────────────────────
+
+var currentMode = 'grouped';
+
+function switchMode(mode) {
+  currentMode = mode;
+  document.getElementById('grouped-view').style.display = mode === 'grouped' ? '' : 'none';
+  document.getElementById('table-view').style.display   = mode === 'table'   ? '' : 'none';
+  applyFilters();
+  populateGlance(mode);
+  injectModeToggle(mode);
+}
+
+function injectModeToggle(mode) {
+  var topbar = document.querySelector('.topbar');
+  if (!topbar) return;
+  var existing = topbar.querySelector('.preview-mode-toggle');
+  if (existing) existing.remove();
+
+  var div = document.createElement('div');
+  div.className = 'preview-mode-toggle';
+  div.innerHTML =
+    '<span class="preview-mode-toggle-label">Variant:</span>'
+    + '<button class="preview-mode-btn' + (mode === 'grouped' ? ' active' : '') + '" onclick="switchMode(\'grouped\')">Grouped</button>'
+    + '<button class="preview-mode-btn' + (mode === 'table'   ? ' active' : '') + '" onclick="switchMode(\'table\')">Table</button>';
+
+  var userEl = topbar.querySelector('.topbar-user');
+  if (userEl) topbar.insertBefore(div, userEl);
+  else topbar.appendChild(div);
+}
+
+// ── KPI tiles ─────────────────────────────────────────────────────────────────
+
+function renderKpis() {
+  var approved = DEMO_DOCS.filter(function(d) { return d.status === 'approved'; }).length;
+  var review   = DEMO_DOCS.filter(function(d) { return d.status === 'review'; }).length;
+  var total    = DEMO_DOCS.length;
+  var pct      = Math.round(approved / total * 100);
+
+  document.getElementById('kpi-row').innerHTML =
+    tile('Total Documents', total, '') +
+    tile('Approved', approved, 'up') +
+    tile('Under Review', review, '') +
+    tile('Completeness', pct + '%', pct >= 70 ? 'up' : '');
+
+  function tile(label, value, sub) {
+    return '<div class="kpi-tile">'
+      + '<div class="kpi-tile-label">' + label + '</div>'
+      + '<div class="kpi-tile-value">' + value + '</div>'
+      + '<div class="kpi-tile-sub' + (sub === 'up' ? ' up' : '') + '">&nbsp;</div>'
+      + '</div>';
+  }
+}
+
+// ── Grouped view ──────────────────────────────────────────────────────────────
+
+function renderGrouped(docs) {
+  var html = '<div class="phase-cards">';
+  var anyVisible = false;
+
+  PHASES.forEach(function(ph) {
+    var filteredRows = docs.filter(function(d) { return d.phase === ph.key; });
+    var allRows      = DEMO_DOCS.filter(function(d) { return d.phase === ph.key; });
+
+    // If a phase filter is active and this isn't the selected phase, skip entirely
+    if (filterPhase && ph.key !== filterPhase) return;
+    anyVisible = true;
+
+    var approvedCnt = allRows.filter(function(d) { return d.status === 'approved'; }).length;
+    var total       = allRows.length;
+    var phClass  = approvedCnt === total ? 'phase-complete' : (approvedCnt > 0 ? 'phase-progress' : 'phase-not-started');
+    var pillCls  = approvedCnt === total ? 'pill-complete'  : (approvedCnt > 0 ? 'pill-progress'  : 'pill-not-started');
+    var pillTxt  = approvedCnt === total ? 'Complete'       : (approvedCnt > 0 ? 'In Progress'    : 'Not Started');
+
+    html += '<div class="phase-card ' + phClass + '">';
+    html += '<div class="phase-hd" onclick="this.closest(\'.phase-card\').classList.toggle(\'collapsed\')">';
+    html += '<div class="phase-hd-left">';
+    html += '<svg class="phase-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>';
+    html += '<span class="phase-name">' + ph.label + '</span>';
+    html += '<span class="phase-status-pill ' + pillCls + '">' + pillTxt + '</span>';
+    html += '</div>';
+    html += '<div class="phase-hd-right">';
+    html += '<span class="phase-doc-count">' + approvedCnt + '&thinsp;/&thinsp;' + total + ' approved</span>';
+    html += '</div></div>';
+
+    html += '<div class="phase-body">';
+    if (filteredRows.length === 0) {
+      html += '<div class="no-results">No documents match the current filters in this phase.</div>';
+    } else {
+      filteredRows.forEach(function(d) {
+        html += '<div class="doc-row">';
+        html += '<div class="doc-row-name"><span class="id-pill">' + d.id + '</span><span class="doc-title">' + d.title + '</span></div>';
+        html += '<span class="status-badge ' + d.status + '">' + statusLabel(d.status) + '</span>';
+        html += '<span class="doc-row-rev">' + d.rev + '</span>';
+        html += '<span class="doc-row-owner">' + d.owner + '</span>';
+        html += '</div>';
+      });
+    }
+    html += '</div></div>'; // phase-body, phase-card
+  });
+
+  if (!anyVisible) {
+    html += '<div class="no-results-card">No documents match the current filters.</div>';
+  }
+
+  html += '</div>';
+  document.getElementById('grouped-view').innerHTML = html;
+}
+
+// ── Table view ────────────────────────────────────────────────────────────────
+
+var sortCol = 'id';
+var sortDir = 'asc';
+
+function setSort(col) {
+  sortDir = (sortCol === col && sortDir === 'asc') ? 'desc' : 'asc';
+  sortCol = col;
+  applyFilters();
+}
+
+function renderTable(docs) {
+  var sorted = docs.slice().sort(function(a, b) {
+    var va = a[sortCol] || '';
+    var vb = b[sortCol] || '';
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ?  1 : -1;
+    return 0;
+  });
+
+  function thCls(col) {
+    var c = 'col-sortable';
+    if (sortCol === col) c += ' sort-active' + (sortDir === 'desc' ? ' sort-desc' : '');
+    return c;
+  }
+
+  var COLS = [
+    { key:'id',     label:'ID'     },
+    { key:'title',  label:'Title'  },
+    { key:'phase',  label:'Phase'  },
+    { key:'status', label:'Status' },
+    { key:'rev',    label:'Rev'    },
+    { key:'owner',  label:'Owner'  },
+    { key:'date',   label:'Date'   },
+  ];
+
+  var ARROW = '<svg class="sort-arrow" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>';
+
+  var html = '<div class="list-table-outer"><table class="list-table">';
+  html += '<colgroup><col style="width:8%"><col style="width:28%"><col style="width:14%"><col style="width:12%"><col style="width:7%"><col style="width:14%"><col style="width:17%"></colgroup>';
+  html += '<thead><tr>';
+  COLS.forEach(function(c) {
+    html += '<th class="' + thCls(c.key) + '" onclick="setSort(\'' + c.key + '\')">' + c.label + ARROW + '</th>';
+  });
+  html += '</tr></thead><tbody>';
+
+  if (sorted.length === 0) {
+    html += '<tr><td colspan="7" style="text-align:center;padding:2.5rem;color:rgba(11,39,64,0.4);font-size:0.82rem;">No documents match the current filters.</td></tr>';
+  } else {
+    sorted.forEach(function(d) {
+      html += '<tr class="row-' + d.status + '">';
+      html += '<td><span class="id-pill">' + d.id + '</span></td>';
+      html += '<td style="font-weight:500">' + d.title + '</td>';
+      html += '<td class="td-phase">' + d.phase + '</td>';
+      html += '<td><span class="status-badge ' + d.status + '">' + statusLabel(d.status) + '</span></td>';
+      html += '<td class="td-muted">' + d.rev + '</td>';
+      html += '<td class="td-owner">' + d.owner + '</td>';
+      html += '<td class="td-muted">' + d.date + '</td>';
+      html += '</tr>';
+    });
+  }
+
+  html += '</tbody></table>';
+  html += '<div class="pagination-bar"><span>Showing ' + sorted.length + ' of ' + DEMO_DOCS.length + ' documents</span></div>';
+  html += '</div>';
+
+  document.getElementById('table-view').innerHTML = html;
+}
+
+// ── At a Glance ───────────────────────────────────────────────────────────────
+
+function populateGlance(mode) {
+  var el = document.getElementById('glance-body');
+  if (!el) return;
+
+  var approved   = DEMO_DOCS.filter(function(d) { return d.status === 'approved';    }).length;
+  var review     = DEMO_DOCS.filter(function(d) { return d.status === 'review';      }).length;
+  var draft      = DEMO_DOCS.filter(function(d) { return d.status === 'draft';       }).length;
+  var notStarted = DEMO_DOCS.filter(function(d) { return d.status === 'not-started'; }).length;
+
+  function phasePct(phKey) {
+    var ph  = DEMO_DOCS.filter(function(d) { return d.phase === phKey; });
+    var app = ph.filter(function(d) { return d.status === 'approved'; }).length;
+    return Math.round(app / ph.length * 100);
+  }
+
+  function barColor(p) { return p >= 80 ? 'var(--green)' : p >= 40 ? 'var(--amber)' : 'var(--red)'; }
+
+  function barRow(label, pct) {
+    return '<div class="lm-sw-bar-row">'
+      + '<span class="lm-sw-bar-label">' + label + '</span>'
+      + '<div class="lm-sw-bar-track"><div class="lm-sw-bar-fill" style="width:' + pct + '%;background:' + barColor(pct) + '"></div></div>'
+      + '<span class="lm-sw-bar-val">' + pct + '%</span>'
+      + '</div>';
+  }
+
+  function statRow(label, value, color) {
+    return '<div class="lm-sw-stat-row">'
+      + '<span class="lm-sw-stat-label">' + label + '</span>'
+      + '<span class="lm-sw-stat-value"' + (color ? ' style="color:' + color + '"' : '') + '>' + value + '</span>'
+      + '</div>';
+  }
+
+  var phaseBars = '';
+  if (mode === 'grouped') {
+    phaseBars = '<div class="lm-sw-section">'
+      + '<div class="lm-sw-section-title">By Phase</div>'
+      + barRow('Planning',      phasePct('Planning'))
+      + barRow('User Needs',    phasePct('User Needs'))
+      + barRow('Design Inputs', phasePct('Design Inputs'))
+      + '</div>';
+  }
+
+  var bigNum = mode === 'grouped'
+    ? Math.round(approved / DEMO_DOCS.length * 100) + '%'
+    : String(DEMO_DOCS.length);
+  var bigSub = mode === 'grouped' ? 'DHF Completeness' : 'Total Documents';
+
+  var aiText = mode === 'grouped'
+    ? 'DI-005 (Usability Requirements) has no assigned owner and is blocking V&amp;V planning. ISO&nbsp;62366-1 requires usability documentation before validation begins.'
+    : 'UN-002 and DI-002 have been under review for 14+ days with no approval activity. Consider escalating or reassigning sign-off.';
+
+  el.innerHTML =
+    '<div class="lm-sw">'
+    + '<div class="lm-sw-gauge-wrap">'
+    + '<div class="lm-sw-big">' + bigNum + '</div>'
+    + '<div class="lm-sw-gauge-sub">' + bigSub + '</div>'
+    + '</div>'
+    + phaseBars
+    + '<div class="lm-sw-section">'
+    + '<div class="lm-sw-section-title">Document Status</div>'
+    + statRow('Approved',    approved,   'var(--green)')
+    + statRow('Under Review', review,    'var(--amber)')
+    + statRow('Draft',       draft,      null)
+    + statRow('Not Started', notStarted, 'rgba(11,39,64,0.35)')
+    + '</div>'
+    + '</div>'
+    + '<div class="lm-sw-ai">'
+    + '<div class="lm-sw-ai-label"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>AI Assist</div>'
+    + '<div class="lm-sw-ai-text">' + aiText + '</div>'
+    + '</div>';
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+
+initShell({
+  activePage: 'design-controls',
+  topbar: { searchPlaceholder: 'Search documents…' },
+  moduleHeader: 'Design Controls',
+  subNav: { module: 'design-controls', activeHref: 'design-controls-overview.html' }
+});
+
+var urlMode = new URLSearchParams(window.location.search).get('mode') || 'grouped';
+currentMode = (urlMode === 'table') ? 'table' : 'grouped';
+if (currentMode === 'table') {
+  document.getElementById('grouped-view').style.display = 'none';
+  document.getElementById('table-view').style.display   = '';
+}
+
+injectModeToggle(currentMode);
+renderKpis();
+if (currentMode === 'grouped') renderGrouped(DEMO_DOCS);
+else renderTable(DEMO_DOCS);
+populateGlance(currentMode);
+
+</script>
+</body>
+</html>

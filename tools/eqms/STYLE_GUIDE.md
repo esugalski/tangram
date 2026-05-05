@@ -531,7 +531,7 @@ Used inside `#glance-body` for summary stat layouts:
   initShell({
     activePage: 'page-id',
     topbar: { searchPlaceholder: 'Search…' },
-    moduleHeader: 'Module Name',          // hub pages only
+    moduleHeader: 'Module Name',          // required on every shell page
     subNav: { module: 'module-key', activeHref: 'current-page.html' }
   });
   // Populate At a Glance panel body after shell init:
@@ -641,7 +641,7 @@ When creating a new eQMS tool page:
 - [ ] Add shell root anchors to `<body>`: `#sidebar-root`, `#topbar-root`, `#module-header-root`, `#subnav-root`, `.page-scroll`, `#glance-root` (see §4)
 - [ ] Load `sidebar.js` then `shell.js` before page scripts
 - [ ] Call `initShell({ activePage, topbar, moduleHeader?, subNav?, glancePanel? })` — do **not** call `initSidebar()` directly
-- [ ] Include `moduleHeader` only on hub/overview pages
+- [ ] Always pass `moduleHeader` in `initShell()` — required on every shell page (see §6)
 - [ ] Pass `glancePanel: { defaultOpen: false }` on wide-format pages (tables, matrices, multi-column layouts)
 - [ ] Populate `#glance-body` after `initShell()` with module-specific summary widgets
 - [ ] Add `btn-guidance` → opens `#helpPanel` with page-specific explanation (what it is, regulatory context, best practices, video placeholder)
@@ -650,3 +650,275 @@ When creating a new eQMS tool page:
 - [ ] Section head: title left, `[+ Add Item]` right (`.btn-tbl-add`)
 - [ ] Table rows use `.row-approved / .row-review / .row-draft` for left border stripe
 - [ ] Add page suppressions if `learn-mode.js` is present: `#lm-step-footer`, `#lm-toggle-root`, `#lm-step-banner { display: none !important }`
+
+---
+
+## 19. Index Page Type
+
+An Index Page presents a collection of documents or records. It is the correct archetype for any page whose primary purpose is listing, filtering, and navigating a set of items — as opposed to editing a single document or displaying analytics.
+
+**Reference implementation:** `index-page-demo.html` (demonstrates both variants with working filters, sorting, and At a Glance panel)
+
+### Two variants
+
+| Variant | Use when | Reference page |
+|---------|----------|----------------|
+| **Grouped Index** | Items have a meaningful hierarchical grouping (phases, modules, categories) and the group structure itself carries status | Design Controls Overview |
+| **Table Index** | Items are a flat cross-cutting collection; grouping isn't meaningful or items span multiple modules | Document Library |
+
+Both variants share the same filter bar, status badge system, At a Glance panel recipe, and shell config. They differ only in how rows are rendered.
+
+---
+
+### Shell config
+
+Index pages default to the At a Glance panel **open** (omit `glancePanel` entirely):
+
+```javascript
+initShell({
+  activePage: 'design-controls',
+  topbar: { searchPlaceholder: 'Search documents…' },
+  moduleHeader: 'Design Controls',
+  subNav: { module: 'design-controls', activeHref: 'design-controls-overview.html' }
+});
+// Then populate #glance-body after init (see At a Glance recipe below)
+```
+
+Do **not** pass `glancePanel: { defaultOpen: false }` on Index pages — the summary panel is the primary companion view.
+
+---
+
+### Layout
+
+Standard single-column `.page-scroll`. No scroll override needed:
+
+```html
+<div class="page-scroll">
+  <div class="index-content">
+    <!-- Optional: KPI tile row (.kpi-row) -->
+    <!-- Filter bar (.filter-bar) -->
+    <!-- Grouped variant: .phase-cards -->
+    <!-- Table variant: .list-table-outer -->
+  </div>
+</div>
+```
+
+```css
+.index-content {
+  padding: 1.25rem 1.5rem;
+  display: flex; flex-direction: column; gap: 1rem;
+  max-width: 1100px;
+}
+```
+
+---
+
+### Filter Bar
+
+The filter bar sits between the KPI row (if present) and the document list. Left: property dropdowns. Right: inline text search.
+
+```css
+.filter-bar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+.filter-bar-left { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.filter-bar-right { display: flex; align-items: center; }
+
+.filter-dropdown-wrap { position: relative; }
+.filter-dropdown {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--mid-blue);
+  background: white; border: 1.5px solid rgba(11,39,64,0.14);
+  border-radius: 7px; padding: 0.38rem 0.75rem; cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.filter-dropdown:hover, .filter-dropdown.has-value {
+  border-color: var(--aqua); color: var(--aqua-dark);
+}
+.filter-dropdown.has-value { background: rgba(10,192,233,0.05); }
+.filter-chevron { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2.5; transition: transform 0.15s; }
+.filter-dropdown-wrap.open .filter-chevron { transform: rotate(180deg); }
+
+.filter-dropdown-menu {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 50;
+  background: white; border: 1px solid rgba(11,39,64,0.1);
+  border-radius: 8px; padding: 0.35rem; min-width: 160px;
+  box-shadow: 0 6px 20px rgba(11,39,64,0.1); display: none;
+}
+.filter-dropdown-wrap.open .filter-dropdown-menu { display: block; }
+
+.filter-option {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.38rem 0.6rem; border-radius: 5px; cursor: pointer;
+  font-size: 0.78rem; color: var(--primary); transition: background 0.1s;
+}
+.filter-option:hover { background: rgba(10,192,233,0.06); }
+.filter-option.selected { background: rgba(10,192,233,0.08); color: var(--aqua-dark); font-weight: 600; }
+
+.filter-search-inline {
+  display: flex; align-items: center; gap: 0.4rem;
+  background: white; border: 1.5px solid rgba(11,39,64,0.14);
+  border-radius: 7px; padding: 0.38rem 0.75rem; transition: border-color 0.15s;
+}
+.filter-search-inline:focus-within { border-color: var(--aqua); }
+.filter-search-icon { width: 13px; height: 13px; stroke: rgba(11,39,64,0.35); fill: none; stroke-width: 2; flex-shrink: 0; }
+.filter-search-inline input {
+  border: none; outline: none; background: transparent;
+  font-size: 0.78rem; color: var(--primary); width: 180px;
+}
+.filter-search-inline input::placeholder { color: rgba(11,39,64,0.35); }
+```
+
+**Filter behavior:** All active filters apply simultaneously (AND logic). Text search matches title, ID, and owner. Grouped variant auto-expands phases with matches. Show a result count when fewer than total items are visible.
+
+---
+
+### Variant A — Grouped Index
+
+Items are presented in collapsible phase/category cards. Each card shows the group name, a completion indicator, and the document rows within.
+
+```css
+.phase-card {
+  background: white; border: 1px solid rgba(11,39,64,0.08);
+  border-left: 3px solid rgba(11,39,64,0.18);
+  border-radius: 12px; overflow: hidden;
+}
+.phase-card.phase-complete    { border-left-color: var(--green); }
+.phase-card.phase-progress    { border-left-color: var(--amber); }
+.phase-card.phase-not-started { border-left-color: rgba(11,39,64,0.18); }
+
+.phase-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.75rem 1rem; cursor: pointer; transition: background 0.1s;
+}
+.phase-hd:hover { background: rgba(11,39,64,0.02); }
+.phase-hd-left { display: flex; align-items: center; gap: 0.6rem; }
+
+.phase-chevron {
+  width: 14px; height: 14px; stroke: rgba(11,39,64,0.4); fill: none;
+  stroke-width: 2.5; transition: transform 0.18s;
+}
+.phase-card.collapsed .phase-chevron { transform: rotate(-90deg); }
+.phase-card.collapsed .phase-body   { display: none; }
+
+.phase-name  { font-size: 0.82rem; font-weight: 700; color: var(--primary); }
+.phase-body  { border-top: 1px solid rgba(11,39,64,0.06); }
+
+/* Phase status pill */
+.phase-status-pill { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.55rem; border-radius: 4px; }
+.pill-complete    { background: rgba(16,185,129,0.1); color: #047857; }
+.pill-progress    { background: rgba(245,158,11,0.12); color: #b45309; }
+.pill-not-started { background: rgba(11,39,64,0.07); color: rgba(11,39,64,0.45); }
+
+/* Document rows inside a phase */
+.doc-row {
+  display: grid; grid-template-columns: 1fr auto auto auto;
+  align-items: center; gap: 1rem; padding: 0.65rem 1rem;
+  border-bottom: 1px solid rgba(11,39,64,0.05); cursor: pointer; transition: background 0.1s;
+}
+.doc-row:last-child { border-bottom: none; }
+.doc-row:hover { background: rgba(10,192,233,0.03); }
+.doc-row-name  { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; font-weight: 500; }
+.doc-row-rev   { font-size: 0.72rem; color: rgba(11,39,64,0.4); min-width: 36px; text-align: right; }
+.doc-row-owner { font-size: 0.72rem; color: rgba(11,39,64,0.4); min-width: 90px; text-align: right; }
+```
+
+**Collapse toggle JS:**
+```javascript
+function togglePhase(hd) {
+  hd.closest('.phase-card').classList.toggle('collapsed');
+}
+```
+
+**Filter behavior for Grouped Index:** Auto-expand phases containing a search match. Hide phases where zero rows match (when a phase filter is active).
+
+---
+
+### Variant B — Table Index
+
+Reuse `.list-table-wrap` / `.list-table` from §10. Additional patterns specific to Table Index pages:
+
+**Sortable column headers:**
+```css
+.col-sortable { cursor: pointer; user-select: none; white-space: nowrap; }
+.col-sortable:hover { color: rgba(11,39,64,0.7); }
+.col-sortable.sort-active { color: var(--primary); }
+.sort-arrow {
+  width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2.5;
+  opacity: 0.2; margin-left: 3px; vertical-align: middle;
+  transition: transform 0.15s, opacity 0.15s;
+}
+.col-sortable.sort-active .sort-arrow { opacity: 0.75; }
+.col-sortable.sort-desc   .sort-arrow { transform: rotate(180deg); }
+```
+
+**Sort JS pattern:**
+```javascript
+var sortCol = 'title';
+var sortDir = 'asc';
+
+function setSort(col) {
+  if (sortCol === col) { sortDir = sortDir === 'asc' ? 'desc' : 'asc'; }
+  else { sortCol = col; sortDir = 'asc'; }
+  renderTable(); // re-render with new sort
+}
+```
+
+**Pagination bar (when count > PAGE_SIZE):**
+```css
+.pagination-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.7rem 1rem; border-top: 1px solid rgba(11,39,64,0.06);
+  font-size: 0.75rem; color: rgba(11,39,64,0.4);
+}
+.btn-load-more {
+  font-size: 0.75rem; font-weight: 600; color: var(--aqua-dark);
+  background: rgba(10,192,233,0.07); border: none; border-radius: 6px;
+  padding: 0.35rem 0.85rem; cursor: pointer; transition: background 0.15s;
+}
+.btn-load-more:hover { background: rgba(10,192,233,0.14); }
+```
+
+---
+
+### At a Glance Panel — Index Page Recipe
+
+Index pages should always populate `#glance-body` with this structure (adjust labels/values to the module):
+
+```
+┌──────────────────────────────┐
+│  [Big Number]                │  ← total count or % complete (.lm-sw-big)
+│  "Documents" / "Completeness"│  ← subtitle (.lm-sw-gauge-sub)
+├──────────────────────────────┤
+│  By Phase / By Category      │  ← progress bars (.lm-sw-bar-row) — GROUPED only
+│  Phase A  ████████░░  80%    │     omit this section on flat Table Index pages
+│  Phase B  █████░░░░░  50%    │
+├──────────────────────────────┤
+│  Status Breakdown            │  ← stat rows (.lm-sw-stat-row)
+│  Approved          18        │     always present on both variants
+│  Under Review       3        │
+│  Draft              5        │
+├──────────────────────────────┤
+│  🤖 AI Assist                │  ← .lm-sw-ai — always present
+│  Surface an actionable gap   │
+│  or coverage issue here.     │
+└──────────────────────────────┘
+```
+
+**Content guidelines:**
+- **Big number:** Total item count for Table Index; completion % for Grouped Index
+- **Progress bars:** Grouped Index only — one bar per group using `var(--green)` (≥80%), `var(--amber)` (<80%), `var(--red)` (<50%)
+- **Status breakdown:** Always present — counts per status (Approved / Under Review / Draft / Not Started)
+- **AI Assist:** One actionable insight — missing owner, stalled review, coverage gap, blocking dependency
+
+---
+
+### New Page Checklist additions (Index Page)
+
+Additional checklist items when building a new Index page (append to the §18 checklist):
+
+- [ ] Choose variant: Grouped (`.phase-cards`) or Table (`.list-table`)
+- [ ] Add `.filter-bar` with one `.filter-dropdown-wrap` per filterable property + inline search input
+- [ ] Wire `applyFilters()` to all filter inputs and search on `oninput` / `onchange`
+- [ ] Grouped: collapse/expand on phase header click; auto-expand phases with search matches
+- [ ] Table: `setSort(col)` on column headers; add `.pagination-bar` when item count > PAGE_SIZE
+- [ ] At a Glance: big number + status breakdown + AI assist card; add phase progress bars for Grouped
+- [ ] Do **not** pass `glancePanel: { defaultOpen: false }` — At a Glance stays open by default on Index pages
